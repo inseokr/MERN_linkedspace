@@ -1,0 +1,204 @@
+<% include ../partials/header %>
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                             
+<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+<link rel="stylesheet" href="/stylesheets/file_upload_v1.css">
+
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>View/Edit Profile</h3>  
+</div>
+
+<div class="container">
+  
+  <form role="form" action="/profile/<%=user_info.user_id%>?_method=PUT" method="post">
+    <div class="row setup-content" id="step-2" style="margin-top:30px;">
+      <div class="col-md-6 offset-md-3">
+        <div class="col-md-12">
+          <hr>
+          <!-- upload or change  profile photos -->
+          <div style="text-align:center; margin-top:20px;">
+            <h5>Upload/Change your profile picture</h5>
+          </div>
+          <div class="avatar-upload" id="avatar-upload">
+                <div class="avatar-edit" id="avatar-edit" onmouseover="handleOnMouseHooverImagePreview(this)">
+                    <label for="imageUpload" id="editLabel"></label>
+                </div>
+
+                <div class="avatar-delete" id="avatar-delete" onmouseover="handleOnMouseHooverImagePreview(this)">
+                  <input type="text" id="deletePicIcon" >
+                    <label for="imageUpload" id="deleteLabel" onclick="handleOnClickDeletePic(this, '/profile', '<%=`${user_info.user_id}`%>')"></label>
+                </div>
+
+                <div class="avatar-preview" id="avatar-preview">
+                    <div id="imagePreview"  onmouseover="handleOnMouseHooverImagePreview(this)" onmouseout="handleOnMouseOutImagePreview(this)" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 0% !important;">
+                          <input type='file' name="file_name" id="imageDefaultUpload" onchange="readURL(this, '/profile', '<%=`${user_info.user_id}`%>')" accept=".png, .jpg, .jpeg"/>
+                          <label class="pictureAddLabel" id="previewLabel" for="imageDefaultUpload" style="opacity: 1">+</label>
+                    </div>
+                </div>
+          </div>
+
+          <hr>
+          <div style="text-align:center; margin-top:20px;">
+            <h5>User Name</h5>
+          </div>
+          <hr>
+          <div class="flex-container" style="margin-top: 10px;">
+            <div style="width: 50%">
+              <input type="text" class="form-control" style="width: 100%" name="user_name" id="user_name" placeholder="User Name" readonly>
+            </div>
+          </div>
+          <hr>
+
+          <!-- end of upload profile photos -->
+          <!-- list of user profile parameters -->
+          <!-- Name: First and Last Name -->
+          <!-- user name -->
+          <div style="text-align:center; margin-top:20px;">
+            <h5>Your Name</h5>
+          </div>
+          <hr>
+          <div class="flex-container">
+            <div style="width: 65%">
+              <input type="text" class="form-control" style="width: 95%" name="first_name" id="first_name" placeholder="First Name">
+            </div>
+            <div style="width: 50%">
+              <input type="text" class="form-control" style="width: 100%" name="last_name" id="last_name" placeholder="Last Name">
+            </div>
+          </div>
+          <hr>
+          <!-- contact information -->
+          <div style="text-align:center; margin-top:20px;">
+            <h5>Contact Information</h5>
+          </div>
+          <hr>
+          <div class="flex-container">
+            <div style="width: 50%">
+              <input type="text" class="form-control" style="width: 95%" name="phone" id="phone" placeholder="Enter your phone number">
+            </div>
+            <div style="width: 65%">
+              <input type="text" class="form-control" style="width: 100%" name="email" id="email" placeholder="Enter your email">
+            </div>
+          </div>
+          <!-- address -->
+          <br>
+          <hr>
+          <% var title = "Home Address"; %>
+          <% include ../partials/location %>
+          <!-- birthdate -->
+          <hr>
+          <div style="text-align:center; margin-top:20px;">
+            <h5>Birth Date</h5>
+          </div>
+          <div class="flex-container" style="margin-top: 10px;">
+              <div style="width: 30%">
+              <select class="form-control" required="required" name="birthdate[month]" id="month" style="width:80%" placeholder="">
+                  <% 
+                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    for (var cur_month=0; cur_month<12; cur_month++) {%>
+                        <option value=<%=cur_month+1%>> <%=months[cur_month]%> </option>
+                 <% } %>
+              </select>
+              </div>
+
+              <div style="width: 30%">
+              <select class="form-control" required="required" name="birthdate[date]" id="date" style="width:80%" placeholder="">
+                  <% 
+                    for (var cur_day=1; cur_day<32; cur_day++) {%>
+                        <option value=<%=cur_day%>> <%=cur_day%> </option>
+                 <% } %>
+              </select>
+              </div>
+              <div style="width: 30%">
+              <select class="form-control" required="required" name="birthdate[year]" id="year" style="width:80%" placeholder="">
+                 <% var cur_year = new Date();
+                     // age limitation
+                     var minimum_age = 16;
+                     var max_age = 80; 
+
+                     var last_year       = cur_year.getFullYear() - minimum_age; 
+                     var beginning_year  = cur_year.getFullYear() - max_age;
+
+                     for (var year=beginning_year; year < last_year; year++) { %>
+                      <option value=<%=year%>> <%=year%> </option>
+                  <% } %>
+              </select>
+              </div>
+          </div>
+          <hr>
+          <!-- geneder -->
+          <div style="text-align:center; margin-top:20px;">
+            <h5>Gender</h5>
+          </div>
+          <hr>
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="M" id="male" />Male
+          </label>
+          <label class="radio-inline" style="margin-left: 30px;">
+            <input type="radio" name="gender" value="F" id="female" />Female
+          </label>
+          <hr>
+
+          <div class="d-flex justify-content-between form-group">
+            <div style="margin-top: 40px">
+              <button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="final">Save</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="/scripts/file_upload.js"></script>
+
+
+<script>
+  <%if(user_info!=null){%>
+    $('#first_name').val("<%=user_info.firstname%>");
+    $('#last_name').val("<%=user_info.lastname%>");
+    $('#user_name').val("<%=user_info.username%>");
+    $('#email').val("<%=user_info.email%>");
+    $('#phone').val("<%=user_info.phone%>");
+
+    $('#street').val("<%=user_info.address.street%>");
+    $('#city').val("<%=user_info.address.city%>");
+    $('#state').val("<%=user_info.address.state%>");
+    $('#country').val("<%=user_info.address.country%>");
+    $('#zipcode').val("<%=user_info.address.zipcode%>");
+
+    $('#date').val("<%=user_info.birthdate.getDate()%>");
+    $('#month').val("<%=user_info.birthdate.getMonth()+1%>");
+    $('#year').val("<%=user_info.birthdate.getFullYear()%>");
+
+    if("<%=user_info.gender%>"=="M")
+    {
+      // DOM doesn't need to add "#"
+      document.getElementById("male").checked = true;
+    } 
+    else
+    {
+      $("#female").prop("checked", true);
+    }
+
+    // load profile picture
+    <%if(user_info.profile_picture!=""){%>
+    $("#imagePreview").css('background-image', 'url("<%=user_info.profile_picture%>")');
+
+     $("#imagePreview").css('background-position', '0% 10%');
+     $("#imagePreview").css('background-size', '100%');
+
+     $("#imagePreview").hide();
+     $("#imagePreview").fadeIn(650);
+
+     $("#previewLabel").css('opacity', 0);
+
+     var picturePreviewId = document.getElementById("avatar-upload");
+     picturePreviewId.style.display = "inline-block";
+
+    <%}%>    
+
+  <%}%>
+</script>
+
+
+<% include ../partials/footer %>

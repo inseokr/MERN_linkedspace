@@ -1,0 +1,113 @@
+.navbar {
+    background-color: white !important;
+}
+
+.show_title {
+    margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1.3333333333333333em !important;
+    letter-spacing: 0.08333333333333333em !important;
+    color: #767676 !important;
+}
+
+.rating {
+    vertical-align: middle !important;
+    line-height: 21px !important;
+    margin-right: 2px !important;
+}
+
+._13wa7798 {
+    color: var(--color-star-select-highlight-color, #914669) !important;
+}
+
+._13wa7798 {
+    display: inline-block !important;
+    color: #914669 !important;
+    font-size: 9px !important;
+    height: 10px !important;
+    margin-right: 1px !important;
+    width: 9px !important;
+}
+
+._1m8bb6v {
+    position: absolute !important;
+    display: block !important;
+    border: 0px !important;
+    margin: -1px !important;
+    padding: 0px !important;
+    height: 1px !important;
+    width: 1px !important;
+    clip: rect(0, 0, 0, 0) !important;
+    overflow: hidden !important;
+}
+
+._1gvnvab {
+    line-height: 21px !important;
+    vertical-align: middle;
+}
+
+._so3dpm2 {
+    margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.3333333333333333em !important;
+    color: #484848 !important;
+}
+
+._1xzp5ma3 {
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-weight: normal !important;
+    font-size: 30px !important;
+    line-height: 42px !important;
+    max-height: 210px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 5 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+._1ezjrwzo {
+    #margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 1.75em !important;
+    color: #484848 !important;
+}
+
+.inner_contents {
+    #margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 1.75em !important;
+    color: #484848 !important;
+}
+
+._tw4pe52 {
+    margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    line-height: 1.2857142857142858em !important;
+    color: #484848 !important;
+}
+
+.sub_title {
+    margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    line-height: 1.4em !important;
+    color: #484848 !important;
+}

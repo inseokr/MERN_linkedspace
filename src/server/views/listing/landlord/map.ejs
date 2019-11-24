@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <style>
+      /* Set the size of the div element that contains the map */
+      #map {
+        height: 200px;  /* The height is 400 pixels */
+        width: 200px;  /* The width is the width of the web page */
+       }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+    <script>
+// Initialize and add the map
+function initMap() {
+  // The location of Uluru
+  var myAddress = '793 praderia circile, 94539/fremont';
+  var urlString = `https://maps.googleapis.com/maps/api/geocode/json?address=793+praderia+circle,
++Fremont,+CA&key=AIzaSyDhNOl53GKZUx7LI66vSng7VUWkHTUgVnE`;
+
+  $.getJSON(urlString, function(data)
+  {
+        var p = data.results[0].geometry.location;
+        // The map, centered at Uluru
+        var map = new google.maps.Map(
+          document.getElementById('map'), {zoom: 15, center: p});
+        var marker = new google.maps.Marker({position: p, map: map});
+  });
+}
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtSupWCIi2l-ZFk5jzVpI2gucIbFP_oCY&callback=initMap">
+    </script>
+  </body>
+</html>

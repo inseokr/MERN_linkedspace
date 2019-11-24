@@ -1,0 +1,106 @@
+<% include ../../partials/header %>
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Listing room/house</h3>  
+</div>
+
+<div class="container">
+<!-- totalSteps and curr_step should be provided -->
+	<%var curr_step=2; 
+	  var totalSteps=6;
+	  var title = "Bedrooms and bathrooms"%> 
+	<% include ../../partials/stepwizard_v2 %>
+	
+	<form role="form" action="/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
+		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
+			<div class="col-md-6 offset-md-3">
+				<div class="col-md-12">
+					<div style="text-align:center">
+						<h5><%=title%></h5>
+					</div>
+					<hr>
+
+					<!-- how many bedrooms & guests to accommodate -->
+					<div class="d-flex flex-column">
+						<div class="p-2">
+							<h5> How many bedrooms?</h5> 
+							<select class="form-control" required="required" name="num_of_bedrooms" id="num_of_bedrooms" placeholder="Studio" style="width:30%" onchange="handleOnChangeNumberOfBedrooms(this)">
+							<% var numOfRooms = ["Studio", "1 bedroom", "2 bedrooms", "3 bedrooms", "4 bedrooms"];
+							   numOfRooms.forEach(function(num_of_rooms, cur_index) { %>
+							   	<option value=<%=cur_index%>><%=num_of_rooms%></option>
+							   	<%}); %>
+							</select>
+						</div>
+						<!-- collect information on bedrooms -->
+						
+						<div class="p2">
+							<div id="studio">
+								<% var bedroom_index = 0; %>
+								<% include ./bedroom_form %>
+							</div>
+							<div id="bedroom#1" >
+								<% var bedroom_index = 1; %>
+								<% include ./bedroom_form %>
+							</div>
+							<div id="bedroom#2" >
+								<% var bedroom_index = 2; %>
+								<% include ./bedroom_form %>
+							</div>
+							<div id="bedroom#3" >
+								<% var bedroom_index = 3; %>
+								<% include ./bedroom_form %>
+							</div>
+							<div id="bedroom#4" >
+								<% var bedroom_index = 4; %>
+								<% include ./bedroom_form %>
+							</div>
+						</div>
+					</div>
+
+					<!-- check if the room's furnished -->
+					<div style="margin-top: 40px">
+              			<a href='<%="/listing/landlord/"+listing_info.listing_id+"/step1"%>' class="btn btn-success btn-lg float-left">Prev</a>
+              			<button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="step#2">Next</button>
+            		</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	<%if(listing_info.listing!=null){%>
+		$('#num_of_bedrooms').val("<%=listing_info.listing.num_of_bedrooms;%>").change();
+
+		<%for(var i=0; i<=listing_info.listing.num_of_bedrooms; i++){%>
+			var bedding_provided_boolean = <%=eval('listing_info.listing.bedrooms['+i+'].bedding_provided')%>;
+			$("#bedding_provided_<%=i%>").prop('checked', bedding_provided_boolean);
+			if(bedding_provided_boolean){
+				document.getElementById("bedding_group_<%=i%>").style.display = "block"; // Show bed form if bedding is provided.
+			}
+			document.getElementById("bathrooms_select_<%=i%>").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_bathrooms')%>";
+			document.getElementById("bedroom_<%=i%>[num_of_guests_bedroom]").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_guests_bedroom')%>";
+			document.getElementById("bedroom_<%=i%>[num_of_single_bed_bedroom]").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_single_bed_bedroom')%>";
+			document.getElementById("bedroom_<%=i%>[num_of_double_bed_bedroom]").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_double_bed_bedroom')%>";
+			document.getElementById("bedroom_<%=i%>[num_of_queen_bed_bedroom]").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_queen_bed_bedroom')%>";
+			document.getElementById("bedroom_<%=i%>[num_of_sofa_bed_bedroom]").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_sofa_bed_bedroom')%>";
+			document.getElementById("bedroom_<%=i%>[num_of_floor_mattress_bedroom]").value="<%=eval('listing_info.listing.bedrooms['+i+'].num_of_floor_mattress_bedroom')%>";
+		<%}%>
+	<%}%>
+	function handleOnChangeNumberOfBedrooms(elememtId){
+		var numOfRooms = elememtId.value;
+		var maxRooms = 4;
+		
+		for (var roomCount = 1; roomCount <= maxRooms; roomCount++){
+			bedRoomGroupElement = document.getElementById(`bedroom_form_group_${roomCount}`);
+
+			if(roomCount<=numOfRooms){
+				bedRoomGroupElement.style.display = "block";
+			}else{
+				bedRoomGroupElement.style.display = "none";
+			}
+		}
+	}
+</script>
+
+<% include ../../partials/footer %>

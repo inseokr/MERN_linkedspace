@@ -1,0 +1,26 @@
+<div class="p-2 flex-inline">
+	<label for=<%=count_name%>><%=count_title%></label>
+	<div class="d-flex flex-inline">
+		<input type="button" class="btn btn-primary btn-empty btn-circle"  id="plus_count" onclick="handleOnClickPlus_count('<%=count_name%>')" value="+"></input>
+		<input type="text" size="25" placeholder="0" style="width:30px; border:none; margin-left: 15px;" id="<%=count_name%>" name="<%=count_name%>">
+		<input type="button" class="btn btn-primary btn-empty btn-circle" style="margin-right: 10px; margin-left:-7px;" id="minus_count" onclick="handleOnClickMinus_count('<%=count_name%>')" value="-"></input>
+	</div>
+</div>
+
+<script>
+function handleOnClickPlus_count(elementIdName){
+
+    var countElement = document.getElementById(elementIdName);
+    ++countElement.value;
+}
+
+function handleOnClickMinus_count(elementIdName){
+    
+    var countElement = document.getElementById(elementIdName);
+
+    if(countElement.value>0)
+    {
+        --countElement.value;
+    }
+}
+</script>

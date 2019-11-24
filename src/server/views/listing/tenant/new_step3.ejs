@@ -1,0 +1,263 @@
+<% include ../../partials/header %>
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                             
+<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+<link rel="stylesheet" href="/stylesheets/file_upload_v1.css">
+
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Posting Rental Request</h3>  
+</div>
+
+<div class="container">
+  
+<div class="stepwizard offset-md-3">
+    <div class="stepwizard-row setup-panel">
+      <div class="stepwizard-step">
+        <a class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
+      </div>
+      <div class="stepwizard-step">
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
+      </div>
+      <div class="stepwizard-step">
+        <a disabled="disabled" class="btn btn-primary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
+      </div>
+    </div>
+  </div>
+  
+  <form role="form" action="/listing/tenant/<%=listing_info.listing_id%>?_method=PUT" method="post">
+    <div class="row setup-content" id="step-2" style="margin-top:30px;">
+      <div class="col-md-6 offset-md-3">
+        <div class="col-md-12">
+          <div style="text-align:center">
+            <h5>Finalize your rental request</h5>
+          </div>
+          <hr>          
+          <!-- Tell me more about you and this rental request-->
+          <div class="form-group" style="margin-top: 10px;">
+            <div style="text-align:center"> <h6>Tell me more about this rental request and yourself</h6> </div>
+            <textarea type="text" class="form-control" rows="5" name="rental_description" id="rental_description" placeholder=""> </textarea>
+            <small id="descriptionHelp" class="form-text text-muted" style="text-align:center !important;">This information will be used to find better rental options.</small>
+          </div>
+          
+          <hr>
+
+          <!-- upload profile photos -->
+          <div style="text-align:center; margin-top:20px;">
+            <h6>Add your profile picture</h6>
+          </div>
+          <div class="avatar-upload" id="avatar-upload">
+                <div class="avatar-edit" id="avatar-edit" onmouseover="handleOnMouseHooverImagePreview(this)">
+                    <label for="imageUpload" id="editLabel"></label>
+                </div>
+
+                <div class="avatar-delete" id="avatar-delete" onmouseover="handleOnMouseHooverImagePreview(this)">
+                  <input type="text" id="deletePicIcon" >
+                    <label for="imageUpload" id="deleteLabel" onclick="handleOnClickDeletePic(this, '/listing/tenant', '<%=`${listing_info.listing_id}`%>')"></label>
+                </div>
+
+                <div class="avatar-preview" id="avatar-preview">
+                    <div id="imagePreview"  onmouseover="handleOnMouseHooverImagePreview(this)" onmouseout="handleOnMouseOutImagePreview(this)" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 0% !important;">
+                          <input type='file' name="file_name" id="imageDefaultUpload" onchange="readURL(this, '/listing/tenant', '<%=`${listing_info.listing_id}`%>')" accept=".png, .jpg, .jpeg"/>
+                          <label class="pictureAddLabel" id="previewLabel" for="imageDefaultUpload" style="opacity: 1">+</label>
+                    </div>
+                </div>
+
+                <div class="caption" style="width: 100%">
+                  <input type="text" name="caption" id="imageCapture" placeholder="Add Caption" style="margin-left: 10%; margin-right: auto; width:80% !important;"></input>
+                </div>
+            </div>
+
+            <hr>
+
+          <!-- end of upload profile photos -->
+
+          <div class="d-flex justify-content-between form-group">
+
+            <div class="form-group">
+              <div class="p-2">
+                <div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+                  <label class="switch switch-sm" style="margin-bottom: auto">
+                    <input type="checkbox" class="primary" style="margin-left:-3px" name="group_rental" id="group_rental" onclick="handleClickGroupRental()" value="">
+                    <span class="slider-sm round"></span>
+                  </label>
+                  <div style="margin-bottom:auto; margin-left: 5px;"> I have roommate(s) </div>
+                </div>
+
+
+                <!-- roommates -->
+                <div style="display:none" id="roommate_group">
+                  <label class="control-label" id="roommate_label">Number of Roommate(s)</label>
+                    <select name="num_of_roommates" id="num_of_roommates" onchange="handleClickNumOfRoommate()" style="margin-left: 10px;">
+                      <option value="0">0</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>         
+                  <div id="roommate_ids" style="display:none">
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_0" value="" placeholder="User ID of roommate#0">
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_1" value="" placeholder="User ID of roommate#1">
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_2" value="" placeholder="User ID of roommate#2">
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_3" value="" placeholder="User ID of roommate#3">  
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_4" value="" placeholder="User ID of roommate#4">  
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="p-2">
+                <div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+                  <label class="switch switch-sm" style="margin-bottom: auto">
+                    <input type="checkbox" class="primary" style="margin-left:-3px" name="roommate_request" id="roommate_request" onclick="handleClickRoommateRequest()" value="">
+                    <span class="slider-sm round"></span>
+                  </label>
+                  <div style="margin-bottom:auto; margin-left: 5px;"> I want roommate(s) </div>
+                </div>
+
+                <div  id="roommate_request_group" style="display:none">
+                  <label class="control-label" id="num_of_roommate_requested">Number of Roommate(s)</label>
+                    <select id="num_of_requested_roommates" name="num_of_requested_roommates" style="margin-left: 10px;">
+                      <option value="0">0</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <hr>
+            <div class="form-group">
+              <label for="description_on_rental">Contact Information</label>
+              <hr>
+              <div class="flex-container">
+                <div style="width: 50%">
+                  <input type="text" class="form-control" style="width: 95%" name="phone" id="phone" placeholder="Enter your phone number">
+                </div>
+                <div style="width: 65%">
+                  <input type="text" class="form-control" style="width: 100%" name="email" id="email" placeholder="Enter your email">
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 40px">
+              <a href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' class="btn btn-success btn-lg float-left">Prev</a>
+              <button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="final">Submit</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+<%if(listing_info.listing!=null){%>
+
+   $('#rental_description').val(`<%=listing_info.listing.rental_description%>`);
+
+  // load profile photo
+  <%if(listing_info.listing.num_of_profile_picture_uploaded>=1){%>
+  $("#imagePreview").css('background-image', 'url("/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>")');
+
+   $("#imagePreview").css('background-position', '0% 10%');
+   $("#imagePreview").css('background-size', '100%');
+
+   $("#imagePreview").hide();
+   $("#imagePreview").fadeIn(650);
+
+   $("#previewLabel").css('opacity', 0);
+
+   var picturePreviewId = document.getElementById("avatar-upload");
+   picturePreviewId.style.display = "inline-block";
+
+   $('#imageCapture').val("<%=listing_info.listing.profile_pictures[0].caption%>");
+
+  <%}%>
+
+
+  var numOfRoommates = <%=listing_info.listing.num_of_roommates%>;
+  console.log("numOfRoommates=" + numOfRoommates);
+
+  var numOfRoommateRequested = <%=listing_info.listing.num_of_requested_roommates%>;
+  console.log("num_of_requested_roommates=" + numOfRoommateRequested);
+
+  
+  $('#phone').val("<%=listing_info.listing.phone%>");
+  $('#email').val("<%=listing_info.listing.email%>");
+
+<%}%>
+</script>
+
+
+
+<script src="/scripts/file_upload.js"></script>
+
+<script>
+
+function handleClickRoommateRequest() {
+  var checkBox                = document.getElementById("roommate_request");
+  var roomMateRequestGroup    = document.getElementById("roommate_request_group");
+  var numOfRoommateRequested  = document.getElementById("num_of_roommate_requested");
+  var roommateRequestedSelect = document.getElementById("num_of_requested_roommates");
+
+  if(checkBox.checked == true){
+    roomMateRequestGroup.style.display    = "block";
+    numOfRoommateRequested.style.display  = "inline";
+    roommateRequestedSelect.style.display = "inline";
+  } else {
+    roomMateRequestGroup.style.display    = "none";
+    numOfRoommateRequested.style.display  = "none";
+    roommateRequestedSelect.style.display = "none";
+  }
+}
+
+function handleClickGroupRental() {
+  var checkBox      = document.getElementById("group_rental");
+  var roomMateGroup = document.getElementById("roommate_group");
+  var roommateIds   = document.getElementById("roommate_ids");
+  var roommateId    = document.getElementById("roommate_1");
+
+  if (checkBox.checked == true){
+    roomMateGroup.style.display = "block";
+    roommateId.style.display    = "block";
+    roommateIds.style.display   = "block";
+  } else {
+    roomMateGroup.style.display = "none";
+    $('.roommate-multiple-entries').css("display", "none");
+  }
+
+  var numOfRoommateElement = document.getElementById("num_of_roommates");
+  numOfRoommateElement.value = 1;
+}
+
+function handleClickNumOfRoommate() {
+  var numOfRoommateElement = document.getElementById("num_of_roommates");
+  var numOfRoommates = numOfRoommateElement.value;
+
+  // ISEO: is there any way to pass parameter to this function?
+  for (var curRoomMateIndex = 1; curRoomMateIndex < 5; curRoomMateIndex++)
+  {
+    var roomateIndex = "roommate_" + curRoomMateIndex;
+    var userId = document.getElementById(roomateIndex);
+
+    if(curRoomMateIndex<=numOfRoommates)
+    {
+      console.log("block");
+      userId.style.display = "block"; 
+    } else {
+      console.log("none");
+      userId.style.display = "none";       
+    }
+  }
+
+}
+</script>
+
+
+
+<% include ../../partials/footer %>

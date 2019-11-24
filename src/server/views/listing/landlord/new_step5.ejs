@@ -1,0 +1,207 @@
+<% include ../../partials/header %>
+
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Listing room/house</h3>  
+</div>
+
+<div class="container">
+<!-- totalSteps and curr_step should be provided -->
+	<%var curr_step=5; 
+	  var totalSteps=6;
+	  var title = "Set the scenes for online tour"%>
+	<% include ../../partials/stepwizard_v2 %>
+
+	<form role="form" action="/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
+		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
+			<div class="col-md-6 offset-md-3">
+				<div class="col-md-12">
+					<div style="text-align:center">
+						<h5> <%=title%></h5>
+					</div>
+					<hr>
+
+					<link rel="stylesheet" href="/stylesheets/file_upload_v1.css">
+					
+					<!--<div class="row text-center">-->
+					<%for(var picIndex=1; picIndex<=20; picIndex++) {
+						if((picIndex%2==0) || (picIndex==1)){%>
+							<div class="row text-center" style="display:flex; flex-wrap: wrap;">
+						<%}%>
+							<%if(picIndex==1){%>
+					           	<div class="col-md-12">
+							<%}else{%>
+					           	<div class="col-md-6">
+							<%}%>
+								<div class="d-flex flex-column">
+									<div class="avatar-upload" id="<%=`avatar-upload-${picIndex}`%>">					
+										<div class="avatar-edit" id="<%=`avatar-edit-${picIndex}`%>" onmouseover="handleOnMouseHooverImagePreview(this, <%=`${picIndex}`%>)">
+											<label for="<%=`imageUpload-${picIndex}`%>" id="<%=`editLabel-${picIndex}`%>"></label>
+										</div>
+
+										<div class="avatar-delete" id="<%=`avatar-delete-${picIndex}`%>" onmouseover="handleOnMouseHooverImagePreview(this, <%=`${picIndex}`%>)">
+											<input type="text" id="<%=`deletePicIcon-${picIndex}`%>" >
+											<label for="<%=`imageUpload-${picIndex}`%>" id="<%=`deleteLabel-${picIndex}`%>" onclick="handleOnClickDeletePic(this,<%=`${picIndex}`%>, '<%=`${listing_info.listing_id}`%>')"></label>
+										</div>
+
+										<div class="avatar-preview" id="<%=`avatar-preview-${picIndex}`%>">
+											<div id="<%=`imagePreview-${picIndex}`%>"  onmouseover="handleOnMouseHooverImagePreview(this, <%=`${picIndex}`%>)" onmouseout="handleOnMouseOutImagePreview(this, <%=`${picIndex}`%>)">
+												<input type='file' name="file_name" id="<%=`imageDefaultUpload-${picIndex}`%>" onchange="readURL(this, <%=`${picIndex}`%>, '<%=`${listing_info.listing_id}`%>')" accept=".png, .jpg, .jpeg"/>
+												<label class="pictureAddLabel" id="<%=`previewLabel-${picIndex}`%>" for="<%=`imageDefaultUpload-${picIndex}`%>" style="opacity: 1">+</label>
+											</div>
+										</div>
+
+										<div class="caption">
+											<input type="text" name="<%=`caption_${picIndex}`%>" id="<%=`imageCapture-${picIndex}`%>" placeholder="Add Caption" ></input>
+										</div>
+									</div>
+								</div>
+							</div>
+						<%if((picIndex%2==1) || (picIndex==1)){%>
+							</div>
+						<%}%>
+					<%}%>
+				</div>
+				<hr>
+
+				<div class="d-flex">
+					<a href='<%="/listing/landlord/"+listing_info.listing_id+"/step4"%>' class="btn btn-success btn-lg float-left">Prev</a>
+					<button class="btn btn-primary nextBtn btn-lg ml-auto" type="submit" name="submit" value="step#5">Next</button>	
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	var nextPictureIndex = 1;
+	// set display to none except the first
+	for (var pictureIndex =1; pictureIndex <=20; pictureIndex++)
+	{
+		if(pictureIndex==1)
+		{
+			$(`#avatar-upload-${pictureIndex}`).css('max-width', '500px');
+			$(`#avatar-preview-${pictureIndex}`).css('width', '490px');
+			$(`#avatar-preview-${pictureIndex}`).css('height', '250px');
+			$(`#previewLabel-${pictureIndex}`).css('left', '55px');
+			$(`#previewLabel-${pictureIndex}`).css('bottom', '80px');
+			$(`#previewLabel-${pictureIndex}`).text('Add Cover Photo');
+			$(`#previewLabel-${pictureIndex}`).css('font-size', '3em');
+		}
+
+
+		if(pictureIndex>1)
+		{
+			var picturePreviewId = document.getElementById(`avatar-upload-${pictureIndex}`);
+			picturePreviewId.style.display = "none";
+		}
+	}
+
+	<%if(listing_info.listing!=null){%>
+		<%for(var i=0; i<listing_info.listing.pictures.length; i++){%>
+			// Load the image and the caption
+			$("#imagePreview-<%=i+1%>").css('background-image', 'url("/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>")');
+			$("#previewLabel-<%=i+1%>").css('opacity', 0);
+			$("#imageCapture-<%=i+1%>").val('<%=listing_info.listing.pictures[i].caption%>');
+			// Display the next image
+			var picturePreviewId = document.getElementById("avatar-upload-<%=i+2%>");
+			picturePreviewId.style.display = "inline-block";
+		<%}%>
+	<%}%>
+
+	function handleOnClickDeletePic(elementId, picIndex, _id){
+		// Upload the file along with caption
+		var myFormData = new FormData();
+		myFormData.append("pic_index", picIndex);
+
+		// ISEO: may need to add listing ID as well.
+		$.ajax({
+		  enctype: 'multipart/form-data',
+		  url:  `/listing/landlord/${_id}/file_delete`,
+		  type: 'POST',
+		  processData: false, // important
+		  contentType: false, // important
+		  dataType : 'application/json',
+		  data: myFormData
+		});
+
+	    $(`#imagePreview-${picIndex}`).css('background-image', 'url("")');
+	    $(`#previewLabel-${picIndex}`).css('opacity', 1);
+	    $(`#deleteLabel-${picIndex}`).css('opacity', 0)
+
+	    // ISEO: this may need some  adjustement as the deletion could happen randomly.
+	    nextPictureIndex--;
+	}
+
+	function handleOnMouseHooverImagePreview(elementId, picIndex){
+	    var previewLabelId = document.getElementById(`previewLabel-${picIndex}`);
+	    
+	    if(previewLabelId.style.opacity==0)
+	    {
+	        var avatarDeleteId = document.getElementById(`avatar-delete-${picIndex}`);
+	        avatarDeleteId.style.display = "inline-block";
+	    }
+
+	    if(previewLabelId.style.opacity==0) {
+	        var labelElementId = document.getElementById(`editLabel-${picIndex}`);
+	        labelElementId.style.opacity = 1;
+
+
+	        labelElementId = document.getElementById(`deleteLabel-${picIndex}`);
+	        labelElementId.style.opacity = 1;
+	    }
+	}
+
+	function handleOnMouseOutImagePreview(elementId, picIndex){
+	    var previewLabelId = document.getElementById(`previewLabel-${picIndex}`);
+
+	    if(previewLabelId.style.opacity==0) {
+	        var labelElementId = document.getElementById(`editLabel-${picIndex}`);
+	        labelElementId.style.opacity = 0;
+
+	        var labelElementId = document.getElementById(`deleteLabel-${picIndex}`);
+	        labelElementId.style.opacity = 0;
+	    }
+
+	}
+
+
+	function readURL(input, picIndex, _id) {
+
+	    if (input.files && input.files[0]) {
+	        var reader = new FileReader();
+	        reader.onload = function(e) {
+	            $(`#imagePreview-${picIndex}`).css('background-image', 'url('+e.target.result +')');
+	            $(`#imagePreview-${picIndex}`).hide();
+	            $(`#imagePreview-${picIndex}`).fadeIn(650);
+	        }
+	        reader.readAsDataURL(input.files[0]);
+
+		    $(`#previewLabel-${picIndex}`).css('opacity', 0);
+
+		    nextPictureIndex++;
+		    var picturePreviewId = document.getElementById(`avatar-upload-${nextPictureIndex}`);
+			picturePreviewId.style.display = "inline-block";
+
+	        // Upload the file along with caption
+			var myFormData = new FormData();
+			myFormData.append("file_name", input.files[0]);
+			myFormData.append("pic_index", picIndex);
+	        myFormData.append("caption", $(`#imageCapture-${picIndex}`).val());
+
+			// ISEO: may need to add listing ID as well.
+			$.ajax({
+			  enctype: 'multipart/form-data',
+			  url: `/listing/landlord/${_id}/file_upload`,
+			  type: 'POST',
+			  processData: false, // important
+			  contentType: false, // important
+			  dataType : 'application/json',
+			  data: myFormData
+			});
+	    } 
+	}
+
+</script>
+
+<% include ../../partials/footer %>

@@ -1,0 +1,131 @@
+<% include ../../partials/header %>
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Listing room/house</h3>  
+</div>
+
+<div class="container">
+<!-- totalSteps and curr_step should be provided -->
+	<%var curr_step=3; 
+	  var totalSteps=6;
+	  var title = "What amenities do you offer?"%> 
+	<% include ../../partials/stepwizard_v2 %>
+	
+	<form role="form" action="/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
+		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
+			<div class="col-md-6 offset-md-3">
+				<div class="col-md-12">
+					<div style="text-align:center">
+						<h5> <%=title%></h5>
+					</div>
+					<hr>
+
+					<div class="d-flex flex-column">
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[internet]" id="internet">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto; margin-left: 5px"> WiFi, broadband internet </div>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[closet]" id="closet">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto; margin-left: 5px;"> Closet/Drawer </div>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[tv]" id="tv">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto; margin-left: 5px;"> TV/entertainment system </div>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[heating]" id="heating">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto; margin-left: 5px;"> Heating </div>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[ac]" id="ac">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto;margin-left: 5px;"> Air conditioning </div>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[desk]" id="desk">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto;margin-left: 5px;"> Desk/Workspace</div>
+						    </div>
+						</div>		
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+						        <label class="switch switch-sm" style="margin-bottom: auto">
+						            <input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[smoke_detector]" id="smoke_detector">
+						            <span class="slider-sm round"></span>
+						        </label>
+								<div style="margin-bottom:auto;margin-left: 5px;"> Smoke Detector </div>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+								<label class="switch switch-sm" style="margin-bottom: auto">
+									<input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[private_entrance]" id="private_entrance">
+									<span class="slider-sm round"></span>
+								</label>
+								<div style="margin-bottom:auto;margin-left: 5px;"> Private Entrance </div>
+							</div>
+						</div>
+						<div class="p-2">
+							<div class="col form-check-inline listing-check-box" style="margin-left: 5px;">
+								<label class="switch switch-sm" style="margin-bottom: auto">
+									<input type="checkbox" class="primary" style="margin-left:-3px" name="amenities[fire_extinguisher]" id="fire_extinguisher">
+									<span class="slider-sm round"></span>
+								</label>
+								<div style="margin-bottom:auto;margin-left: 5px;"> Fire extinguisher </div>
+							</div>
+						</div>
+					</div>
+
+					<div class="p-2">
+						<a href='<%="/listing/landlord/"+listing_info.listing_id+"/step2"%>' class="btn btn-success btn-lg float-left">Prev</a>
+				    	<button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="step#3">Next</button>
+				    </div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	<%if(listing_info.listing!=null){%>
+		$("#internet").prop('checked', <%=eval('listing_info.listing.amenities.internet')%>);
+		$("#closet").prop('checked', <%=eval('listing_info.listing.amenities.closet')%>);
+		$("#tv").prop('checked', <%=eval('listing_info.listing.amenities.tv')%>);
+		$("#heating").prop('checked', <%=eval('listing_info.listing.amenities.heating')%>);
+		$("#ac").prop('checked', <%=eval('listing_info.listing.amenities.ac')%>);
+		$("#desk").prop('checked', <%=eval('listing_info.listing.amenities.desk')%>);
+		$("#smoke_detector").prop('checked', <%=eval('listing_info.listing.amenities.smoke_detector')%>);
+		$("#private_entrance").prop('checked', <%=eval('listing_info.listing.amenities.private_entrance')%>);
+		$("#fire_extinguisher").prop('checked', <%=eval('listing_info.listing.amenities.fire_extinguisher')%>);
+	<%}%>
+</script>
+
+<% include ../../partials/footer %>

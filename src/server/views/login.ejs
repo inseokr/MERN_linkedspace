@@ -1,0 +1,88 @@
+<% include ./partials/header %> 
+
+<h1>Login!</h1>
+<form action="/login" method="POST">
+    <input type="text" name="username" placeholder="username">
+    <input type="password" name="password" placeholder="password">
+    <input type="submit" value="Login!">
+</form>
+
+
+	<div class="container">
+		<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+		  aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header text-center">
+		        <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body mx-3">
+		        <div class="md-form mb-5">
+		          <i class="fas fa-envelope prefix grey-text"></i>
+		          <input type="email" id="defaultForm-email" class="form-control validate">
+		          <label data-error="wrong" data-success="right" for="defaultForm-email">Your email</label>
+		        </div>
+
+		        <div class="md-form mb-4">
+		          <i class="fas fa-lock prefix grey-text"></i>
+		          <input type="password" id="defaultForm-pass" class="form-control validate">
+		          <label data-error="wrong" data-success="right" for="defaultForm-pass">Your password</label>
+		        </div>
+
+		      </div>
+
+		      <div class="modal-footer d-flex justify-content-center">
+				  <fb:login-button 
+					  scope="public_profile,email"
+					  onlogin="checkLoginState();">
+				  </fb:login-button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="text-center">
+		  <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Launch
+		    Modal Login Form</a>
+		</div>
+	</div>
+
+
+<!-- To support Facebook login -->
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1011405085718313',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v3.2'
+    });
+      
+    FB.AppEvents.logPageView();   
+      
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+
+  function checkLoginState() {
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+}
+
+</script>
+
+<% include ./partials/footer %> 

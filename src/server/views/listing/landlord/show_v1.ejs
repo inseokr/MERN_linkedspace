@@ -1,0 +1,384 @@
+<% include ../../partials/header %> 
+
+<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+<link rel="stylesheet" href="/stylesheets/listing_style.css">
+
+<div class="row">
+  <div class="col-3 wooden_background border" style="height: 500px; margin-left: 30px; background-color:#f2f2f2;">
+  
+    <div style="margin-top:10px; font-family: 'Lobster', cursive; font-family: 'Lobster', cursive;
+    color: #914669 !important;"> LinkedSpaces </div>
+
+<!--
+    <div class="linkedspace_logo" style="margin-top: 10px;">
+      <svg viewBox="0 0 66 34" version="1" fill="#914669" height="44px" role="img" width="85.41px"><title>Airbnb Plus Logo</title><path d="M14.71 21.18a8.685 8.685 0 0 0-.236-.588 55.599 55.599 0 0 0-.376-.84l-.01-.022a189.383 189.383 0 0 0-3.543-7.371l-.052-.104c-.127-.25-.258-.508-.392-.762a4.957 4.957 0 0 0-.576-.901 2.656 2.656 0 0 0-4.115 0 4.978 4.978 0 0 0-.576.902 49.03 49.03 0 0 0-.395.768l-.049.097A189.54 189.54 0 0 0 .847 19.73l-.016.036c-.122.27-.249.548-.37.826a8.59 8.59 0 0 0-.235.588 3.66 3.66 0 0 0-.191 1.756 3.463 3.463 0 0 0 2.092 2.716 3.424 3.424 0 0 0 1.733.233 4.261 4.261 0 0 0 1.613-.553c.65-.372 1.293-.917 1.995-1.695.701.778 1.344 1.323 1.994 1.695a4.26 4.26 0 0 0 1.613.553 3.424 3.424 0 0 0 1.734-.233 3.464 3.464 0 0 0 2.092-2.716c.081-.58.019-1.155-.191-1.756zm-7.242.906c-.873-1.126-1.433-2.17-1.63-3.047a2.741 2.741 0 0 1-.056-1.004c.04-.259.127-.49.26-.687.301-.446.834-.713 1.426-.713.591 0 1.124.267 1.425.713.134.197.221.428.26.687.045.299.026.637-.056 1.005-.197.876-.757 1.92-1.63 3.046zm6.448.763a2.433 2.433 0 0 1-1.47 1.908 2.47 2.47 0 0 1-1.236.165 3.227 3.227 0 0 1-1.233-.429c-.582-.332-1.17-.843-1.833-1.592 1.054-1.323 1.713-2.542 1.957-3.629a3.79 3.79 0 0 0 .07-1.396 2.704 2.704 0 0 0-.428-1.12c-.494-.73-1.344-1.167-2.276-1.167-.93 0-1.78.437-2.274 1.167a2.705 2.705 0 0 0-.429 1.12c-.065.429-.041.899.07 1.395.244 1.087.903 2.307 1.958 3.63-.663.75-1.252 1.26-1.833 1.592-.42.24-.824.38-1.234.429a2.47 2.47 0 0 1-1.236-.165 2.433 2.433 0 0 1-1.47-1.908 2.608 2.608 0 0 1 .144-1.266c.057-.164.125-.326.208-.518.118-.271.243-.547.365-.814l.016-.036c1.11-2.444 2.3-4.922 3.54-7.365l.049-.097c.126-.25.256-.507.388-.755.137-.258.274-.508.455-.723a1.639 1.639 0 0 1 1.284-.614c.502 0 .946.213 1.283.614.181.215.319.464.455.722.13.247.26.502.385.749l.053.104c1.24 2.443 2.43 4.92 3.54 7.365l.01.022c.123.272.25.552.37.828.084.193.151.354.209.518.156.447.201.85.143 1.266zm27.27-6.223c0-4.717.595-9.032 1.643-11.966.708-2.042 1.615-3.567 2.804-3.567 1.048 0 1.643 1.237 1.643 3.222 0 2.531-.85 5.523-2.237 8.485-1.02 2.186-2.352 4.315-3.796 6.242a62.931 62.931 0 0 1-.057-2.416zm-6.09 9.377c1.784-1.006 3.597-2.56 5.269-4.458.51 3.279 1.586 4.343 2.86 4.343 1.417 0 2.777-1.323 3.966-3.71v.46c0 2.474 1.105 3.25 2.096 3.25 1.473 0 2.918-1.668 4.08-4.4-.029.488-.029.718-.029 1.035 0 2.502.907 3.25 1.955 3.25.963 0 1.756-.69 2.606-2.128.198-.345-.057-.806-.454-.806a.547.547 0 0 0-.481.288c-.51.92-.992 1.553-1.586 1.553-.822 0-.907-1.208-.907-2.157 0-1.38.172-3.634.425-4.976a.549.549 0 0 0-.538-.662.587.587 0 0 0-.567.431c-1.076 3.97-2.747 7.48-4.334 7.48-.793 0-1.133-.95-1.133-2.187 0-1.41.284-3.106.793-5.005a.555.555 0 0 0-.538-.69c-.226 0-.481.144-.538.374-1.275 4.314-3.06 7.507-4.674 7.507-1.161 0-1.756-1.61-2.01-4.17a35.162 35.162 0 0 0 4.701-7.364c1.445-3.136 2.351-6.3 2.351-8.946C48.41.949 46.993 0 45.69 0c-1.529 0-2.945 1.467-3.936 4.257-1.048 3.05-1.7 7.479-1.7 12.37 0 1.322.057 2.473.142 3.48-1.757 2.042-3.683 3.797-5.609 4.918-.255.144-.368.49-.227.748.142.26.482.374.737.23zM25.493 34c.312 0 .595-.259.595-.575 0-2.532.113-5.063.368-7.537 5.156-.46 11.076-5.465 11.076-10.671 0-3.596-2.55-5.638-5.92-5.638-3.286 0-7.45 2.1-10.906 5.58-.227.201-.227.575 0 .805.198.23.567.23.793 0 3.23-3.192 7.054-5.235 10.084-5.235 2.72 0 4.76 1.64 4.76 4.488 0 4.602-5.184 9.003-9.773 9.492.425-3.653 1.104-7.191 2.04-10.298.084-.287-.114-.633-.397-.72-.312-.085-.652.087-.737.375-.935 3.222-1.643 6.875-2.096 10.7-1.105-.057-2.068-.345-3.144-.977-.284-.144-.623-.03-.793.23a.642.642 0 0 0 .226.805c1.275.662 2.38 1.007 3.598 1.093a82.746 82.746 0 0 0-.369 7.508c0 .316.284.575.595.575zm38.524-15.792c.227.173.595.144.765-.086.765-.978 1.218-2.014 1.218-2.905 0-1.324-.878-2.158-2.493-2.158-3.116 0-6.118 3.222-6.118 5.696 0 1.582 1.076 2.646 3.229 3.049l1.331.23c1.388.23 2.323.719 2.323 1.697 0 1.064-1.161 1.64-2.38 1.64-.906 0-1.699-.317-2.322-.748a.532.532 0 0 0-.737.115.551.551 0 0 0 .114.748 4.843 4.843 0 0 0 2.946.978c2.01 0 3.512-1.151 3.512-2.79 0-1.324-.991-2.33-3.286-2.733l-1.331-.23c-1.36-.23-2.266-.834-2.266-1.985 0-1.985 2.493-4.574 4.957-4.574.85 0 1.388.374 1.388 1.151 0 .604-.34 1.38-.935 2.129a.586.586 0 0 0 .085.776z"></path></svg>
+    </div> -->
+
+    <div style="margin-top:20px;"><div class="show_title">BEAUTIFUL HOME IN FREMONT</div></div>
+
+    <div style="margin-top:4px">
+      <div><span class="rating"><span role="img" aria-label="Rating 5 out of 5"><span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span><span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span><span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span><span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span><span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span></span></span><span class="_1m8bb6v">229 reviews</span><span class="_1gvnvab" aria-hidden="true"><span class="_so3dpm2">229</span></span>
+      </div>
+
+      <div style="margin-top:32px"><span class="_1xzp5ma3">Gorgeous Modern Masion in Mission Valley</span></div>
+
+    </div>
+
+  </div>
+
+  <div class="col-8 border" style="border-style:none !important; height: 500px; margin-left: 30px;">
+
+  <!--
+  Along with inherit, initial and unset, there are 5 more possible values for object-fit:
+
+  contain: The image keeps its original aspect ratio, but resized so that the longest of either the height or width can fit in the given dimensions.
+  cover: The image keeps its original aspect ratio and the image area is completely covered.
+  fill: The initial value. The image will fill its given area, even if it means losing its aspect ratio. -->
+
+  <img src="https://a0.muscache.com/4ea/air/v2/pictures/ac0252bc-810e-4764-8ccf-5a23ac469727.jpg?t=r:w2500-h1500-sfit,e:fjpg-c90" align="right" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 70%;">
+  
+  </div>
+
+</div>
+
+<!--<div class="container border" style="border-style: none !important; margin-top: 20px; margin-left: 100px; margin-right: 100px;">-->
+<div class="container border" style="border-style: none !important; margin-top: 20px;">
+  
+  <div class="row">
+
+
+    <div class="col-7">
+      <div class="_tw4pe52">
+        4 guests 2 bedroom 1 bath
+      </div>
+
+      <div class="_1ezjrwzo" style="margin-top: 20px; !important">
+      Take a scenic drive through the historic Hollywood Hills from a Spanish Colonial Revival guesthouse that's minutes from the Sunset Strip. Marble countertops, imported tiles, vintage furnishings, and original artwork create a crisp, yet eclectic feel.
+      </div>
+    </div> <!-- the end of col-7 -->
+
+    <div class="col-4" style="margin-left: 10px;">
+      <div class="_tw4pe52">
+        Hosted by In Seo
+      </div>
+      <div style="max-width:100px; margin-top:20px;">
+        <img src="inseo_profile.jpg" class="center rounded-circle" style="width:100%; max-height:100%">
+      </div>
+      
+      <div style="margin-left:30px;>
+        <span class="rating">
+          <span role="img" aria-label="distance">
+
+            <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+
+          </span>
+        </span>
+
+        <span class="_1m8bb6v">1st</span><span class="_1gvnvab" aria-hidden="true"><span class="_so3dpm2">1st</span></span>
+      </div>
+    </div> <!-- the end of col-4 -->
+
+  </div> <!-- the end of the first row -->
+
+  <hr>
+
+  <div class="row">
+    <div class="col-7">
+    <!-- location information-->
+      <div>
+        <div class="_1xzp5ma3" style="font-size: 100em; !important">
+          Location
+        </div>
+        <div class="inner_contents" style="margin-top: 5px;">
+          793 praderia circle, Fremont, CA, 94539, United States
+        </div>
+        <div style="height:300px; margin-top:5px;">
+          <div id="map" style="height: 80%;width: 85%;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-5" style="margin-top: 70px;">
+      
+      <div class="subtitle_info">
+        <div class="sub_title">
+          Distance to Bart station
+        </div>
+        <div class="inner_contents" style="margin-top: 2px;">
+          5 minutes without traffics, either Warmspring or Fremont Bart
+        </div>
+      </div>
+
+      <div class="subtitle_info" style="margin-top: 20px">
+        <div class="sub_title">
+          Distance to Highway ramp
+        </div>
+        <div class="inner_contents" style="margin-top: 2px;">
+          5 minutes to 680
+          <br>
+          10 minutes to 880 
+        </div> 
+      </div>
+
+
+      <div class="subtitle_info" style="margin-top: 20px">
+        <div class="sub_title">
+          Distance to grocery markets
+        </div>
+        <div class="inner_contents" style="margin-top: 2px;">
+          5 minutes to 711
+          <br>
+          10 minutes to Safeway
+        </div>
+      </div>
+    </div>
+  </div> <!-- the end of location -->
+
+  <hr>
+
+  <div class="_1xzp5ma3" style="font-size: 100em; !important">
+    Explore the house
+  </div>
+
+
+  <div class="row">
+
+    <div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/4ea/air/v2/pictures/8ab4cf60-c642-48c6-9c60-75d0570e367e.jpg?t=r:w1200-h720-sfit,e:fjpg-c90">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">pool</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/im/pictures/e9b0624b-3bc0-4853-be75-1490eb827337.jpg?aki_policy=large">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">bedroom</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/im/pictures/52af603c-df7d-43d9-be53-8e098b026bba.jpg?aki_policy=x_medium">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">kitchen</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/4ea/air/v2/pictures/63bc0948-b45e-452c-ad9e-fcf35a7c72fe.jpg?t=r:w2500-h1500-sfit,e:fjpg-c90">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">bathroom</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/4ea/air/v2/pictures/ac0252bc-810e-4764-8ccf-5a23ac469727.jpg?t=r:w2500-h1500-sfit,e:fjpg-c90">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">pool</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/im/pictures/f6ba41e6-2202-473e-948d-4135a0c956ff.jpg?aki_policy=x_medium">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">bedroom</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/im/pictures/52af603c-df7d-43d9-be53-8e098b026bba.jpg?aki_policy=x_medium">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">kitchen</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive" src="https://a0.muscache.com/4ea/air/v2/pictures/63bc0948-b45e-452c-ad9e-fcf35a7c72fe.jpg?t=r:w2500-h1500-sfit,e:fjpg-c90">
+        <div class="caption-full ">
+          <h4 class="pull-right inner_contents">bathroom</h4>
+          <p></p>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- Explore the house(row) -->
+
+  <hr>
+
+  <div class="_1xzp5ma3">
+    Amenities available to you
+  </div>
+
+  <div class="wooden_background border rounded-top rounded-bottom" style="margin-top: 20px;">
+    <div class="row sub_title" style="padding-top:8px; !important">
+      <div class="col-4" >
+        <ul>
+          <li> Internet </li>
+          <li> Closet </li>
+          <li> TV </li>
+        </ul>
+      </div>
+
+      <div class="col-4" >
+        <ul>
+          <li> Air Conditioner </li>
+          <li> Desk </li>
+          <li> Smoke Detector </li>
+        </ul>
+      </div>
+
+      <div class="col-4" >
+        <ul>
+          <li> Private Entrance </li>
+          <li> Fire extinghisher </li>
+        </ul>
+      </div>
+    </div>
+  </div> <!--Amenities-->
+
+  <hr>
+  <div class="_1xzp5ma3" style="margin-top:40px;">
+    Available facilities
+  </div>
+
+  <div class="wooden_background border rounded-top rounded-bottom" style="margin-top: 20px;">
+    <div class="row sub_title" style="padding-top:8px; !important">
+      <div class="col-4" >
+        <ul>
+          <li> Living room, shared </li>
+          <li> Community pool </li>
+        </ul>
+      </div>
+
+      <div class="col-4" >
+        <ul>
+          <li> Kitchen, shared </li>
+          <li> Parking, driveway </li>
+        </ul>
+      </div>
+    </div>
+  </div> <!-- Available facilities-->
+
+  <hr>
+  <div class="_1xzp5ma3" style="margin-top:40px;">
+    Rental terms
+  </div>
+
+  <div class="wooden_background border rounded-top rounded-bottom" style="margin-top: 20px;">
+    <div class="row sub_title" style="padding-top:8px; !important">
+      <div class="col-4" >
+        <ul>
+          <li> Asking Price: $3400/month </li>
+          <li> Security Deposit: 2 months' rental </li>
+        </ul>
+      </div>
+
+      <div class="col-6" >
+        <ul>
+          <li> Rental Duration: minimum 1 year </li>
+          <li> Move-in available date: from Mar-1st 2019 </li>
+        </ul>
+      </div>
+    </div>
+  </div> <!-- Rental terms-->
+
+  <hr>
+  <div class="_1xzp5ma3" style="margin-top:40px;">
+    Interested in this property?
+  </div>
+
+  <div class="row" style="margin-top: 30px;">
+    <div class="col-3">
+      <img src="yoobin_justin.jpg" class="center rounded-circle" style="width:100%; max-height:100%; margin-left: 25px;">
+    </div>
+
+    <div class="col-4 _1ezjrwzo" style="margin-left: 50px;">
+      Hello there, 
+      <br> 
+      My name is In Seo who's working at one of high-tech company in Silicon Valley.
+      <br>
+      <br>
+      I'm currently looking for a tenant for one of my extra room which has private entrance, and very private.
+      You could share the living room and kitchen as well.
+      <br>
+      <br>
+      Read more...
+
+    </div>
+
+    <div class="col-lg-4 sub_title wooden_background border rounded-top rounded-bottom" style="max-height:102px;text-align: center;">
+      <div style="margin-top:10px;">Contact</div>
+      <div class="sub_title" style="margin-top:10px !important;">
+        <ul  style="list-style-type:none;">
+          <li> Phone Number: 510-474-8138 </li>
+          <li> E-mail: inseo.kr@gmail.com </li>
+        </ul>
+      </div>
+  </div>
+</div>
+  <hr>
+</div>
+
+
+<script>
+// Initialize and add the map
+function initMap() {
+  // The location of Uluru
+  var myAddress = '793 praderia circile, 94539/fremont';
+  var urlString = `https://maps.googleapis.com/maps/api/geocode/json?address=793+praderia+circle,
++Fremont,+CA&key=AIzaSyDhNOl53GKZUx7LI66vSng7VUWkHTUgVnE`;
+
+  var urlString1 = `https://maps.googleapis.com/maps/api/geocode/json?address=loro+pl,
++Fremont,+CA&key=AIzaSyDhNOl53GKZUx7LI66vSng7VUWkHTUgVnE`;
+
+  $.getJSON(urlString, function(data)
+  {
+        var p1 = data.results[0].geometry.location;
+
+        $.getJSON(urlString1, function(data)
+        {
+              var p2 = data.results[0].geometry.location;
+              // The map, centered at Uluru
+              var map = new google.maps.Map(
+                document.getElementById('map'), {zoom: 8, center: p1});
+              var marker1 = new google.maps.Marker({position: p1, map: map, title:'In Seo: direct middlemen'});
+              var marker2 = new google.maps.Marker({position: p2, map: map, title:'Gaeyong: direct middlemen'});
+        });
+  });
+
+
+}
+
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtSupWCIi2l-ZFk5jzVpI2gucIbFP_oCY&callback=initMap">
+</script>
+
+
+<% include ../../partials/footer %> 

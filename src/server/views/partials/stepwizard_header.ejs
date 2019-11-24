@@ -1,0 +1,32 @@
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
+<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+	<!-- totalSteps/curr_step/action_url/action_method should be provided -->
+	<div class="stepwizard offset-md-3" style="margin-top: 20px">
+		<div class="stepwizard-row setup-panel">
+			<% 
+			for (var step = 1; step <= totalSteps; step++) 
+			{%>
+				<div class="stepwizard-step">
+					<a class="btn <% if(curr_step==step)
+					                 {%>
+					                 	btn-primary
+					               <%} 
+					                 else 
+					                 {%>
+					                 	btn-outline-secondary
+					               <%}%>  
+					          btn-circle" href="#step-<%=step%>" type="button"><%=step%></a>
+					<!--<p>Step <%=step%></p>-->
+				</div>
+		  <%}%>
+		</div>
+	</div> <!-- stepwizard -->
+
+	<form role="form" action=<%=action_url%> method=<%=action_method%>
+	<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
+		<div class="col-md-6 offset-md-3">
+			<div class="col-md-12">
+				<div style="text-align:center">
+					<h5> <%=title%></h5>
+				</div>
+				<hr>

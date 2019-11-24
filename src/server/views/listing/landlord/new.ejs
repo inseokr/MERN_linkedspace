@@ -1,0 +1,76 @@
+<% include ../../partials/header %>
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
+<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Listing room/house</h3>  
+</div>
+
+<div class="container">
+	<!-- totalSteps and curr_step should be provided -->
+	<%var curr_step=1; 
+	  var totalSteps=6;
+	  var title = "What kind of place do you have?"%> 
+	<% include ../../partials/stepwizard_v2 %>
+
+	<%if(listing_info.listing==null) {%>
+	  <form role="form" action="/listing/landlord/new" method="POST">
+	<%}else{%>
+	  <form role="form" action="<%=`/listing/landlord/${listing_info.listing_id}/new`%>" method="POST"> <!-- Add id to action url if it exists. -->
+	<%}%>
+		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
+			<div class="col-md-6 offset-md-3">
+				<div class="col-md-12">
+					<div style="text-align:center">
+						<h5><%=title%></h5>
+					</div>
+					<hr>
+
+					<div class="d-flex">
+						<div class="p-2 flex-fill mr-auto">
+							<select class="form-control" required="required" name="rental_property_information[room_type]" id="room_type" placeholder="Private Room">
+			      			<% var rentalTypeArray = ["Entire Place", "Private Room", "Shared Room"];
+			        			rentalTypeArray.forEach(function(rentalType) { %>
+			          			<option value=<%=rentalType%>><%=rentalType%></option>
+			        			<% }); %>
+			      			</select>
+				  		</div>
+				  		<div class="p-2 flex-fill ml-auto">
+				      		<select class="form-control"  required="required" name="rental_property_information[unit_type]" id="unit_type" placeholder="Single House">
+				      		<% var rentalTypeArray = ["Apartment", "Single House", "Guest House"];
+				        		rentalTypeArray.forEach(function(unitType) { %>
+				          		<option value=<%=unitType%>><%=unitType%></option>
+				        		<% }); %>
+				      		</select>
+				  		</div>
+					</div>
+
+					<!-- locations information -->
+					<hr>   
+					<% include ../../partials/location %>
+					<hr>    
+				    <div style="margin-top: 40px">
+						<button class="btn btn-success btn-lg float-left" type="submit" name="submit" value="exit">Exit</button>
+						<button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="next">Next</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	<%if(listing_info.listing!=null){%>
+		$('#room_type').val("<%=listing_info.listing.rental_property_information.room_type;%>")	;
+		$('#unit_type').val("<%=listing_info.listing.rental_property_information.unit_type;%>");
+
+		$('#street').val("<%=listing_info.listing.rental_property_information.location.street;%>");
+		$('#city').val("<%=listing_info.listing.rental_property_information.location.city%>");
+    	$('#state').val("<%=listing_info.listing.rental_property_information.location.state%>");
+    	$('#country').val("<%=listing_info.listing.rental_property_information.location.country%>");
+    	$('#zipcode').val("<%=listing_info.listing.rental_property_information.location.zipcode%>");
+	<%}%>
+</script>
+
+<% include ../../partials/footer %>

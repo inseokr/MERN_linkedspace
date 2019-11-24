@@ -1,0 +1,31 @@
+span.fa-comment {
+  position: relative;
+  font-size: 1em;
+  top: -8px;
+  color: red;
+  right: 5px;
+}
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a.fa-globe {
+  position: relative;
+  font-size: 2em;
+  color: grey;
+  cursor: pointer;
+}
+
+span.num {
+  position: relative;
+  font-size: 0.5em;
+  top: -10px;
+  color: #fff;
+  right:19px;
+}

@@ -1,0 +1,173 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Sortable - Portlets</title>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <style>
+
+  .tilt {
+    transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+
+  body {
+    min-width: 520px;
+  }
+
+  .column {
+    width: 170px;
+    float: left;
+    padding-bottom: 100px;
+  }
+  .portlet {
+    margin: 0 1em 1em 0;
+    padding: 0.3em;
+  }
+  .portlet-header {
+    padding: 0.2em 0.3em;
+    margin-bottom: 0.5em;
+    position: relative;
+  }
+  .portlet-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -8px;
+  }
+  .portlet-content {
+    padding: 0.4em;
+  }
+  .portlet-placeholder {
+    border: 1px dotted black;
+    margin: 0 1em 1em 0;
+    height: 50px;
+  }
+  </style>
+  <script>
+  $(onPageLoad);
+
+  function onPageLoad()
+  {
+    // connectWith:A selector of other sortable elements that the items from this list should be connected to. This is a one-way relationship, if you want the items to be connected in both directions, the connectWith option must be set on both sortable elements.
+    // handle: specify the element that will be draggable.
+    // cancel: Prevents sorting if you start on elements matching the selector.
+    $( ".column" ).sortable({
+      connectWith: ".column",
+      handle: ".portlet-header",
+      cancel: ".portlet-toggle",
+      start: function (event, ui) {
+        ui.item.addClass('tilt');
+      },
+      stop: function (event, ui) {
+        ui.item.removeClass('tilt');
+      }
+    });
+
+
+    // This is not directly related to drag/drop feature, but just a look at feel.  
+    $( ".portlet" )
+      .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
+      .find( ".portlet-header" )
+        .addClass( "ui-widget-header ui-corner-all" )
+        .prepend( "<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+    // This will hide or unhide contents.
+    $( ".portlet-toggle" ).click(function() {
+      var icon = $( this );
+      // add or delete upon clicking
+      icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
+      // closest: return the first ancester
+      // toggle: it will show or hide.
+      icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
+    });
+  }
+  </script>
+
+</head>
+<body>
+
+<div class="column">
+
+  <div class="portlet">
+    <div class="portlet-header">Feeds</div>
+    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+  </div>
+
+  <div class="portlet">
+    <div class="portlet-header">News</div>
+    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+  </div>
+
+</div>
+
+<div class="column">
+
+  <div class="portlet">
+    <div class="portlet-header">Shopping</div>
+    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+  </div>
+
+</div>
+
+<div class="column">
+
+  <div class="portlet">
+    <div class="portlet-header">Links</div>
+    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+  </div>
+
+  <div class="portlet">
+    <div class="portlet-header">Images</div>
+    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+  </div>
+
+</div>
+
+
+</body>
+
+<script>
+
+// this script will be loaded after page load.
+$( ".column" ).sortable({
+    connectWith: ".column",
+    handle: ".portlet-header",
+    cancel: ".portlet-toggle",
+    start: function (event, ui) {
+        ui.item.addClass('tilt');
+        // Start monitoring tilt direction
+        tilt_direction(ui.item);
+    },
+    stop: function (event, ui) {
+        ui.item.removeClass("tilt");
+        // Unbind temporary handlers and excess data
+        $("html").unbind('mousemove', ui.item.data("move_handler"));
+        ui.item.removeData("move_handler");
+    }
+});
+
+// Monitor tilt direction and switch between classes accordingly
+function tilt_direction(item) {
+    var left_pos = item.position().left,
+        move_handler = function (e) {
+            if (e.pageX >= left_pos) {
+                item.addClass("right");
+                item.removeClass("left");
+            } else {
+                item.addClass("left");
+                item.removeClass("right");
+            }
+            left_pos = e.pageX;
+        };
+    $("html").bind("mousemove", move_handler);
+    item.data("move_handler", move_handler);
+}  
+
+</script>
+</html>

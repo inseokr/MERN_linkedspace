@@ -1,0 +1,95 @@
+<% include ../../partials/header %> 
+
+<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="/stylesheets/listing_style.css">
+<style>
+.move-cursor {
+  cursor: move;
+}
+
+.grab-cursor {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+.box {
+  margin: 0 auto;
+  margin-top: 50px;
+  width: 301px;
+  height: 101px;
+  background-color: #54cfb3;
+  padding-top: 70px;
+}
+</style>
+
+<div class="row">
+
+  <div class="col-3" style="height: 500px; margin-left: 30px; border:none;" id="dragMe">
+      <div>
+      <img src="/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>" align="right" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 0%;">
+      </div>
+
+      <!-- short description about the rental request -->
+      <!-- 1. Name 2. Move-in Date 3. Location -->
+      <div class="wooden_background sub_title border border-top-0 border-bottom-0" style="text-align: center; background-color:#FFFFFF;"> 
+        <%=listing_info.listing.profile_pictures[0].caption%>
+        <br> 
+        Move-in date: <%=listing_info.listing.move_in_date.month%>/<%=listing_info.listing.move_in_date.date%>/<%=listing_info.listing.move_in_date.year%>
+        <br>
+        Location: <%=listing_info.listing.location.city%>
+        <hr>
+        <!-- button for edit and more and delete -->
+        <div class="wooden_background border border-top-0 d-flex justify-content-between" style="margin-top: -17px !important;">
+          <a href="/listing/tenant/<%=listing_info.list_id%>/edit" class="btn btn-primary">Edit</a>
+          <a href="/listing/tenant/<%=listing_info.list_id%>/show" class="btn btn-info">More Info</a>
+          <form action="/listing/tenant/<%=listing_info.list_id%>?_method=DELETE" method="POST">
+            <button class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+
+      </div> 
+
+    </div>
+
+</div>
+
+<script>
+
+grid_size = 10;
+
+$(" #dragMe ")
+  .draggable({ grid: [ grid_size, grid_size ] })
+
+  .resizable({ grid: grid_size * 2 })
+  
+  .on("mouseover", function(){
+    $( this ).addClass("move-cursor")
+  })
+
+  .on("mousedown", function(){
+    $( this )
+      .removeClass("move-cursor")
+      .addClass("grab-cursor")
+      .addClass("opac");
+  
+    $(" .text ").hide();
+  
+  })
+
+  .on("mouseup", function(){
+    $( this )
+      .removeClass("grab-cursor")
+      .removeClass("opac")
+      .addClass("move-cursor");
+  });
+</script>
+
+
+<% include ../../partials/footer %> 

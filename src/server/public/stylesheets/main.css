@@ -1,0 +1,81 @@
+
+.thumbnail img {
+    width: 100%;
+    height:  100%;    #max-height: 100%
+}
+
+.thumbnail {
+    padding: 0;
+    margin-top: 10px;
+    max-width: 100%;
+}
+
+.thumbnail .caption-full {
+    padding: 9px;
+}
+
+.container {
+	margin-bottom: 10px;
+}
+
+.shadow-textarea textarea.form-control::placeholder {
+    font-weight: 300;
+}
+
+.shadow-textarea textarea.form-control {
+    padding-left: 0.8rem;
+}
+
+.amenities_tile {
+    border-radius: 10px;
+    /* background-color: #f2f2f2; */
+    max-width: 150px;
+    max-height: 40px;
+    height: 150px;
+    margin: 10px;
+    background-color: #f0f0f0;
+    #box-shadow: 1px 1px grey;
+}
+
+.contained_image {
+    width: 100%; /* or any custom size */
+    height: 80%; 
+    object-fit: contain;
+    object-position: 0 10%;
+}
+
+.contained_caption {
+	text-align: center; !important;
+}
+
+.wooden_background {
+    background-image: url("/public/user_resources/pictures/wooden_background_v1.jpeg");
+    opacity: 1;
+}
+
+.strike-through:before {
+    content:"\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0";
+    text-decoration:line-through;
+}
+
+.strike-through:after {
+    content:"\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0";
+    text-decoration:line-through;   
+}
+
+
+span.fa-comment {
+  position: relative;
+  font-size: 1.4em !important;
+  top: -8px;
+  color: light-blue !important;
+  right: 5px;
+}
+
+span.num {
+  position: relative;
+  font-size: 0.7em !important;
+  top: -12px !important;
+  color: #fff;
+  right:24px !important;
+}

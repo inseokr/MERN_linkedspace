@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Sortable - Portlets</title>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<style>
+body {
+  background-position: 18px 11px;
+}
+
+.box {
+  margin: 0 auto;
+  margin-top: 50px;
+  width: 301px;
+  height: 101px;
+  background-color: #54cfb3;
+  padding-top: 70px;
+}
+
+.text {
+  margin-top: 0;
+  color: #fff;
+  text-align: center;
+  font-size: 28px;
+  letter-spacing: 1px;
+}
+
+.opac {
+  opacity: .8;
+}
+
+.move-cursor {
+  cursor: move;
+}
+
+.grab-cursor {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+</style>
+</head>
+
+<div class="box" id="dragMe">
+  Drag me
+</div>
+
+<body>
+
+</body>
+
+
+<script>
+grid_size = 10;
+
+$(" #dragMe ")
+  .draggable({ grid: [ grid_size, grid_size ] })
+
+  .resizable({ grid: grid_size * 2 })
+	
+	.on("mouseover", function(){
+  	$( this ).addClass("move-cursor")
+	})
+
+	.on("mousedown", function(){
+  	$( this )
+      .removeClass("move-cursor")
+      .addClass("grab-cursor")
+      .addClass("opac");
+  
+  	$(" .text ").hide();
+  
+	})
+
+	.on("mouseup", function(){
+  	$( this )
+      .removeClass("grab-cursor")
+      .removeClass("opac")
+      .addClass("move-cursor");
+	});
+  </script>

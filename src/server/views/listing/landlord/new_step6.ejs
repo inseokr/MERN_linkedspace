@@ -1,0 +1,149 @@
+<% include ../../partials/header %>
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Listing room/house</h3>  
+</div>
+
+<div class="container">
+<!-- totalSteps and curr_step should be provided -->
+	<%var curr_step=6; 
+	  var totalSteps=6;
+	  var title = "Finalize your listing"%> 
+	<% include ../../partials/stepwizard_v2 %>
+
+	<form role="form" action="/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
+		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
+			<div class="col-md-6 offset-md-3">
+				<div class="col-md-12">
+					<div style="text-align:center">
+						<h5> <%=title%></h5>
+					</div>
+					<hr>
+
+					<div class="d-flex flex-column">
+						<div class="p-2">
+							<div class="form-group shadow-textarea">
+								<label for="summaryOfListing">Please write a quick summary of your place </label>
+								<textarea class="form-control z-depth-1" name="summary_of_listing" placeholder="Write something here..." row="3" id="summaryOfListing" style="white-space: pre-wrap;">
+							    </textarea>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="form-group shadow-textarea">
+								<label for="summaryOfNeighborhood">Please share what makes your neighborhood special</label>
+								<textarea class="form-control z-depth-1" name="summary_of_neighborhood" placeholder="Write something here..." row="3" id="summaryOfNeighborhood" style="white-space: pre-wrap;">
+							    </textarea>
+						    </div>
+						</div>
+						<div class="p-2">
+							<div class="form-group shadow-textarea">
+								<label for="summaryOfTransportation">Please add information about public transportation, and driving tips.</label>
+								<textarea class="form-control z-depth-1" name="summary_of_transportation" placeholder="Write something here..." row="3" id="summaryOfTransportation" style="white-space: pre-wrap;">
+							    </textarea>
+						    </div>
+						</div>
+
+						<div class="border border-light rounded">
+					    <div class="input-group mb-3" style="margin-top: 10px">
+					    	<div style="margin-left:12px; margin-top:5px;">
+						    	<label> Asking rental price </label>
+					    	</div>
+							<div class="input-group-prepend" style="margin-left: 10px;">
+				    			<span class="input-group-text">$</span>
+				  			</div>
+				  			<div style="width:20%">
+				  			<input type="text" class="form-control" name="rental_terms[asking_price]"aria-label="Amount">
+				  			</div>
+				  			<div class="input-group-append">
+				    			<span class="input-group-text">per month</span>
+				  			</div>
+						</div>
+
+						 <div class="input-group mb-3" style="margin-top: 10px">
+					    	<div style="margin-left:12px; margin-top:5px;">
+						    	<label> Security Deposit </label>
+					    	</div>
+							<div class="input-group-prepend" style="margin-left: 26px;">
+				    			<span class="input-group-text">$</span>
+				  			</div>
+				  			<div style="width:20%">
+				  			<input type="text" class="form-control" name="rental_terms[security_deposit]" aria-label="Amount">
+				  			</div>
+						</div>
+
+						<div class="input-group mb-3" style="margin-top: 10px">
+					    	<div style="margin-left:12px; margin-top:5px;">
+						    	<label> Rental Duration </label>
+					    	</div>
+				  			<div style="width:10%; margin-left: 30px;">
+				  			<input type="text" class="form-control" name="rental_terms[duration]">
+				  			</div>
+				  			<div class="input-group-append">
+				    			<span class="input-group-text">months</span>
+				  			</div>
+						</div>
+
+						<div class="flex-container" style="margin-top: 10px;">
+					      <div style="text-align:center">
+					       	<label> Available Date</label>
+					      </div>
+
+					      <div style="width: 30%">
+					      <select class="form-control" required="required" name="move_in_date[month]" style="width:80%" placeholder="">
+					          <% 
+					            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+					            for (var cur_month=0; cur_month<12; cur_month++) {%>
+					                <option value=<%=cur_month+1%>> <%=months[cur_month]%> </option>
+					         <% } %>
+					      </select>
+					      </div>
+
+					      <div style="width: 30%">
+					      <select class="form-control" required="required" name="move_in_date[date]" style="width:80%" placeholder="">
+					          <% 
+					            for (var cur_day=1; cur_day<32; cur_day++) {%>
+					                <option value=<%=cur_day%>> <%=cur_day%> </option>
+					         <% } %>
+					      </select>
+					      </div>
+					      <div style="width: 30%">
+					      <select class="form-control" required="required" name="move_in_date[year]" style="width:80%" placeholder="">
+					          <% var this_year = new Date();
+					            var starting_year=this_year.getFullYear();
+					            var last_year = starting_year + 2;
+					            for (var cur_year=starting_year; cur_year<last_year; cur_year++) {%>
+					                <option value=<%=cur_year%>> <%=cur_year%> </option>
+					         <% } %>
+					      </select>
+					      </div>
+					    </div>
+
+					    </div>
+
+					    <div class="form-group border border-light rounded" style="margin-top:30px;">
+				            <label >Contact Information</label>
+				              <div class="flex-container">
+				                <div style="width: 35%">
+				                  <input type="text" class="form-control" style="width: 90%" name="contact[phone]" placeholder="Phone number">
+				                </div>
+				                <div style="width: 65%">
+				                  <input type="text" class="form-control" style="width: 100%" name="contact[email]" placeholder="Your email">
+				                </div>
+				              </div>
+				        </div>
+
+					</div>
+
+
+					<div style="margin-top: 40px">
+				    	<a href='<%="/listing/landlord/"+listing_info.listing_id+"/step5"%>' class="btn btn-success btn-lg float-left">Prev</a>
+				    	<button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="step#6">Next</button>
+				    </div>
+
+    			</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<% include ../../partials/footer %>

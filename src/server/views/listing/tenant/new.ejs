@@ -1,0 +1,150 @@
+<% include ../../partials/header %>
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
+<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+
+
+<div class="container" style="text-align: center; margin-bottom: 10px">
+  <h3>Posting Rental Request</h3>  
+</div>
+
+<div class="container">
+  
+<div class="stepwizard offset-md-3">
+    <div class="stepwizard-row setup-panel">
+      <div class="stepwizard-step">
+        <a class="btn btn-primary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
+      </div>
+      <div class="stepwizard-step">
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
+      </div>
+      <div class="stepwizard-step">
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
+      </div>
+    </div>
+  </div>
+
+<%if(listing_info.listing==null) {%>
+  <form role="form" action="/listing/tenant/new" method="POST">
+<%} else {%>
+  <form role="form" action="<%=`/listing/tenant/${listing_info.listing_id}/new`%>" method="POST">
+<%}%>
+    <div class="row setup-content" id="step-1" style="margin-top:30px;">
+      <div class="col-md-6 offset-md-3">
+        <div class="col-md-12">      
+          <!-- collect rental location -->
+          <% include ../../partials/location %>
+          <div class="form-group" style="width:100%">
+              <label class="control-label">Distance range allowed</label>
+
+              <select class="form-control" style="width:20%" required="required" name="maximum_range_in_miles" id="maximum_range_in_miles" placeholder="">
+                <% 
+                  for (var cur_miles=5; cur_miles<100; cur_miles+=5) {%>
+                      <option value=<%=cur_miles%>> <%=cur_miles%> miles </option>
+               <% } %>
+              </select>
+          </div> 
+
+          <div style="text-align:center">
+            <h5> Rental Duration & Budget</h5>
+          </div>
+          <hr>
+          <div class="flex-container">
+            <div class="form-group" style="width:30%">
+              <label class="control-label">Rental Duration</label>
+              <select class="form-control" style="width:85%" required="required" name="rental_duration" id="rental_duration" placeholder="">
+                <% 
+                  for (var cur_month=1; cur_month<25; cur_month++) { 
+                    if(cur_month==1) {%>
+                      <option value=<%=cur_month%>> <%=cur_month%> month </option>
+                    <%}
+                    else {%>
+                      <option value=<%=cur_month%>> <%=cur_month%> months </option>
+                  <%}%>
+
+                  <% } %>
+              </select>
+            </div>
+            <div class="form-group" style="width:30%">
+              <label class="control-label">Maximum Budget</label>
+
+              <select class="form-control" style="width:80%" required="required" name="rental_budget" id="rental_budget" placeholder="">
+                <% 
+                  for (var cur_budget=300; cur_budget<5000; cur_budget+=100) {%>
+                      <option value=<%=cur_budget%>> $<%=cur_budget%> </option>
+               <% } %>
+              </select>
+            </div> 
+          </div>
+          <div style="text-align:center">
+            <h5> Move-in date</h5>
+          </div>
+          <hr>
+          <div class="flex-container">
+            <div style="width: 30%">
+            <select class="form-control" required="required" name="move_in_date[month]" id="month" style="width:80%" placeholder="">
+                <% 
+                  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                  for (var cur_month=0; cur_month<12; cur_month++) {%>
+                      <option value=<%=cur_month+1%>> <%=months[cur_month]%> </option>
+               <% } %>
+            </select>
+            </div>
+            <div style="width: 30%">
+            <select class="form-control" required="required" name="move_in_date[date]" id="date" style="width:80%" placeholder="">
+                <% 
+                  for (var cur_day=1; cur_day<32; cur_day++) {%>
+                      <option value=<%=cur_day%>> <%=cur_day%> </option>
+               <% } %>
+            </select>
+            </div>
+            <div style="width: 30%">
+            <select class="form-control" required="required" name="move_in_date[year]" id="year" style="width:80%" placeholder="">
+                <% var this_year = new Date();
+                  var starting_year=this_year.getFullYear();
+                  var last_year = starting_year + 2;
+                  for (var cur_year=starting_year; cur_year<last_year; cur_year++) {%>
+                      <option value=<%=cur_year%>> <%=cur_year%> </option>
+               <% } %>
+            </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 40px">
+            <a class="btn btn-success btn-lg float-left" href="/" value="Exit">Exit</a>
+            <button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="next">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  
+</div>
+
+<script>
+  <%if(listing_info.listing!=null){%>
+    $('#street').val("<%=listing_info.listing.location.street;%>");
+    $('#street').val("<%=listing_info.listing.location.street;%>");
+    $('#city').val("<%=listing_info.listing.location.city%>");
+    $('#state').val("<%=listing_info.listing.location.state%>");
+    $('#country').val("<%=listing_info.listing.location.country%>");
+    $('#zipcode').val("<%=listing_info.listing.location.zipcode%>");
+
+    // Distance range allowed
+    $('#maximum_range_in_miles').val("<%=listing_info.listing.maximum_range_in_miles%>");
+
+    // Rental Duration
+    $('#rental_duration').val("<%=listing_info.listing.rental_duration%>");
+
+    // Maximum budget
+    $('#rental_budget').val("<%=listing_info.listing.rental_budget%>");
+
+    // Move-in Date
+    $('#month').val("<%=listing_info.listing.move_in_date.month%>");
+    $('#date').val("<%=listing_info.listing.move_in_date.date%>");
+    $('#year').val("<%=listing_info.listing.move_in_date.year%>");
+  <%}%>
+</script>
+
+<% include ../../partials/footer %>

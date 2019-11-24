@@ -1,0 +1,95 @@
+<div id=<%=`bedroom_form_group_${bedroom_index}`%> 
+	<% if(bedroom_index>=1) {%>style="display:none"<%}%>>
+	<hr>
+	<div style="text-align: center;">
+		<% if(bedroom_index==0) {%>
+			<h5> Common Space </h5>
+		<%}
+		  else
+		  {%>
+		  	<h5> Bedroom <%=bedroom_index%> </h5>
+		<%}%>
+	</div>
+	<!-- how many guests -->
+	<div class="d-flex p-3">
+		<% var count_name = `bedroom_${bedroom_index}[num_of_guests_bedroom]`; %>
+		<% var count_title = "How many guests can stay comfortably?" %>
+		<% include ../../partials/count_wizard %>
+	</div>
+
+	<div class="row">
+		<div class="col form-check-inline listing-check-box" style="margin-left: 40px;">
+			<div style="margin-bottom:auto"> Bedding Provided? </div>
+	        <label class="switch switch-sm" style="margin-left: 10px; margin-bottom: auto">
+	            <input type="checkbox" class="primary" style="margin-left:-3px" name=<%=`bedroom_${bedroom_index}[bedding_provided]`%> id=<%=`bedding_provided_${bedroom_index}`%> onclick="handleOnClickBedding(this,<%=bedroom_index%>)">
+	            <span class="slider-sm round"></span>
+	        </label>
+	    </div>
+
+		<div class="col form-check-inline listing-check-box" style="margin-left: 40px;">
+			<div style="margin-bottom:auto"> Bathroom </div>
+            <select id=<%=`bathrooms_select_${bedroom_index}`%> name=<%=`bedroom_${bedroom_index}[num_of_bathrooms]`%> style="margin-left: 10px; margin-bottom: auto;">
+              <option value="0">0</option>
+              <option value="0.5">0.5</option>
+              <option value="1">1</option>
+            </select>
+	    </div>
+
+    </div>
+
+	<!-- add bedding -->
+	<div class="container border border-left-0 border-right-0" id=<%=`bedding_group_${bedroom_index}`%> style="display:none;">
+	
+		<div class="row">
+			<div class="col">
+				<% var count_name = `bedroom_${bedroom_index}[num_of_single_bed_bedroom]`; %>
+				<% var count_title = "Single Bed" %>
+				<% include ../../partials/count_wizard %>
+			</div>
+			<div class="col">
+				<% var count_name = `bedroom_${bedroom_index}[num_of_double_bed_bedroom]`; %>
+				<% var count_title = "Double Bed" %>
+				<% include ../../partials/count_wizard %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<% var count_name = `bedroom_${bedroom_index}[num_of_queen_bed_bedroom]`; %>
+				<% var count_title = "Queen Bed" %>
+				<% include ../../partials/count_wizard %>
+			</div>
+			<div class="col">
+				<% var count_name = `bedroom_${bedroom_index}[num_of_sofa_bed_bedroom]`; %>
+				<% var count_title = "Sofa Bed" %>
+				<% include ../../partials/count_wizard %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<% var count_name = `bedroom_${bedroom_index}[num_of_floor_mattress_bedroom]`; %>
+				<% var count_title = "Floor Mattress" %>
+				<% include ../../partials/count_wizard %>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
+<script>
+function handleOnClickBedding(elementId, group_index)
+{
+	var beddingGroupElement = document.getElementById(`bedding_group_${group_index}`);
+
+	if(elementId.checked == true)
+	{
+		beddingGroupElement.style.display = "block";
+	}
+	else 
+	{
+		beddingGroupElement.style.display = "none";
+	}
+}
+</script>

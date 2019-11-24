@@ -1,0 +1,30 @@
+<% include ./partials/header %> 
+
+
+<div class="row">
+  <div class="col-md-4" style="margin-left: 20px">
+    <div style="margin-top: 20px">
+    <h1>Choose what to post</h1>
+    </div>
+    <form action="/listing" method="POST">
+      
+      <div class="form-check" style="margin-top: 40px; margin-bottom: 20px">
+        <label class="form-check-label" for="radio1">
+          <input type="radio" class="form-check-input" id="radio1" name="post_type" value="landlord" checked>Looking for tenant(s)
+        </label>
+      </div>
+
+      <hr>
+
+      <div class="form-check" style="margin-top: 20px; margin-bottom: 20px">
+        <label class="form-check-label" for="radio2">
+          <input type="radio" class="form-check-input" id="radio2" name="post_type" value="tenant">Looking for house/room
+        </label>
+      </div>
+
+     
+      <button type="submit" class="btn btn-primary float-left">Next</button>
+    </form>
+  </div>
+</div>
+<% include ./partials/footer %> 

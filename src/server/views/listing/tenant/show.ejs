@@ -1,0 +1,258 @@
+<% include ../../partials/header %> 
+
+<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+<link rel="stylesheet" href="/stylesheets/listing_style.css">
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+
+<div class="row">
+  <div class="col-3" style="height: 600px; margin-left: 30px; border:none;">
+  <img src="/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>" align="right" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 0%;">
+  <div class="border border-top-0" style="text-align: center; background-color:#FFFFFF;"> <%=listing_info.listing.profile_pictures[0].caption%> </div> 
+
+  </div>
+
+  <div class="col-5 border" style="border-style:none !important; height: 500px; margin-left: 30px;">
+  <div class="sub_title" style="text-align: center; margin-top: 20px !important;">
+        Self-introduction
+  </div>
+  <div class="_1ezjrwzo" style="margin-top: 20px !important">
+  <%=listing_info.listing.rental_description%>
+  </div>
+  </div>
+
+  <div class="col-3 wooden_background border" style="text-align: center;border-style:none !important; height: 600px; margin-left: 30px;">
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Preferred Location
+  </div>
+  <div class="_1ezjrwzo">
+  <%=listing_info.listing.location.city%>, <%=listing_info.listing.location.state%>, <%=listing_info.listing.location.country%>, <%=listing_info.listing.location.zipcode%>
+  </div>
+
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Distance Range Allowed
+  </div>
+  <div class="_1ezjrwzo">
+  <%=listing_info.listing.maximum_range_in_miles%> miles
+  </div>
+
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Budget
+  </div>
+  <div class="_1ezjrwzo">
+  $<%=listing_info.listing.rental_budget%>.00
+  </div>
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Move-in Date
+  </div>
+  <div class="_1ezjrwzo">
+  <%=listing_info.listing.move_in_date.month%>/<%=listing_info.listing.move_in_date.date%>/<%=listing_info.listing.move_in_date.year%>
+  </div>
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Rental Duration
+  </div>
+  <div class="_1ezjrwzo">
+  <%=listing_info.listing.rental_duration%> months
+  </div>
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Preferred rental unit type
+  </div>
+  <div class="_1ezjrwzo">
+  <%=listing_info.listing.rental_preferences.rental_unit_type%>
+  </div>
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Number of rooms or Whole Unit?
+  </div>
+  <div class="_1ezjrwzo">
+  <%if(listing_info.listing.rental_preferences.rent_whole_unit=="off") {%>
+  	<%=listing_info.listing.rental_preferences.num_of_rooms%> bedroom<%if(listing_info.listing.rental_preferences.num_of_rooms>1) {%>s<%}%>
+  	<%} else {%>
+  		Whole Unit
+  	<%}%>
+
+  </div>
+
+  <%if(listing_info.listing.num_of_requested_roommates>0) {%>
+
+  <div class="sub_title" style="margin-top: 20px !important;">
+        Additional tenant?
+  </div>
+  <div class="_1ezjrwzo">
+  <%=listing_info.listing.num_of_requested_roommates%>
+  </div>
+
+  <%}%>
+
+  </div>
+
+</div>
+
+<!--<div class="container border" style="border-style: none !important; margin-top: 20px; margin-left: 100px; margin-right: 100px;">-->
+<div class="container border" style="border-style: none !important; margin-top: 40px;">
+  
+  <hr>
+  <div class="_1xzp5ma3">
+    Rental Preferences
+  </div>
+
+  <div class="wooden_background border rounded-top rounded-bottom" style="margin-top: 20px;">
+    <div class="row sub_title" style="padding-top:8px; !important">
+    
+    <% for (var preferenceIndex=0; preferenceIndex<listing_info.rentalPreferences.length; preferenceIndex++) {%>
+        <% if ((preferenceIndex%3)==0) {%>
+          <div class="col-4">
+            <ul>
+          <%}%>
+          <li><%=listing_info.rentalPreferences[preferenceIndex];%></li>
+         <%if ((preferenceIndex==2) || (preferenceIndex==5) || (preferenceIndex==listing_info.rentalPreferences.length-1)) {%>
+            </ul>
+          </div>
+          <%}%>
+        <%}%>
+
+    </div>
+  </div> <!--Preferences-->
+
+
+  <hr>
+  <div class="_1xzp5ma3" style="margin-top:40px; margin-left:20px;">
+    Referring Mutual Friends
+  </div>
+
+  <div class="row" style="margin-top: 30px;">
+    <div class="col-7 wooden_background border rounded-top rounded-bottom" style="">
+
+    <div class="row">
+    
+    <div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive center rounded-circle" src="Peter.jpg">
+
+         <span class="_so3dpm2" style="margin-left:40px !important;">Peter Bae</span>
+
+         <div style="margin-left:60px;>
+          <span class="rating">
+            <span role="img" aria-label="distance">
+
+              <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+
+              </span>
+            </span>
+         </span>
+      	</div>
+
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive center rounded-circle" src="inseo_profile.jpg">
+		<span class="_so3dpm2" style="margin-left:50px !important;">In Seo</span>
+
+         <div style="margin-left:55px;>
+          <span class="rating">
+            <span role="img" aria-label="distance">
+
+              <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+              <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+
+
+              </span>
+            </span>
+         </span>
+      	</div>
+
+      </div>
+    </div>
+    
+	<div class="col-3">
+      <div class=" thumbnail" background-color:#f2f2f2;>
+        <img class="img-responsive center rounded-circle" src="Chinh - Vy.jpg">
+		<span class="_so3dpm2" style="margin-left:45px !important;">Chinh Le</span>
+
+         <div style="margin-left:50px;>
+          <span class="rating">
+            <span role="img" aria-label="distance">
+
+              <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+              <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+              <span class="_13wa7798"><svg viewBox="0 0 1000 1000" role="presentation" aria-hidden="true" focusable="false" style="height:1em;width:1em;display:block;fill:currentColor"><path d="M971.5 379.5c9 28 2 50-20 67L725.4 618.6l87 280.1c11 39-18 75-54 75-12 0-23-4-33-12l-226.1-172-226.1 172.1c-25 17-59 12-78-12-12-16-15-33-8-51l86-278.1L46.1 446.5c-21-17-28-39-19-67 8-24 29-40 52-40h280.1l87-278.1c7-23 28-39 52-39 25 0 47 17 54 41l87 276.1h280.1c23.2 0 44.2 16 52.2 40z"></path></svg></span>
+              </span>
+            </span>
+         </span>
+      	</div>
+
+      </div>
+    </div>
+    
+
+    </div>
+    </div>
+
+    <div class="col-lg-4 sub_title wooden_background border rounded-top rounded-bottom" style="max-height:102px;text-align: center; margin-left: 80px !important; ">
+      <div style="margin-top:10px;">Contact</div>
+      	<div class="sub_title" style="margin-top:10px !important;">
+        	<ul  style="list-style-type:none;">
+          		<li> Phone Number: <%=listing_info.listing.phone%> </li>
+          		<li> E-mail: <%=listing_info.listing.email%> </li>
+        	</ul>
+      	</div>
+    </div>
+
+  </div>
+
+      <%if(listing_info.list_id!=0) {%>
+        <div style="margin-top:30px;">
+        <input type="text" value="Hello World" id="post_link" style="color:white; border-style:none;">
+
+        <!-- The button used to copy the text -->
+        <div class="d-flex jjustify-content-start">
+          <button class="btn btn-primary" onclick="copy_posting_link('<%=`${listing_info.list_id}`%>')">Copy link of this posting</button>
+          <button class="btn btn-info" style="margin-left:70px !important;">Send listing to friends</button>
+          <button class="btn btn-danger" style="margin-left:70px !important;">Check status</button>
+        <div>
+        </div>
+      <%}%>
+
+	</div>
+
+  <hr>
+  
+</div>
+
+<script>
+function copy_posting_link(listing_id) {
+
+  console.log("myFunction is called");
+  /* Get the text field */
+  var copyText = document.getElementById("post_link");
+
+  var currentURL = document.URL;
+  var hostSection = currentURL.split("listing")[0];
+
+  copyText.value = `${hostSection}listing/tenant/${listing_id}/show`;
+
+  /* Select the text field */
+  copyText.select();
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  // data is not copied if I disable display.
+  //${#post_link}.css("display", "none");
+} 
+</script>
+
+
+<% include ../../partials/footer %> 

@@ -1,0 +1,147 @@
+<% include ../partials/header %>
+
+<link rel="stylesheet" href="/stylesheets/mynetwork_style.css"> 
+
+<div class="row">
+
+<div class="col-lg-3">
+	<div class="d-flex justify-content-around connection_pannel wooden_background">
+		<div class="connection_image">
+			<div class="col">
+				<div class="image1">
+					<img class="img-responsive center rounded-circle" style="max-height: 70%; margin-top:10px;" src="../public/user_resources/pictures/Peter.jpg">
+				</div>
+				<div class="image2">
+					<img class="img-responsive center rounded-circle" style="max-height: 70%; margin-top:10px;" src="../public/user_resources/pictures/Joongho.jpg">
+				</div>
+				<div class="image3">
+					<img class="img-responsive center rounded-circle" style="max-height: 70%; margin-top:10px;" src="../public/user_resources/pictures/Chinh - Vy.jpg">
+				</div>
+			</div>
+		</div>
+		<div class="connection_caption bold_fonts">
+			<a href="#direct_friends"> Connections(<%=network_info.number_of_friends%>) </a>
+		</div>
+	</div>
+</div>
+
+<div class="col-lg-6">
+	<div class="bottom-shadow">
+		<span style="text-align:center;"><h3> Friends Recommendation </h3></span>
+		<hr>
+		<div class="d-flex justify-content-between">
+		<%
+			var x;
+			for (x in network_info.recommended_friends_list) {%>
+
+			<div class="network_board">
+				<div class="profile_picture">
+					<img class="img-responsive center rounded-circle" style="max-width: 100%; margin-top:10px;" src='<%=network_info.recommended_friends_list[x].profile_picture%>'>
+				</div>
+				<div class="friend_information">
+					<span class="bold_fonts"><%=network_info.recommended_friends_list[x].name%></span>
+					<br>
+					<span class="normal_fonts"><%=network_info.recommended_friends_list[x].address.city+","+network_info.recommended_friends_list[x].address.state%></span>
+				</div>
+
+				<form role="form" action="/mynetwork/<%=network_info.recommended_friends_list[x].id%>/friend_request" method="post">
+					<div class="action">
+						<button class="btn btn-info">Connect</button>
+					</div>
+				</form>
+			</div>
+		<%}%>
+		</div>
+
+		<hr>
+
+		<!-- Pending Friend Request -->
+		<div class="d-flex justify-content-between">
+		<%
+			var x;
+			for (x in network_info.pending_friends_request_list) {%>
+			<div class="network_board">
+				<div class="profile_picture">
+					<img class="img-responsive center rounded-circle" style="max-width: 100%; margin-top:10px;" src='<%=network_info.pending_friends_request_list[x].profile_picture%>'>
+				</div>
+				<div class="friend_information">
+					<span class="bold_fonts">'<%=network_info.pending_friends_request_list[x].name%>'</span>
+					<br>
+					<span class="normal_fonts">'<%=network_info.pending_friends_request_list[x].address.city+","+network_info.pending_friends_request_list[x].address.state%>'</span>
+				</div>
+
+				<form role="form" action="/mynetwork/<%=network_info.pending_friends_request_list[x].id%>/friend_request" method="post">
+					<div class="action">
+						<button class="btn btn-info">Pending</button>
+					</div>
+				</form>
+			</div>
+		<%}%>
+		</div>
+	</div>
+
+	<div class="bottom-shadow">
+		<span style="text-align:center;"><h3> Incoming Friend Requests </h3></span>
+		<hr>
+		<div class="d-flex justify-content-between">
+		<%
+			var x;
+			for (x in network_info.incoming_friends_request_list) {%>
+
+			<div class="network_board">
+				<div class="profile_picture">
+					<img class="img-responsive center rounded-circle" style="max-width: 100%; margin-top:10px;" src='<%=network_info.incoming_friends_request_list[x].profile_picture%>'>
+				</div>
+				<div class="friend_information">
+					<span class="bold_fonts">'<%=network_info.incoming_friends_request_list[x].name%>'</span>
+					<br>
+					<span class="normal_fonts">'<%=network_info.incoming_friends_request_list[x].address.city+","+network_info.incoming_friends_request_list[x].address.state%>'</span>
+				</div>
+
+				<form role="form" action="/mynetwork/<%=network_info.incoming_friends_request_list[x].id%>/friend_accept" method="post">
+					<div class="action">
+						<button class="btn btn-info">Accept</button>
+					</div>
+				</form>
+			</div>
+		<%}%>
+		</div>
+		<hr>
+	</div>
+
+	<div class="bottom-shadow" id="direct_friends">
+		<span style="text-align:center;"><h3> Direct Friends </h3></span>
+		<hr>
+		<div class="d-flex justify-content-between">
+		<%
+			var x;
+
+			for (x in network_info.direct_friends_list) {%>
+
+			<div class="network_board">
+				<div class="profile_picture">
+
+					<img class="img-responsive center rounded-circle" style="max-width: 100%; margin-top:10px;" src='<%=network_info.direct_friends_list[x].profile_picture%>'>
+				</div>
+				<div class="friend_information">
+
+					<span class="bold_fonts">'<%=network_info.direct_friends_list[x].name%>'</span>
+					<br>
+					<span class="normal_fonts">'<%=network_info.direct_friends_list[x].address.city+","+network_info.direct_friends_list[x].address.state%>'</span>
+				</div>
+
+				<form role="form" action="/mynetwork/<%=network_info.direct_friends_list[x].id%>/friend_accept" method="post">
+					<div class="action">
+						<button class="btn btn-info">Message</button>
+					</div>
+				</form>
+			</div>
+		<%}%>
+		</div>
+		<hr>
+	</div>
+
+</div>
+
+</div>
+<% include ../partials/footer %> 
