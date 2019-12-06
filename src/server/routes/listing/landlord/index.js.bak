@@ -239,8 +239,6 @@ function handleStep5(req, res, foundListing){
 	var processedPictures = 0;
 
 	for(var picIndex=0; processedPictures<foundListing.num_of_pictures_uploaded;picIndex++){
-		
-		console.log("ISEO: picIndex = " + picIndex);
 		if(foundListing.pictures[picIndex].path!=""){
 			foundListing.pictures[picIndex].caption = eval(`req.body.caption_${picIndex+1}`);
 			processedPictures++;
@@ -360,7 +358,6 @@ router.get("/new_step6", function(req,res){
 router.get("/edit", function(req,res){
 	res.render("listing/landlord/new_step5");
 });
-
 
 router.get("/temp", function(req,res){
 	res.render("listing/landlord/new_step6");

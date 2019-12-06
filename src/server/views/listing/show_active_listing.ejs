@@ -1,0 +1,90 @@
+<% include ../partials/header %>
+
+<link rel="stylesheet" href="/stylesheets/mynetwork_style.css"> 
+
+<div class="row">
+
+
+	<div class="col-lg-3">
+	<!-- no contents for now-->
+	</div>
+
+	<div class="col-lg-6">
+		<div class="bottom-shadow">
+			<span style="text-align:center;"><h3> Looking for rooms/house  </h3></span>
+			<hr>
+			<div class="d-flex justify-content-between flex-wrap">
+			<%
+				var x;
+				for (x in tenant_listing) {%>
+
+				<div class="network_board">
+					<div class="profile_picture">
+						<a href='<%="tenant/"+tenant_listing[x].id%>/show'>
+							<img class="img-responsive center rounded-circle" style="max-width: 100%; margin-top:10px;" src='<%=tenant_listing[x].picture%>'>
+						</a>
+					</div>
+
+					<div class="d-flex justify-content-between">
+						<form role="form" action="/listing/tenant/<%=tenant_listing[x].id%>/edit" method="post">
+							<div class="action">
+								<button class="btn btn-info">Edit</button>
+							</div>
+						</form>
+
+						<form role="form" action="/listing/tenant/<%=tenant_listing[x].id%>?_method=DELETE" method="post">
+							<div class="action">
+								<button class="btn btn-danger">Delete</button>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			<%}%>
+			</div>
+
+			<hr>
+		</div>
+
+		<div class="bottom-shadow" style="margin-top: 40px">
+			<span style="text-align:center;"><h3> Looking for tenants/roommates </h3></span>
+			<hr>
+			<div class="d-flex justify-content-between flex-wrap">
+			<%
+				var x;
+				for (x in landlord_listing) {%>
+
+				<div class="network_board">
+					<div class="profile_picture">
+						<a href='<%="landlord/"+landlord_listing[x].id%>/show'>
+							<img class="img-responsive center" style="max-height: 80%; max-width: 100%; margin-top:10px;" src='<%=landlord_listing[x].picture%>'>
+						</a>
+					</div>
+
+					<div class="d-flex justify-content-between">
+						<form role="form" action="/listing/landlord/<%=landlord_listing[x].id%>/edit" method="post">
+							<div class="action">
+								<button class="btn btn-info">Edit</button>
+							</div>
+						</form>
+
+						<form role="form" action="/listing/landlord/<%=landlord_listing[x].id%>?_method=DELETE" method="post">
+							<div class="action">
+								<button class="btn btn-danger">Delete</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+			<%}%>
+			</div>
+			<hr>
+		</div>
+	</div>
+
+	<div class="col-lg-3">
+	<!-- no contents for now-->
+	</div>
+
+</div>
+<% include ../partials/footer %> 

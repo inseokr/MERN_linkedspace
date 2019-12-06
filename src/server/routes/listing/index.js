@@ -24,6 +24,37 @@ router.post("/", function(req, res){
     }
 });
 
+router.get("/show_active_listing", function(req,res){
+    User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').exec(function(err, foundUser){
+    //User.findById(req.user._id).populate('tenant_listing').exec(function(err, foundUser){
+    //User.findById(req.user._id).exec(function(err, foundUser){
+        if(err){
+            console.log(err);
+        } else {
+            var tenant_listing = [];
+            var landlord_listing = [];
+
+            //<note> yes, landlord_listing array got screwed up after populate... darn...
+            
+            foundUser.tenant_listing.forEach(function(listing){
+                var tlist = {id: listing._id , picture: listing.profile_pictures[0].path}
+                console.log("tenant profile picture => " + tlist.picture);
+                tenant_listing.push(tlist);
+            });
+
+
+            foundUser.landlord_listing.forEach(function(listing){
+                var llist = {id: listing._id , picture: listing.pictures[0].path}
+                console.log("landlord cover picture => " + llist.picture);
+                landlord_listing.push(llist);
+            });
+
+            // passing whole data structure may not be a good idea?
+            res.render("listing/show_active_listing", {tenant_listing: tenant_listing, landlord_listing: landlord_listing});
+        }
+    });
+});
+
 
 router.get("/:filename", function(req, res){
 	var fileName = req.params.filename;

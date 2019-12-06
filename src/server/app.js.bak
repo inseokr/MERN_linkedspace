@@ -25,8 +25,6 @@ var fileUpload    = require('express-fileupload');
 var facebook      = require('./facebook.js');
 var nodemailer = require('nodemailer');
 
-var serverPath = "./src/server";
-
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
 
@@ -98,8 +96,6 @@ app.use(fileUpload());
 app.locals.profile_picture = "/public/user_resources/pictures/profile_pictures/default_profile.jpg";
 app.locals.lastReactMenu = "";
 global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
-
-console.log("basedir="+__dirname);
 // ISEO-TBD: test e-mail
 /*
 // TBD: test email
@@ -159,7 +155,7 @@ app.post('/listing/landlord/:list_id/file_upload', function(req, res) {
 
   console.log("picPath=" + picPath);
   // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv(serverPath+picPath, function(err) {
+    sampleFile.mv("."+picPath, function(err) {
     if (err)
       return res.status(500).send(err);
     console.log("ISEO: Successful File upload");
@@ -186,7 +182,7 @@ app.post('/listing/landlord/:list_id/file_delete', function(req, res) {
   try {
       const picPath = "/public/user_resources/pictures/landdlord/"+req.params.list_id+"_"+picIndex+".jpg";
 
-      fs.unlinkSync(serverPath+picPath);
+      fs.unlinkSync("."+picPath);
     foundListing.pictures[picIndex-1].path = "";
     foundListing.num_of_pictures_uploaded = foundListing.num_of_pictures_uploaded - 1;
     foundListing.save();
@@ -213,7 +209,7 @@ app.post('/listing/tenant/:list_id/file_upload', function(req, res) {
 
   console.log("picPath=" + picPath);
   // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv(serverPath+picPath, function(err) {
+    sampleFile.mv("."+picPath, function(err) {
     if (err)
     {
       console.log("mv operation failed with error code="+err);
@@ -242,7 +238,7 @@ app.post('/listing/tenant/:list_id/file_delete', function(req, res) {
   try {
     
     console.log("File path=" + foundListing.profile_pictures[0].path );
-      fs.unlinkSync(serverPath + foundListing.profile_pictures[0].path);
+      fs.unlinkSync("." + foundListing.profile_pictures[0].path);
     
     foundListing.profile_pictures[0].path = "";
     foundListing.num_of_profile_picture_uploaded = foundListing.num_of_profile_picture_uploaded - 1;
@@ -274,13 +270,11 @@ app.post('/profile/:user_id/file_upload', function(req, res) {
     let picPath = "/public/user_resources/pictures/"+user_id+"_"+"profile"+"."+sampleFile.name.split(".")[1];
 
   // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv(serverPath+picPath, function(err) {
+    sampleFile.mv("."+picPath, function(err) {
     if (err)
       {
         console.log("ISEO: upload failure. error="+err);
       return res.status(500).send(err);
-      }
-
     console.log("ISEO: Successful File upload");
     curr_user.profile_picture = picPath;
     app.locals.profile_picture = picPath;
@@ -292,7 +286,7 @@ app.post('/profile/:user_id/file_upload', function(req, res) {
 app.post('/profile/:user_id/file_delete', function(req, res) {
   User.findById(req.params.user_id, function(err, curr_user){
   try {
-      fs.unlinkSync(serverPath+curr_user.profile_picture);
+      fs.unlinkSync("."+curr_user.profile_picture);
 
     curr_user.profile_picture = "";
     curr_user.save();
