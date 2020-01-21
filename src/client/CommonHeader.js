@@ -7,10 +7,10 @@ import LoginMenu from './LoginMenu';
 
 
 export default class CommonHeader extends Component {
-  
+
   constructor(props){
     super(props);
-    this.state = { 
+    this.state = {
       isUserLoggined: "false"
     }
   }
@@ -32,7 +32,7 @@ export default class CommonHeader extends Component {
     return (
       <div>
         <LinkedSpaceHeader />
-        { this.state.isUserLoggined=="true" 
+        { this.state.isUserLoggined==="true"
           ? <LoginMenu />
           : <NoLoginMenu />
         }
