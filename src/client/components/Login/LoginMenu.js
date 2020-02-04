@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './app.css';
+import '../../app.css';
 
 export default class LoginMenu extends Component {
   state = { };
@@ -13,14 +13,14 @@ export default class LoginMenu extends Component {
       <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container">
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"/>
           </button>
           <div class="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
             <a class="navbar-brand" href="/">LinkedSpaces</a>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                   <a class="nav-link" href="/mynetwork">
-                      My Network 
+                      My Network
                       <span class="fa fa-comment"></span>
                       <span class="num">2</span>
                   </a>
@@ -37,7 +37,7 @@ export default class LoginMenu extends Component {
 
                 <li class="nav-item">
                     <a class="nav-link" href="/profile">
-                        <img class="img-responsive center rounded-circle" 
+                        <img class="img-responsive center rounded-circle"
                               style={{
                                         maxHeight: '70%',
                                         height: '30px'
@@ -45,7 +45,7 @@ export default class LoginMenu extends Component {
                                      }
                               src="/public/user_resources/pictures/profile_pictures/default_profile.jpg"/>
                     </a>
-                </li>   
+                </li>
             </ul>
           </div>
         </div>

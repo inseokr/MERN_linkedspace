@@ -221,7 +221,7 @@ This starts a server and listens on port 8080 for connections. The app responds 
 [Concurrently](https://github.com/kimmobrunfeldt/concurrently) is used to run multiple commands concurrently. I am using it to run the webpack dev server and the backend node server concurrently in the development environment. Below are the npm/yarn script commands used.
 
 ```javascript
-"client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
+"client": containers,
 "server": "nodemon src/server/index.js",
 "dev": "concurrently \"npm run server\" \"npm run client\""
 ```

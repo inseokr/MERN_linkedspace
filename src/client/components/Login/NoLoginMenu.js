@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './app.css';
+import '../../app.css';
 
 export default class NoLoginMenu extends Component {
   state = { };
@@ -21,7 +21,7 @@ export default class NoLoginMenu extends Component {
               <li class="nav-item">
                 <a class="nav-link" href="#">About</a>
               </li>
-              
+
               <li class="nav-item">
                 <a href="/react_login" data-toggle = "modal" data-target= "#modalLoginForm" class="nav-link">Login</a>
               </li>

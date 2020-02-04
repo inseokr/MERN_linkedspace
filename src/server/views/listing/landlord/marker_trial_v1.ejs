@@ -1,10 +1,10 @@
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-      <title>Google Maps Javascript API example | codeshare by Paul Seal</title> 
+      <title>Google Maps Javascript API example | codeshare by Paul Seal</title>
 
-      <!--link to bootstrap to reset the css. you could remove this or use your own resets.*/ --> 
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">   
+      <!--link to bootstrap to reset the css. you could remove this or use your own resets.*/ -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
       <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
       <link rel="stylesheet" href="/stylesheets/listing_style.css">
 
@@ -52,7 +52,7 @@
       }
       .iw-content img {
         float: right;
-        margin: 0 5px 5px 10px; 
+        margin: 0 5px 5px 10px;
       }
       .iw-subTitle {
         font-size: 16px;
@@ -70,7 +70,7 @@
         background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
         background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
       }
-              
+
       </style>
   </head>
 
@@ -88,7 +88,7 @@
 
 
 function initialize() {
-  // map center
+  // containers center
   var center = new google.maps.LatLng(40.589500, -8.683542);
 
   // marker position
@@ -120,7 +120,7 @@ function initialize() {
   var content1 = '<div style="max-width:100px; margin-top:20px;">' +
         '<img src="inseo_profile.jpg" class="center rounded-circle" style="width:100%; max-height:100%">' +
       '</div>'
-      
+
   // A new Info Window is created and set content
   var infowindow = new google.maps.InfoWindow({
     content: content1,
@@ -135,7 +135,7 @@ function initialize() {
     coords: [0, 0, 60],
     type: 'circle'
   };
-   
+
   // marker options
   var marker = new google.maps.Marker({
     position: factory,
@@ -153,7 +153,7 @@ function initialize() {
 
   infowindow.open(map,marker);
 
-  // Event that closes the Info Window with a click on the map
+  // Event that closes the Info Window with a click on the containers
   google.maps.event.addListener(map, 'click', function() {
     infowindow.close();
   });

@@ -62,7 +62,7 @@ span.num {
 	      <li class="nav-item">
 	        <a class="nav-link" href="/react_landing">About</a>
 	      </li>
-	      
+
 	      <li class="nav-item">
 	      	<a href="#modalLoginForm" data-toggle = "modal" data-target= "#modalLoginForm" class="nav-link">Login</a>
 	      </li>
@@ -72,7 +72,7 @@ span.num {
 	      <% } else { %>
           <li class="nav-item">
               <a class="nav-link" href="/mynetwork">
-                  My Network 
+                  My Network
                   <span class="fa fa-comment"></span>
                   <span class="num">2</span>
               </a>
@@ -81,6 +81,7 @@ span.num {
           <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
           <li class="nav-item"><a class="nav-link" href="/listing/show_forwarded_listing">Listing from friends</a></li>
           <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
+				  <li class="nav-item"><a class="nav-link" href="/map">Map</a></li>
 	      	<li class="nav-item">
             <a class="nav-link" href="/logout" style="position: relative">
               Logout
@@ -99,7 +100,7 @@ span.num {
 	    </ul>
 	  </div>
 	</div>
-	</nav>	
+	</nav>
 
 	<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
 		  aria-hidden="true">
@@ -211,13 +212,13 @@ span.num {
   window.fbAsyncInit = function() {
     FB.init({
       appId      : '1011405085718313',
-      cookie     : true,  // enable cookies to allow the server to access 
+      cookie     : true,  // enable cookies to allow the server to access
                           // the session
       xfbml      : true,  // parse social plugins on this page
       version    : 'v3.2' // The Graph API version to use for the call
     });
 
-    // Now that we've initialized the JavaScript SDK, we call 
+    // Now that we've initialized the JavaScript SDK, we call
     // FB.getLoginStatus().  This function gets the state of the
     // person visiting this page and can return one of three states to
     // the callback you provide.  They can be:

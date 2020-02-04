@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './app.css';
+import '../../app.css';
 
 import {
   BrowserRouter as Router,
@@ -13,7 +13,7 @@ import {
 var lastMenu = "";
 
 export default class Home extends Component {
-  
+
   constructor(props) {
   	super(props);
 

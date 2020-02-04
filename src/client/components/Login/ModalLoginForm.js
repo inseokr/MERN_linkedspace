@@ -1,8 +1,41 @@
 
 import React, { Component } from 'react';
-import './app.css';
+import '../../app.css';
 
+var modalContentStyle = {
+	width: '300px !important'
+};
 
+var modalTitleStyle = {
+	color: 'black'
+};
+
+var mdFormStyle = {
+	margin: 'auto',
+	marginTop: '20px',
+	marginBottom: '10px !important'
+};
+
+var facebookImgStyle = {
+	width: '270px',
+	height: '45px'
+};
+
+var strikeThroughStyle = {
+	color: 'LightGrey'
+};
+
+var mdFormBottom = {
+	marginBottom: '10px !important'
+};
+
+var mdFormBackground = {
+	backgroundColor: '#FFFFFF'
+};
+
+var marginBottom5x = {
+	marginBottom: '5px !important'
+};
 
 export default class ModalLoginForm extends Component {
   state = { };
@@ -13,14 +46,14 @@ export default class ModalLoginForm extends Component {
   render() {
     return (
     	<>
-		<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">	  
-		  
+		<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">
+
 		  <div class="modal-dialog" role="document">
 
 		  	<div class="modal-content" style={modalContentStyle}>
-		  	</div>
 
-			<div class="modal-header text-center">
+
+			  <div class="modal-header text-center">
 		        <h4 class="modal-title w-100 ariweight-bold" font-ss="close" data-dismiss="modal" style={modalTitleStyle}>LinkedSpaces</h4>
 		      </div>
 
@@ -35,25 +68,25 @@ export default class ModalLoginForm extends Component {
 		      <form action="/login" method="POST" role="form">
 
 		      	<div class="modal-body form-group">
-			        
+
 			        <div class="md-form mb-5 form-group" style={mdFormBottom}>
 			        	<div class="input-group">
 			          		<input type="text" class="form-control validate" name="username"/>
 			          		<div class="input-group-append">
-    							<span class="input-group-text" style={mdFormBackground}><i class="fa fa-user"></i></span>
+    							<span class="input-group-text" style={{backgroundColor: '#FFFFFF'}}><i class="fa fa-user"></i></span>
   					  		</div>
   					  	</div>
   					  <label data-error="wrong" data-success="right" for="defaultForm-email" style={modalTitleStyle}>Your login name</label>
 			        </div>
 
-			        <div class="md-form mb-4 form-group" style={marginBottom5x}>
+			        <div class="md-form mb-4 form-group" style={{backgroundColor: '#FFFFFF'}}>
 			        	<div class="input-group">
 				          <input type="password" id="defaultForm-pass" class="form-control validate" name="password"/>
 				          <div class="input-group-append">
 				          	<span class="input-group-text" style={mdFormBackground}><i class="fas fa-lock"></i></span>
 				          </div>
 				        </div>
-			          <label data-error="wrong" data-success="right" for="defaultForm-pass" style={mdFormBackground}>Your password</label>
+			          <label data-error="wrong" data-success="right" for="defaultForm-pass" style={{backgroundColor: '#FFFFFF'}}>Your password</label>
 			        </div>
 
 			    </div>
@@ -67,9 +100,10 @@ export default class ModalLoginForm extends Component {
 		        </div>
 
 			  </form>
-		    </div>		  		  
+		    </div>
+
 		  </div>
-		  
+
 		</div>
         </>
     );

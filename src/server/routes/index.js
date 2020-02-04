@@ -26,6 +26,10 @@ router.get("/about", function(req, res){
   app.locals.lastReactMenu = "dashboard";
   res.redirect("/");
 });
+router.get("/map", function(req, res){
+  app.locals.lastReactMenu = "map";
+  res.redirect("/");
+});
 router.get("/landing", function(req, res){
   console.log("called landing page");
   res.render("landing");
@@ -39,7 +43,7 @@ router.get("/facebook_login", function(req, res){
 // show sign-up form
 router.get("/signup", function(req, res){
   res.render("signup");
-})
+});
 
 //handle sign up logic
 router.post("/signup", function(req, res){

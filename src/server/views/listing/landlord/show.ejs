@@ -1,4 +1,4 @@
-<% include ../../partials/header %> 
+<% include ../../partials/header %>
 
 <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
 
@@ -8,7 +8,7 @@
 
 <div class="row">
   <div class="col-3 wooden_background border" style="height: 500px; margin-left: 30px; background-color:#f2f2f2;">
-  
+
     <div style="margin-top:10px; font-family: 'Lobster', cursive; font-family: 'Lobster', cursive;
     color: #914669 !important;"> LinkedSpaces </div>
 
@@ -51,7 +51,7 @@
 
 <!--<div class="container border" style="border-style: none !important; margin-top: 20px; margin-left: 100px; margin-right: 100px;">-->
 <div class="container border" style="border-style: none !important; margin-top: 20px;">
-  
+
   <div class="row">
 
 
@@ -72,7 +72,7 @@
       <div style="max-width:100px; margin-top:20px;">
         <img src="inseo_profile.jpg" class="center rounded-circle" style="width:100%; max-height:100%">
       </div>
-      
+
       <div style="margin-left:30px;>
         <span class="rating">
           <span role="img" aria-label="distance">
@@ -111,7 +111,7 @@
     </div>
 
     <div class="col-5" style="margin-top: 70px;">
-      
+
       <div class="subtitle_info">
         <div class="sub_title">
           Neighborhood
@@ -127,7 +127,7 @@
         </div>
         <div class="inner_contents" style="margin-top: 2px;white-space:pre-line">
         <%=listing_info.listing.summary_of_transportation%>
-        </div> 
+        </div>
       </div>
     </div>
   </div> <!-- the end of location -->
@@ -143,7 +143,7 @@
   <%for (var picIndex=1; picIndex<listing_info.listing.num_of_pictures_uploaded; ++picIndex){%>
     <div class="col-3">
       <div class=" thumbnail" background-color:#f2f2f2;>
-        <img class="img-responsive" 
+        <img class="img-responsive"
           src="<%=listing_info.listing.pictures[picIndex].path.split("/")[listing_info.listing.pictures[picIndex].path.split("/").length-1]%>">
         <div class="caption-full ">
           <h4 class="pull-right inner_contents"><%=listing_info.listing.pictures[picIndex].caption%></h4>
@@ -237,8 +237,8 @@
     </div>
 
     <div class="col-4 _1ezjrwzo" style="margin-left: 50px;">
-      Hello there, 
-      <br> 
+      Hello there,
+      <br>
       My name is In Seo who's working at one of high-tech company in Silicon Valley.
       <br>
       <br>
@@ -259,7 +259,7 @@
         </ul>
       </div>
   </div>
-  
+
   <%if(listing_info.list_id!=0) {%>
         <div style="margin-top:30px;">
         <input type="text" value="Hello World" id="post_link" style="color:white; border-style:none;">
@@ -280,7 +280,7 @@
 </div>
 
 <script>
-// Initialize and add the map
+// Initialize and add the containers
 function initMap() {
   var mapUrl = document.getElementById('map_url');
   var urlString = mapUrl.value.trim();
@@ -288,7 +288,7 @@ function initMap() {
   $.getJSON(urlString, function(data)
   {
         var p = data.results[0].geometry.location;
-        // The map, centered at Uluru
+        // The containers, centered at Uluru
         var map = new google.maps.Map(
           document.getElementById('map'), {zoom: 15, center: p});
         var marker = new google.maps.Marker({position: p, map: map});
@@ -302,7 +302,7 @@ function copy_posting_link(listing_id) {
   var copyText = document.getElementById("post_link");
 
   var currentURL = document.URL;
-  var hostSection = currentURL.split("listing")[0]; 
+  var hostSection = currentURL.split("listing")[0];
 
   copyText.value = `${hostSection}listing/landlord/${listing_id}/show`;
 
@@ -317,4 +317,4 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtSupWCIi2l-ZFk5jzVpI2guc
 </script>
 
 
-<% include ../../partials/footer %> 
+<% include ../../partials/footer %>

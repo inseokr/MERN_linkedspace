@@ -3,7 +3,7 @@
   <head>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <style>
-      /* Set the size of the div element that contains the map */
+      /* Set the size of the div element that contains the containers */
       #map {
         height: 200px;  /* The height is 400 pixels */
         width: 200px;  /* The width is the width of the web page */
@@ -12,10 +12,10 @@
   </head>
   <body>
     <h3>My Google Maps Demo</h3>
-    <!--The div element for the map -->
+    <!--The div element for the containers -->
     <div id="map"></div>
     <script>
-// Initialize and add the map
+// Initialize and add the containers
 function initMap() {
   // The location of Uluru
   var myAddress = '793 praderia circile, 94539/fremont';
@@ -25,7 +25,7 @@ function initMap() {
   $.getJSON(urlString, function(data)
   {
         var p = data.results[0].geometry.location;
-        // The map, centered at Uluru
+        // The containers, centered at Uluru
         var map = new google.maps.Map(
           document.getElementById('map'), {zoom: 15, center: p});
         var marker = new google.maps.Marker({position: p, map: map});
