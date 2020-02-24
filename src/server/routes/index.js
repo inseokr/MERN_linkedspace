@@ -8,15 +8,28 @@ var fileUpload = require('express-fileupload');
 var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
+var TenantRequest = require("../models/listing/tenant_request");
+
 router.get("/getLoginStatus", function(req, res){
   var isUserLoggined = (req.user) ? "true": "false";
   console.log("getLoginStatus called. status = " + isUserLoggined);
   res.json(isUserLoggined);
 });
+
 router.get("/getLastMenu", function(req, res){
   console.log("getLastMenu is called");
   res.json(app.locals.lastReactMenu);
   app.locals.lastReactMenu = "";
+});
+
+router.get("/getData", function(req, res){
+  console.log("getData is called");
+
+  // read listing information from database.
+  TenantRequest.find({}).then(function (listings) {
+    res.send(listings);
+    console.log("getData = " + listings);
+  });
 });
 
 router.get("/", function(req, res){
