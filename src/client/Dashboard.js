@@ -25,7 +25,7 @@ export default class Dashboard extends Component {
   getListInformation = () => {
     fetch('/getData')
     .then(data => data.json())
-    .then((listings) => { console.log("received data = "  + listings); this.setState({ data: listings }); console.log("getListInformation is called"); });
+    .then((listings) => {this.setState({ data: listings });});
   };
 
   constructor(props) {
@@ -34,24 +34,18 @@ export default class Dashboard extends Component {
 
   componentWillMount() {
     this.getListInformation();
-    console.log("Dashboard componentWillMount is called");
   }
 
 
   componentDidMount() {
     this.getListInformation();
     this.setState({ dataLoaded: true});
-    console.log("Dashboard componentDidMount is called");
-    console.log("data: " +  this.state.data);
   }
 
   render() {
-
-    //this.getListInformation();
-    console.log("data: " +  this.state.data);
-
     this.state.data.forEach((listing) => {
       console.log("listing information = " + listing);
+      console.log("number of picture" + listing.num_of_profile_picture_uploaded);
     });
 
     // Please note... render will be called when there is a change in the state?
