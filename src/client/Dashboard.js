@@ -25,36 +25,33 @@ export default class Dashboard extends Component {
   getListInformation = () => {
     fetch('/getData')
     .then(data => data.json())
-    .then((listings) => {this.setState({ data: listings });});
+    .then((listings) => {this.setState({ data: listings , dataLoaded: true});});
   };
 
   constructor(props) {
   	super(props);
   }
 
-  componentWillMount() {
-    this.getListInformation();
-  }
-
-
   componentDidMount() {
     this.getListInformation();
-    this.setState({ dataLoaded: true});
   }
 
   render() {
-    this.state.data.forEach((listing) => {
-      console.log("listing information = " + listing);
-      console.log("number of picture" + listing.num_of_profile_picture_uploaded);
-    });
 
-    // Please note... render will be called when there is a change in the state?
-    console.log("Dashboard component rendering");
+    const items = this.state.data.map((listing, i) => {
+      return <li> requester name = {listing.requester.username} </li>
+    })
+
 
   	return (
 	  	<>
         <div>
           <h2>Dashboard</h2>
+            {this.state.dataLoaded===true && 
+              <ul>
+              {items}
+              </ul>
+            }
         </div>
 	  	</>
   	);
