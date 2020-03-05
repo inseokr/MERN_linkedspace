@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './app.css';
+import '../../app.css';
 
 export default class LoginMenu extends Component {
   state = { };
@@ -20,7 +20,7 @@ export default class LoginMenu extends Component {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                   <a class="nav-link" href="/mynetwork">
-                      My Network 
+                      My Network
                       <span class="fa fa-comment"></span>
                       <span class="num">2</span>
                   </a>
@@ -37,7 +37,7 @@ export default class LoginMenu extends Component {
 
                 <li class="nav-item">
                     <a class="nav-link" href="/profile">
-                        <img class="img-responsive center rounded-circle" 
+                        <img class="img-responsive center rounded-circle"
                               style={{
                                         maxHeight: '70%',
                                         height: '30px'
@@ -45,7 +45,7 @@ export default class LoginMenu extends Component {
                                      }
                               src="/public/user_resources/pictures/profile_pictures/default_profile.jpg"/>
                     </a>
-                </li>   
+                </li>
             </ul>
           </div>
         </div>

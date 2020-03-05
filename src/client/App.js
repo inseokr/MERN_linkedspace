@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './app.css';
-import ReactImage from './react.png';
-import CommonHeader from './CommonHeader';
-import LandingPage from './LandingPage';
-import ModalLoginForm from './ModalLoginForm';
+import CommonHeader from './components/Header/CommonHeader';
+import LandingPage from './container/LandingPage/LandingPage';
+import ModalLoginForm from './components/Login/ModalLoginForm';
+
 export default class App extends Component {
   state = { };
 
@@ -11,11 +11,12 @@ export default class App extends Component {
   }
 
   render() {
+    console.log("bruh");
     return (
       <div>
-        <CommonHeader />
-        <ModalLoginForm />
-        <LandingPage />
+        <CommonHeader/>
+        <ModalLoginForm/>
+        <LandingPage/>
       </div>
     );
   }

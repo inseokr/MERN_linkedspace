@@ -1,16 +1,16 @@
 <% include ../partials/header %>
 
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                             
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <link rel="stylesheet" href="/stylesheets/step_wizard.css">
 <link rel="stylesheet" href="/stylesheets/file_upload_v1.css">
 
 
 <div class="container" style="text-align: center; margin-bottom: 10px">
-  <h3>View/Edit Profile</h3>  
+  <h3>View/Edit Profile</h3>
 </div>
 
 <div class="container">
-  
+
   <form role="form" action="/profile/<%=user_info.user_id%>?_method=PUT" method="post">
     <div class="row setup-content" id="step-2" style="margin-top:30px;">
       <div class="col-md-6 offset-md-3">
@@ -83,7 +83,7 @@
           <!-- address -->
           <br>
           <hr>
-          <% var title = "Home Address"; %>
+          <% var title = "HomePage Address"; %>
           <% include ../partials/location %>
           <!-- birthdate -->
           <hr>
@@ -93,7 +93,7 @@
           <div class="flex-container" style="margin-top: 10px;">
               <div style="width: 30%">
               <select class="form-control" required="required" name="birthdate[month]" id="month" style="width:80%" placeholder="">
-                  <% 
+                  <%
                     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                     for (var cur_month=0; cur_month<12; cur_month++) {%>
                         <option value=<%=cur_month+1%>> <%=months[cur_month]%> </option>
@@ -103,7 +103,7 @@
 
               <div style="width: 30%">
               <select class="form-control" required="required" name="birthdate[date]" id="date" style="width:80%" placeholder="">
-                  <% 
+                  <%
                     for (var cur_day=1; cur_day<32; cur_day++) {%>
                         <option value=<%=cur_day%>> <%=cur_day%> </option>
                  <% } %>
@@ -114,9 +114,9 @@
                  <% var cur_year = new Date();
                      // age limitation
                      var minimum_age = 16;
-                     var max_age = 80; 
+                     var max_age = 80;
 
-                     var last_year       = cur_year.getFullYear() - minimum_age; 
+                     var last_year       = cur_year.getFullYear() - minimum_age;
                      var beginning_year  = cur_year.getFullYear() - max_age;
 
                      for (var year=beginning_year; year < last_year; year++) { %>
@@ -174,7 +174,7 @@
     {
       // DOM doesn't need to add "#"
       document.getElementById("male").checked = true;
-    } 
+    }
     else
     {
       $("#female").prop("checked", true);
@@ -195,7 +195,7 @@
      var picturePreviewId = document.getElementById("avatar-upload");
      picturePreviewId.style.display = "inline-block";
 
-    <%}%>    
+    <%}%>
 
   <%}%>
 </script>
