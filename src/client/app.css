@@ -1,3 +1,7 @@
+.navBarContainer {
+  padding-bottom: 70px;
+}
+
 span.fa-comment {
   position: relative;
   font-size: 1em;
