@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import './app.css';
-import ReactImage from './react.png';
-
+import '../../app.css';
 
 export default class LinkedSpaceHeader extends Component {
   state = { };

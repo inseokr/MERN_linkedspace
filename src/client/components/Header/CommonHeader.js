@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import './app.css';
-import ReactImage from './react.png';
+import '../../app.css';
 import LinkedSpaceHeader from './LinkedSpaceHeader';
-import NoLoginMenu from './NoLoginMenu';
-import LoginMenu from './LoginMenu';
+import NoLoginMenu from '../Login/NoLoginMenu';
+import LoginMenu from '../Login/LoginMenu';
 
 export default class CommonHeader extends Component {
-  
+
   constructor(props){
     super(props);
-    this.state = { 
+    this.state = {
       isUserLoggined: "false"
     }
   }
@@ -26,10 +25,10 @@ export default class CommonHeader extends Component {
 
   render() {
 
-    console.log("User Loggin status  = " + this.state.isUserLoggined);
+    console.log("User Login Status: ", this.state.isUserLogged);
 
     return (
-        <div className="CommonHeader">
+        <div className="navBarContainer">
           <LinkedSpaceHeader />
           { this.state.isUserLoggined=="true" 
             ? <LoginMenu />

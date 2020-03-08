@@ -1,0 +1,34 @@
+.loader {
+    margin: 100px auto auto;
+    border: 16px solid gray;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation: coloredspin 4s linear infinite;
+}
+
+@keyframes coloredspin {
+    0%{
+        transform: rotate(0deg) scale(1);
+        border-top-color: gray;
+        border-bottom-color: gray;
+    }
+    25%{
+        border-top-color: whitesmoke;
+        border-bottom-color: whitesmoke;
+    }
+    50%{
+        transform: rotate(360deg) scale(1.05);
+        border-top-color: gray;
+        border-bottom-color: gray;
+    }
+    75%{
+        border-top-color: whitesmoke;
+        border-bottom-color: whitesmoke;
+    }
+    100%{
+        transform: rotate(720deg) scale(1);
+        border-top-color: gray;
+        border-bottom-color: gray;
+    }
+}

@@ -1,16 +1,16 @@
 <% include ../../partials/header %>
 
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                             
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <link rel="stylesheet" href="/stylesheets/step_wizard.css">
 <link rel="stylesheet" href="/stylesheets/file_upload_v1.css">
 
 
 <div class="container" style="text-align: center; margin-bottom: 10px">
-  <h3>Posting Rental Request</h3>  
+  <h3>Posting Rental Request</h3>
 </div>
 
 <div class="container">
-  
+
 <div class="stepwizard offset-md-3">
     <div class="stepwizard-row setup-panel">
       <div class="stepwizard-step">
@@ -24,7 +24,7 @@
       </div>
     </div>
   </div>
-  
+
   <form role="form" action="/listing/tenant/<%=listing_info.listing_id%>?_method=PUT" method="post">
     <div class="row setup-content" id="step-2" style="margin-top:30px;">
       <div class="col-md-6 offset-md-3">
@@ -32,14 +32,14 @@
           <div style="text-align:center">
             <h5>Finalize your rental request</h5>
           </div>
-          <hr>          
+          <hr>
           <!-- Tell me more about you and this rental request-->
           <div class="form-group" style="margin-top: 10px;">
             <div style="text-align:center"> <h6>Tell me more about this rental request and yourself</h6> </div>
             <textarea type="text" class="form-control" rows="5" name="rental_description" id="rental_description" placeholder=""> </textarea>
             <small id="descriptionHelp" class="form-text text-muted" style="text-align:center !important;">This information will be used to find better rental options.</small>
           </div>
-          
+
           <hr>
 
           <!-- upload profile photos -->
@@ -94,13 +94,13 @@
                       <option value="2">2</option>
                       <option value="3">3</option>
                       <option value="4">4</option>
-                    </select>         
+                    </select>
                   <div id="roommate_ids" style="display:none">
                     <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_0" value="" placeholder="User ID of roommate#0">
                     <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_1" value="" placeholder="User ID of roommate#1">
                     <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_2" value="" placeholder="User ID of roommate#2">
-                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_3" value="" placeholder="User ID of roommate#3">  
-                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_4" value="" placeholder="User ID of roommate#4">  
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_3" value="" placeholder="User ID of roommate#3">
+                    <input type="text" class="form-control roommate-multiple-entries" style="display:none" id="roommate_4" value="" placeholder="User ID of roommate#4">
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@
   var numOfRoommateRequested = <%=listing_info.listing.num_of_requested_roommates%>;
   console.log("num_of_requested_roommates=" + numOfRoommateRequested);
 
-  
+
   $('#phone').val("<%=listing_info.listing.phone%>");
   $('#email').val("<%=listing_info.listing.email%>");
 
@@ -248,10 +248,10 @@ function handleClickNumOfRoommate() {
     if(curRoomMateIndex<=numOfRoommates)
     {
       console.log("block");
-      userId.style.display = "block"; 
+      userId.style.display = "block";
     } else {
       console.log("none");
-      userId.style.display = "none";       
+      userId.style.display = "none";
     }
   }
 

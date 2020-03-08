@@ -30,7 +30,7 @@ var TenantRequestSchema = new mongoose.Schema({
     num_of_profile_picture_uploaded: {type: Number, default: 0},
 
     profile_pictures: [
-      { 
+      {
         path: String,
         caption: String
       }
@@ -40,12 +40,12 @@ var TenantRequestSchema = new mongoose.Schema({
     // 1. Being reviewed by middlemen or landlord
     // 2. Connected with at least with one landlord
     // 3. In the middle of negotiation
-    // 4. Transaction completed 
+    // 4. Transaction completed
     state: Number,
 
   	// list of landlords or middlemen helping this requests
   	request_responses: [
-  	 { 
+  	 {
         responder: {
       	 	id: {
              	type: mongoose.Schema.Types.ObjectId,
@@ -61,11 +61,11 @@ var TenantRequestSchema = new mongoose.Schema({
           },
           // TBD...
           // 1: middlemen
-          // 
+          //
           // 2: landlord
           state: Number
         }
-      }  
+      }
   	],
 
   	// rental location
@@ -76,6 +76,10 @@ var TenantRequestSchema = new mongoose.Schema({
   		country: String,
   		zipcode: Number
   	},
+    coordinates: {
+	    lat: Number,
+      lng: Number
+    },
   	// move in date
   	move_in_date: {
   		month: String,
@@ -84,7 +88,7 @@ var TenantRequestSchema = new mongoose.Schema({
   	},
   	// rental duration in months
   	rental_duration: Number,
-    
+
     // maximum range from the desired location
   	maximum_range_in_miles: Number,
 
@@ -92,8 +96,8 @@ var TenantRequestSchema = new mongoose.Schema({
   	rental_budget: Number,
 
   	rental_preferences: {
-  		furnished: { type: String, default: 'off' }, 
-      	kitchen: { type: String, default: 'off' }, 
+  		furnished: { type: String, default: 'off' },
+      	kitchen: { type: String, default: 'off' },
   		parking: { type: String, default: 'off' },
   		laundry: { type: String, default: 'off' },
   		internet: { type: String, default: 'off' },
@@ -115,7 +119,7 @@ var TenantRequestSchema = new mongoose.Schema({
     roommate_request: String,
     num_of_requested_roommates: { type: Number, default: 0},
 
-    // already have roomnates?2
+    // already have roommates?
     group_rental: String,
     num_of_roommates: { type: Number, default: 0},
 

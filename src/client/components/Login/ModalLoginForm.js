@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import './app.css';
+import '../../app.css';
 
 var modalContentStyle = {
 	width: '300px !important'
@@ -46,12 +46,12 @@ export default class ModalLoginForm extends Component {
   render() {
     return (
     	<>
-		<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">	  
-		  
+		<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">
+
 		  <div class="modal-dialog" role="document">
 
 		  	<div class="modal-content" style={modalContentStyle}>
-		  	
+
 
 			  <div class="modal-header text-center">
 		        <h4 class="modal-title w-100 ariweight-bold" font-ss="close" data-dismiss="modal" style={modalTitleStyle}>LinkedSpaces</h4>
@@ -68,7 +68,7 @@ export default class ModalLoginForm extends Component {
 		      <form action="/login" method="POST" role="form">
 
 		      	<div class="modal-body form-group">
-			        
+
 			        <div class="md-form mb-5 form-group" style={mdFormBottom}>
 			        	<div class="input-group">
 			          		<input type="text" class="form-control validate" name="username"/>
@@ -100,7 +100,7 @@ export default class ModalLoginForm extends Component {
 		        </div>
 
 			  </form>
-		    </div>		 
+		    </div>
 
 		  </div>
 
