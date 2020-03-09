@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../../app.css';
+import Search from "../../container/SearchPage/SearchPage"
 
 export default class NoLoginMenu extends Component {
   state = { };

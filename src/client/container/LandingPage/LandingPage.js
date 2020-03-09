@@ -3,6 +3,7 @@ import '../../app.css';
 import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from "../MapPage/index"
+import Search from "../SearchPage/SearchPage"
 
 import {
 	BrowserRouter as Router,
@@ -40,6 +41,10 @@ export default class LandingPage extends Component {
 		loggedIn : "yes"
 	};
 
+	 constructor(props) {
+	  	super(props);
+	 }
+
 	componentWillMount() {
 		console.log("componentWillMount is called!");
 		fetch('/getLastMenu')
@@ -56,6 +61,7 @@ export default class LandingPage extends Component {
 	}
 
 	render() {
+
 		const {lastMenu} = this.state;
 		let pageToRender = <></>;
 		if (lastMenu === "map") {
@@ -73,8 +79,14 @@ export default class LandingPage extends Component {
 								<h1> LinkedSpaces</h1>
 								<h3> Make your next move through a trusted network. </h3>
 								
-								<a href="/" class="btn btn-default btn-lg"><i class="fa fa-search"/> Find
-									your home away from home</a>
+								<Router>
+								<Search />
+								<Switch>
+									<Route exact path="/Map">
+										<Map />
+									</Route>
+								</Switch>
+								</Router>
 							</div>
 						</div>
 					</div>

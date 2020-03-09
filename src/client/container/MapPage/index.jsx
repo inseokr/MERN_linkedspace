@@ -67,6 +67,9 @@ class LandingPage extends Component {
     };
 
     componentDidMount() {
+
+        console.log("Map page is called");
+        
         this.getListInformation()
            .then(response => this.setState({data: response}));
     }

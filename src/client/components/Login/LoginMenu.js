@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../../app.css';
+import Search from "../../container/SearchPage/SearchPage"
 
 export default class LoginMenu extends Component {
   state = { };
@@ -17,6 +18,7 @@ export default class LoginMenu extends Component {
           </button>
           <div class="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
             <a class="navbar-brand" href="/">LinkedSpaces</a>
+            
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                   <a class="nav-link" href="/mynetwork">
@@ -26,6 +28,7 @@ export default class LoginMenu extends Component {
                   </a>
                 </li>
 
+                <li class="nav-item"><a class="nav-link" href="/Map">Map</a></li>
                 <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
                 <li class="nav-item"><a class="nav-link" href="/listing/tenant/show">My Active Listing</a></li>
                 <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>

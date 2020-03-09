@@ -7,11 +7,15 @@ import ModalLoginForm from './components/Login/ModalLoginForm';
 export default class App extends Component {
   state = { };
 
+  constructor(props) {
+    super(props);
+  }
+
   componentDidMount() {
   }
 
   render() {
-    console.log("bruh");
+
     return (
       <div>
         <CommonHeader/>
