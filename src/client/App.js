@@ -12,6 +12,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
+    document.title = 'LinkedSpaces';
   }
 
   render() {

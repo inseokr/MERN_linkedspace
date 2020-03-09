@@ -1,3 +1,20 @@
-.SearchTextBox {
-	margin-right: 5px;
+.searchIcon {
+	margin-right: 10px;
+	color: white;
+}
+
+.searchInput {
+	background-color: transparent;
+    border-style: none none solid none;
+    color: white;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+input:focus { 
+    outline: none !important;
+    border-style: none none solid none;
 }

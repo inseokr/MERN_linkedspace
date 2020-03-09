@@ -49,8 +49,8 @@ render() {
      return (
       <div>
           <form class="btn btn-default btn-lg"> 
-              <i class="fa fa-search SearchTextBox"/>
-              <input
+              <i class="fa fa-search searchIcon"/>
+              <input class="searchInput"
                placeholder="City, State, Country"
                ref={input => this.search = input}
                onKeyDown={this.handleKeyDown}
