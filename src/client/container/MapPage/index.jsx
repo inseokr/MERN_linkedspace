@@ -8,8 +8,6 @@ import Box from '@material-ui/core/Box'
 import ListingInfo from "./ListingInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import Geocoder from 'react-native-geocoding';
-Geocoder.init("AIzaSyCxRamqYhHGxnWvDIAzGBKuVpU-HCa-EHg");
 
 
 class LandingPage extends Component {
@@ -52,7 +50,7 @@ class LandingPage extends Component {
         for (let listing of listings) {
             let listingFormatted = {...listing};
             let address = listing.location.street + ", " + listing.location.city + ", " + listing.location.state + ", " + listing.location.zipcode + ", " + listing.location.country;
-            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "AIzaSyCxRamqYhHGxnWvDIAzGBKuVpU-HCa-EHg")
+            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "")
               .then((response) => response.json())
               .then((responseJson) => {
                   let coordinates = responseJson.results[0].geometry.location;
