@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+import {SearchContext} from "../../contexts/SearchContext";
 
 import {
   BrowserRouter as Router,
@@ -13,6 +13,8 @@ import "./SearchPage.css";
 
 export default class Search extends Component {
 
+ static contextType = SearchContext;
+
  constructor(props) {
   super(props);
   this.state = { query: '', EnterKeyPressed: false };
@@ -22,9 +24,14 @@ export default class Search extends Component {
  }
 
 handleInputChange = () => {
+
+   const {changeSearch} = this.context;
+
    this.setState({
      query: this.search.value
    })
+   
+   //changeSearch(this.search.value);
 }
 
 handleKeyDown = (e) => {

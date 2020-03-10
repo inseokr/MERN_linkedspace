@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import '../../app.css';
 import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
-import Map from "../MapPage/index"
-import Search from "../SearchPage/SearchPage"
+import Map from "../MapPage/index";
+import Search from "../SearchPage/SearchPage";
+import {SearchContext} from "../../contexts/SearchContext";
 
 import {
 	BrowserRouter as Router,
@@ -35,6 +36,9 @@ function About() {
 }
 
 export default class LandingPage extends Component {
+	// <note> can we have multiple contexts?
+	static contextType = SearchContext;
+
 	state = {
 		lastMenu : "",
 		fetchedMenu: false,
@@ -46,7 +50,6 @@ export default class LandingPage extends Component {
 	 }
 
 	componentWillMount() {
-		console.log("componentWillMount is called!");
 		fetch('/getLastMenu')
 			.then(res => res.json())
 			.then(menuFromExpress => {
@@ -57,7 +60,8 @@ export default class LandingPage extends Component {
 	}
 
 	componentDidMount() {
-		console.log("componentDidMount is called");
+		const {search} = this.context;
+		console.log("LandingPage is loaded. search = " + search);
 	}
 
 	render() {

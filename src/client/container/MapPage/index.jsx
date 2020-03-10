@@ -9,7 +9,7 @@ import ListingInfo from "./ListingInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import Geocoder from 'react-native-geocoding';
-Geocoder.init("AIzaSyAz5LGq4rf38Sav2MY_H9Nzl4aGm45jz3E");
+Geocoder.init("AIzaSyCxRamqYhHGxnWvDIAzGBKuVpU-HCa-EHg");
 
 
 class LandingPage extends Component {
@@ -52,7 +52,7 @@ class LandingPage extends Component {
         for (let listing of listings) {
             let listingFormatted = {...listing};
             let address = listing.location.street + ", " + listing.location.city + ", " + listing.location.state + ", " + listing.location.zipcode + ", " + listing.location.country;
-            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "AIzaSyAz5LGq4rf38Sav2MY_H9Nzl4aGm45jz3E")
+            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "AIzaSyCxRamqYhHGxnWvDIAzGBKuVpU-HCa-EHg")
               .then((response) => response.json())
               .then((responseJson) => {
                   let coordinates = responseJson.results[0].geometry.location;
@@ -69,7 +69,7 @@ class LandingPage extends Component {
     componentDidMount() {
 
         console.log("Map page is called");
-        
+
         this.getListInformation()
            .then(response => this.setState({data: response}));
     }

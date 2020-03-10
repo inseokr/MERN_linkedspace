@@ -4,6 +4,8 @@ import CommonHeader from './components/Header/CommonHeader';
 import LandingPage from './container/LandingPage/LandingPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 
+import { SearchProvider } from './contexts/SearchContext';
+
 export default class App extends Component {
   state = { };
 
@@ -18,11 +20,11 @@ export default class App extends Component {
   render() {
 
     return (
-      <div>
+      <SearchProvider>
         <CommonHeader/>
         <ModalLoginForm/>
         <LandingPage/>
-      </div>
+      </SearchProvider>
     );
   }
 }
