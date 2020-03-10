@@ -3,8 +3,6 @@ import GoogleMapReact from 'google-map-react'
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import list from 'less/lib/less/functions/list';
-import Geocoder from 'react-native-geocoding';
-Geocoder.init("AIzaSyAz5LGq4rf38Sav2MY_H9Nzl4aGm45jz3E");
 
 const wrapperStyles = {
     width: "100%",
@@ -58,7 +56,7 @@ class MapView extends Component {
         return (
             <div style={{ height: '100vh', width: '100%' }}>
                 <GoogleMapReact
-                    bootstrapURLKeys={{ key: "AIzaSyAz5LGq4rf38Sav2MY_H9Nzl4aGm45jz3E" }}
+                    bootstrapURLKeys={{ key: "" }}
                     center={center}
                     zoom={zoom}
                 >
