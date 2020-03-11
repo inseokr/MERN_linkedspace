@@ -8,9 +8,12 @@ import Box from '@material-ui/core/Box'
 import ListingInfo from "./ListingInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-
+import {SearchContext} from "../../contexts/SearchContext";
 
 class LandingPage extends Component {
+    
+    static contextType = SearchContext;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -67,6 +70,10 @@ class LandingPage extends Component {
     componentDidMount() {
 
         console.log("Map page is called");
+
+        const {search} = this.context;
+
+        console.log("MapPage is loaded. search = " + search);
 
         this.getListInformation()
            .then(response => this.setState({data: response}));
