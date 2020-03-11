@@ -3,7 +3,15 @@ import './app.css';
 import CommonHeader from './components/Header/CommonHeader';
 import LandingPage from './container/LandingPage/LandingPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
+import Map from "./container/MapPage/index";
 
+import {
+  BrowserRouter as Router,
+  Switch,
+  Link
+} from "react-router-dom";
+
+import {Redirect, Route} from 'react-router'
 import { SearchProvider } from './contexts/SearchContext';
 
 export default class App extends Component {
@@ -23,7 +31,16 @@ export default class App extends Component {
       <SearchProvider>
         <CommonHeader/>
         <ModalLoginForm/>
-        <LandingPage/>
+        <Router>
+            <Switch>
+              <Route exact path="/Map">
+                <Map />
+              </Route>
+              <Route exact path="/">
+                <LandingPage />
+              </Route>
+            </Switch>
+        </Router>
       </SearchProvider>
     );
   }

@@ -56,7 +56,7 @@ class MapView extends Component {
         return (
             <div style={{ height: '100vh', width: '100%' }}>
                 <GoogleMapReact
-                    bootstrapURLKeys={{ key: "" }}
+                    bootstrapURLKeys={{ key: "AIzaSyCxRamqYhHGxnWvDIAzGBKuVpU-HCa-EHg" }}
                     center={center}
                     zoom={zoom}
                 >

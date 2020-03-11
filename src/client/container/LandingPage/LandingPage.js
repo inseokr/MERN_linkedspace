@@ -6,14 +6,6 @@ import Map from "../MapPage/index";
 import Search from "../SearchPage/SearchPage";
 import {SearchContext} from "../../contexts/SearchContext";
 
-import {
-	BrowserRouter as Router,
-	Switch,
-	Link
-} from "react-router-dom";
-
-import {Redirect, Route} from 'react-router'
-
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
 //
@@ -25,15 +17,6 @@ import {Redirect, Route} from 'react-router'
 
 // You can think of these components as "pages"
 // in your app.
-
-function About() {
-	console.log("About function is called");
-	return (
-		<div>
-			<h2>About</h2>
-		</div>
-	);
-}
 
 export default class LandingPage extends Component {
 	// <note> can we have multiple contexts?
@@ -82,15 +65,7 @@ export default class LandingPage extends Component {
 							<div className="content">
 								<h1> LinkedSpaces</h1>
 								<h3> Make your next move through a trusted network. </h3>
-								
-								<Router>
 								<Search />
-								<Switch>
-									<Route exact path="/Map">
-										<Map />
-									</Route>
-								</Switch>
-								</Router>
 							</div>
 						</div>
 					</div>

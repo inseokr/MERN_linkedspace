@@ -27,8 +27,6 @@ export default class LoginMenu extends Component {
                       <span class="num">2</span>
                   </a>
                 </li>
-
-                <li class="nav-item"><a class="nav-link" href="/Map">Map</a></li>
                 <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
                 <li class="nav-item"><a class="nav-link" href="/listing/tenant/show">My Active Listing</a></li>
                 <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>

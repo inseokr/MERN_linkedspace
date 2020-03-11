@@ -50,7 +50,7 @@ class LandingPage extends Component {
         for (let listing of listings) {
             let listingFormatted = {...listing};
             let address = listing.location.street + ", " + listing.location.city + ", " + listing.location.state + ", " + listing.location.zipcode + ", " + listing.location.country;
-            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "")
+            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "AIzaSyCxRamqYhHGxnWvDIAzGBKuVpU-HCa-EHg")
               .then((response) => response.json())
               .then((responseJson) => {
                   let coordinates = responseJson.results[0].geometry.location;
