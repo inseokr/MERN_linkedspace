@@ -1,0 +1,222 @@
+.marginBottom {
+	margin-bottom: 5px;
+}
+
+.marginTop {
+	margin-top: 5px;
+}
+
+.GeneralChatMainWrapper {
+	display: grid;
+	grid-template-columns: repeat(12,1fr);
+	grid-gap: 0.1em;
+	border-width: 0.1px;
+}
+
+.GeneralChatMainWrapper > div {
+	padding: 0.2em;
+}
+
+.GeneralChatMainWrapper > div:nth-child(odd){
+}
+
+.MessageLeftPanel {
+	grid-column: 4/6;
+	display: flex;
+	flex-flow: column;
+	height: 100vh;		
+	border-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+	background-color: white;
+	margin: none;
+}
+
+.MessageRightPanel {
+	grid-column: 6/10;
+	display: flex;
+	flex-flow: column;
+	height: 100vh;
+	border-width: thin;
+	background-color: white;
+	border-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+}
+
+.MessageHeader_ls{
+	height: 40px;
+	border-bottom-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+
+.SearchMessageBox{
+	height: 40px;
+	padding-top:2px;
+	padding-bottom:2px;
+	border-bottom-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+}
+
+
+
+.SenderProfileSummary{
+	height: 40px;
+	border-bottom-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+
+.ChattingWindow{
+	flex-grow: 1;
+	overflow-y: scroll;
+	padding-top:2px;
+	padding-bottom:2px;
+	border-bottom-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+}
+
+.WriteMessageWindow{
+	height: 100px;
+}
+
+.speech-bubble-right {
+	position: relative;
+	background: rgba(0,0,0,.075);
+	border-radius: .4em;
+	border-color: #E8E8E8;
+	width: 70%;
+	min-height: 100px;
+	float: left;
+	text-align: center;
+}
+
+.speech-bubble-right:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-left-color: rgba(0,0,0,.075);
+	border-right: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-right: -20px;
+}
+
+.speech-bubble-left {
+	position: relative;
+	background: #F3F9F8;
+	border-radius: .4em;
+	width: 70%;
+	min-height: 100px;
+	float: right;
+	text-align: center;
+}
+
+.speech-bubble-left:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-right-color:#F3F9F8;
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-left: -20px;
+}
+
+.MessageTimeStamp {
+	position: absolute;
+	bottom: 5px;
+	left:5px;
+	color: #A52A2A;
+}
+
+.MessageContents {
+	color: #A52A2A;
+}
+
+.MessageContactList{
+	overflow-y: scroll;
+	flex-grow: 1;
+	padding-top: 2px;
+	margin-left: -3px;
+}
+
+.ProfilePicture {
+	grid-column: 1/2;
+	grid-row: 1/4;
+	padding-left: 2px;
+}
+
+.ProfileName {
+	grid-column: 2/4;
+	grid-row: 1/2;
+	padding-left: 10px;
+}
+
+.TimeStamp {
+	grid-column: 4/5;
+	grid-row: 1/2;
+}
+
+.MessageSummary {
+	grid-column: 2/5;
+	grid-row: 2/4;
+	padding-left: 10px;
+}
+
+.ContactSummary {
+	display: grid;
+	grid-template-columns: 1fr 2fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
+	height:100px;
+
+	border-bottom-style: solid;
+	border-color: #E8E8E8;
+	border-width: thin;
+
+	padding-top: 2px;
+}
+
+.ContactSummaryClicked {
+	display: grid;
+	grid-template-columns: 1fr 2fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
+	height:100px;
+
+	background-color: #F3F9F8;
+	border-left-style: solid;
+	border-left-color: brown;
+	border-left-width: 5px;
+
+	padding-top: 2px;
+}
+
+.imgFitToGrid {
+	object-fit: cover !important;
+	width: 100% !important;
+}
+
+.imgMsgBox {
+	object-fit: cover !important;
+	width: 100px;
+	margin: 20px;
+}
+
+.ChattingMessageBoxWrapper {
+	display: flex;
+}
