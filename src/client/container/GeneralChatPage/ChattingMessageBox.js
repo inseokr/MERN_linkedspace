@@ -7,10 +7,10 @@ function ChattingMessageBox(props) {
     if(props.msg_direction=="0")
     {
       return (
-        <div className="ChattingMessageBoxWrapper">
+        <div className="ChattingMessageBoxWrapper AlignToLeft">
             
             <div className="ProfilePicture">
-                <img className="center rounded-circle imgMsgBox" src={props.profile_picture} alt="myFriend" />
+                <img className="center rounded-circle imgLeftMsgBox" src={props.profile_picture} alt="myFriend" />
             </div>
 
             <div className="speech-bubble-left marginTop marginBottom">
@@ -28,7 +28,11 @@ function ChattingMessageBox(props) {
     else 
     {
       return (
-        <div className="ChattingMessageBoxWrapper">
+        <div className="ChattingMessageBoxWrapper AlignToRight">
+
+            <div className="ProfilePicture">
+                <img className="center rounded-circle imgRightMsgBox" src={props.profile_picture} alt="myFriend" />
+            </div>
 
             <div className="speech-bubble-right marginTop marginBottom">
                 <div className="MessageContents">
@@ -37,10 +41,6 @@ function ChattingMessageBox(props) {
                 <div className="MessageTimeStamp">
                     {props.timestamp}
                 </div>
-            </div>
-            
-            <div className="ProfilePicture">
-                <img className="center rounded-circle imgMsgBox" src={props.profile_picture} alt="myFriend" />
             </div>
         </div>
       );

@@ -95,7 +95,7 @@
 	background: rgba(0,0,0,.075);
 	border-radius: .4em;
 	border-color: #E8E8E8;
-	width: 70%;
+	width: 85%;
 	min-height: 100px;
 	float: right;
 	text-align: left;
@@ -105,15 +105,14 @@
 .speech-bubble-right:after {
 	content: '';
 	position: absolute;
-	right: 0;
-	top: 50%;
+	top: 0;
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
 	border-left-color: rgba(0,0,0,.075);
 	border-right: 0;
 	border-bottom: 0;
-	margin-top: -10px;
+	margin-top: -20px;
 	margin-right: -20px;
 }
 
@@ -121,7 +120,7 @@
 	position: relative;
 	background: #F3F9F8;
 	border-radius: .4em;
-	width: 70%;
+	width: 85%;
 	min-height: 100px;
 	float: right;
 	text-align: left;
@@ -131,16 +130,15 @@
 .speech-bubble-left:after {
 	content: '';
 	position: absolute;
-	left: 0;
-	top: 50%;
+	top: 0;
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
 	border-right-color:#F3F9F8;
 	border-left: 0;
 	border-bottom: 0;
-	margin-top: -10px;
-	margin-left: -20px;
+	margin-top: -20px;
+	margin-left: 90%;
 }
 
 .MessageTimeStamp {
@@ -152,6 +150,9 @@
 
 .MessageContents {
 	color: rgb(72, 72, 72) !important;
+	padding-top: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
 .MessageContactList{
@@ -216,15 +217,35 @@
 	width: 100% !important;
 }
 
-.imgMsgBox {
+.imgLeftMsgBox {
 	object-fit: cover !important;
 	width: 60px;
 	margin: 20px;
+	margin-left: 75%;
+	margin-bottom: 15px;
+}
+
+.imgRightMsgBox {
+	object-fit: cover !important;
+	width: 60px;
+	margin: 20px;
+	margin-left: -20px;
+	margin-bottom: 15px;
+}
+
+.AlignToLeft {
+	padding-left: 20% !important;
+	margin-right: -10% !important;
+}
+
+.AlignToRight {
+	padding-left: 5% !important;
 }
 
 .ChattingMessageBoxWrapper {
 	display: flex;
 	padding-left: 50px;
+	flex-direction: column;
 }
 
 .ChatPartyName {
