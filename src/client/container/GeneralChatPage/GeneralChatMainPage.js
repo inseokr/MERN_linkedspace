@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../../app.css';
 import Home from '../HomePage/Home';
 import Search from '../SearchPage/SearchPage';
-import { SearchContext } from '../../contexts/SearchContext';
+import { MessageContextProvider } from "../../contexts/MessageContext";
 
 import GeneralChatHeader from './GeneralChatHeader';
 import SearchMessageBox from './SearchMessageBox';
@@ -12,6 +12,7 @@ import ChattingWindow from './ChattingWindow';
 import WriteChat from './WriteChat';
 
 import './GeneralChatMainPage.css'
+
 
 function GeneralChatMainPage() {
 
@@ -29,17 +30,19 @@ function GeneralChatMainPage() {
             </div>
         </div>
 
-        <div className="MessageRightPanel">
-            <div className="SenderProfileSummary">
-                <ChatPartySummary />
+        < MessageContextProvider >
+            <div className="MessageRightPanel">
+                <div className="SenderProfileSummary">
+                    <ChatPartySummary />
+                </div>
+                <div className="ChattingWindow">
+                    <ChattingWindow />
+                </div>
+                <div className="WriteMessageWindow">
+                    <WriteChat />
+                </div>
             </div>
-            <div className="ChattingWindow">
-                <ChattingWindow />
-            </div>
-            <div className="WriteMessageWindow">
-                <WriteChat />
-            </div>
-        </div>
+        </MessageContextProvider>
     </div>
   );
 }

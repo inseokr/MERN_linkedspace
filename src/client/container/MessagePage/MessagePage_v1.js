@@ -4,7 +4,6 @@ import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from '../MapPage/index';
 import Search from '../SearchPage/SearchPage';
-import { SearchContext } from '../../contexts/SearchContext';
 import MessageHeader from './MessageHeader';
 import MessageSummaryPanel from './MessageSummaryPanel';
 import './MessagePage_v1.css'

@@ -6,7 +6,8 @@ function SearchMessageBox() {
 
   return (
     <>
-        Search messages
+    	<i className="fa fa-search searchIcon"/>
+        <div className="searchLabel"> Search messages </div>
     </>
   );
 }

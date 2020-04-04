@@ -11,6 +11,9 @@
 	grid-template-columns: repeat(12,1fr);
 	grid-gap: 0.1em;
 	border-width: 0.1px;
+	border-style: solid hidden;
+	margin-top: 5px;
+	border-color: #adb5bd;
 }
 
 .GeneralChatMainWrapper > div {
@@ -26,7 +29,7 @@
 	flex-flow: column;
 	height: 100vh;		
 	border-style: solid;
-	border-color: #E8E8E8;
+	border-color: #adb5bd;
 	border-width: thin;
 	background-color: white;
 	margin: none;
@@ -40,17 +43,29 @@
 	border-width: thin;
 	background-color: white;
 	border-style: solid;
-	border-color: #E8E8E8;
+	border-color: #adb5bd;
 	border-width: thin;
 }
 
 .MessageHeader_ls{
 	height: 40px;
 	border-bottom-style: solid;
-	border-color: #E8E8E8;
+	border-color: inherit;
 	border-width: thin;
 	padding-top:2px;
 	padding-bottom:2px;
+
+	display: flex;
+	justify-content: space-between;
+}	
+
+.MessageHeaderLabel {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.MessageEditIcon {
+	color: #a52a2a;
 }
 
 .SearchMessageBox{
@@ -58,20 +73,31 @@
 	padding-top:2px;
 	padding-bottom:2px;
 	border-bottom-style: solid;
-	border-color: #E8E8E8;
+	border-color: inherit;
 	border-width: thin;
+
+	display: flex;
 }
 
+.searchIcon {
+	margin-right: 10px;
+	color: #adb5bd;
+	margin-top: 8px;
+	margin-left: 8px;
+}
 
+.searchLabel {
+	margin-top: 5px;
+
+}
 
 .SenderProfileSummary{
 	height: 40px;
 	border-bottom-style: solid;
-	border-color: #E8E8E8;
+	border-color: inherit;
 	border-width: thin;
 	padding-top:2px;
 	padding-bottom:2px;
-
 	display: flex;
 	flex-direction: row;
 }
@@ -82,19 +108,28 @@
 	padding-top:2px;
 	padding-bottom:2px;
 	border-bottom-style: solid;
-	border-color: #E8E8E8;
+	border-color: inherit;
 	border-width: thin;
 }
 
 .WriteMessageWindow{
-	height: 100px;
+	height: 80px;
+	display: flex;
+	margin-bottom:15px;
+}
+
+
+.WriteMessageBox{
+	margin-left: 5px;
+	width: 90%;
+	padding: 2px 5px;
 }
 
 .speech-bubble-right {
 	position: relative;
-	background: rgba(0,0,0,.075);
+	background: #dee2e6;
 	border-radius: .4em;
-	border-color: #E8E8E8;
+	border-color: inherit;
 	width: 85%;
 	min-height: 100px;
 	float: right;
@@ -109,7 +144,7 @@
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
-	border-left-color: rgba(0,0,0,.075);
+	border-left-color: #dee2e6;
 	border-right: 0;
 	border-bottom: 0;
 	margin-top: -20px;
@@ -118,9 +153,9 @@
 
 .speech-bubble-left {
 	position: relative;
-	background: #F3F9F8;
+	background: #cdd6e0;
 	border-radius: .4em;
-	width: 85%;
+	width: 93%;
 	min-height: 100px;
 	float: right;
 	text-align: left;
@@ -134,7 +169,7 @@
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
-	border-right-color:#F3F9F8;
+	border-right-color:#cdd6e0;
 	border-left: 0;
 	border-bottom: 0;
 	margin-top: -20px;
@@ -190,11 +225,6 @@
 	grid-template-columns: 1fr 2fr 1fr;
 	grid-template-rows: 1fr 1fr 1fr;
 	height:100px;
-
-	border-bottom-style: solid;
-	border-color: #E8E8E8;
-	border-width: thin;
-
 	padding-top: 2px;
 }
 
@@ -204,9 +234,9 @@
 	grid-template-rows: 1fr 1fr 1fr;
 	height:100px;
 
-	background-color: #F3F9F8;
+	background-color: #b0becc;
 	border-left-style: solid;
-	border-left-color: brown;
+	border-left-color: #115399;
 	border-left-width: 5px;
 
 	padding-top: 2px;
@@ -221,7 +251,7 @@
 	object-fit: cover !important;
 	width: 60px;
 	margin: 20px;
-	margin-left: 75%;
+	margin-left: 83%;
 	margin-bottom: 15px;
 }
 
@@ -235,7 +265,7 @@
 
 .AlignToLeft {
 	padding-left: 20% !important;
-	margin-right: -10% !important;
+	margin-right: 0% !important;
 }
 
 .AlignToRight {
@@ -272,4 +302,30 @@
     width: 15px;
     margin-left: 70px;
     margin-top: 5px;
+}
+
+.FileAttachIcon {
+	height: 24px; 
+	width: 24px; 
+	display: block; 
+	fill: currentcolor;
+	margin-top: 10px;
+	color: #a52a2a;
+}
+
+#ChattingMessage {
+	width: 100%;
+	white-space: pre-wrap;
+	border-style: solid !important;
+	border-color: #adb5bd;
+	border-width: thin;
+	resize: none;
+	height: 80px;
+	margin-top:8px;
+}
+
+#ChattingMessage:focus {
+	border-style: solid !important;
+	border-color: gray;
+	border-width: 0.1rem;
 }

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './MessagePage.css';
 import '../../app.css';
 import Search from '../SearchPage/SearchPage';
-import { SearchContext } from '../../contexts/SearchContext';
 import MessageSummary from '../../components/Message/MessageSummary';
 
 import myFriend1 from '../../../assets/images/Peter.jpg';
@@ -30,9 +29,6 @@ function MessageSummaryPanel() {
     msg_summary: 'Hello My friend, here comes the new listing for you.'
   };
   msg3.img_src = myFriend3;
-
-
-  console.log("ISEO: msg1.img_src = " + msg1.img_src);
 
   return (
     <div>
