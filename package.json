@@ -22,7 +22,9 @@
     "react-native-geocoding": "^0.4.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "react-search-box": "^2.0.2"
+    "react-search-box": "^2.0.2",
+    "react-sound": "^1.2.0",
+    "websocket": "^1.0.31"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

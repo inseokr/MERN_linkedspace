@@ -12,7 +12,7 @@
 	grid-gap: 0.1em;
 	border-width: 0.1px;
 	border-style: solid hidden;
-	margin-top: 5px;
+	margin-top: 2px;
 	border-color: #adb5bd;
 }
 
@@ -27,7 +27,7 @@
 	grid-column: 4/6;
 	display: flex;
 	flex-flow: column;
-	height: 100vh;		
+	height: 90vh;
 	border-style: solid;
 	border-color: #adb5bd;
 	border-width: thin;
@@ -39,7 +39,7 @@
 	grid-column: 6/10;
 	display: flex;
 	flex-flow: column;
-	height: 100vh;
+	height: 90vh;
 	border-width: thin;
 	background-color: white;
 	border-style: solid;
@@ -131,10 +131,10 @@
 	border-radius: .4em;
 	border-color: inherit;
 	width: 85%;
-	min-height: 100px;
+	min-height: 50px;
 	float: right;
 	text-align: left;
-	padding: 10px 10px 40px 10px;
+	padding: 0px 10px 30px 10px;
 }
 
 .speech-bubble-right:after {
@@ -156,10 +156,10 @@
 	background: #cdd6e0;
 	border-radius: .4em;
 	width: 93%;
-	min-height: 100px;
+	min-height: 50px;
 	float: right;
 	text-align: left;
-	padding: 10px 10px 40px 10px;
+	padding: 0px 10px 30px 10px;
 }
 
 .speech-bubble-left:after {

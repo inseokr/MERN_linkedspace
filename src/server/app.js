@@ -31,9 +31,23 @@ var serverPath = "./src/server";
 var viewPath = path.join(__dirname, 'views');
 
 const os = require('os');
+const WebSocket = require('ws');
+
 var url = process.env.DATABASEURL || "mongodb://localhost/Linkedspaces";
 mongoose.connect(url,  { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
+
+const wss = new WebSocket.Server({ port: 3030});
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(data) {
+    wss.clients.forEach(function each(client) {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+  });
+});
+
 
 app.set("view engine", "ejs");
 app.set('views', viewPath);

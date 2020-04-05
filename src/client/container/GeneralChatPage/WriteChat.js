@@ -4,7 +4,7 @@ import '../../app.css';
 import './GeneralChatMainPage.css';
 
 function WriteChat() {
-  const { chattingHistory } = useContext(MessageContext);
+  const { chattingHistory,  updateChatHistory} = useContext(MessageContext);
   const [chatMessage, setChatMessage] = useState("Write message...");
 
   const handleKeyPress = (e) => {
@@ -26,9 +26,8 @@ function WriteChat() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(`ISEO: input text = ${chatMessage}`);
-    console.log(`ISEO: chattingHistory${chattingHistory}`);
     setChatMessage("");
+    updateChatHistory(chatMessage, true);
   };
 
   	return (
