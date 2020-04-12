@@ -17,13 +17,26 @@ export function MessageContextProvider(props) {
   const [chatSocket, setWebSocket] = useState(null);
   const [alertSound, setAlertSound] = useState(null);
 
+
+    function parseIncomingMessage(msg)
+    {
+        const regex = /CSD:(.*):(.*)/g;
+        let parsedString = regex.exec(msg);
+
+        return parsedString;
+    }
+
   function updateChatHistory(msg, local) {
 
       if(local==true)
       {
           // sending to chat server
-          console.log("Sending message to server");
-          chatSocket.send(JSON.stringify(msg));
+          console.log("Sending message to server. msg = " + msg);
+
+          // need to append header
+          // @CSD:channel_id:
+          //chatSocket.send(''.concat("CSD:iseo-dm-justin:", JSON.stringify(msg)));
+          chatSocket.send(''.concat("CSD:iseo-dm-justin:", msg));
           setWaitMessage(true);
           // it will echo locally added messages.
           // how to filter it out then? Server should not forward it back to me?
@@ -32,8 +45,12 @@ export function MessageContextProvider(props) {
       }
       else {
           alertSound.play();
+          let processedMsg = parseIncomingMessage(msg);
 
-          const newHistory = [...chattingHistory, msg];
+          // <note> processedMsg[1] will contain the channel information.
+          console.log("Message for channel ID = " + processedMsg[1]);
+
+          const newHistory = [...chattingHistory, processedMsg[2]];
           addMsgToChatHistory(newHistory);
       }
   }
@@ -50,11 +67,12 @@ export function MessageContextProvider(props) {
     else {
         chatSocket.onopen = () => {
             console.log("Chat Server Connected");
+            // let's send the first message to register this socket.
+            chatSocket.send("CSC:Register:inseo");
         }
 
         chatSocket.onmessage = evt => {
-            const message = JSON.parse(evt.data);
-            console.log("Got Message = " + message);
+            const message = evt.data;
             updateChatHistory(message, false);
             setWaitMessage(false);
         }

@@ -24,30 +24,17 @@ var TenantRequest  = require("./models/listing/tenant_request");
 var fileUpload    = require('express-fileupload');
 var facebook      = require('./facebook.js');
 var nodemailer = require('nodemailer');
-
+var chatServer = require('./chatting_server');
 var serverPath = "./src/server";
 
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
 
 const os = require('os');
-const WebSocket = require('ws');
 
 var url = process.env.DATABASEURL || "mongodb://localhost/Linkedspaces";
 mongoose.connect(url,  { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
-
-const wss = new WebSocket.Server({ port: 3030});
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(data) {
-    wss.clients.forEach(function each(client) {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(data);
-      }
-    });
-  });
-});
-
 
 app.set("view engine", "ejs");
 app.set('views', viewPath);
@@ -71,6 +58,7 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate())); // iseo: passport will use User's authenticate method which is passport-mongoose-local
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
 passport.use(new FacebookStrategy({
   clientID: '1011405085718313',
   clientSecret: '3b630313a8a2c8983405b55c11289e8b',
@@ -114,6 +102,10 @@ app.locals.lastReactMenu = "";
 global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
 console.log("basedir="+__dirname);
+
+// starting chatting server
+chatServer();
+
 // ISEO-TBD: test e-mail
 /*
 // TBD: test email
