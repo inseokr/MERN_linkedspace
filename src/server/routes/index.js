@@ -4,22 +4,89 @@ var router = express.Router();
 var passport = require("passport");
 var User = require("../models/user");
 var fileUpload = require('express-fileupload');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser());
+//app.use(bodyParser.json());
+
+var User          = require("../models/user");
+var ChatChannel   = require("../models/chatting/chatting_channel");
+var ChatL1P       = require("../models/chatting/channel_level1_parent");
+var ChatL2P       = require("../models/chatting/channel_level2_parent");
+var ChatDb        = require("../models/chatting/chatting_db");
+
 // for password reset
 var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
 var TenantRequest = require("../models/listing/tenant_request");
 
+// create DM channel
+async function getMemberInfoByUserName(name)
+{
+  return new Promise(resolve => {
+    User.findOne({username: name}, function(err, foundMember){
+      if(err || foundMember==null)
+      {
+        console.log("No user found with given user name");  
+        return;
+      }
+      else 
+      {
+        console.log("User Found");
+        var memberInformation = {id: foundMember._id, name: foundMember.username};
+
+        resolve(memberInformation);
+      }
+    });
+  });
+}
+
+router.post("/chatting/new", function(req, res){
+
+  console.log("Channel is being created");
+
+  var newChannel = new ChatChannel;
+
+  //newChannel.channel_id   = req.body.channel_id;
+  //newChannel.channel_type = req.body.channel_type;
+
+  // <note> probably we don't need to pass this information?
+  // all the channel creation will be done by the user loggined now.
+  // <note> The app defined here is different from the app in "App.js"
+  //newChannel.channel_creator.name = app.locals.currentUser.username;
+  //newChannel.channel_creator.id   = app.locals.currentUser._id; // need to double check it.
+  // <note> req.body doesn't include those information.
+
+  // process list of members
+  req.body.members.forEach(function(err, member)
+  {
+    if(member>=1) return;
+
+    console.log("member name = " + req.body.members[member]);
+ 
+    getMemberInfoByUserName(req.body.members[member]).then((memberInfo) => {
+          newChannel.members.push(memberInfo);
+          newChannel.save();
+    });
+  });
+
+  res.json("success");
+
+});
+
 router.get("/getLoginStatus", function(req, res){
   var isUserLoggined = (req.user) ? "true": "false";
   console.log("getLoginStatus called. status = " + isUserLoggined);
   res.json(isUserLoggined);
 });
+
 router.get("/getLastMenu", function(req, res){
   console.log("getLastMenu is called");
   res.json(app.locals.lastReactMenu);
   app.locals.lastReactMenu = "";
 });
+
 router.get("/getData", function(req, res){
   console.log("getData is called");
 
@@ -216,4 +283,6 @@ router.post('/reset/:token', function(req, res) {
     res.redirect('/');
   });
 });
+
+
 module.exports = router;

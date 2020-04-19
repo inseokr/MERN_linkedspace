@@ -14,6 +14,7 @@ import {
 
 import {Redirect, Route} from 'react-router'
 import { SearchProvider } from './contexts/SearchContext';
+import { MessageContextProvider } from './contexts/MessageContext';
 
 export default class App extends Component {
   state = { };
@@ -37,7 +38,9 @@ export default class App extends Component {
               <Map />
             </Route>
             <Route exact path="/Messages">
-              <GeneralChatMainPage />
+              < MessageContextProvider >
+                <GeneralChatMainPage />
+              </MessageContextProvider>
             </Route>
             <Route exact path="/">
               <LandingPage />

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useContext } from 'react';
 import '../../app.css';
 import Home from '../HomePage/Home';
 import Search from '../SearchPage/SearchPage';
-import { MessageContextProvider } from "../../contexts/MessageContext";
+import { MessageContext } from '../../contexts/MessageContext';
 
 import GeneralChatHeader from './GeneralChatHeader';
 import SearchMessageBox from './SearchMessageBox';
@@ -15,6 +15,18 @@ import './GeneralChatMainPage.css'
 
 
 function GeneralChatMainPage() {
+
+  // ISEO-TBD: why we can't use the context here??
+  const {chattingHistory, updateChatHistory, loadChattingDatabase} = useContext(MessageContext);
+
+  console.log("GeneralChatMainPage is being loaded");
+  
+  loadChattingDatabase();
+
+  useEffect(() => {
+    console.log("loading channel database");
+    loadChattingDatabase();
+  });
 
   return (
     <div className="GeneralChatMainWrapper bg-light">
@@ -30,19 +42,17 @@ function GeneralChatMainPage() {
             </div>
         </div>
 
-        < MessageContextProvider >
-            <div className="MessageRightPanel">
-                <div className="SenderProfileSummary">
-                    <ChatPartySummary />
-                </div>
-                <div className="ChattingWindow">
-                    <ChattingWindow />
-                </div>
-                <div className="WriteMessageWindow">
-                    <WriteChat />
-                </div>
+        <div className="MessageRightPanel">
+            <div className="SenderProfileSummary">
+                <ChatPartySummary />
             </div>
-        </MessageContextProvider>
+            <div className="ChattingWindow">
+                <ChattingWindow />
+            </div>
+            <div className="WriteMessageWindow">
+                <WriteChat />
+            </div>
+        </div>
     </div>
   );
 }

@@ -16,6 +16,8 @@ var mynetworkRoutes  = require("./routes/mynetwork/index");
 var landlordRoutes   = require("./routes/listing/landlord/index")(app);
 var tenantRoutes     = require("./routes/listing/tenant/index")(app);
 var profileRoutes = require("./routes/profile/index");
+var chattingRoutes = require("./routes/chatting/index");
+
 var fs            = require("fs");
 var path          = require("path");
 var LandlordRequest  = require("./models/listing/landlord_request");
@@ -27,6 +29,11 @@ var nodemailer = require('nodemailer');
 var chatServer = require('./chatting_server');
 var serverPath = "./src/server";
 
+
+const parseurl = require('parseurl');
+const expressValidator = require('express-validator');
+
+
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
 
@@ -34,7 +41,8 @@ const os = require('os');
 
 var url = process.env.DATABASEURL || "mongodb://localhost/Linkedspaces";
 mongoose.connect(url,  { useNewUrlParser: true });
-app.use(bodyParser.urlencoded({extended: true}));
+//app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser());
 
 app.set("view engine", "ejs");
 app.set('views', viewPath);
@@ -77,7 +85,7 @@ passport.use(new FacebookStrategy({
     User.findOne({username:'inseo'}, function(err, user) {
       if (err) { return done(err); }
       console.log("Facebook login: saving current user");
-      app.locals.curr_user = user;
+      app.locals.currentUser = user;
       done(null, user);
     });
   }
@@ -88,14 +96,18 @@ app.use(function(req, res, next){
    res.locals.error = req.flash("error");
    res.locals.success = req.flash("success");
    //console.log("Current User = " + res.locals.currentUser);
+   
    next();
 });
+
 app.use("/", indexRoutes);
 app.use("/listing", listingRoutes);
 app.use("/mynetwork", mynetworkRoutes);
 app.use("/listing/landlord", landlordRoutes);
 app.use("/listing/tenant", tenantRoutes);
 app.use("/profile", profileRoutes);
+app.use("/chatting", chattingRoutes);
+
 app.use(fileUpload());
 app.locals.profile_picture = "/public/user_resources/pictures/profile_pictures/default_profile.jpg";
 app.locals.lastReactMenu = "";
@@ -147,6 +159,19 @@ transporter.sendMail(mailOptions, function(error, info){
 app.get('/drag_drop', function(req, res){
 res.render("drag_drop_demo_v1");
 });
+
+app.post('/test_api', function(req,res) {
+  console.log("test_api, userName= " + req.body.userName);
+  res.send(JSON.stringify(req.body, null, 4));
+});
+
+
+app.get('/test_api', function(req,res) {
+  //console.log("test_api, body= " + req.body('name'));
+  console.log("test_api, param= " + req.param('name'));
+  res.send('The API handled well!');
+});
+
 
 // ISEO: req.files were undefined if it's used in routers.
 // We need to address this problem later, but I will define it inside app.js for now.

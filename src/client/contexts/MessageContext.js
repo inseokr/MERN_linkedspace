@@ -1,14 +1,13 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import ChattingMessageBox from "../container/GeneralChatPage/ChattingMessageBox";
 import sampleProfile from "../../assets/images/Chinh - Vy.jpg";
 import messageAlertSound from "../../assets/musics/eventually.mp3";
-
-
+import axios from 'axios';
 
 export const MessageContext = createContext();
 
-
-const chatUrl = 'ws://10.0.0.55:3030';
+// <note> need to  use IP address variable
+const chatUrl = 'ws://localhost:3030';
 
 export function MessageContextProvider(props) {
   const [chattingHistory, addMsgToChatHistory] = useState([]);
@@ -85,8 +84,36 @@ export function MessageContextProvider(props) {
         }
     }
 
+
+    // loading chatting database from backend
+    function loadChattingDatabase()
+    {
+      var testArray = ["iseo" , "justin"];
+      var data = {channel_id: "iseo-dm-justin", channel_type: 0, members: testArray};
+
+      console.log("calling /chatting/new API call");
+
+      axios.post('/chatting/new', data)
+        .then(res => res.json())
+        .then(result => 
+        {
+            console.log("result = " + result);
+        });
+    }
+  /*
+    axios.post('/test_api', {
+        userName: "inseo",
+      })
+    .then(response => {
+      console.log(response, 'Signature added!');
+    })
+    .catch(err => {
+      console.log(err, 'Signature not added, try again');
+    });
+    }*/
+
     return (
-    <MessageContext.Provider value={{ chattingHistory, updateChatHistory }}>
+    <MessageContext.Provider value={{ chattingHistory, updateChatHistory, loadChattingDatabase }}>
       {props.children}
     </MessageContext.Provider>
   );
