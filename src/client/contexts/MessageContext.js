@@ -100,17 +100,6 @@ export function MessageContextProvider(props) {
             console.log("result = " + result);
         });
     }
-  /*
-    axios.post('/test_api', {
-        userName: "inseo",
-      })
-    .then(response => {
-      console.log(response, 'Signature added!');
-    })
-    .catch(err => {
-      console.log(err, 'Signature not added, try again');
-    });
-    }*/
 
     return (
     <MessageContext.Provider value={{ chattingHistory, updateChatHistory, loadChattingDatabase }}>

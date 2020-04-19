@@ -21,8 +21,6 @@ function GeneralChatMainPage() {
 
   console.log("GeneralChatMainPage is being loaded");
   
-  loadChattingDatabase();
-
   useEffect(() => {
     console.log("loading channel database");
     loadChattingDatabase();
