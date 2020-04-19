@@ -1,8 +1,8 @@
 var express       = require("express");
 var router        = express.Router();
 
-var fileUpload = require('express-fileupload');
-const bodyParser = require('body-parser');
+var fileUpload    = require('express-fileupload');
+const bodyParser  = require('body-parser');
 var User          = require("../../models/user");
 var ChatChannel   = require("../../models/chatting/chatting_channel");
 var ChatL1P       = require("../../models/chatting/channel_level1_parent");
@@ -11,49 +11,12 @@ var ChatDb        = require("../../models/chatting/chatting_db");
 var node 		  = require("deasync");
 var async         = require("async");
 
+const chatDbHandler = require('../../db_utilities/chatting_db/access_chat_db');
+
 node.loop = node.runLoopOnce;
 
 // <note> somehow React can't find the routes defined here....
 module.exports = function(app) {
-	// create DM channel
-	async function getMemberInfoByUserName(name)
-	{
-	  return new Promise(resolve => {
-	    User.findOne({username: name}, function(err, foundMember){
-	      if(err || foundMember==null)
-	      {
-	        console.log("No user found with given user name");  
-	        return;
-	      }
-	      else 
-	      {
-	        console.log("User Found");
-	        var memberInformation = {id: foundMember._id, name: foundMember.username};
-
-	        resolve(memberInformation);
-	      }
-	    });
-	  });
-	}
-
-	async function getChannelByChannelId(channelName)
-	{
-	  return new Promise(resolve => {
-	    ChatChannel.findOne({channel_id: channelName}, function(err, foundChannel){
-
-	      if(err || foundChannel===null)
-	      {
-	        console.log("No such channel found");
-	        resolve(null);
-	      }
-	      else
-	      {
-	        console.log("Channel found");
-	        resolve(foundChannel);
-	      }
-	    });
-	  })
-	}
 
 	router.get("/get", function(req,res){
 		console.log("channel/get called");
@@ -62,7 +25,7 @@ module.exports = function(app) {
 
 	router.post("/new", function(req, res){
 		console.log("channels/new API called");
-	  	getChannelByChannelId(req.body.channel_id).then((channel) => {
+	  	chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
 		    if(channel!=null)
 		    {
 		      console.log("Channel already exists");
@@ -90,7 +53,7 @@ module.exports = function(app) {
 		    {
 		      console.log("index = " + index);
 
-		      getMemberInfoByUserName(req.body.members[index]).then((memberInfo) => {
+		      chatDbHandler.findChatPartyByName(req.body.members[index]).then((memberInfo) => {
 		            numberOfPushedMembers++;
 
 		            newChannel.members.push(memberInfo);

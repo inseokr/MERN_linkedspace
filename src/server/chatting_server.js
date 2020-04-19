@@ -30,6 +30,7 @@
 // channel? That's true... However message may need to include header still to route it properly?
 // 1.3 special channel
 const WebSocket = require('ws');
+const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
 
 const wss = new WebSocket.Server({ port: 3030});
 
@@ -69,12 +70,12 @@ function handleCtrlMsg(rxMsg) {
     return parsedString;
 }
 
-function extractChannelId(data)
+function parseChatMsgHeader(data)
 {
     const regex = /CSD:(.*):(.*)/g;
     let parsedString = regex.exec(data);
 
-    return parsedString[1];
+    return {channel_id: parsedString[1], msg: parsedString[2]};
 }
 
 function addUserToChannel(channelId, user)
@@ -107,35 +108,60 @@ function getListOfSocketsByChannelId(channelId)
     return channelIdToSocketList[channelId];
 }
 
-function getDestinationSockets(data, incomingSocket)
+function processChatMsgHeader(data)
 {
     let targetSockets = [];
-    let channelId = extractChannelId(data);
 
-    if(channelId==undefined){
+    let {channel_id, msg} = parseChatMsgHeader(data);
+
+    if(channel_id==undefined){
         console.log("No channelID has been identified");
-        return null;
+        return {targets: null, id: channel_id, message: msg};
     }
     else {
-        targetSockets = getListOfSocketsByChannelId(channelId);
-        return targetSockets;
+        console.log("channel found. channel ID = " + channel_id)
+        targetSockets = getListOfSocketsByChannelId(channel_id);
+        return {targets: targetSockets, id: channel_id, message: msg};
     }
 }
 
 function routeMessage(data, incomingSocket)
 {
     console.log("routeMessage: got message from socket = " + incomingSocket);
-    let listOfTargetSockets = getDestinationSockets(data, incomingSocket);
+    let {targets, id, message} = processChatMsgHeader(data);
 
-    listOfTargetSockets.forEach(function each(target) {
-        if (target!=incomingSocket && target.readyState === WebSocket.OPEN) {
-            console.log("forwarding the packet");
-            target.send(data);
-        }
-        else {
-            console.log("Same socket");
-        }
-    });
+    // find the channel DB entry with given channelId
+    if(id!=null){
+        chatDbHandler.findChatChannel(id).then(function(channel){
+
+            if(channel==null){
+                console.log("Channel couldn't be found");
+                return;
+            }
+
+            console.log("Adding to history");
+            // add to history
+            const chat = {writer: socketToUserMap[incomingSocket], message: message, timestamp: Date.now()};
+            channel.chat_history.push(chat);
+            channel.save();
+
+            targets.forEach(function each(target) {
+                if (target!=incomingSocket && target.readyState === WebSocket.OPEN) {
+                    console.log("forwarding the packet");
+                    target.send(data);
+                }
+                else {
+                    console.log("Same socket");
+                }
+            });
+        });         
+    }   
+    else
+    {
+        console.log("No chatting channel found with given channel ID");
+        return;
+    } 
+
 }
 
 module.exports = function() {
