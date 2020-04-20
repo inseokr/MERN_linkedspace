@@ -111,13 +111,44 @@ module.exports = function(app) {
     res.render("login");
   });
 
+
+  //handling login logic
+  router.post("/login",function(req, res){
+    // it's not called
+    passport.authenticate("local")(req, res, function(error){
+        if(error)
+        {
+          res.redirect("/");
+          done();
+        }
+        else 
+        {
+          req.flash("success", "Welcome back to LinkedSpaces " + req.body.username);
+          res.redirect("/homepage");
+
+          User.findOne({username:req.body.username}, function(err, user) {
+            if (err) { console.log("User Not Found"); return; }
+            app.locals.currentUser = user;
+          });
+        }
+
+    });
+
+  });
+
+/*
   //handling login logic
   router.post("/login", passport.authenticate("local",
     {
       successRedirect: "/homepage",
       failureRedirect: "/"
     }), function(req, res){
-  });
+
+    // it's not called
+    console.log("Why it's not called?");
+  });*/
+
+
   router.get("/homepage", function(req,res){
     res.render("homepage");
   });

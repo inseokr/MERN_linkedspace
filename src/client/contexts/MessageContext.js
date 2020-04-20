@@ -93,6 +93,15 @@ export function MessageContextProvider(props) {
 
       console.log("calling /chatting/new API call");
 
+/*
+      fetch('/chatting/get')
+      .then(res => res.json())
+      .then(channel => {
+        console.log("channel ID = " + channel.channel_id);
+        //console.log("creator = " + channel.channel_creator.name);
+        console.log("history length = " + channel.chat_history.length);
+      });
+*/
       axios.post('/chatting/new', data)
         .then(res => res.json())
         .then(result => 

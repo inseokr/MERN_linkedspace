@@ -12,6 +12,7 @@ var node 		  = require("deasync");
 var async         = require("async");
 
 const chatDbHandler = require('../../db_utilities/chatting_db/access_chat_db');
+const userDbHandler = require('../../db_utilities/user_db/access_user_db');
 
 node.loop = node.runLoopOnce;
 
@@ -19,17 +20,21 @@ node.loop = node.runLoopOnce;
 module.exports = function(app) {
 
 	router.get("/get", function(req,res){
-		console.log("channel/get called");
-		res.json("success");
+		chatDbHandler.findChatChannel("iseo-dm-justin").then((channel) => {
+			if(channel!=null)
+			{
+				console.log("channel found");
+				res.json(channel);
+				return;
+			}
+		})
 	});
 
 	router.post("/new", function(req, res){
-		console.log("channels/new API called");
 	  	chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
 		    if(channel!=null)
 		    {
-		      console.log("Channel already exists");
-		      res.json("exists");
+		      res.json(channel);
 		      return;
 		    }
 
@@ -40,8 +45,8 @@ module.exports = function(app) {
 
 		    // <note> The app defined here is different from the app in "App.js"
 		    // <note> we should re-factor index.js in the root routes directory, need to inherit app. 
-		    //newChannel.channel_creator.name = app.locals.currentUser.username;
-		    //newChannel.channel_creator.id   = app.locals.currentUser._id; // need to double check it.
+		    newChannel.channel_creator.name = app.locals.currentUser.username;
+		    newChannel.channel_creator.id   = app.locals.currentUser.id_;
 		    // <note> req.body doesn't include those information.
 
 		    // process list of members
@@ -57,11 +62,12 @@ module.exports = function(app) {
 		            numberOfPushedMembers++;
 
 		            newChannel.members.push(memberInfo);
-		            
+
 		            if(req.body.members.length==numberOfPushedMembers)
 		            {
 		              console.log("Saving it to the database"); 
 		              newChannel.save();
+		              chatDbHandler.addChannelToUser(newChannel);
 		              res.json("success");
 		            }
 		      });

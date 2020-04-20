@@ -92,13 +92,13 @@ passport.use(new FacebookStrategy({
     });
   }
 ));
+
 // iseo: It's kind of pre-processing or middleware for route handling
 app.use(function(req, res, next){
    res.locals.currentUser = req.user;
    res.locals.error = req.flash("error");
    res.locals.success = req.flash("success");
    //console.log("Current User = " + res.locals.currentUser);
-   
    next();
 });
 
