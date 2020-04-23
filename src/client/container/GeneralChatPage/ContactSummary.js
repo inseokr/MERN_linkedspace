@@ -20,10 +20,10 @@ function ContactSummary(props) {
   	return (
 	    <div className={getContactSummaryClassName()} onClick={handleClick}>
 	    	<div className="ProfilePicture">
-	    		<img className="center rounded-circle imgFitToGrid" src={sampleProfile} alt="myFriend" />
+	    		<img className="center rounded-circle imgFitToGrid" src={props.user.profile_picture} alt="myFriend" />
 	    	</div>
 	    	<div className="ProfileName">
-	    		Chinh Le
+	    		{props.user.username}
 	    	</div>
 	    	<div className="TimeStamp">
 	    		Mar 23,2020

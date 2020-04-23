@@ -225,7 +225,12 @@ module.exports = function(app) {
 			else
 			{
 				User.findById(req.user._id, function(err, curr_user){
-					var acceptingFriend = {id: req.user._id, name: curr_user.firstname + curr_user.lastname, email: curr_user.email};
+					var acceptingFriend = { id: req.user._id, 
+						                    name: curr_user.firstname + curr_user.lastname,
+						                    username: curr_user.username,
+						                    profile_picture: curr_user.profile_picture, 
+						                    email: curr_user.email
+						                  };
 					friend.direct_friends.push(acceptingFriend);
 
 
@@ -239,7 +244,11 @@ module.exports = function(app) {
 							friend.save();
 					});
 					
-					var acceptedFriend = {id: friend._id, name: friend.firstname + friend.lastname, email: friend.email};
+					var acceptedFriend = { id: friend._id, 
+						                   name: friend.firstname + friend.lastname, 
+										   username: friend.username,
+										   profile_picture: friend.profile_picture,
+										   email: friend.email};
 
 					curr_user.direct_friends.push(acceptedFriend);
 

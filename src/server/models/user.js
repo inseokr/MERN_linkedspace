@@ -90,7 +90,9 @@ var UserSchema = new mongoose.Schema({
 		     	ref: "User"
 		    },
 		    name: String,
-		    email: String
+		    username: String,
+		    email: String,
+		    profile_picture: String,
 		}
 	],
 

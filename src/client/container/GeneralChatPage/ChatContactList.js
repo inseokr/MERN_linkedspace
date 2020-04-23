@@ -1,12 +1,23 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useContext } from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 
 import ContactSummary from './ContactSummary';
+import { GlobalContext } from '../../contexts/GlobalContext';
 
 function ChatContactList() {
+
+	const {friendsList} = useContext(GlobalContext);
+
+	// create initial state based on friendsList
+	let initClickStates = [];
+
+	for(var i=0; i< friendsList.length; i++)
+	{
+		initClickStates.push((i==0)?1: 0);
+	}
 	
-	const [clickStates, setClickStates] = useState([1,0,0]);
+	const [clickStates, setClickStates] = useState(initClickStates);
 
 
 	function handleClickState(index) {
@@ -24,11 +35,18 @@ function ChatContactList() {
 		setClickStates([...contactClickStates]);
 	}
 
+	let contacts = [];
+
+	for(var i = 0; i<friendsList.length; i++)
+	{
+		console.log("user name = " + friendsList[i].username);
+		console.log("name = " + friendsList[i].name);
+		contacts.push(<ContactSummary contactIndex="0" clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]}/>);
+	}
+
   	return (
 	    <>
-	    	<ContactSummary contactIndex="0" clickState={clickStates[0]} clickHandler={handleClickState} />  
-	    	<ContactSummary contactIndex="1" clickState={clickStates[1]} clickHandler={handleClickState}/>  
-	    	<ContactSummary contactIndex="2" clickState={clickStates[2]} clickHandler={handleClickState}/>  
+	    	{contacts}
 	    </>
   	);
 }
