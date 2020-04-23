@@ -16,7 +16,7 @@ var express            = require("express"),
 // routes
 var indexRoutes        = require("./routes/index")(app);
 var listingRoutes      = require("./routes/listing/index");
-var mynetworkRoutes    = require("./routes/mynetwork/index");
+var mynetworkRoutes    = require("./routes/mynetwork/index")(app);
 var landlordRoutes     = require("./routes/listing/landlord/index")(app);
 var tenantRoutes       = require("./routes/listing/tenant/index")(app);
 var profileRoutes      = require("./routes/profile/index");

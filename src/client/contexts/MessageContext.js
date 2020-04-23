@@ -1,8 +1,10 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import ChattingMessageBox from "../container/GeneralChatPage/ChattingMessageBox";
 import sampleProfile from "../../assets/images/Chinh - Vy.jpg";
 import messageAlertSound from "../../assets/musics/eventually.mp3";
 import axios from 'axios';
+
+import { GlobalContext } from './GlobalContext';
 
 export const MessageContext = createContext();
 
@@ -10,20 +12,74 @@ export const MessageContext = createContext();
 const chatUrl = 'ws://localhost:3030';
 
 export function MessageContextProvider(props) {
+  // How to organize chatting channels?
+  // 1. information needed per channel
+  //    + channel name
+  //    + channel type
+  //    + chatting history: message & timestamp
+  //    + last read index
+  //
+  // 2. list of channels and control information
+  //    : let's organize channels separately. DM and other channels
+  //    + DM channels
+  //    + Group channels
+  //    + other channels associated with listing
+  //    + current channel index and type
+
+  // DM channels
+  // <note> {channel_id:, channel_type:, last_read_index:, chattingHistory: [{message:, timestamp:}]}
+  // <question> can we use map?
+  const [dmChannelContexts, setChannelContexts] = useState([]);
+
+  const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
+  const [currChanneInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
+
   const [chattingHistory, addMsgToChatHistory] = useState([]);
+
   const [waitMessage, setWaitMessage] = useState(false);
   const [socketCreated, setSocketCreated] = useState(false);
   const [chatSocket, setWebSocket] = useState(null);
   const [alertSound, setAlertSound] = useState(null);
 
 
-    function parseIncomingMessage(msg)
-    {
-        const regex = /CSD:(.*):(.*)/g;
-        let parsedString = regex.exec(msg);
+  const {friendsList} = useContext(GlobalContext);
 
-        return parsedString;
-    }
+
+  function parseIncomingMessage(msg)
+  {
+      const regex = /CSD:(.*):(.*)/g;
+      let parsedString = regex.exec(msg);
+
+      return parsedString;
+  }
+
+  function updateChatContext(msg, channelName, channeType)
+  {
+    let channelContexts = dmChannelContexts;
+
+    let chatHistory = channelContexts[channelName].chattingHistory;
+    let currentChat = {message: msg, timestamp: Date.now()};
+    
+    chatHistory = [...chatHistory, currentChat];
+    channelContexts["iseo-dm-justin"].chattingHistory = chatHistory;
+
+    console.log("updateChatContext... updating chatHistory now....");
+
+    setChannelContexts(channelContexts); 
+  }
+
+  function getChattingHistory() {
+      console.log("getChattingHistory...");
+      if(dmChannelContexts["iseo-dm-justin"]===undefined)
+      {
+        // no history
+        return [];
+      }
+      else 
+      {
+        return dmChannelContexts["iseo-dm-justin"].chattingHistory;
+      }
+  }
 
   function updateChatHistory(msg, local) {
 
@@ -41,6 +97,11 @@ export function MessageContextProvider(props) {
           // how to filter it out then? Server should not forward it back to me?
           const newHistory = [...chattingHistory, msg];
           addMsgToChatHistory(newHistory);
+
+          // let's add to new DBs
+          // <note> I find it very inefficient...
+          // we have to copy things all the time??
+          updateChatContext(msg, "iseo-dm-justin", 0);
       }
       else {
           alertSound.play();
@@ -51,6 +112,8 @@ export function MessageContextProvider(props) {
 
           const newHistory = [...chattingHistory, processedMsg[2]];
           addMsgToChatHistory(newHistory);
+
+          updateChatContext(processedMsg[2], "iseo-dm-justin", 0);
       }
   }
     if(socketCreated==false)
@@ -91,8 +154,8 @@ export function MessageContextProvider(props) {
       var testArray = ["iseo" , "justin"];
       var data = {channel_id: "iseo-dm-justin", channel_type: 0, members: testArray};
 
-      console.log("calling /chatting/new API call");
-
+      console.log("loadChattingDatabase");
+      console.log("friendsList = ", friendsList);
 /*
       fetch('/chatting/get')
       .then(res => res.json())
@@ -108,10 +171,29 @@ export function MessageContextProvider(props) {
         {
             console.log("result = " + result);
         });
+
+
+      // update channel DB in react side
+      const initDmChannel = {channel_id: "iseo-dm-justin", channel_type: 0, last_read_index: 0, 
+                             chattingHistory: []
+                             };
+
+      if(dmChannelContexts["iseo-dm-justin"]===undefined)
+      {
+        console.log("New channel just added");
+        
+        const dmChannelContextArray = dmChannelContexts;
+        dmChannelContextArray["iseo-dm-justin"] = initDmChannel;
+        setChannelContexts(dmChannelContextArray);
+      }
+      else
+      {
+        console.log("The channel already exists");
+      }
     }
 
     return (
-    <MessageContext.Provider value={{ chattingHistory, updateChatHistory, loadChattingDatabase }}>
+    <MessageContext.Provider value={{getChattingHistory, updateChatHistory, loadChattingDatabase }}>
       {props.children}
     </MessageContext.Provider>
   );

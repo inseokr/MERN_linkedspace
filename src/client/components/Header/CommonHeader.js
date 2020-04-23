@@ -3,8 +3,12 @@ import '../../app.css';
 import LinkedSpaceHeader from './LinkedSpaceHeader';
 import NoLoginMenu from '../Login/NoLoginMenu';
 import LoginMenu from '../Login/LoginMenu';
+import { GlobalContext } from '../../contexts/GlobalContext';
+
 
 export default class CommonHeader extends Component {
+
+  static contextType = GlobalContext;
 
   constructor(props){
     super(props);
@@ -20,7 +24,16 @@ export default class CommonHeader extends Component {
   getLoginStatus = () => {
     fetch('/getLoginStatus')
     .then(res => res.json())
-    .then(status => {console.log(" received status= " + status); this.setState({isUserLoggined: status})})
+    .then(status => {
+      console.log(" received status= " + status); 
+      this.setState({isUserLoggined: status});
+      if(status=="true")
+      {
+        //loading user information and others
+        console.log("User Loggined and loading friend list");
+        this.context.loadFriendList();
+      }
+    })
   }
 
   render() {

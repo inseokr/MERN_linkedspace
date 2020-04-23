@@ -12,9 +12,11 @@ import {
   Link
 } from "react-router-dom";
 
-import {Redirect, Route} from 'react-router'
-import { SearchProvider } from './contexts/SearchContext';
+import { Redirect, Route }        from 'react-router';
+
+import { SearchProvider }         from './contexts/SearchContext';
 import { MessageContextProvider } from './contexts/MessageContext';
+import { GlobalProvider }         from './contexts/GlobalContext';
 
 export default class App extends Component {
   state = { };
@@ -29,25 +31,27 @@ export default class App extends Component {
 
   render() {
     return (
-      <SearchProvider>
-        <Router>
-          <CommonHeader/>
-          <ModalLoginForm/>
-          <Switch>
-            <Route exact path="/Map">
-              <Map />
-            </Route>
-            <Route exact path="/Messages">
-              < MessageContextProvider >
-                <GeneralChatMainPage />
-              </MessageContextProvider>
-            </Route>
-            <Route exact path="/">
-              <LandingPage />
-            </Route>              
-          </Switch>
-        </Router>
-      </SearchProvider>
+      <GlobalProvider>
+        <SearchProvider>
+          <Router>
+            <CommonHeader/>
+            <ModalLoginForm/>
+            <Switch>
+              <Route exact path="/Map">
+                <Map />
+              </Route>
+              <Route exact path="/Messages">
+                < MessageContextProvider >
+                  <GeneralChatMainPage />
+                </MessageContextProvider>
+              </Route>
+              <Route exact path="/">
+                <LandingPage />
+              </Route>              
+            </Switch>
+          </Router>
+        </SearchProvider>
+      </GlobalProvider>
     );
   }
 }

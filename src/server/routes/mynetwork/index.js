@@ -1,99 +1,275 @@
-var express       = require("express");
-var router        = express.Router();
-var User          = require("../../models/user");
-var ChatChannel   = require("../../models/chatting/chatting_channel");
-var ChatL1P       = require("../../models/chatting/channel_level1_parent");
-var ChatL2P       = require("../../models/chatting/channel_level2_parent");
-var ChatDb        = require("../../models/chatting/chatting_db");
-var async         = require("async");
+var express = require("express");
+var User    = require("../../models/user");
+var router  = express.Router();
+
+var node = require("deasync");
+
+node.loop = node.runLoopOnce;
 
 module.exports = function(app) {
-	// create DM channel
-	async function getMemberInfoByUserName(name)
-	{
-	  return new Promise(resolve => {
-	    User.findOne({username: name}, function(err, foundMember){
-	      if(err || foundMember==null)
-	      {
-	        console.log("No user found with given user name");  
-	        return;
-	      }
-	      else 
-	      {
-	        console.log("User Found");
-	        var memberInformation = {id: foundMember._id, name: foundMember.username};
 
-	        resolve(memberInformation);
-	      }
-	    });
-	  });
+	async function getCurUser(req)
+	{
+		return new Promise((resolve, reject) => {
+			User.findById(req.user._id, function(err, curr_user){
+				if(err)
+				{
+					console.log("err = " + err);
+					reject("user doesn't exist");
+				}
+				else
+				{
+					resolve(curr_user);
+				}
+			});
+		});
+
 	}
 
-	async function getChannelByChannelId(channelName)
-	{
-	  return new Promise(resolve => {
-	    ChatChannel.findOne({channel_id: channelName}, function(err, foundChannel){
 
-	      if(err || foundChannel===null)
-	      {
-	        console.log("No such channel found");
-	        resolve(null);
-	      }
-	      else
-	      {
-	        console.log("Channel found");
-	        resolve(foundChannel);
-	      }
-	    });
-	  })
+	function getSummaryOfUser(user_id) {
+
+		return new Promise(resolve => {
+			User.findById(user_id, function(err, curr_user){
+				var friend = 
+				{
+					profile_picture: "../public/user_resources/pictures/Chinh - Vy.jpg",
+					name: curr_user.firstname+curr_user.lastname, 
+					address: {city: "San Jose", state: "CA"},
+					id: user_id
+				}; 
+
+				resolve(friend);
+			});	
+
+		});
+
 	}
 
-	router.post("/new", function(req, res){
-		console.log("channels/new API called");
-	  	getChannelByChannelId(req.body.channel_id).then((channel) => {
-		    if(channel!=null)
-		    {
-		      console.log("Channel already exists");
-		      res.json("exists");
-		      return;
-		    }
 
-		    var newChannel = new ChatChannel;
+	function pushFriendReqstList(list, friend){
+		return new Promise(resolve => {
+			list.push(friend);
+			resolve(list);
+		});
+	}
 
-		    newChannel.channel_id   = req.body.channel_id;
-		    newChannel.channel_type = req.body.channel_type;
+	function requestedAlready(curr_user, friend_id)
+	{
+		let bFound = false;
 
-		    // <note> probably we don't need to pass this information?
-		    // all the channel creation will be done by the user loggined now.
-		    // <note> The app defined here is different from the app in "App.js"
-		    newChannel.channel_creator.name = app.locals.currentUser.username;
-		    newChannel.channel_creator.id   = app.locals.currentUser._id; // need to double check it.
-		    // <note> req.body doesn't include those information.
+		curr_user.outgoing_friends_requests.forEach(function(friend){
+			if(friend.id.equals(friend_id)==true)
+			{
+				bFound = true;
+				// ISEO: seriously??? function return twice??
+				// I returned true from here, 
+				// but it didn't break out from the function and it moved on to return outside of this for loop.
+			} 
+		});
 
-		    // process list of members
-		    // <note> forEach doesn't guarantee the order of member and it could come in 0, 1 or 1,0
-		    // <note> Please don't rely on index value to check if it's the last item 'cause getMemberInfoByUserName
-		    // could be called in parallel.
-		    let numberOfPushedMembers = 0;
-		    for (index = 0; index < req.body.members.length; index++)
-		    {
-		      console.log("index = " + index);
+		return bFound;
+	}
 
-		      getMemberInfoByUserName(req.body.members[index]).then((memberInfo) => {
-		            numberOfPushedMembers++;
+	function isDirectFriend(curr_user, friend_id)
+	{
+		let bFound = false;
 
-		            newChannel.members.push(memberInfo);
-		            
-		            if(req.body.members.length==numberOfPushedMembers)
-		            {
-		              console.log("Saving it to the database"); 
-		              newChannel.save();
-		              res.json("success");
-		            }
-		      });
-		    }
-	  	});
+		curr_user.direct_friends.forEach(function(friend){
+			if(friend.id.equals(friend_id)==true)
+			{
+				bFound = true;
+				// ISEO: seriously??? function return twice??
+				// I returned true from here, 
+				// but it didn't break out from the function and it moved on to return outside of this for loop.
+			} 
+		});
 
+		return bFound;
+
+	}
+
+	async function buildRecommendedFriendsList(curr_user) {
+
+		return new Promise(resolve => {
+
+			User.find({}, function(error, users) {
+				var recommended_friends_list = [];
+
+				users.forEach(function(user){
+					if((curr_user._id.equals(user._id)!=true) && 
+					   (requestedAlready(curr_user, user._id)==false) &&
+					   (isDirectFriend(curr_user, user._id)==false))
+					{
+						var friend = {profile_picture: "../public/user_resources/pictures/Chinh - Vy.jpg", 
+						              name: user.firstname + user.lastname, 
+						              address: {city: "San Jose", state: "CA"},
+						              id: user._id};
+						recommended_friends_list.push(friend);
+					}
+				});
+
+				resolve(recommended_friends_list);
+			});
+		});
+	} 
+
+	function buildFriendsList(input_list) {
+
+		return new Promise(async resolve => {
+
+			var output_list = [];
+
+			if(input_list.length==0)
+			{
+				resolve(output_list);
+			}
+
+			for(var friend_idx=0; friend_idx < input_list.length ;  friend_idx++)
+			{
+				const friend =  await getSummaryOfUser(input_list[friend_idx].id);
+				const res    =  await pushFriendReqstList(output_list, friend);
+
+				if((friend_idx+1)==input_list.length)
+				{
+					resolve(output_list);
+				}			
+			}
+
+		});
+	}
+
+	function buildAsyncFriendList(input_list) {
+
+		return new Promise(async resolve => {
+
+			buildFriendsList(input_list).then((output_list) => {resolve(output_list)});
+
+		});
+	} 
+
+
+	async function buildMyNetworkList(req) {
+
+	     return new Promise(async resolve => {
+
+			var networkInfo = {};
+
+			const curUser = await getCurUser(req);
+
+			networkInfo.recommended_friends_list 	  = await buildRecommendedFriendsList(curUser);
+			networkInfo.pending_friends_request_list  = await buildAsyncFriendList(curUser.outgoing_friends_requests);
+			networkInfo.direct_friends_list           = await buildAsyncFriendList(curUser.direct_friends);
+
+			buildAsyncFriendList(curUser.incoming_friends_requests).then((req_list) => 
+			{
+				networkInfo.number_of_friends = curUser.direct_friends.length;
+				networkInfo.incoming_friends_request_list=req_list;
+				resolve(networkInfo);
+			});
+		});
+	}
+
+	router.get("/", function(req, res){
+
+		buildMyNetworkList(req).then((networkInfo) => {
+
+			res.render("mynetwork/mynetwork_main", {network_info: networkInfo});
+
+		});
+	});
+
+	router.get("/friend_list", function(req, res){
+		
+		console.log("Get friend list");
+
+		res.json(app.locals.currentUser.direct_friends);
+	});
+
+
+	router.post("/:friend_id/friend_request", function(req, res){
+
+		User.findById(req.params.friend_id, function(err, user){
+
+			if(err){
+				console.log("No such user found");
+			}
+			else
+			{
+				User.findById(req.user._id, function(err, curr_user){
+					// ISEO: I don't know why name is not saved to the database...
+					var requestingFriend = {id: req.user._id, name: curr_user.firstname + curr_user.lastname};
+					user.incoming_friends_requests.push(requestingFriend);
+					user.save();
+
+					var invitedFriend = {id: user._id, name: user.firstname + user.lastname};
+
+					curr_user.outgoing_friends_requests.push(invitedFriend);
+					curr_user.save();
+
+					// Let's render with updated database...
+					res.redirect("/mynetwork");
+				});
+			}
+		});
+
+	});
+
+	router.post("/:friend_id/friend_accept", function(req, res){
+
+		User.findById(req.params.friend_id, function(err, friend){
+
+			if(err){
+				console.log("No such user found");
+			}
+			else
+			{
+				User.findById(req.user._id, function(err, curr_user){
+					var acceptingFriend = {id: req.user._id, name: curr_user.firstname + curr_user.lastname, email: curr_user.email};
+					friend.direct_friends.push(acceptingFriend);
+
+
+					User.update({
+					    _id: req.params.friend_id
+					}, {
+					    $pull: 
+					        {outgoing_friends_requests: {id: req.user._id}}
+					    },
+					    function (err, val) {
+							friend.save();
+					});
+					
+					var acceptedFriend = {id: friend._id, name: friend.firstname + friend.lastname, email: friend.email};
+
+					curr_user.direct_friends.push(acceptedFriend);
+
+					// ISEO-TBD:... can't believe but remove/pull only works with _id, not other fields.
+					//result = curr_user.incoming_friends_requests.remove({_id: friendObjectToRemove._id});
+					//result =curr_user.incoming_friends_requests.pull(friend._id);
+			
+					// This works but non-sense to me... why should I query again??
+					User.update({
+					    _id: req.user._id
+					}, {
+					    $pull: 
+					        {incoming_friends_requests: {id: friend._id}}
+					    },
+					    function (err, val) {
+							curr_user.save();
+							// Let's render with updated database...
+							res.redirect("/mynetwork");
+					});
+					
+				});
+			}
+		});
+
+	});
+
+	router.get("/:filename", function(req, res){
+		var fileName = req.params.filename;
+	 	console.log("received file name=" + fileName)
+	  	res.sendFile(path.join(__dirname, `../../../public/user_resources/pictures/${fileName}`));
 	});
 
 	return router;

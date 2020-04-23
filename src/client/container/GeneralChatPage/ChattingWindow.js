@@ -17,13 +17,13 @@ function ChattingWindow() {
         divRef.current.scrollIntoView({behavior: 'smooth'});
     });
 
-    const {chattingHistory, updateChatHistory} = useContext(MessageContext);
+    const {getChattingHistory, updateChatHistory} = useContext(MessageContext);
 
-    const chatMessages = chattingHistory.map(function (message, index) {
+    const chatMessages = getChattingHistory().map(function (chat, index) {
         return <ChattingMessageBox
             msg_direction={(index % 2)}
             profile_picture={sampleProfile}
-            message={message}
+            message={chat.message}
             timestamp="03/28/2020 7:11 P.M"
         />;
     });

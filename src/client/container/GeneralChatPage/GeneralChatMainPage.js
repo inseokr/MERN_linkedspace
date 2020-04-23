@@ -16,8 +16,7 @@ import './GeneralChatMainPage.css'
 
 function GeneralChatMainPage() {
 
-  // ISEO-TBD: why we can't use the context here??
-  const {chattingHistory, updateChatHistory, loadChattingDatabase} = useContext(MessageContext);
+  const {loadChattingDatabase} = useContext(MessageContext);
 
   console.log("GeneralChatMainPage is being loaded");
   

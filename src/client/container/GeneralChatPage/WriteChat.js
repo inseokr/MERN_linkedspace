@@ -4,7 +4,7 @@ import '../../app.css';
 import './GeneralChatMainPage.css';
 
 function WriteChat() {
-  const { chattingHistory,  updateChatHistory} = useContext(MessageContext);
+  const {updateChatHistory} = useContext(MessageContext);
   const [chatMessage, setChatMessage] = useState("Write message...");
 
   const handleKeyPress = (e) => {
