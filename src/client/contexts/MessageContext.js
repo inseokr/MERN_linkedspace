@@ -31,18 +31,52 @@ export function MessageContextProvider(props) {
   // <question> can we use map?
   const [dmChannelContexts, setChannelContexts] = useState([]);
 
+  // ISEO-TBD: need to figure out the default channel
+
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
   const [currChanneInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
 
-  const [chattingHistory, addMsgToChatHistory] = useState([]);
+  //const [chattingHistory, addMsgToChatHistory] = useState([]);
 
   const [waitMessage, setWaitMessage] = useState(false);
   const [socketCreated, setSocketCreated] = useState(false);
   const [chatSocket, setWebSocket] = useState(null);
   const [alertSound, setAlertSound] = useState(null);
 
+  const {currentUser, friendsList} = useContext(GlobalContext);
 
-  const {friendsList} = useContext(GlobalContext);
+  // create or connect messaging socket
+  if(socketCreated==false)
+  {
+      console.log("creating WebSocket");
+      let ws = new WebSocket(chatUrl);
+      setSocketCreated(true);
+      setWebSocket(ws);
+
+      let audio = new Audio(messageAlertSound);
+      setAlertSound(audio);
+  }
+  else {
+      // ISEO: not sure how it will be called upon every message reception?
+      chatSocket.onopen = () => {
+          console.log("Chat Server Connected");
+          // let's send the first message to register this socket.
+          chatSocket.send("CSC:Register:inseo");
+      }
+
+      chatSocket.onmessage = evt => {
+          const message = evt.data;
+          updateChatHistory(message, false);
+          setWaitMessage(false);
+      }
+
+      chatSocket.onclose = () => {
+          console.log("Disconnected");
+          // Do we need to reconnected?
+          setWebSocket(null);
+          setSocketCreated(false);
+      }
+  }
 
 
   function parseIncomingMessage(msg)
@@ -53,31 +87,44 @@ export function MessageContextProvider(props) {
       return parsedString;
   }
 
-  function updateChatContext(msg, channelName, channeType)
+  // direction: 
+  //  + 0: sent from current user
+  //  + 1: receive from others
+  function updateChatContext(msg, channelName, channeType, direction)
   {
+    console.log("updateChatContext, channelName = " + channelName);
+
     let channelContexts = dmChannelContexts;
 
     let chatHistory = channelContexts[channelName].chattingHistory;
-    let currentChat = {message: msg, timestamp: Date.now()};
+
+    let currentChat = {message: msg, timestamp: Date.now(), direction: direction};
     
     chatHistory = [...chatHistory, currentChat];
-    channelContexts["iseo-dm-justin"].chattingHistory = chatHistory;
 
-    console.log("updateChatContext... updating chatHistory now....");
 
-    setChannelContexts(channelContexts); 
+    console.log("length of chatHistory = " + chatHistory.length );
+
+    channelContexts[channelName].chattingHistory = chatHistory;
+
+    setChannelContexts(channelContexts);
+
+    console.log("current chat history = " + JSON.stringify(channelContexts[channelName].chattingHistory[chatHistory.length-1]));
   }
 
+
   function getChattingHistory() {
-      console.log("getChattingHistory...");
-      if(dmChannelContexts["iseo-dm-justin"]===undefined)
+      console.log("getChattingHistory of " + currChanneInfo.channelName);
+
+      if(dmChannelContexts[currChanneInfo.channelName]===undefined)
       {
         // no history
         return [];
       }
       else 
       {
-        return dmChannelContexts["iseo-dm-justin"].chattingHistory;
+        console.log("Channel was found!!");
+        return dmChannelContexts[currChanneInfo.channelName].chattingHistory;
       }
   }
 
@@ -90,18 +137,18 @@ export function MessageContextProvider(props) {
 
           // need to append header
           // @CSD:channel_id:
-          //chatSocket.send(''.concat("CSD:iseo-dm-justin:", JSON.stringify(msg)));
-          chatSocket.send(''.concat("CSD:iseo-dm-justin:", msg));
+          //chatSocket.send(''.concat("CSD:{currChanneInfo.channelName}:", msg));
+          chatSocket.send("CSD:"+currChanneInfo.channelName+":"+msg);
           setWaitMessage(true);
           // it will echo locally added messages.
           // how to filter it out then? Server should not forward it back to me?
-          const newHistory = [...chattingHistory, msg];
-          addMsgToChatHistory(newHistory);
+          //const newHistory = [...chattingHistory, msg];
+          //addMsgToChatHistory(newHistory);
 
           // let's add to new DBs
           // <note> I find it very inefficient...
           // we have to copy things all the time??
-          updateChatContext(msg, "iseo-dm-justin", 0);
+          updateChatContext(msg, currChanneInfo.channelName, 0 , 0);
       }
       else {
           alertSound.play();
@@ -110,89 +157,134 @@ export function MessageContextProvider(props) {
           // <note> processedMsg[1] will contain the channel information.
           console.log("Message for channel ID = " + processedMsg[1]);
 
-          const newHistory = [...chattingHistory, processedMsg[2]];
-          addMsgToChatHistory(newHistory);
+         //const newHistory = [...chattingHistory, processedMsg[2]];
+         // addMsgToChatHistory(newHistory);
 
-          updateChatContext(processedMsg[2], "iseo-dm-justin", 0);
+          updateChatContext(processedMsg[2], processedMsg[1], 0, 0);
       }
   }
-    if(socketCreated==false)
+
+  function getListOfDmChannels()
+  {
+    let dmChannels = [];
+
+    for(let i=0; i < friendsList.length; i++)
     {
-        console.log("creating WebSocket");
-        let ws = new WebSocket(chatUrl);
-        setSocketCreated(true);
-        setWebSocket(ws);
+      let dmChannel = {channel_id: 
+                       (currentUser.username>friendsList[i].username)?
+                       friendsList[i].username + "-dm-" +  currentUser.username:
+                       currentUser.username + "-dm-" + friendsList[i].username,
+                       members: []};
 
-        let audio = new Audio(messageAlertSound);
-        setAlertSound(audio);
-    }
-    else {
-        chatSocket.onopen = () => {
-            console.log("Chat Server Connected");
-            // let's send the first message to register this socket.
-            chatSocket.send("CSC:Register:inseo");
-        }
+      dmChannel.members.push(friendsList[i].username);
+      dmChannel.members.push(currentUser.username);
 
-        chatSocket.onmessage = evt => {
-            const message = evt.data;
-            updateChatHistory(message, false);
-            setWaitMessage(false);
-        }
-
-        chatSocket.onclose = () => {
-            console.log("Disconnected");
-            // Do we need to reconnected?
-            setWebSocket(null);
-            setSocketCreated(false);
-        }
+      dmChannels.push(dmChannel);
     }
 
+    return dmChannels;
+  }
 
-    // loading chatting database from backend
-    function loadChattingDatabase()
+  function getLastReadIndex(chnanel_id)
+  {
+    // ISEO: let's consider introducing map instead?
+    for(let i=0; i<currentUser.chatting_channels.dm_channels; i++)
     {
-      var testArray = ["iseo" , "justin"];
-      var data = {channel_id: "iseo-dm-justin", channel_type: 0, members: testArray};
+      if(currentUser.chatting_channels.dm_channels[i].name==channel_id)
+      {
+        return currentUser.chatting_channels.dm_channels[i].lastReadIndex; 
+      }
+    }
+    return 0;
+  }
 
-      console.log("loadChattingDatabase");
-      console.log("friendsList = ", friendsList);
-/*
-      fetch('/chatting/get')
-      .then(res => res.json())
-      .then(channel => {
-        console.log("channel ID = " + channel.channel_id);
-        //console.log("creator = " + channel.channel_creator.name);
-        console.log("history length = " + channel.chat_history.length);
-      });
-*/
+  function buildHistoryFromDb(history)
+  {
+    let reactChatHistory = [];
+
+
+    for(let i=0; i<history.length; i++)
+    {
+      let curChat = { message: history[i].message, 
+                      timestamp: history[i].timestamp, 
+                      direction: ((history[i].writer==currentUser.username) ? 0 : 1)};
+
+      reactChatHistory = [...reactChatHistory, curChat];
+    }
+
+    return reactChatHistory;
+  }
+
+  function loadChatHistory(channel_id, history)
+  {
+    console.log("loadChatHistory");
+
+    // update channel DB in react side
+    let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: 0, 
+                           chattingHistory: buildHistoryFromDb(history)
+                           };
+
+
+    let dmChannelContextArray = dmChannelContexts;
+    dmChannelContextArray[channel_id] = dmChannel;
+
+    setChannelContexts(dmChannelContextArray);
+
+    // ISEO-TBD: somehow it's not changing ??
+    console.log("channel ID = " + dmChannelContexts[channel_id].channel_id);
+    
+    console.log("length of chattingHistory = " + dmChannelContexts[channel_id].chattingHistory.length);
+
+  }
+
+  // loading chatting database from backend
+  function loadChattingDatabase()
+  {
+    var testArray = ["iseo" , "justin"];
+
+    console.log("loadChattingDatabase");
+
+    let dmChannels = getListOfDmChannels();
+
+    console.log("number of channels = " + dmChannels.length);
+
+    // go through each channel and load chatting history if any.
+    // we need to create the channel if it doesn't exist yet.
+    for(let i = 0; i<dmChannels.length; i++)
+    {      
+      var data = { channel_id: dmChannels[i].channel_id, 
+                   channel_type: 0, 
+                   members: dmChannels[i].members};
+
+      console.log("creating channels = " + dmChannels[i].channel_id);
+
+      // ISEO-TBD: problem in handling the result!!
       axios.post('/chatting/new', data)
-        .then(res => res.json())
         .then(result => 
         {
-            console.log("result = " + result);
-        });
+            console.log(result.data);
 
-
-      // update channel DB in react side
-      const initDmChannel = {channel_id: "iseo-dm-justin", channel_type: 0, last_read_index: 0, 
-                             chattingHistory: []
-                             };
-
-      if(dmChannelContexts["iseo-dm-justin"]===undefined)
-      {
-        console.log("New channel just added");
-        
-        const dmChannelContextArray = dmChannelContexts;
-        dmChannelContextArray["iseo-dm-justin"] = initDmChannel;
-        setChannelContexts(dmChannelContextArray);
-      }
-      else
-      {
-        console.log("The channel already exists");
-      }
+            if(result.data.bNewlyCreated==false)
+            {
+              // update channel DB using the history data
+              console.log("result = " + result);
+              let channelData = { channel_id: result.data.channel.channel_id,
+                                  channel_type: result.data.channel.channel_type,
+                                  last_read_index: getLastReadIndex(result.data.channel.channel_id)}
+              loadChatHistory(dmChannels[i].channel_id, result.data.channel.chat_history);
+            }
+            else
+            {
+              console.log(dmChannels[i].channel_id+"was newly created");
+              loadChatHistory(dmChannels[i].channel_id, []);
+            }
+        })
+        .catch(err => console.log(err));
     }
 
-    return (
+  }
+
+  return (
     <MessageContext.Provider value={{getChattingHistory, updateChatHistory, loadChattingDatabase }}>
       {props.children}
     </MessageContext.Provider>

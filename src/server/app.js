@@ -113,6 +113,7 @@ app.use("/chatting", chattingRoutes);
 app.use(fileUpload());
 app.locals.profile_picture = "/public/user_resources/pictures/profile_pictures/default_profile.jpg";
 app.locals.lastReactMenu = "";
+app.locals.currentUser = null;
 global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
 console.log("basedir="+__dirname);

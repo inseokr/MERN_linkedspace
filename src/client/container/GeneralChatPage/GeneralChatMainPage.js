@@ -3,6 +3,7 @@ import '../../app.css';
 import Home from '../HomePage/Home';
 import Search from '../SearchPage/SearchPage';
 import { MessageContext } from '../../contexts/MessageContext';
+import { GlobalContext } from '../../contexts/GlobalContext';
 
 import GeneralChatHeader from './GeneralChatHeader';
 import SearchMessageBox from './SearchMessageBox';
@@ -17,6 +18,7 @@ import './GeneralChatMainPage.css'
 function GeneralChatMainPage() {
 
   const {loadChattingDatabase} = useContext(MessageContext);
+  const {friendsList} = useContext(GlobalContext);
 
   console.log("GeneralChatMainPage is being loaded");
   

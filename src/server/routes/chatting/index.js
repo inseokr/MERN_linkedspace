@@ -34,7 +34,11 @@ module.exports = function(app) {
 	  	chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
 		    if(channel!=null)
 		    {
-		      res.json(channel);
+		      let result = {bNewlyCreated: false, channel: channel};
+
+		      console.log("Channel exits already. returning the channel");
+
+		      res.json(result);
 		      return;
 		    }
 
@@ -68,10 +72,15 @@ module.exports = function(app) {
 		              console.log("Saving it to the database"); 
 		              newChannel.save();
 		              chatDbHandler.addChannelToUser(newChannel);
-		              res.json("success");
 		            }
 		      });
 		    }
+
+		    let result = {bNewlyCreated: true};
+
+		    res.json(result);
+
+		    console.log("Channel just created");
 	  	});
 
 	});

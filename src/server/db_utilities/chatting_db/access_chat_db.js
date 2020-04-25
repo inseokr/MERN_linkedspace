@@ -49,6 +49,9 @@ function addChannelToUser(chat_channel)
 {
 	chat_channel.members.forEach(member => {
 	    userDbHandler.getUserById(member.id).then((foundUser) => {
+
+        console.log("addChannelToUser: foundUser = " + foundUser);
+        
 	    	if(foundUser)
 	    	{
 	    		// <note> id is now known yet.

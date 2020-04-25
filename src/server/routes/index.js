@@ -19,9 +19,7 @@ node.loop = node.runLoopOnce;
 module.exports = function(app) {
 
   router.get("/getLoginStatus", function(req, res){
-    var isUserLoggined = (req.user) ? "true": "false";
-    console.log("getLoginStatus called. status = " + isUserLoggined);
-    res.json(isUserLoggined);
+    res.json(app.locals.currentUser);
   });
 
   router.get("/getLastMenu", function(req, res){
@@ -100,6 +98,7 @@ module.exports = function(app) {
   router.get("/logout", function(req,res){
     req.logout();
     req.flash("success", "Logged you out!");
+    app.locals.currentUser = null;
     res.redirect("/");
   });
 

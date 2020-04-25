@@ -5,6 +5,13 @@ export const GlobalContext = createContext();
 export function GlobalProvider(props) {
 
   const [friendsList, setFriends] = useState();	
+  const [currentUser, setCurrentUser] = useState(null);
+
+  function isUserLoggined()
+  {
+  	if(currentUser!=null) return true;
+  	else false;
+  }
 
   function loadFriendList()
   {
@@ -17,7 +24,7 @@ export function GlobalProvider(props) {
   }
 
   return (
-    <GlobalContext.Provider value={{ friendsList, loadFriendList }}>
+    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList }}>
       {props.children}
     </GlobalContext.Provider>
   );
