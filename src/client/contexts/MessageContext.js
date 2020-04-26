@@ -31,6 +31,8 @@ export function MessageContextProvider(props) {
   // <question> can we use map?
   const [dmChannelContexts, setChannelContexts] = useState([]);
 
+  const [numOfMsgHistory, setNumOfMsgHistory] = useState(0);
+
   // ISEO-TBD: need to figure out the default channel
 
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
@@ -108,6 +110,8 @@ export function MessageContextProvider(props) {
     channelContexts[channelName].chattingHistory = chatHistory;
 
     setChannelContexts(channelContexts);
+
+    setNumOfMsgHistory(chatHistory.length);
 
     console.log("current chat history = " + JSON.stringify(channelContexts[channelName].chattingHistory[chatHistory.length-1]));
   }
@@ -232,16 +236,17 @@ export function MessageContextProvider(props) {
 
     // ISEO-TBD: somehow it's not changing ??
     console.log("channel ID = " + dmChannelContexts[channel_id].channel_id);
-    
     console.log("length of chattingHistory = " + dmChannelContexts[channel_id].chattingHistory.length);
+
+    setNumOfMsgHistory(dmChannelContexts[channel_id].chattingHistory.length);
+
+    console.log("dmChannelContexts length = " + dmChannelContexts.length);
 
   }
 
   // loading chatting database from backend
   function loadChattingDatabase()
   {
-    var testArray = ["iseo" , "justin"];
-
     console.log("loadChattingDatabase");
 
     let dmChannels = getListOfDmChannels();
@@ -285,7 +290,7 @@ export function MessageContextProvider(props) {
   }
 
   return (
-    <MessageContext.Provider value={{getChattingHistory, updateChatHistory, loadChattingDatabase }}>
+    <MessageContext.Provider value={{ numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase }}>
       {props.children}
     </MessageContext.Provider>
   );

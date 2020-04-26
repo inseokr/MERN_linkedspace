@@ -4,6 +4,7 @@ import LinkedSpaceHeader from './LinkedSpaceHeader';
 import NoLoginMenu from '../Login/NoLoginMenu';
 import LoginMenu from '../Login/LoginMenu';
 import { GlobalContext } from '../../contexts/GlobalContext';
+import { MessageContext } from '../../contexts/MessageContext';
 
 export default class CommonHeader extends Component {
 
@@ -14,6 +15,7 @@ export default class CommonHeader extends Component {
   }
 
   componentDidMount() {
+    console.log("CommonHeader componentDidMount");
     this.getLoginStatus();
   }
 
@@ -29,7 +31,6 @@ export default class CommonHeader extends Component {
       {
         //loading user information and others
         console.log("User Loggined and loading friend list");
-        
         this.context.loadFriendList();
       }
     })

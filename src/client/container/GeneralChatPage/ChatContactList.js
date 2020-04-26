@@ -4,9 +4,11 @@ import './GeneralChatMainPage.css'
 
 import ContactSummary from './ContactSummary';
 import { GlobalContext } from '../../contexts/GlobalContext';
+import { MessageContext } from '../../contexts/MessageContext';
 
 function ChatContactList() {
 
+	console.log("ChatContactList");
 	const {friendsList} = useContext(GlobalContext);
 
 	// create initial state based on friendsList

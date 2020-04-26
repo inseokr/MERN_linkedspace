@@ -15,45 +15,47 @@ import WriteChat from './WriteChat';
 import './GeneralChatMainPage.css'
 
 
-function GeneralChatMainPage() {
-
-  const {loadChattingDatabase} = useContext(MessageContext);
-  const {friendsList} = useContext(GlobalContext);
-
-  console.log("GeneralChatMainPage is being loaded");
+export default class GeneralChatMainPage extends Component {
   
-  useEffect(() => {
-    console.log("loading channel database");
-    loadChattingDatabase();
-  });
+  static contextType = MessageContext;
 
-  return (
-    <div className="GeneralChatMainWrapper bg-light">
-        <div className="MessageLeftPanel">
-            <div className="MessageHeader_ls" >
-                <GeneralChatHeader />
-            </div>
-            <div className="SearchMessageBox">
-                <SearchMessageBox />
-            </div>
-            <div className="MessageContactList">
-                <ChatContactList />
-            </div>
-        </div>
+  constructor(props){
+    super(props);
+  }
 
-        <div className="MessageRightPanel">
-            <div className="SenderProfileSummary">
-                <ChatPartySummary />
-            </div>
-            <div className="ChattingWindow">
-                <ChattingWindow />
-            </div>
-            <div className="WriteMessageWindow">
-                <WriteChat />
-            </div>
-        </div>
-    </div>
-  );
+  componentDidMount() {
+    console.log("GeneralChatMainPage is being loaded");
+    this.context.loadChattingDatabase();
+
+  }
+
+  render() {
+    return (
+      <div className="GeneralChatMainWrapper bg-light">
+          <div className="MessageLeftPanel">
+              <div className="MessageHeader_ls" >
+                  <GeneralChatHeader />
+              </div>
+              <div className="SearchMessageBox">
+                  <SearchMessageBox />
+              </div>
+              <div className="MessageContactList">
+                  <ChatContactList />
+              </div>
+          </div>
+
+          <div className="MessageRightPanel">
+              <div className="SenderProfileSummary">
+                  <ChatPartySummary />
+              </div>
+              <div className="ChattingWindow">
+                  <ChattingWindow />
+              </div>
+              <div className="WriteMessageWindow">
+                  <WriteChat />
+              </div>
+          </div>
+      </div>
+    );
+  }
 }
-
-export default GeneralChatMainPage;
