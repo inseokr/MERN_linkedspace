@@ -49,8 +49,8 @@ module.exports = function(app) {
 
 		    // <note> The app defined here is different from the app in "App.js"
 		    // <note> we should re-factor index.js in the root routes directory, need to inherit app. 
-		    newChannel.channel_creator.name = app.locals.currentUser.username;
-		    newChannel.channel_creator.id   = app.locals.currentUser.id_;
+		    newChannel.channel_creator.name = req.user.username;
+		    newChannel.channel_creator.id   = app.locals.currentUser[req.user.username].id_;
 		    // <note> req.body doesn't include those information.
 
 		    // process list of members

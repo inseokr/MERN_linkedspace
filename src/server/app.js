@@ -87,7 +87,8 @@ passport.use(new FacebookStrategy({
     User.findOne({username:'inseo'}, function(err, user) {
       if (err) { return done(err); }
       console.log("Facebook login: saving current user");
-      app.locals.currentUser = user;
+      // ISEO-TBD: need work!!
+      app.locals.currentUser["inseo"] = user;
       done(null, user);
     });
   }
@@ -95,10 +96,14 @@ passport.use(new FacebookStrategy({
 
 // iseo: It's kind of pre-processing or middleware for route handling
 app.use(function(req, res, next){
-   res.locals.currentUser = req.user;
+
+   if(req.user != undefined)
+   {
+      res.locals.currentUser = req.user;
+      app.locals.currentUser[req.user.username] = req.user;
+   }
    res.locals.error = req.flash("error");
    res.locals.success = req.flash("success");
-   //console.log("Current User = " + res.locals.currentUser);
    next();
 });
 
@@ -113,7 +118,7 @@ app.use("/chatting", chattingRoutes);
 app.use(fileUpload());
 app.locals.profile_picture = "/public/user_resources/pictures/profile_pictures/default_profile.jpg";
 app.locals.lastReactMenu = "";
-app.locals.currentUser = null;
+app.locals.currentUser = [];
 global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
 console.log("basedir="+__dirname);

@@ -9,7 +9,7 @@ import { GlobalContext } from './GlobalContext';
 export const MessageContext = createContext();
 
 // <note> need to  use IP address variable
-const chatUrl = 'ws://localhost:3030';
+const chatUrl = 'ws://10.0.0.34:3030';
 
 export function MessageContextProvider(props) {
   // How to organize chatting channels?
@@ -63,7 +63,8 @@ export function MessageContextProvider(props) {
       chatSocket.onopen = () => {
           console.log("Chat Server Connected");
           // let's send the first message to register this socket.
-          chatSocket.send("CSC:Register:inseo");
+          // ISEO-TBD: 
+          chatSocket.send("CSC:Register:"+currentUser.username);
       }
 
       chatSocket.onmessage = evt => {
@@ -83,16 +84,17 @@ export function MessageContextProvider(props) {
 
   function parseIncomingMessage(msg)
   {
-      const regex = /CSD:(.*):(.*)/g;
+      const regex = /CSD:(.*):(.*):(.*)/g;
       let parsedString = regex.exec(msg);
 
+      console.log("received mssg="+msg);
       return parsedString;
   }
 
   // direction: 
   //  + 0: sent from current user
   //  + 1: receive from others
-  function updateChatContext(msg, channelName, channeType, direction)
+  function updateChatContext(msg, channelName, channeType, direction, username)
   {
     console.log("updateChatContext, channelName = " + channelName);
 
@@ -100,7 +102,7 @@ export function MessageContextProvider(props) {
 
     let chatHistory = channelContexts[channelName].chattingHistory;
 
-    let currentChat = {message: msg, timestamp: Date.now(), direction: direction};
+    let currentChat = {message: msg, timestamp: Date.now().toDateString(), direction: direction, username: username};
     
     chatHistory = [...chatHistory, currentChat];
 
@@ -140,9 +142,9 @@ export function MessageContextProvider(props) {
           console.log("Sending message to server. msg = " + msg);
 
           // need to append header
-          // @CSD:channel_id:
+          // @CSD:channel_id:sender_name:msg
           //chatSocket.send(''.concat("CSD:{currChanneInfo.channelName}:", msg));
-          chatSocket.send("CSD:"+currChanneInfo.channelName+":"+msg);
+          chatSocket.send("CSD:"+currChanneInfo.channelName+":"+currentUser.username+":"+msg);
           setWaitMessage(true);
           // it will echo locally added messages.
           // how to filter it out then? Server should not forward it back to me?
@@ -152,19 +154,21 @@ export function MessageContextProvider(props) {
           // let's add to new DBs
           // <note> I find it very inefficient...
           // we have to copy things all the time??
-          updateChatContext(msg, currChanneInfo.channelName, 0 , 0);
+          updateChatContext(msg, currChanneInfo.channelName, 0 , 0, currentUser.username);
       }
       else {
           alertSound.play();
           let processedMsg = parseIncomingMessage(msg);
 
-          // <note> processedMsg[1] will contain the channel information.
-          console.log("Message for channel ID = " + processedMsg[1]);
+          // <note> 
+          // processedMsg[1]: channel information.
+          // processedMsg[2]: sender name
+          // processedMsg[3]: message
+          //console.log("Message for channel ID = " + processedMsg[1]);
 
-         //const newHistory = [...chattingHistory, processedMsg[2]];
-         // addMsgToChatHistory(newHistory);
-
-          updateChatContext(processedMsg[2], processedMsg[1], 0, 0);
+          //const newHistory = [...chattingHistory, processedMsg[2]];
+          // addMsgToChatHistory(newHistory);
+          updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
       }
   }
 
@@ -209,8 +213,11 @@ export function MessageContextProvider(props) {
 
     for(let i=0; i<history.length; i++)
     {
-      let curChat = { message: history[i].message, 
-                      timestamp: history[i].timestamp, 
+      let date = new Date(history[i].timestamp);
+
+      let curChat = { message: history[i].message,
+                      username: history[i].writer, 
+                      timestamp: date.toDateString(), 
                       direction: ((history[i].writer==currentUser.username) ? 0 : 1)};
 
       reactChatHistory = [...reactChatHistory, curChat];

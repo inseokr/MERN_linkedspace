@@ -29,16 +29,20 @@
 // <QUESTION> Probably it's better that we use API to manage chatting room instead of using socket
 // channel? That's true... However message may need to include header still to route it properly?
 // 1.3 special channel
+const uuidv4 = require('uuid/v4')
 const WebSocket = require('ws');
 const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
 
 const wss = new WebSocket.Server({ port: 3030});
 
 // MAP: user/channelID/socket
+// ISEO-TBD: is there any map to manage per user?
 var socketToUserMap = [];
 var userToSocketMap = [];
 var channelIdToSocketList = [];
-var channelIdToUserList = [];
+
+// ISEO-TBD: this map is not being used
+var channelIdToUserList = []; 
 
 function updateUserSocketMap(currentSocket, user_name)
 {
@@ -50,7 +54,9 @@ function updateUserSocketMap(currentSocket, user_name)
         userToSocketMap[user_name] = [currentSocket] :
         userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
-    socketToUserMap[currentSocket] = user_name;
+    console.log("Updating socketToUserMap for user = " + user_name);
+
+    socketToUserMap[currentSocket.id] = user_name;
 
     // <TBD> When is the right point to do this?
     // We may consult DB here and get the list of channels for this user and update it.
@@ -72,10 +78,10 @@ function handleCtrlMsg(rxMsg) {
 
 function parseChatMsgHeader(data)
 {
-    const regex = /CSD:(.*):(.*)/g;
+    const regex = /CSD:(.*):(.*):(.*)/g;
     let parsedString = regex.exec(data);
 
-    return {channel_id: parsedString[1], msg: parsedString[2]};
+    return {channel_id: parsedString[1], sender: parsedString[2], msg: parsedString[3]};
 }
 
 function addUserToChannel(channelId, user)
@@ -112,7 +118,7 @@ function processChatMsgHeader(data)
 {
     let targetSockets = [];
 
-    let {channel_id, msg} = parseChatMsgHeader(data);
+    let {channel_id, sender, msg} = parseChatMsgHeader(data);
 
     if(channel_id==undefined){
         console.log("No channelID has been identified");
@@ -121,14 +127,13 @@ function processChatMsgHeader(data)
     else {
         console.log("channel found. channel ID = " + channel_id)
         targetSockets = getListOfSocketsByChannelId(channel_id);
-        return {targets: targetSockets, id: channel_id, message: msg};
+        return {targets: targetSockets, id: channel_id, sender: sender, message: msg};
     }
 }
 
 function routeMessage(data, incomingSocket)
 {
-    console.log("routeMessage: got message from socket = " + incomingSocket);
-    let {targets, id, message} = processChatMsgHeader(data);
+    let {targets, id, sender, message} = processChatMsgHeader(data);
 
     // find the channel DB entry with given channelId
     if(id!=null){
@@ -138,10 +143,10 @@ function routeMessage(data, incomingSocket)
                 console.log("Channel couldn't be found");
                 return;
             }
-
-            console.log("Adding to history");
             // add to history
-            const chat = {writer: socketToUserMap[incomingSocket], message: message, timestamp: Date.now()};
+            console.log("Writer = " + socketToUserMap[incomingSocket.id]);
+
+            const chat = {writer: socketToUserMap[incomingSocket.id], message: message, timestamp: Date.now()};
             channel.chat_history.push(chat);
             channel.save();
 
@@ -171,6 +176,10 @@ module.exports = function() {
     channelIdToUserList["iseo-dm-justin"] = ["iseo", "justin"];
 
     wss.on('connection', function connection(ws) {
+        ws.id = uuidv4();
+        
+        console.log("New connection: UUID = " + ws.id);
+
         ws.on('message', function incoming(data) {
 
             console.log("Chat Server: received data = " + data);

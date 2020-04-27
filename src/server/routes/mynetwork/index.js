@@ -183,7 +183,7 @@ module.exports = function(app) {
 		
 		console.log("Get friend list");
 
-		res.json(app.locals.currentUser.direct_friends);
+		res.json(app.locals.currentUser[req.user.username].direct_friends);
 	});
 
 

@@ -12,6 +12,7 @@ function ChattingWindow() {
 
     const divRef = React.createRef();
     const {numOfMsgHistory, getChattingHistory, updateChatHistory} = useContext(MessageContext);
+    const {getProfilePicture} = useContext(GlobalContext);
 
     let bFirstLoad = true;
 
@@ -22,9 +23,9 @@ function ChattingWindow() {
         let chatHistory = getChattingHistory().map(function (chat, index) {
             return <ChattingMessageBox
                 msg_direction={chat.direction}
-                profile_picture={sampleProfile}
+                profile_picture={getProfilePicture(chat.username)}
                 message={chat.message}
-                timestamp="03/28/2020 7:11 P.M"
+                timestamp={chat.timestamp}
             />;
         });
         return chatHistory;

@@ -19,11 +19,14 @@ node.loop = node.runLoopOnce;
 module.exports = function(app) {
 
   router.get("/getLoginStatus", function(req, res){
-    res.json(app.locals.currentUser);
+    if(req.user==undefined) 
+      res.json(null);
+    else
+      res.json(app.locals.currentUser[req.user.username]);
   });
 
   router.get("/getLastMenu", function(req, res){
-    console.log("getLastMenu is called");
+    console.log("getLastMenu is called for user = " + req.user);
     res.json(app.locals.lastReactMenu);
     app.locals.lastReactMenu = "";
   });
@@ -98,7 +101,7 @@ module.exports = function(app) {
   router.get("/logout", function(req,res){
     req.logout();
     req.flash("success", "Logged you out!");
-    app.locals.currentUser = null;
+    app.locals.currentUser[req.user.username] = null;
     res.redirect("/");
   });
 
@@ -127,7 +130,8 @@ module.exports = function(app) {
 
           User.findOne({username:req.body.username}, function(err, user) {
             if (err) { console.log("User Not Found"); return; }
-            app.locals.currentUser = user;
+            app.locals.currentUser[req.user.username] = user;
+            //console.log("Updating current user = " + app.locals.currentUser );
           });
         }
 
