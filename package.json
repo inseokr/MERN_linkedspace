@@ -19,6 +19,7 @@
     "express-validator": "^6.4.0",
     "image-webpack-loader": "^6.0.0",
     "react": "^16.5.2",
+    "react-bootstrap": "^1.0.0-beta.17",
     "react-dom": "^16.5.2",
     "react-native-geocoding": "^0.4.0",
     "react-router": "^5.1.2",
