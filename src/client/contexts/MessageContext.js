@@ -51,7 +51,8 @@ export function MessageContextProvider(props) {
   if(socketCreated==false)
   {
       console.log("creating WebSocket");
-      let ws = new WebSocket(chatUrl);
+      console.log("current href = "+window.location.hostname);
+      let ws = new WebSocket("ws://"+window.location.hostname+":3030");
       setSocketCreated(true);
       setWebSocket(ws);
 

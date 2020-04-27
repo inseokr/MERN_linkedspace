@@ -44,6 +44,7 @@ function ChattingWindow() {
             console.log("block to start");
             divRef.current.scrollIntoView({block: "start"});
         }*/
+        divRef.current.scrollIntoView({block: "end"});
         divRef.current.scrollIntoView({behavior: 'smooth'});
     });
 
