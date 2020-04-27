@@ -21,6 +21,66 @@ var UserSchema = new mongoose.Schema({
         state: String,
         country: String,
         zipcode: Number
+    },
+
+    chatting_channels: {
+    	nextGroupChannelIndex: { type:  Number, default: 0 },
+    	
+    	dm_channels: 
+    	[
+	    	{
+	    		id: {
+	    			type: mongoose.Schema.Types.ObjectId,
+	    			ref: "ChattingChannel"
+	    		},
+	    		name: String,
+	    		lastReadIndex: { type: Number, default: 0 } 
+	    	}
+    	],
+
+    	level_1_parents:
+    	[
+    		{
+	    		id: {
+	    			type: mongoose.Schema.Types.ObjectId,
+	    			ref: "ChattingChannelLevel1Parent"
+	    		},
+
+	    		dm_channels: 
+	    		[
+		    		{
+			    		id: {
+			    			type: mongoose.Schema.Types.ObjectId,
+			    			ref: "ChattingChannel"
+			    		},
+			    		name: String,
+			    		lastReadIndex: { type: Number, default: 0 } 
+		    		}
+	    		],
+
+	    		level_2_parents:
+	    		[
+		    		{
+			    		id: {
+			    			type: mongoose.Schema.Types.ObjectId,
+			    			ref: "ChattingChannelLevel2Parent"
+			    		},
+			    		
+		    			dm_channels:
+			    		[
+				    		{
+					    		id: {
+					    			type: mongoose.Schema.Types.ObjectId,
+					    			ref: "ChattingChannel"
+					    		},
+					    		name: String,
+					    		lastReadIndex: { type: Number, default: 0 } 
+				    		}
+			    		]
+			    	}
+		    	]
+		    }
+    	]
     },  
 
 	direct_friends: [
@@ -30,7 +90,9 @@ var UserSchema = new mongoose.Schema({
 		     	ref: "User"
 		    },
 		    name: String,
-		    email: String
+		    username: String,
+		    email: String,
+		    profile_picture: String,
 		}
 	],
 

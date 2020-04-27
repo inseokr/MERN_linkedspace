@@ -1,255 +1,255 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>LinkedSpaces</title>
-		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">-->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-		<link href="https://use.fontawesome.com/releases/v5.0.7/css/all.css" rel="stylesheet">
-  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-	    <link rel="stylesheet" href="/stylesheets/main.css">
-  	  <link rel="stylesheet" href="/stylesheets/bootstrap_switch.css">
-      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-	</head>
+<head>
+	<title>LinkedSpaces</title>
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link href="https://use.fontawesome.com/releases/v5.0.7/css/all.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/stylesheets/main.css">
+	<link rel="stylesheet" href="/stylesheets/bootstrap_switch.css">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+</head>
 
-  <style>
-span.fa-comment {
-    position: relative;
-    font-size: 1em;
-    top: -8px;
-    color: red;
-    right: 5px;
-}
+<style>
+	span.fa-comment {
+		position: relative;
+		font-size: 1em;
+		top: -8px;
+		color: red;
+		right: 5px;
+	}
 
-.fa {
-    display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+	.fa {
+		display: inline-block;
+		font: normal normal normal 14px/1 FontAwesome;
+		font-size: inherit;
+		text-rendering: auto;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 
-a.fa-globe {
-    position: relative;
-    font-size: 2em;
-    color: grey;
-    cursor: pointer;
-}
+	a.fa-globe {
+		position: relative;
+		font-size: 2em;
+		color: grey;
+		cursor: pointer;
+	}
 
-span.num {
-    position: relative;
-    font-size: 0.5em;
-    top: -10px;
-    color: #fff;
-    right:19px;
-}
+	span.num {
+		position: relative;
+		font-size: 0.5em;
+		top: -10px;
+		color: #fff;
+		right:19px;
+	}
 
 </style>
 
-	<body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
 	<div class="container">
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
-	  <div class="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
-	    <a class="navbar-brand" href="/">LinkedSpaces</a>
-	    <ul class="navbar-nav ml-auto">
-	      <% if(!currentUser){ %>
-	      <li class="nav-item">
-	        <a class="nav-link" href="/react_landing">About</a>
-	      </li>
-	      
-	      <li class="nav-item">
-	      	<a href="#modalLoginForm" data-toggle = "modal" data-target= "#modalLoginForm" class="nav-link">Login</a>
-	      </li>
-	      <li class="nav-item">
-	        <a class="nav-link" href="/signup" >Sign up</a>
-	      </li>
-	      <% } else { %>
-          <li class="nav-item">
-              <a class="nav-link" href="/mynetwork">
-                  My Network 
-                  <span class="fa fa-comment"></span>
-                  <span class="num">2</span>
-              </a>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
-          <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
-          <li class="nav-item"><a class="nav-link" href="/listing/show_forwarded_listing">Listing from friends</a></li>
-          <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
-	      	<li class="nav-item">
-            <a class="nav-link" href="/logout" style="position: relative">
-              Logout
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">
-                <% if(locals.profile_picture != "") {%>
-                <img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.profile_picture%>">
-                <% } else {%>
-                <img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="/public/user_resources/pictures/profile_pictures/default_profile.jpg">
-                <%}%>
-            </a>
-          </li>
-	      <% } %>
-	    </ul>
-	  </div>
-	</div>
-	</nav>	
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
+			<a class="navbar-brand" href="/">LinkedSpaces</a>
+			<ul class="navbar-nav ml-auto">
+				<% if(!currentUser){ %>
+					<li class="nav-item">
+						<a class="nav-link" href="/react_landing">About</a>
+					</li>
 
-	<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-		  aria-hidden="true">
-		  <div class="modal-dialog" role="document">
-		    <div class="modal-content" style="width: 300px !important;">
-		      <div class="modal-header text-center">
-		        <h4 class="modal-title w-100 font-ss="close" data-dismiss="modal" ariweight-bold" style="color:black">LinkedSpaces</h4>
-		      </div>
-
-<!-- Facebook Login
-          <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-          </fb:login-button>
--->
-
-			  <div class="md-form mb-5 form-group" style="margin:auto; margin-top:20px; margin-bottom: 10px !important;">
-				<a href="/auth/facebook"><img src="/public/user_resources/pictures/facebook_login.png" style="width: 270px; height:45px;" alt="Facebook"></a>
-			  </div>
-
-			  <div class="modal-body text-center" style="margin-bottom: 0px !important">
-			  	<span class="strike-through" style="color:LightGrey ;"> or </span>
-			  </div>
-
-		      <form action="/login" method="POST" role="form">
-
-		      	<div class="modal-body form-group">
-			    	<!--FACEBOOK login-->
-
-			        <div class="md-form mb-5 form-group" style="margin-bottom: 10px !important;">
-			        	<div class="input-group">
-			          		<input type="text" class="form-control validate" name="username">
-			          		<div class="input-group-append">
-    							<span class="input-group-text" style="background-color: #FFFFFF"><i class="fa fa-user"></i></span>
-  					  		</div>
-  					  	</div>
-  					  <label data-error="wrong" data-success="right" for="defaultForm-email" style="color: black">Your login name</label>
-			        </div>
-
-			        <div class="md-form mb-4 form-group" style="margin-bottom: 5px !important;">
-			        	<div class="input-group">
-				          <input type="password" id="defaultForm-pass" class="form-control validate" name="password">
-				          <div class="input-group-append">
-				          	<span class="input-group-text" style="background-color: #FFFFFF"><i class="fas fa-lock"></i></span>
-				          </div>
-				        </div>
-			          <label data-error="wrong" data-success="right" for="defaultForm-pass" style="color: black">Your password</label>
-			        </div>
-
-			    </div>
-
-			    <div class="modal-footer d-flex justify-content-center form-group">
-			       <button class="btn btn-danger p-2 flex-grow-1">Login</button>
-			    </div>
-
-          <div class="modal-footer d-flex justify-content-center">
-             <a href="/forgot"> Forgot Password </a>
-          </div>
-
-			  </form>
-		    </div>
-		  </div>
+					<li class="nav-item">
+						<a href="#modalLoginForm" data-toggle = "modal" data-target= "#modalLoginForm" class="nav-link">Login</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/signup" >Sign up</a>
+					</li>
+				<% } else { %>
+					<li class="nav-item">
+						<a class="nav-link" href="/mynetwork">
+							My Network
+							<span class="fa fa-comment"></span>
+							<span class="num">2</span>
+						</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
+					<li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
+					<li class="nav-item"><a class="nav-link" href="/listing/show_forwarded_listing">Listing from friends</a></li>
+					<li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
+					<li class="nav-item">
+						<a class="nav-link" href="/logout" style="position: relative">
+							Logout
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/profile">
+							<% if(locals.profile_picture != "") {%>
+							<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.profile_picture%>">
+							<% } else {%>
+								<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="/public/user_resources/pictures/profile_pictures/default_profile.jpg">
+							<%}%>
+						</a>
+					</li>
+				<% } %>
+			</ul>
 		</div>
 	</div>
+</nav>
 
-	<!-- print out flash information if needed-->
-	<div class="container" style="padding-top: 70px; ">
-        <% if(error && error.length > 0){ %>
-            <div class="alert alert-danger" role="alert">
-                <%= error %>
-            </div>
-        <% } %>
-        <% if(success && success.length > 0){ %>
-            <div class="alert alert-success" role="alert">
-                <%= success %>
-            </div>
-        <% } %>
-    </div>
+<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content" style="width: 300px !important;">
+			<div class="modal-header text-center">
+				<h4 class="modal-title w-100 font-ss="close" data-dismiss="modal" ariweight-bold" style="color:black">LinkedSpaces</h4>
+			</div>
+
+			<!-- Facebook Login
+                      <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                      </fb:login-button>
+            -->
+
+			<div class="md-form mb-5 form-group" style="margin:auto; margin-top:20px; margin-bottom: 10px !important;">
+				<a href="/auth/facebook"><img src="/public/user_resources/pictures/facebook_login.png" style="width: 270px; height:45px;" alt="Facebook"></a>
+			</div>
+
+			<div class="modal-body text-center" style="margin-bottom: 0px !important">
+				<span class="strike-through" style="color:LightGrey ;"> or </span>
+			</div>
+
+			<form action="/login" method="POST" role="form">
+
+				<div class="modal-body form-group">
+					<!--FACEBOOK login-->
+
+					<div class="md-form mb-5 form-group" style="margin-bottom: 10px !important;">
+						<div class="input-group">
+							<input type="text" class="form-control validate" name="username">
+							<div class="input-group-append">
+								<span class="input-group-text" style="background-color: #FFFFFF"><i class="fa fa-user"></i></span>
+							</div>
+						</div>
+						<label data-error="wrong" data-success="right" for="defaultForm-email" style="color: black">Your login name</label>
+					</div>
+
+					<div class="md-form mb-4 form-group" style="margin-bottom: 5px !important;">
+						<div class="input-group">
+							<input type="password" id="defaultForm-pass" class="form-control validate" name="password">
+							<div class="input-group-append">
+								<span class="input-group-text" style="background-color: #FFFFFF"><i class="fas fa-lock"></i></span>
+							</div>
+						</div>
+						<label data-error="wrong" data-success="right" for="defaultForm-pass" style="color: black">Your password</label>
+					</div>
+
+				</div>
+
+				<div class="modal-footer d-flex justify-content-center form-group">
+					<button class="btn btn-danger p-2 flex-grow-1">Login</button>
+				</div>
+
+				<div class="modal-footer d-flex justify-content-center">
+					<a href="/forgot"> Forgot Password </a>
+				</div>
+
+			</form>
+		</div>
+	</div>
+</div>
+</div>
+
+<!-- print out flash information if needed-->
+<div class="container" style="padding-top: 70px; ">
+	<% if(error && error.length > 0){ %>
+		<div class="alert alert-danger" role="alert">
+			<%= error %>
+		</div>
+	<% } %>
+	<% if(success && success.length > 0){ %>
+		<div class="alert alert-success" role="alert">
+			<%= success %>
+		</div>
+	<% } %>
+</div>
 
 <!-- To support Facebook login -->
 <!-- It's not used for now. currently switched to passport-facebook module -->
 <script>
-  // This is called with the results from from FB.getLoginStatus().
-  function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
-    // The response object is returned with a status field that lets the
-    // app know the current login status of the person.
-    // Full docs on the response object can be found in the documentation
-    // for FB.getLoginStatus().
-    if (response.status === 'connected') {
-      // Logged into your app and Facebook.
-      testAPI();
-    } else {
-      // The person is not logged into your app or we are unable to tell.
-      FB.login(function(response){
-      	//Handle the response object, like in statusChangeCallback()
-      });
-    }
-  }
+	// This is called with the results from from FB.getLoginStatus().
+	function statusChangeCallback(response) {
+		console.log('statusChangeCallback');
+		console.log(response);
+		// The response object is returned with a status field that lets the
+		// app know the current login status of the person.
+		// Full docs on the response object can be found in the documentation
+		// for FB.getLoginStatus().
+		if (response.status === 'connected') {
+			// Logged into your app and Facebook.
+			testAPI();
+		} else {
+			// The person is not logged into your app or we are unable to tell.
+			FB.login(function(response){
+				//Handle the response object, like in statusChangeCallback()
+			});
+		}
+	}
 
-  // This function is called when someone finishes with the Login
-  // Button.  See the onlogin handler attached to it in the sample
-  // code below.
-  function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
-    });
-  }
+	// This function is called when someone finishes with the Login
+	// Button.  See the onlogin handler attached to it in the sample
+	// code below.
+	function checkLoginState() {
+		FB.getLoginStatus(function(response) {
+			statusChangeCallback(response);
+		});
+	}
 
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1011405085718313',
-      cookie     : true,  // enable cookies to allow the server to access 
-                          // the session
-      xfbml      : true,  // parse social plugins on this page
-      version    : 'v3.2' // The Graph API version to use for the call
-    });
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId      : '1011405085718313',
+			cookie     : true,  // enable cookies to allow the server to access
+								// the session
+			xfbml      : true,  // parse social plugins on this page
+			version    : 'v3.2' // The Graph API version to use for the call
+		});
 
-    // Now that we've initialized the JavaScript SDK, we call 
-    // FB.getLoginStatus().  This function gets the state of the
-    // person visiting this page and can return one of three states to
-    // the callback you provide.  They can be:
-    //
-    // 1. Logged into your app ('connected')
-    // 2. Logged into Facebook, but not your app ('not_authorized')
-    // 3. Not logged into Facebook and can't tell if they are logged into
-    //    your app or not.
-    //
-    // These three cases are handled in the callback function.
+		// Now that we've initialized the JavaScript SDK, we call
+		// FB.getLoginStatus().  This function gets the state of the
+		// person visiting this page and can return one of three states to
+		// the callback you provide.  They can be:
+		//
+		// 1. Logged into your app ('connected')
+		// 2. Logged into Facebook, but not your app ('not_authorized')
+		// 3. Not logged into Facebook and can't tell if they are logged into
+		//    your app or not.
+		//
+		// These three cases are handled in the callback function.
 
-    //FB.getLoginStatus(function(response) {
-    //  statusChangeCallback(response);
-    //});
+		//FB.getLoginStatus(function(response) {
+		//  statusChangeCallback(response);
+		//});
 
-  };
+	};
 
-  // Load the SDK asynchronously
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
+	// Load the SDK asynchronously
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "https://connect.facebook.net/en_US/sdk.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
 
-  // Here we run a very simple test of the Graph API after login is
-  // successful.  See statusChangeCallback() for when this call is made.
-  function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', {fields: 'first_name,last_name,email'}, function(response) {
-      console.log('Successful login: ' + response.email);
-    });
-  }
+	// Here we run a very simple test of the Graph API after login is
+	// successful.  See statusChangeCallback() for when this call is made.
+	function testAPI() {
+		console.log('Welcome!  Fetching your information.... ');
+		FB.api('/me', {fields: 'first_name,last_name,email'}, function(response) {
+			console.log('Successful login: ' + response.email);
+		});
+	}
 </script>

@@ -16,7 +16,7 @@ router.post("/new", function(req, res){
 	{
 		res.render("listing_main");
 	}
-	else 
+	else
 	{
 		// create a new listing\
 		var newListing = new TenantRequest;
@@ -29,6 +29,7 @@ router.post("/new", function(req, res){
         newListing.rental_duration = req.body.rental_duration;
         newListing.maximum_range_in_miles = req.body.maximum_range_in_miles;
         newListing.rental_budget = req.body.rental_budget;
+				newListing.coordinates = {"lat": 0, "lng": 0};
 
         newListing.save(function(err){
 
@@ -46,7 +47,7 @@ router.post("/new", function(req, res){
         	}
 
         	foundUser.tenant_listing.push(newListing._id);
-        	
+
         	foundUser.save();
         });
 
@@ -87,7 +88,7 @@ router.put("/:list_id", function(req, res){
 	{
 		res.render("/");
 	}
-	else 
+	else
 	{
 		TenantRequest.findById(req.params.list_id, function(err, foundListing){
 			if(err){
@@ -110,7 +111,7 @@ router.put("/:list_id", function(req, res){
 					foundListing.num_of_roommates = req.body.num_of_roommates;
 					foundListing.roommate_request = req.body.roommate_request;
 					foundListing.num_of_requested_roommates = req.body.num_of_requested_roommates;
-					
+
 					if(foundListing.num_of_profile_picture_uploaded!=0)
 					{
 						foundListing.profile_pictures[0].caption = req.body.caption;
@@ -132,13 +133,13 @@ router.put("/:list_id", function(req, res){
 							userFound = false;
 							// TBD
 							var roommate_id = eval(`req.body.roommate_${roommate_idx}`);
-							
+
 							User.find({ "username":  roommate_id}, function (err, tempUser){
 								if(err)
 								{
 									console.log("User not found");
-								} 
-								else 
+								}
+								else
 								{
 									if(tempUser.length==1)
 									{
@@ -169,7 +170,7 @@ router.put("/:list_id", function(req, res){
 
 						foundListing.save();
 
-					} 
+					}
 					else
 					{
 						foundListing.save();
@@ -298,10 +299,10 @@ router.delete("/:list_id", function(req, res){
     	try {
     		fs.unlinkSync(foundListing.profile_pictures[0].path);
 	    } catch(err){
-	    	console.error(err);	
+	    	console.error(err);
 	    }
 
-		foundListing.remove();	    
+		foundListing.remove();
 
     	req.flash("success", "Listing Deleted Successfully");
 		res.redirect("/");
@@ -405,7 +406,7 @@ router.put("/:list_id/forward", function(req, res){
 		});
 	});
 
-    
+
 });
 
 

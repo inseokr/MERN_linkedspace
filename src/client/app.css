@@ -1,3 +1,12 @@
+.navBarContainer {
+  padding-bottom: 70px;
+}
+
+.landingPage {
+  background-color: transparent !important;
+  border-style: none !important;
+}
+
 span.fa-comment {
   position: relative;
   font-size: 1em;

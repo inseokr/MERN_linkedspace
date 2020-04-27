@@ -1,46 +1,57 @@
 // testing heroku...
-var express       = require("express"),
-   app            = express(),
-   bodyParser     = require("body-parser"),
-  mongoose      = require("mongoose"),
-  flash         = require("connect-flash"),
-  passport      = require("passport"),
-  LocalStrategy = require("passport-local"),
-  FacebookStrategy = require("passport-facebook").Strategy,
-  methodOverride   = require("method-override"),
-  User          = require("./models/user")
+var express            = require("express"),
+    app                = express(),
+    bodyParser         = require("body-parser"),
+    mongoose           = require("mongoose"),
+    flash              = require("connect-flash"),
+    passport           = require("passport"),
+    LocalStrategy      = require("passport-local"),
+    FacebookStrategy   = require("passport-facebook").Strategy,
+    methodOverride     = require("method-override"),
+    User               = require("./models/user"),
+    async              = require("async"),
+    nodemailer         = require("nodemailer"),
+    crypto             = require("crypto")
+
 // routes
-var indexRoutes   = require("./routes/index");
-var listingRoutes = require("./routes/listing/index");
-var mynetworkRoutes  = require("./routes/mynetwork/index");
-var landlordRoutes   = require("./routes/listing/landlord/index")(app);
-var tenantRoutes     = require("./routes/listing/tenant/index")(app);
-var profileRoutes = require("./routes/profile/index");
-var fs            = require("fs");
-var path          = require("path");
-var LandlordRequest  = require("./models/listing/landlord_request");
-var TenantRequest  = require("./models/listing/tenant_request");
+var indexRoutes        = require("./routes/index")(app);
+var listingRoutes      = require("./routes/listing/index");
+var mynetworkRoutes    = require("./routes/mynetwork/index")(app);
+var landlordRoutes     = require("./routes/listing/landlord/index")(app);
+var tenantRoutes       = require("./routes/listing/tenant/index")(app);
+var profileRoutes      = require("./routes/profile/index");
+var chattingRoutes     = require("./routes/chatting/index")(app);
 
-var fileUpload    = require('express-fileupload');
-var facebook      = require('./facebook.js');
-var nodemailer = require('nodemailer');
+var fs                 = require("fs");
+var path               = require("path");
+var LandlordRequest    = require("./models/listing/landlord_request");
+var TenantRequest      = require("./models/listing/tenant_request");
 
-var serverPath = "./src/server";
+var fileUpload         = require('express-fileupload');
+var facebook           = require('./facebook.js');
+var nodemailer         = require('nodemailer');
+var chatServer         = require('./chatting_server');
+var serverPath         = "./src/server";
+
+const parseurl         = require('parseurl');
+const expressValidator = require('express-validator');
+
 
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
 
 const os = require('os');
+
 var url = process.env.DATABASEURL || "mongodb://localhost/Linkedspaces";
 mongoose.connect(url,  { useNewUrlParser: true });
-app.use(bodyParser.urlencoded({extended: true}));
+//app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser());
 
 app.set("view engine", "ejs");
 app.set('views', viewPath);
 
 app.use(express.static(__dirname + "/public"));
 
-var indexRoutes = require("./routes/index");
 app.use(methodOverride("_method"));
 app.use(flash());
 app.use(express.static('dist'));
@@ -57,6 +68,7 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate())); // iseo: passport will use User's authenticate method which is passport-mongoose-local
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
 passport.use(new FacebookStrategy({
   clientID: '1011405085718313',
   clientSecret: '3b630313a8a2c8983405b55c11289e8b',
@@ -75,69 +87,49 @@ passport.use(new FacebookStrategy({
     User.findOne({username:'inseo'}, function(err, user) {
       if (err) { return done(err); }
       console.log("Facebook login: saving current user");
-      app.locals.curr_user = user;
+      // ISEO-TBD: need work!!
+      app.locals.currentUser["inseo"] = user;
       done(null, user);
     });
   }
 ));
+
 // iseo: It's kind of pre-processing or middleware for route handling
 app.use(function(req, res, next){
-   res.locals.currentUser = req.user;
+
+   if(req.user != undefined)
+   {
+      res.locals.currentUser = req.user;
+      app.locals.currentUser[req.user.username] = req.user;
+   }
    res.locals.error = req.flash("error");
    res.locals.success = req.flash("success");
-   //console.log("Current User = " + res.locals.currentUser);
    next();
 });
+
 app.use("/", indexRoutes);
 app.use("/listing", listingRoutes);
 app.use("/mynetwork", mynetworkRoutes);
 app.use("/listing/landlord", landlordRoutes);
 app.use("/listing/tenant", tenantRoutes);
 app.use("/profile", profileRoutes);
+app.use("/chatting", chattingRoutes);
+
 app.use(fileUpload());
 app.locals.profile_picture = "/public/user_resources/pictures/profile_pictures/default_profile.jpg";
 app.locals.lastReactMenu = "";
+app.locals.currentUser = [];
 global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
 console.log("basedir="+__dirname);
-// ISEO-TBD: test e-mail
-/*
-// TBD: test email
-// <note> we should enable "Less secure app access"
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-  user: 'inseo.kr@gmail.com',
-  pass: '!newintern0320'
-  }
-});
-var mailOptions = {
-  from: 'inseo.kr@gmail.com',
-  to: 'in.seo@spirent.com',
-  subject: 'Sending Email using Node.js',
-  text: '<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "EmailMessage",
-  "potentialAction": {
-  "@type": "ConfirmAction",
-  "name": "Approve Expense",
-  "handler": {
-    "@type": "HttpActionHandler",
-    "url": "https://myexpenses.com/approve?expenseId=abc123"
-  }
-  },
-  "description": "Approval request for John's $10.13 expense for office supplies"
-}
-</script>'
-};
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-  console.log(error);
-  } else {
-  console.log('Email sent: ' + info.response);
-  }
-});*/
+
+// starting chatting server
+chatServer();
+
+
+//==============================================================================================
+// Define APIs
+//==============================================================================================
 app.get('/drag_drop', function(req, res){
 res.render("drag_drop_demo_v1");
 });
@@ -179,6 +171,7 @@ app.post('/listing/landlord/:list_id/file_upload', function(req, res) {
   });
   });
 });
+
 app.post('/listing/landlord/:list_id/file_delete', function(req, res) {
   console.log("ISEO: file_delete called with pic_index=" + req.body.pic_index);
   var picIndex = req.body.pic_index;
@@ -334,6 +327,7 @@ app.listen(process.env.PORT, process.env.IP, function(){
 //app.listen(5000, "10.0.0.194", function(){
    console.log("Linkedspaces Has Started!" + "PORT = " + process.env.PORT + " IP = " + process.env.IP);
 });
+
 //Facebook login
 // Redirect the user to Facebook for authentication.  When complete,
 // Facebook will redirect the user back to the application at
