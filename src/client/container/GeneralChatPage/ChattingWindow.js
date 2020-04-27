@@ -32,7 +32,7 @@ function ChattingWindow() {
     }
     
     useEffect(() => {
-        
+        /*
         if(bFirstLoad==true)
         {
             console.log("block to  end");
@@ -43,8 +43,7 @@ function ChattingWindow() {
         {
             console.log("block to start");
             divRef.current.scrollIntoView({block: "start"});
-        }
-
+        }*/
         divRef.current.scrollIntoView({behavior: 'smooth'});
     });
 

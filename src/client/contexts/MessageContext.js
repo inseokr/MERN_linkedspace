@@ -102,7 +102,9 @@ export function MessageContextProvider(props) {
 
     let chatHistory = channelContexts[channelName].chattingHistory;
 
-    let currentChat = {message: msg, timestamp: Date.now().toDateString(), direction: direction, username: username};
+    let now = new Date();
+
+    let currentChat = {message: msg, timestamp: now.toDateString() + " " + now.toLocaleTimeString(), direction: direction, username: username};
     
     chatHistory = [...chatHistory, currentChat];
 
@@ -217,7 +219,7 @@ export function MessageContextProvider(props) {
 
       let curChat = { message: history[i].message,
                       username: history[i].writer, 
-                      timestamp: date.toDateString(), 
+                      timestamp: date.toDateString() + " " + date.toLocaleTimeString(), 
                       direction: ((history[i].writer==currentUser.username) ? 0 : 1)};
 
       reactChatHistory = [...reactChatHistory, curChat];
