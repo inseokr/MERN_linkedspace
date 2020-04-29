@@ -8,9 +8,6 @@ import { GlobalContext } from './GlobalContext';
 
 export const MessageContext = createContext();
 
-// <note> need to  use IP address variable
-const chatUrl = 'ws://10.0.0.34:3030';
-
 export function MessageContextProvider(props) {
   // How to organize chatting channels?
   // 1. information needed per channel
@@ -299,7 +296,7 @@ export function MessageContextProvider(props) {
   }
 
   return (
-    <MessageContext.Provider value={{ numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase }}>
+    <MessageContext.Provider value={{ setCurrChannelInfo, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase }}>
       {props.children}
     </MessageContext.Provider>
   );

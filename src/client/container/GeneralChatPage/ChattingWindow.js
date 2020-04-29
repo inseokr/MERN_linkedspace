@@ -14,7 +14,6 @@ function ChattingWindow() {
     const {numOfMsgHistory, getChattingHistory, updateChatHistory} = useContext(MessageContext);
     const {getProfilePicture} = useContext(GlobalContext);
 
-    let bFirstLoad = true;
 
     console.log("loading Chatting Window");
 
@@ -31,21 +30,12 @@ function ChattingWindow() {
         return chatHistory;
     }
     
+
     useEffect(() => {
-        /*
-        if(bFirstLoad==true)
-        {
-            console.log("block to  end");
-            divRef.current.scrollIntoView({block: "end"});
-            bFirstLoad = false;
-        }
-        else 
-        {
-            console.log("block to start");
-            divRef.current.scrollIntoView({block: "start"});
-        }*/
+        // use this option if it's the first load after channel history got loaded.
         divRef.current.scrollIntoView({block: "end"});
-        divRef.current.scrollIntoView({behavior: 'smooth'});
+        
+        //divRef.current.scrollIntoView({behavior: 'smooth'});
     });
 
     return (

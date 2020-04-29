@@ -9,7 +9,8 @@ import { MessageContext } from '../../contexts/MessageContext';
 function ChatContactList() {
 
 	console.log("ChatContactList");
-	const {friendsList} = useContext(GlobalContext);
+	const {friendsList, getDmChannelId} = useContext(GlobalContext);
+	const {setCurrChannelInfo, loadChattingDatabase} = useContext(MessageContext);
 
 	// create initial state based on friendsList
 	let initClickStates = [];
@@ -21,8 +22,10 @@ function ChatContactList() {
 	
 	const [clickStates, setClickStates] = useState(initClickStates);
 
-
 	function handleClickState(index) {
+
+		console.log("handleClickState, index="+index);
+
 		// update clickStates where the index is referring to
 		let contactClickStates  = [...clickStates];
 
@@ -35,6 +38,10 @@ function ChatContactList() {
 		contactClickStates[index] = 1;
 
 		setClickStates([...contactClickStates]);
+
+		let channelInfo = {channelName: getDmChannelId(friendsList[index].username)};
+		setCurrChannelInfo(channelInfo);
+		loadChattingDatabase();
 	}
 
 	let contacts = [];
@@ -42,8 +49,7 @@ function ChatContactList() {
 	for(var i = 0; i<friendsList.length; i++)
 	{
 		console.log("user name = " + friendsList[i].username);
-		console.log("name = " + friendsList[i].name);
-		contacts.push(<ContactSummary contactIndex="0" clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]}/>);
+		contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]}/>);
 	}
 
   	return (
