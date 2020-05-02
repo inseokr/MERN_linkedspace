@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useContext } from 'react';
 import '../../app.css';
 import LinkedSpaceHeader from './LinkedSpaceHeader';
 import NoLoginMenu from '../Login/NoLoginMenu';
@@ -6,49 +6,70 @@ import LoginMenu from '../Login/LoginMenu';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
-export default class CommonHeader extends Component {
+function CommonHeader (){
 
-  static contextType = GlobalContext;
+  const {loadFriendList, friendsList, setCurrentUser, currentUser, isUserLoggined} = useContext(GlobalContext);
+  const {loadChattingDatabase} = useContext(MessageContext);
 
-  constructor(props){
-    super(props);
+  async function loadDataBases() {
+    if(isUserLoggined()==true)
+    {
+      console.log("loading databases");
+
+      // ISEO-TBD: followinng 2 API should be called in sequence.
+      console.log("loading friend list");
+      const result1 = await loadFriendList();
+      console.log("loading chatting Database");
+
+      const result2 = await loadChattingDatabase();
+    }
+    else
+    {
+      console.log("loadDataBases failed as the user is  not loggined properly?");
+    }
   }
 
-  componentDidMount() {
-    console.log("CommonHeader componentDidMount");
-    this.getLoginStatus();
+  function getLoginStatus()
+  {
+    // This should be called only once when no current user is set
+    if(currentUser==null)
+    {
+      fetch('/getLoginStatus')
+      .then(res => res.json())
+      .then(user => {
+        console.log(" received user = " + user);
+        setCurrentUser(user);
+      })
+    }
   }
 
-  getLoginStatus = () => {
-    fetch('/getLoginStatus')
-    .then(res => res.json())
-    .then(user => {
-      console.log(" received user = " + user);
+  useEffect(() => {
 
-      this.context.setCurrentUser(user);
-      
-      if(this.context.isUserLoggined()==true)
+      getLoginStatus();
+
+      if(currentUser!=null)
       {
-        //loading user information and others
-        console.log("User Loggined and loading friend list");
-        this.context.loadFriendList();
+        if(friendsList==undefined) loadFriendList();
+      } 
+
+      if(friendsList!=undefined && friendsList.length!=0) 
+      {
+          console.log("useEffect of commonHeader");
+          // how to prevent multiple loading?
+          loadChattingDatabase();
       }
-    })
-  }
 
-  render() {
+  }, [currentUser, friendsList]);
 
-    console.log("User Login Status: ", this.context.isUserLoggined());
-
-    return (
-        <div className="navBarContainer">
-          <LinkedSpaceHeader />
-          { this.context.isUserLoggined()==true 
-            ? <LoginMenu />
-            : <NoLoginMenu />
-          }
-        </div>
-    );
-
-  }
+  return (
+      <div className="navBarContainer">
+        <LinkedSpaceHeader />
+        { isUserLoggined()==true 
+          ? <LoginMenu />
+          : <NoLoginMenu />
+        }
+      </div>
+  );
 }
+
+export default CommonHeader;

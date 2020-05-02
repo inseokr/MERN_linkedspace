@@ -17,18 +17,14 @@ export function GlobalProvider(props) {
 
   function getProfilePicture(user_name)
   {
-    console.log("getProfilePicture of username = " + user_name);
-
     if(user_name==undefined) return sampleProfile;
 
     if(user_name==currentUser.username)
     {
-      console.log("Getting profile picture for current user");
       return currentUser.profile_picture;
     }
     else
     {
-      console.log("Getting profile picture for friend");
       return friendsMap[user_name].profile_picture;
     }
   }
@@ -53,13 +49,13 @@ export function GlobalProvider(props) {
     setFriendsMap(tempFriendsMap);
   }
 
-  function loadFriendList()
+  async function loadFriendList()
   {
-  	fetch('/mynetwork/friend_list')
+  	await fetch('/mynetwork/friend_list')
       .then(res => res.json())
       .then(friends => {
-      	  setFriends(friends);
-          buildFriendsMap(friends);
+      	  setFriends(friends, buildFriendsMap(friends));
+          //buildFriendsMap(friends);
       	  console.log("friends = " + friends);
       });
   }

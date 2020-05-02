@@ -42,6 +42,10 @@ export function MessageContextProvider(props) {
   const [chatSocket, setWebSocket] = useState(null);
   const [alertSound, setAlertSound] = useState(null);
 
+  const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
+
+  const [chatMainPageLoaded, setChatMainPageLoaded] = useState(false);
+
   const {currentUser, friendsList} = useContext(GlobalContext);
 
   // create or connect messaging socket
@@ -60,8 +64,8 @@ export function MessageContextProvider(props) {
       chatSocket.onopen = () => {
           console.log("Chat Server Connected");
           // let's send the first message to register this socket.
-          // ISEO-TBD: 
-          chatSocket.send("CSC:Register:"+currentUser.username);
+          if(currentUser!=null)
+            chatSocket.send("CSC:Register:"+currentUser.username);
       }
 
       chatSocket.onmessage = evt => {
@@ -117,6 +121,17 @@ export function MessageContextProvider(props) {
     console.log("current chat history = " + JSON.stringify(channelContexts[channelName].chattingHistory[chatHistory.length-1]));
   }
 
+  function checkNewlyLoaded() {
+
+    let previousValue = flagNewlyLoaded;
+
+    if(flagNewlyLoaded==true)
+    {
+      console.log("Resetting newly loaded flag");
+      setFlagNewlyLoaded(false); // We will reset always when it's read.
+    }
+    return flagNewlyLoaded;
+  }
 
   function getChattingHistory() {
       console.log("getChattingHistory of " + currChanneInfo.channelName);
@@ -229,6 +244,13 @@ export function MessageContextProvider(props) {
   {
     console.log("loadChatHistory");
 
+     // It's a special flag to indicate that the channel history is loaded.
+    if(currChanneInfo.channelName==channel_id)
+    {
+      console.log("setFlagNewlyLoaded!!!!!");
+      setFlagNewlyLoaded(true);
+    }
+
     // update channel DB in react side
     let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: 0, 
                            chattingHistory: buildHistoryFromDb(history)
@@ -246,12 +268,12 @@ export function MessageContextProvider(props) {
 
     setNumOfMsgHistory(dmChannelContexts[channel_id].chattingHistory.length);
 
-    console.log("dmChannelContexts length = " + dmChannelContexts.length);
+   
 
   }
 
   // loading chatting database from backend
-  function loadChattingDatabase()
+  async function loadChattingDatabase()
   {
     console.log("loadChattingDatabase");
 
@@ -270,7 +292,7 @@ export function MessageContextProvider(props) {
       console.log("creating channels = " + dmChannels[i].channel_id);
 
       // ISEO-TBD: problem in handling the result!!
-      axios.post('/chatting/new', data)
+      const result = await axios.post('/chatting/new', data)
         .then(result => 
         {
             console.log(result.data);
@@ -296,7 +318,7 @@ export function MessageContextProvider(props) {
   }
 
   return (
-    <MessageContext.Provider value={{ setCurrChannelInfo, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase }}>
+    <MessageContext.Provider value={{ chatMainPageLoaded, setChatMainPageLoaded, setCurrChannelInfo, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
       {props.children}
     </MessageContext.Provider>
   );

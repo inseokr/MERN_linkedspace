@@ -33,6 +33,7 @@ export default class App extends Component {
     return (
       <GlobalProvider>
         <SearchProvider>
+          < MessageContextProvider >
           <Router>
             <CommonHeader/>
             <ModalLoginForm/>
@@ -41,15 +42,14 @@ export default class App extends Component {
                 <Map />
               </Route>
               <Route exact path="/Messages">
-                < MessageContextProvider >
                   <GeneralChatMainPage />
-                </MessageContextProvider>
               </Route>
               <Route exact path="/">
                 <LandingPage />
               </Route>              
             </Switch>
           </Router>
+          </MessageContextProvider>
         </SearchProvider>
       </GlobalProvider>
     );
