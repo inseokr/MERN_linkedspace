@@ -41,8 +41,16 @@ var socketToUserMap = [];
 var userToSocketMap = [];
 var channelIdToSocketList = [];
 
-// ISEO-TBD: this map is not being used
-var channelIdToUserList = []; 
+async function registerSocketToChannels(currentSocket, user_name)
+{
+    console.log("getChannels");
+    let channels = await chatDbHandler.getChannels(user_name);
+
+    console.log("go through channels");
+    channels.dm_channels.forEach(function each(channel) {
+                addSocketToChannel(channel.name, currentSocket);
+            });
+}
 
 function updateUserSocketMap(currentSocket, user_name)
 {
@@ -60,7 +68,7 @@ function updateUserSocketMap(currentSocket, user_name)
 
     // <TBD> When is the right point to do this?
     // We may consult DB here and get the list of channels for this user and update it.
-    addSocketToChannel("iseo-dm-justin", currentSocket);
+    registerSocketToChannels(currentSocket, user_name);
 }
 
 function handleCtrlMsg(rxMsg) {
@@ -91,9 +99,25 @@ function addUserToChannel(channelId, user)
 
 function addSocketToChannel(channelId, socket_)
 {
-    (channelIdToSocketList[channelId]==undefined) ?
-        channelIdToSocketList[channelId] = [socket_] :
+    if(channelIdToSocketList[channelId]==undefined)
+    {
+        channelIdToSocketList[channelId] = [socket_];
+    }
+    else
+    {
+        // check if there is any duplicate
+        channelIdToSocketList[channelId].forEach( (socket) => {
+            if(socket==socket_)
+            {
+                //console.log("duplciate sockets");
+                return;
+            }
+        });
+
         channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
+        console.log("addSocketToChannel, channel = " + channelId);
+        console.log("length" + channelIdToSocketList[channelId].length);
+    }
 }
 
 function removeSocketToChannel(channelId, socket_)
@@ -170,10 +194,6 @@ function routeMessage(data, incomingSocket)
 }
 
 module.exports = function() {
-
-    // <note> register DM channel for testing
-    // between justin and iseo
-    channelIdToUserList["iseo-dm-justin"] = ["iseo", "justin"];
 
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();

@@ -25,6 +25,22 @@ async function getMemberInfoByUserName(name)
   });
 }
 
+async function getListOfChannelsByUserName(name)
+{
+  return new Promise(resolve => {
+    User.findOne({username: name}, function(err, foundUser){
+      if(err || foundUser==null)
+      {
+        return;
+      }
+      else
+      {
+        resolve(foundUser.chatting_channels);
+      }
+    });
+  });
+}
+
 async function getChannelByChannelId(channelName)
 {
   return new Promise(resolve => {
@@ -54,6 +70,16 @@ function addChannelToUser(chat_channel)
         
 	    	if(foundUser)
 	    	{
+
+          foundUser.chatting_channels.dm_channels.forEach((channel)=>{
+            if(channel.name == chat_channel.channel_id)
+            {
+              // duplicate exists;
+              return;
+            }
+
+          });
+
 	    		// <note> id is now known yet.
 	    		const dm_channel = {id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0};
 	    		foundUser.chatting_channels.dm_channels.push(dm_channel);
@@ -63,4 +89,7 @@ function addChannelToUser(chat_channel)
 	})
 }
 
-module.exports = {findChatPartyByName: getMemberInfoByUserName, findChatChannel: getChannelByChannelId, addChannelToUser: addChannelToUser}
+module.exports = { findChatPartyByName: getMemberInfoByUserName, 
+                   findChatChannel:     getChannelByChannelId, 
+                   addChannelToUser:    addChannelToUser,
+                   getChannels:         getListOfChannelsByUserName}

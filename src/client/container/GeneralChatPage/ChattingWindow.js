@@ -22,14 +22,14 @@ function ChattingWindow() {
 
         if(messagesEndRef.current!=undefined)
         {
-            console.log("setting scrollIntoView mode");
             messagesEndRef.current.scrollIntoView({block: "end", inline: "nearest"});
-            
+
             // smooth option won't be used to load the first history.
             if(numOfHistory>0)
             { 
                 messagesEndRef.current.scrollIntoView({behavior: "smooth"});
             }
+            
             setNumOfHistory(numOfMsgHistory);
         }
     }

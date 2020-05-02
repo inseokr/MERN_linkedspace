@@ -30,8 +30,6 @@ export function MessageContextProvider(props) {
 
   const [numOfMsgHistory, setNumOfMsgHistory] = useState(0);
 
-  // ISEO-TBD: need to figure out the default channel
-
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
   const [currChanneInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
 
@@ -325,6 +323,12 @@ export function MessageContextProvider(props) {
     }
 
   }
+
+  useEffect(()=>{
+
+    console.log("chatSocket = " + chatSocket);
+    
+  },[chatSocket]);
 
   return (
     <MessageContext.Provider value={{ chatMainPageLoaded, setChatMainPageLoaded, setCurrChannelInfo, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
