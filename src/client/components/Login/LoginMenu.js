@@ -1,10 +1,14 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import '../../app.css';
 import Search from "../../container/SearchPage/SearchPage"
 import {Link} from 'react-router-dom';
 
+import {GlobalContext} from "../../contexts/GlobalContext";
+
 function LoginMenu()
 {
+  const {currentUser} = useContext(GlobalContext);
+
   return (
   	<>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -41,7 +45,7 @@ function LoginMenu()
                                       height: '30px'
                                     }
                                    }
-                            src="/public/user_resources/pictures/profile_pictures/default_profile.jpg"/>
+                            src={currentUser.profile_picture}/>
                   </a>
               </li>
           </ul>

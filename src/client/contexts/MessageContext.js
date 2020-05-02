@@ -65,7 +65,13 @@ export function MessageContextProvider(props) {
           console.log("Chat Server Connected");
           // let's send the first message to register this socket.
           if(currentUser!=null)
+          {
             chatSocket.send("CSC:Register:"+currentUser.username);
+          }
+          else
+          {
+            console.log("No current user is set yet!!!");
+          }
       }
 
       chatSocket.onmessage = evt => {
@@ -276,6 +282,9 @@ export function MessageContextProvider(props) {
   async function loadChattingDatabase()
   {
     console.log("loadChattingDatabase");
+
+    // ISEO-TBD: it will be good time to register the user again?
+    chatSocket.send("CSC:Register:"+currentUser.username);
 
     let dmChannels = getListOfDmChannels();
 
