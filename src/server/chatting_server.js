@@ -54,15 +54,31 @@ async function registerSocketToChannels(currentSocket, user_name)
 
 function updateUserSocketMap(currentSocket, user_name)
 {
+    let bDuplicate = false;
     // <note> The socket list should be dynamically updated.
     // How to remove a specific socket from the list then?
     // We may have multiple sockets?
     // check if the user_name exists in the array
-    (userToSocketMap[user_name]==undefined) ?
-        userToSocketMap[user_name] = [currentSocket] :
-        userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
+    if(userToSocketMap[user_name]==undefined)
+    {
+        userToSocketMap[user_name] = [currentSocket];
+    }
+    else
+    {
+        userToSocketMap[user_name].forEach((socket) => {
+            if(currentSocket.id===socket.id)
+            {
+                bDuplicate = true;
+                return;
+            }
+        });
+
+    }
+
+    if(bDuplicate==true) return;
 
     console.log("Updating socketToUserMap for user = " + user_name);
+    userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
     socketToUserMap[currentSocket.id] = user_name;
 
@@ -107,7 +123,7 @@ function addSocketToChannel(channelId, socket_)
     {
         // check if there is any duplicate
         channelIdToSocketList[channelId].forEach( (socket) => {
-            if(socket==socket_)
+            if(socket.id==socket_.id)
             {
                 //console.log("duplciate sockets");
                 return;
@@ -116,7 +132,7 @@ function addSocketToChannel(channelId, socket_)
 
         channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
         console.log("addSocketToChannel, channel = " + channelId);
-        console.log("length" + channelIdToSocketList[channelId].length);
+        console.log("length = " + channelIdToSocketList[channelId].length);
     }
 }
 
@@ -127,7 +143,7 @@ function removeSocketToChannel(channelId, socket_)
 
     channelIdToSocketList[channelId].forEach(socket =>
     {
-        if(socket!=socket_) newList = [...newList, socket];
+        if(socket.id!=socket_.id) newList = [...newList, socket];
     })
 
     channelIdToSocketList[channelId] = newList;
@@ -202,7 +218,7 @@ module.exports = function() {
 
         ws.on('message', function incoming(data) {
 
-            console.log("Chat Server: received data = " + data);
+            console.log("Chat Server: received data = " + data + "id = " + ws.id);
             // It goes through all sockets registered to this server
             const result = handleCtrlMsg(data);
 

@@ -8,8 +8,8 @@ import { MessageContext } from '../../contexts/MessageContext';
 
 function CommonHeader (){
 
-  const {loadFriendList, friendsList, setCurrentUser, currentUser, isUserLoggined} = useContext(GlobalContext);
-  const {loadChattingDatabase} = useContext(MessageContext);
+  const {loadFriendList, friendsList, setCurrentUser, currentUser, isUserLoggined, getDmChannelId } = useContext(GlobalContext);
+  const {loadChattingDatabase, setCurrChannelInfo} = useContext(MessageContext);
 
   async function loadDataBases() {
     if(isUserLoggined()==true)
@@ -56,6 +56,8 @@ function CommonHeader (){
       {
           console.log("useEffect of commonHeader");
           // how to prevent multiple loading?
+          let channelInfo = {channelName: getDmChannelId(friendsList[0].username)};
+          setCurrChannelInfo(channelInfo);
           loadChattingDatabase();
       }
 

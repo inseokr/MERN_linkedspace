@@ -11,26 +11,27 @@ function ChattingWindow() {
 
     const messagesEndRef = useRef(null);
 
-    const {numOfMsgHistory, getChattingHistory} = useContext(MessageContext);
+    const {numOfMsgHistory, getChattingHistory, loadChattingDatabase} = useContext(MessageContext);
     const {getProfilePicture} = useContext(GlobalContext);
 
-    const [numOfHistory, setNumOfHistory] = useState(0);
+    //const [numOfHistory, setNumOfHistory] = useState(0);
 
     console.log("loading Chatting Window");
 
     const scrollToBottom = () => {
+
+        console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
 
         if(messagesEndRef.current!=undefined)
         {
             messagesEndRef.current.scrollIntoView({block: "end", inline: "nearest"});
 
             // smooth option won't be used to load the first history.
-            if(numOfHistory>0)
+            if(numOfMsgHistory>0)
             { 
+                console.log("changing behavior to smooth");
                 messagesEndRef.current.scrollIntoView({behavior: "smooth"});
             }
-            
-            setNumOfHistory(numOfMsgHistory);
         }
     }
 
@@ -45,14 +46,13 @@ function ChattingWindow() {
             // Hmm... I suspect that there is a bug... it may just need time??? how about
             // So indeed it is a bug!! Gosh... 
             setTimeout(() => {  console.log("World!"); }, 500);
-            return;
+            console.log("reference is not ready, just return empty");
+            return "";
         }
 
-        if(numOfHistory!=numOfMsgHistory)
-        {
-            console.log("Number of history got udpated. old = " + numOfHistory + " new = " + numOfMsgHistory);
-            scrollToBottom();
-        }
+        console.log("reference is ready and read chatting history now");
+
+        scrollToBottom();
 
         let chatHistory = getChattingHistory().map(function (chat, index) {
             return <ChattingMessageBox
@@ -65,10 +65,9 @@ function ChattingWindow() {
         return chatHistory;
     }
     
-
     useEffect(() => {
         scrollToBottom();
-    });
+    }, [numOfMsgHistory]);
 
     return (
         <>
