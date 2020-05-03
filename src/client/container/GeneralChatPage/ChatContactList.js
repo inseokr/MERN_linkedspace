@@ -10,7 +10,7 @@ function ChatContactList() {
 
 	console.log("ChatContactList");
 	const {friendsList, getDmChannelId} = useContext(GlobalContext);
-	const {setCurrChannelInfo, loadChattingDatabase} = useContext(MessageContext);
+	const {switchChattingChannel, loadChattingDatabase} = useContext(MessageContext);
 
 	// create initial state based on friendsList
 	let initClickStates = [];
@@ -40,7 +40,7 @@ function ChatContactList() {
 		setClickStates([...contactClickStates]);
 
 		let channelInfo = {channelName: getDmChannelId(friendsList[index].username)};
-		setCurrChannelInfo(channelInfo);
+		switchChattingChannel(channelInfo);
 		loadChattingDatabase();
 	}
 

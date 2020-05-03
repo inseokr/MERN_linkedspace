@@ -11,7 +11,7 @@ function ChattingWindow() {
 
     const messagesEndRef = useRef(null);
 
-    const {numOfMsgHistory, getChattingHistory, loadChattingDatabase} = useContext(MessageContext);
+    const {numOfMsgHistory, getChattingHistory, loadChattingDatabase, getLastReadIndex} = useContext(MessageContext);
     const {getProfilePicture} = useContext(GlobalContext);
 
     //const [numOfHistory, setNumOfHistory] = useState(0);
@@ -30,14 +30,48 @@ function ChattingWindow() {
             if(numOfMsgHistory>0)
             { 
                 console.log("changing behavior to smooth");
-                messagesEndRef.current.scrollIntoView({behavior: "smooth"});
+                //messagesEndRef.current.scrollIntoView({behavior: "smooth"});
             }
         }
     }
 
+
+    function getNewMessageMarker()
+    {
+        return <hr className="newMessage" />;
+    }
+
+    function getCurMessageBox(chat, new_msg_marker)
+    {
+        return <ChattingMessageBox
+                    msg_direction={chat.direction}
+                    profile_picture={getProfilePicture(chat.username)}
+                    message={chat.message}
+                    timestamp={chat.timestamp}
+                    new_msg={new_msg_marker}
+                />;
+    }
+
+    function getChatHistory()
+    {
+        let chatHistory   = getChattingHistory();
+        let lastReadIndex = getLastReadIndex("");
+        let output        = [];
+
+        console.log("lastReadIndex = " + lastReadIndex);
+        
+        for(let index=0; index<chatHistory.length; index++)
+        {
+            output = [...output, getCurMessageBox(chatHistory[index], 
+                                                  (index==(lastReadIndex))? true: false)]
+        }
+
+        return output;
+    }
+
+
     function loadChattingHistory()
     {
-
         console.log("loadChattingHistory");
 
         if(messagesEndRef.current==undefined) 
@@ -45,7 +79,7 @@ function ChattingWindow() {
             // ISEO-TBD: It's so weird!!!
             // Hmm... I suspect that there is a bug... it may just need time??? how about
             // So indeed it is a bug!! Gosh... 
-            setTimeout(() => {  console.log("World!"); }, 500);
+            //setTimeout(() => {  console.log("World!"); }, 500);
             console.log("reference is not ready, just return empty");
             return "";
         }
@@ -53,16 +87,7 @@ function ChattingWindow() {
         console.log("reference is ready and read chatting history now");
 
         scrollToBottom();
-
-        let chatHistory = getChattingHistory().map(function (chat, index) {
-            return <ChattingMessageBox
-                msg_direction={chat.direction}
-                profile_picture={getProfilePicture(chat.username)}
-                message={chat.message}
-                timestamp={chat.timestamp}
-            />;
-        });
-        return chatHistory;
+        return (getChatHistory());
     }
     
     useEffect(() => {

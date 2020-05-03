@@ -331,3 +331,12 @@
 	border-color: gray;
 	border-width: 0.1rem;
 }
+
+.newMessage {
+	border-top: 1px solid red;
+}
+
+.newMessage:after {
+	content: 'New';
+	color: red;
+}

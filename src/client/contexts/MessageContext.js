@@ -31,6 +31,7 @@ export function MessageContextProvider(props) {
   const [numOfMsgHistory, setNumOfMsgHistory] = useState(0);
 
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
+
   const [currChanneInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
 
   //const [chattingHistory, addMsgToChatHistory] = useState([]);
@@ -44,7 +45,7 @@ export function MessageContextProvider(props) {
 
   const [chatMainPageLoaded, setChatMainPageLoaded] = useState(false);
 
-  const {currentUser, friendsList} = useContext(GlobalContext);
+  const {currentUser, setCurrentUser, friendsList} = useContext(GlobalContext);
 
   // create or connect messaging socket
   if(socketCreated==false)
@@ -87,6 +88,19 @@ export function MessageContextProvider(props) {
   }
 
 
+  function updateLastReadIndex(data)
+  {
+    for(let i=0; i<currentUser.chatting_channels.dm_channels.length; i++)
+    {
+      if(currentUser.chatting_channels.dm_channels[i].name==data.channel_id)
+      {
+        let tempUser = currentUser;
+        tempUser.chatting_channels.dm_channels[i].lastReadIndex = data.lastReadIndex;
+        setCurrentUser(tempUser);
+      }
+    }    
+  }
+
   function parseIncomingMessage(msg)
   {
       const regex = /CSD:(.*):(.*):(.*)/g;
@@ -94,6 +108,45 @@ export function MessageContextProvider(props) {
 
       console.log("received mssg="+msg);
       return parsedString;
+  }
+
+  async function pushCurrentChannelToDB()
+  {
+    // we don't update initial value;
+    if(numOfMsgHistory==0) return;
+
+    // update last read index
+    // ISEO-TBD: What't the proper index value?
+    // It may point to sending message as well if the last message is sending.
+    // How are we going to handle this then? 
+    // case 1> 
+    // last index --> 10(<--Hello)
+    //                11(--> I'm doing good)
+    //                12(<-- Glad to hear that)
+    //  size of length: 13(It will be the next message to be read)
+    // case 2>
+    // last index --> 10(<--Hello)
+    //                11(--> I'm doing good)
+    // size of length: 12(It will be the next message to be read)
+    // So it doesn't matter!!
+    var data = { channel_id: currChanneInfo.channelName, 
+                 lastReadIndex: dmChannelContexts[currChanneInfo.channelName].chattingHistory.length};
+
+    console.log("pushCurrentChannelToDB: lastReadIndex = " + data.lastReadIndex);
+    const result = await axios.post('/chatting/update', data)
+      .then(result => 
+      {
+          updateLastReadIndex(data);
+      })
+      .catch(err => console.log(err));
+
+  }
+
+  function switchChattingChannel(channelInfo)
+  {
+    // save some of information back to database
+    pushCurrentChannelToDB();
+    setCurrChannelInfo(channelInfo);
   }
 
   // direction: 
@@ -211,16 +264,24 @@ export function MessageContextProvider(props) {
     return dmChannels;
   }
 
-  function getLastReadIndex(chnanel_id)
+  function getLastReadIndex(channel_id)
   {
+    let channel_name = (channel_id!=""? channel_id:currChanneInfo.channelName);
+
+    console.log("channel_name = " + channel_name);
+
     // ISEO: let's consider introducing map instead?
-    for(let i=0; i<currentUser.chatting_channels.dm_channels; i++)
+    for(let i=0; i<currentUser.chatting_channels.dm_channels.length; i++)
     {
-      if(currentUser.chatting_channels.dm_channels[i].name==channel_id)
+      console.log("current channel = " + currentUser.chatting_channels.dm_channels[i].name);
+      if(currentUser.chatting_channels.dm_channels[i].name==channel_name)
       {
+        // ISEO-TBD: This value may contain old data.
+        // let's use context information instead
         return currentUser.chatting_channels.dm_channels[i].lastReadIndex; 
       }
     }
+
     return 0;
   }
 
@@ -256,11 +317,9 @@ export function MessageContextProvider(props) {
     }
 
     // update channel DB in react side
-    let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: 0, 
+    let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: getLastReadIndex(channel_id), 
                            chattingHistory: buildHistoryFromDb(history)
                            };
-
-
     let dmChannelContextArray = dmChannelContexts;
     dmChannelContextArray[channel_id] = dmChannel;
 
@@ -271,9 +330,6 @@ export function MessageContextProvider(props) {
     console.log("length of chattingHistory = " + dmChannelContexts[channel_id].chattingHistory.length);
 
     setNumOfMsgHistory(dmChannelContexts[channel_id].chattingHistory.length);
-
-   
-
   }
 
   // loading chatting database from backend
@@ -308,9 +364,12 @@ export function MessageContextProvider(props) {
             {
               // update channel DB using the history data
               console.log("result = " + result);
+
+              // ISEO-TBD: channelData is not being used at all.
               let channelData = { channel_id: result.data.channel.channel_id,
                                   channel_type: result.data.channel.channel_type,
                                   last_read_index: getLastReadIndex(result.data.channel.channel_id)}
+
               loadChatHistory(dmChannels[i].channel_id, result.data.channel.chat_history);
             }
             else
@@ -327,11 +386,11 @@ export function MessageContextProvider(props) {
   useEffect(()=>{
 
     console.log("chatSocket = " + chatSocket);
-    
+
   },[chatSocket]);
 
   return (
-    <MessageContext.Provider value={{ chatMainPageLoaded, setChatMainPageLoaded, setCurrChannelInfo, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
+    <MessageContext.Provider value={{ getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
       {props.children}
     </MessageContext.Provider>
   );
