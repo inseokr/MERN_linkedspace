@@ -1,25 +1,14 @@
-import React, { Component, createContext } from "react";
+import React, { createContext, useEffect, useState } from 'react';
 
 export const ListingsContext = createContext();
 
-export class ListingsProvider extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: [],
-            center: {
-                lat:37.338207,
-                lng:-121.886330
-            },
-            zoom: 9
-        };
-        // this.changeLanguage = this.changeLanguage.bind(this);
-    }
-    // changeLanguage(e) {
-    //     this.setState({ language: e.target.value });
-    // }
+export function ListingsProvider(props) {
 
-    async getListInformation() {
+    const [data, setData] = useState([]);
+    const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
+    const [zoom, setZoom] = useState(9);
+
+    async function getListInformation() {
         let listingsFormatted = [];
         let listings = await fetch('/getData')
             .then(data => data.json())
@@ -31,7 +20,7 @@ export class ListingsProvider extends Component {
             let listingFormatted = {...listing};
             let location = listing.rental_property_information.location;
             let address = listing.rental_property_information.location.street + ", " + location.city + ", " + location.state + ", " + location.zipcode + ", " + location.country;
-            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "AIzaSyA0xwOTN9Sl9aLninaOtIapMvsCo8JMU-I")
+            await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + "AIzaSyDFmEEQH0IlODaZN6Tq9euWxDLd1WyYVt8")
                 .then((response) => response.json())
                 .then((responseJson) => {
                     let coordinates = responseJson.results[0].geometry.location;
@@ -43,26 +32,16 @@ export class ListingsProvider extends Component {
                 });
         }
         return listingsFormatted;
-    };
-
-    componentDidMount() {
-        // const {search} = this.context;
-        // console.log("MapPage is loaded. search = " + search);
-        this.getListInformation()
-            .then(response => this.setState({data: response}));
     }
 
-    render() {
-        return (
-            <ListingsContext.Provider value={{ ...this.state }}>
-                {this.props.children}
-            </ListingsContext.Provider>
-        );
-    }
+    useEffect(() => {
+        getListInformation()
+          .then(response => setData(response));
+    }, []);
+
+    return (
+      <ListingsContext.Provider value={{ data, center, zoom }}>
+          {props.children}
+      </ListingsContext.Provider>
+    );
 }
-
-export const withListingsContext = Component => props => (
-    <ListingsContext.Consumer>
-        {value => <Component listingsContext={value} {...props} />}
-    </ListingsContext.Consumer>
-);

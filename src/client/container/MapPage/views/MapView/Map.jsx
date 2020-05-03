@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { ListingsContext } from "../../../../contexts/ListingsContext";
+import { ListingsContext } from '../../../../contexts/ListingsContext';
+import createHTMLMapMarker from './createHTMLMapMarker';
+import './Map.css';
 
 function Map() {
     const {center, zoom, data} = useContext(ListingsContext);
@@ -8,39 +10,38 @@ function Map() {
     let googleMap = null;
 
     useEffect(() => {
-        googleMap = initGoogleMap(center, zoom);
+        const mapOptions = {
+          zoom: zoom,
+          center: center
+        };
+        googleMap = initGoogleMap(mapOptions);
         if (data.length > 0) {
             let bounds = new window.google.maps.LatLngBounds();
             data.map(listing => {
                 const coordinates = listing.rental_property_information.coordinates;
-                const mapParameters = {
-                    lat: coordinates.lat,
-                    lng: coordinates.lng,
-                    icon: "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg"
-                };
-                const marker = createMarker(mapParameters);
-                bounds.extend(marker.position);
+                const marker = createMarker(coordinates);
+                console.log("um", marker.getPosition);
+                bounds.extend(coordinates);
             });
             // console.log("googleMap.getBounds(bounds);", googleMap.getBounds(bounds));
-            googleMap.fitBounds(bounds); // the map to contain all markers
+            // googleMap.fitBounds(bounds); // the map to contain all markers
         }
     }, []);
 
-    const initGoogleMap = (center, zoom) => { // Initialize the google map
-        return new window.google.maps.Map(googleMapRef.current, {
-            center: center,
-            zoom: zoom
-        });
+    const initGoogleMap = (mapOptions) => { // Initialize the google map
+        return new window.google.maps.Map(googleMapRef.current, mapOptions);
     };
 
-    const createMarker = (markerObj) => new window.google.maps.Marker({ // Create marker on google map
-        position: { lat: markerObj.lat, lng: markerObj.lng },
-        map: googleMap,
-        icon: {
-            url: markerObj.icon,
-            scaledSize: new window.google.maps.Size(50, 50)
-        }
-    });
+    const createMarker = (coordinates) => {
+        const latLng = new google.maps.LatLng(coordinates.lat, coordinates.lng);
+        let marker = createHTMLMapMarker({
+            latlng: latLng,
+            map: googleMap,
+            html: `<img id="marker" src="/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg">`
+        });
+        marker.addListener('click', () => alert("CLICKED!"));
+        return marker;
+    };
 
     return <div ref={googleMapRef} style={{height: '100vh', width: '100%'}}/>;
 }

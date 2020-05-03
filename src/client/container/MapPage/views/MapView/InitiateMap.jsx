@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Map from './Map'
 
-const GOOGLE_MAP_API_KEY = 'AIzaSyA0xwOTN9Sl9aLninaOtIapMvsCo8JMU-I';
+const GOOGLE_MAP_API_KEY = 'AIzaSyDFmEEQH0IlODaZN6Tq9euWxDLd1WyYVt8';
 
 function loadGoogleMapScript(callback) { // Load the google map script
     if (typeof window.google === 'object' && typeof window.google.maps === 'object') {
