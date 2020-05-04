@@ -313,14 +313,14 @@ export function MessageContextProvider(props) {
       // So it has read all the messages if it equals to the length.
       console.log("checkIfAnyNewMsg: direction of last message" + chatHistory[chatHistory.length-1].direction);
       console.log("checkIfAnyNewMsg: lastReadIndex = " + lastReadIndex + " history length = " + chatHistory.length);
+
       if(lastReadIndex == chatHistory.length)
       {
           return false;
       }
       else {
           // return TRUE only if the direction of message is received.
-          //return (chatHistory[chatHistory.length-1].direction==0)? false: true;
-          return true;
+          return (chatHistory[chatHistory.length-1].direction==0)? false: true;
       }
   }
 

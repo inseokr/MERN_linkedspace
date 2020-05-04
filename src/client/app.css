@@ -10,9 +10,9 @@
 span.fa-comment {
   position: relative;
   font-size: 1em;
-  top: -14px;
+  top: -14px !important;
   color: red;
-  right: 5px;
+  right: 5px !important;
 }
 
 .fa {
@@ -33,7 +33,15 @@ a.fa-globe {
 
 span.num {
   position: relative;
-  font-size: 0.5em;
+  font-size: 0.6em;
+  top: -18px !important;
+  color: #fff;
+  right:20px !important;
+}
+
+span.newMsgSignature {
+  position: relative;
+  font-size: 0.6em;
   top: -18px;
   color: #fff;
   right:20px !important;

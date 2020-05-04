@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import '../../app.css';
 import Search from "../../container/SearchPage/SearchPage"
 import {Link} from 'react-router-dom';
-
 import {GlobalContext} from "../../contexts/GlobalContext";
 import {MessageContext} from "../../contexts/MessageContext";
 
@@ -15,7 +14,7 @@ function LoginMenu()
   let newMsgMarker = (checkIfAnyNewMsgArrived()==true)?
                       <> 
                       <span class="fa fa-comment"></span>
-                      <span class="num">N</span></>: "";                      
+                      <span class="newMsgSignature">N</span></>: "";                      
   
   return (
   	<>
@@ -32,7 +31,7 @@ function LoginMenu()
                 <a class="nav-link" href="/mynetwork">
                     My Network
                     <span class="fa fa-comment"></span>
-                    <span class="num">2</span>
+                    <span class="newMsgSignature">2</span>
                 </a>
               </li>
               <Link class="nav-link" to="/Messages">
