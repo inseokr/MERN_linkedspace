@@ -4,11 +4,19 @@ import Search from "../../container/SearchPage/SearchPage"
 import {Link} from 'react-router-dom';
 
 import {GlobalContext} from "../../contexts/GlobalContext";
+import {MessageContext} from "../../contexts/MessageContext";
+
 
 function LoginMenu()
 {
   const {currentUser} = useContext(GlobalContext);
+  const {checkIfAnyNewMsgArrived} = useContext(MessageContext);
 
+  let newMsgMarker = (checkIfAnyNewMsgArrived()==true)?
+                      <> 
+                      <span class="fa fa-comment"></span>
+                      <span class="num">N</span></>: "";                      
+  
   return (
   	<>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -27,8 +35,10 @@ function LoginMenu()
                     <span class="num">2</span>
                 </a>
               </li>
-              <li class="nav-item"><Link class="nav-link" to="/Messages">Messages</Link></li>
-              <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
+              <Link class="nav-link" to="/Messages">
+                Messages
+              {newMsgMarker}
+              </Link>
               <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
               <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
               <li class="nav-item">

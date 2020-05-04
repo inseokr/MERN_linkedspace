@@ -30,6 +30,8 @@ export function MessageContextProvider(props) {
 
   const [numOfMsgHistory, setNumOfMsgHistory] = useState(0);
 
+  const [newMsgArrived, setNewMsgArrived] = useState(false);
+
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
 
   const [currChanneInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
@@ -322,6 +324,11 @@ export function MessageContextProvider(props) {
       }
   }
 
+  function checkIfAnyNewMsgArrived()
+  {
+    return newMsgArrived;
+  }
+
   function loadChatHistory(channel_id, history)
   {
     console.log("loadChatHistory");
@@ -343,6 +350,11 @@ export function MessageContextProvider(props) {
     dmChannel.msg_summary  = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].message.slice(0,25) + "...";
     dmChannel.datestamp    = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].datestamp;
 
+    if(dmChannel.flag_new_msg==true)
+    {
+        setNewMsgArrived(true);
+    }
+
     let dmChannelContextArray = dmChannelContexts;
     dmChannelContextArray[channel_id] = dmChannel;
 
@@ -359,6 +371,9 @@ export function MessageContextProvider(props) {
   async function loadChattingDatabase()
   {
     console.log("loadChattingDatabase");
+
+    // clear new message arrival;
+    setNewMsgArrived(false);
 
     // ISEO-TBD: it will be good time to register the user again?
     chatSocket.send("CSC:Register:"+currentUser.username);
@@ -413,7 +428,7 @@ export function MessageContextProvider(props) {
   },[chatSocket]);
 
   return (
-    <MessageContext.Provider value={{ dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
+    <MessageContext.Provider value={{ dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded , checkIfAnyNewMsgArrived}}>
       {props.children}
     </MessageContext.Provider>
   );

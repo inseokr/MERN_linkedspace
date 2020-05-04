@@ -10,7 +10,7 @@
 span.fa-comment {
   position: relative;
   font-size: 1em;
-  top: -8px;
+  top: -14px;
   color: red;
   right: 5px;
 }
@@ -34,7 +34,7 @@ a.fa-globe {
 span.num {
   position: relative;
   font-size: 0.5em;
-  top: -10px;
+  top: -18px;
   color: #fff;
-  right:19px;
+  right:20px !important;
 }
