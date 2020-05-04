@@ -14,7 +14,11 @@ function ContactSummary(props) {
 
   	function getContactSummaryClassName()
   	{
-  		return (props.clickState===0? "ContactSummary": "ContactSummaryClicked");
+  		let listOfClass = (props.clickState===0? "ContactSummary": "ContactSummaryClicked");
+
+  		listOfClass = (props.summary.flag_new_msg==true)? listOfClass + " NewMessageIndicator": listOfClass;
+
+  		return listOfClass;
   	}
 
   	return (
@@ -26,10 +30,10 @@ function ContactSummary(props) {
 	    		{props.user.username}
 	    	</div>
 	    	<div className="TimeStamp">
-	    		Mar 23,2020
+				{props.summary.timestamp}
 	    	</div>
 	    	<div className="MessageSummary">
-	    		Happy Birthday, ...
+				{props.summary.msg_summary}
 	    	</div>
 	    </div>
   	);

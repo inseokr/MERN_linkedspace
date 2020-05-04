@@ -289,20 +289,37 @@ export function MessageContextProvider(props) {
   {
     let reactChatHistory = [];
 
-
     for(let i=0; i<history.length; i++)
     {
       let date = new Date(history[i].timestamp);
 
       let curChat = { message: history[i].message,
                       username: history[i].writer, 
-                      timestamp: date.toDateString() + " " + date.toLocaleTimeString(), 
+                      timestamp: date.toDateString() + " " + date.toLocaleTimeString(),
+                      datestamp: date.toDateString(),
                       direction: ((history[i].writer==currentUser.username) ? 0 : 1)};
 
       reactChatHistory = [...reactChatHistory, curChat];
     }
 
     return reactChatHistory;
+  }
+
+  function checkIfAnyNewMsg(lastReadIndex, chatHistory)
+  {
+      // <note> lastReadIndex has the value of the next message to saved in the chat history
+      // So it has read all the messages if it equals to the length.
+      console.log("checkIfAnyNewMsg: direction of last message" + chatHistory[chatHistory.length-1].direction);
+      console.log("checkIfAnyNewMsg: lastReadIndex = " + lastReadIndex + " history length = " + chatHistory.length);
+      if(lastReadIndex == chatHistory.length)
+      {
+          return false;
+      }
+      else {
+          // return TRUE only if the direction of message is received.
+          //return (chatHistory[chatHistory.length-1].direction==0)? false: true;
+          return true;
+      }
   }
 
   function loadChatHistory(channel_id, history)
@@ -317,9 +334,15 @@ export function MessageContextProvider(props) {
     }
 
     // update channel DB in react side
-    let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: getLastReadIndex(channel_id), 
-                           chattingHistory: buildHistoryFromDb(history)
-                           };
+    let lastReadIndex = getLastReadIndex(channel_id);
+    let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: lastReadIndex,
+                     chattingHistory: buildHistoryFromDb(history)};
+
+    // ISEO-TBD: make it sure that dmChannelContexts[chnnale_id] is defined.
+    dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
+    dmChannel.msg_summary  = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].message.slice(0,25) + "...";
+    dmChannel.datestamp    = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].datestamp;
+
     let dmChannelContextArray = dmChannelContexts;
     dmChannelContextArray[channel_id] = dmChannel;
 
@@ -390,7 +413,7 @@ export function MessageContextProvider(props) {
   },[chatSocket]);
 
   return (
-    <MessageContext.Provider value={{ getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
+    <MessageContext.Provider value={{ dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded }}>
       {props.children}
     </MessageContext.Provider>
   );

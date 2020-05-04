@@ -244,6 +244,12 @@
 	padding-top: 2px;
 }
 
+.NewMessageIndicator {
+    border-left-style: solid !important;
+    border-left-color: #dc3545 !important;
+    border-left-width: 5px !important;
+}
+
 .imgFitToGrid {
 	object-fit: cover !important;
 	width: 100% !important;

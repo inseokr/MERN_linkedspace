@@ -10,7 +10,7 @@ function ChatContactList() {
 
 	console.log("ChatContactList");
 	const {friendsList, getDmChannelId} = useContext(GlobalContext);
-	const {switchChattingChannel, loadChattingDatabase} = useContext(MessageContext);
+	const {switchChattingChannel, loadChattingDatabase, dmChannelContexts} = useContext(MessageContext);
 
 	// create initial state based on friendsList
 	let initClickStates = [];
@@ -49,7 +49,18 @@ function ChatContactList() {
 	for(var i = 0; i<friendsList.length; i++)
 	{
 		console.log("user name = " + friendsList[i].username);
-		contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]}/>);
+		// construct channel specific information
+		// 1. any indication of new message
+		// : It should have been kept in context? Upon database loading.
+		//   Check the last read index and the total number of messages in channel DB.
+		// 2. latest message
+		let channel_name = getDmChannelId(friendsList[i].username);
+
+		let channelSummary = {flag_new_msg: dmChannelContexts[channel_name].flag_new_msg,
+		                      timestamp:    dmChannelContexts[channel_name].datestamp,
+			                  msg_summary:  dmChannelContexts[channel_name].msg_summary};
+
+		contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />);
 	}
 
   	return (

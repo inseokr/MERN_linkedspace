@@ -58,12 +58,24 @@ function ChattingWindow() {
         let lastReadIndex = getLastReadIndex("");
         let output        = [];
 
-        console.log("lastReadIndex = " + lastReadIndex);
+        console.log("chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
+
+        let newMsgMarked = false;
         
         for(let index=0; index<chatHistory.length; index++)
         {
-            output = [...output, getCurMessageBox(chatHistory[index], 
-                                                  (index==(lastReadIndex))? true: false)]
+            // ISEO-TBD: need to find the first RX message beyond the lastReadIndex
+            let newMsgFlag = false;
+
+            if(newMsgMarked==false)
+            {
+                if(index>=lastReadIndex && (chatHistory[index].direction == 1))
+                {
+                    newMsgFlag = true;
+                    newMsgMarked = true;
+                }
+            }
+            output = [...output, getCurMessageBox(chatHistory[index], newMsgFlag)];
         }
 
         return output;

@@ -15,7 +15,6 @@ function ChattingMessageBox(props) {
     {
       return (
         <>
-        {newMsgMarker}
         <div className="ChattingMessageBoxWrapper AlignToLeft">
             <div className="ProfilePicture">
                 <img className="center rounded-circle imgLeftMsgBox" src={props.profile_picture} alt="myFriend" />
