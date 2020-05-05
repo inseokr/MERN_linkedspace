@@ -15,6 +15,12 @@ function ChatContactList() {
 	// create initial state based on friendsList
 	let initClickStates = [];
 
+	if(friendsList==undefined)
+	{
+		console.log("friendsList is not available yet.");
+		return;
+	}
+
 	for(var i=0; i< friendsList.length; i++)
 	{
 		initClickStates.push((i==0)?1: 0);

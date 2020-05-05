@@ -50,15 +50,19 @@ export function MessageContextProvider(props) {
   const {currentUser, setCurrentUser, friendsList} = useContext(GlobalContext);
 
   // create or connect messaging socket
+//    if(sessionStorage.getItem('socketCreated')===null)
   if(socketCreated==false)
   {
       console.log("creating WebSocket");
+      localStorage.setItem("socketCreated", "true");
       let ws = new WebSocket("ws://"+window.location.hostname+":3030");
       setSocketCreated(true);
       setWebSocket(ws);
+      localStorage.setItem("webSocket", JSON.stringify(ws));
 
       let audio = new Audio(messageAlertSound);
       setAlertSound(audio);
+      localStorage.setItem("alertSound", JSON.stringify(audio));
   }
   else {
       // ISEO: not sure how it will be called upon every message reception?
@@ -67,7 +71,7 @@ export function MessageContextProvider(props) {
           // let's send the first message to register this socket.
           if(currentUser!=null)
           {
-            chatSocket.send("CSC:Register:"+currentUser.username);
+              chatSocket.send("CSC:Register:"+currentUser.username);
           }
           else
           {
@@ -83,9 +87,8 @@ export function MessageContextProvider(props) {
 
       chatSocket.onclose = () => {
           console.log("Disconnected");
-          // Do we need to reconnected?
-          setWebSocket(null);
-          setSocketCreated(false);
+          // Do we need to reconnected
+          localStorage.removeItem("socketCreated");
       }
   }
 
@@ -167,11 +170,22 @@ export function MessageContextProvider(props) {
     let currentChat = {message: msg, timestamp: now.toDateString() + " " + now.toLocaleTimeString(), direction: direction, username: username};
     
     chatHistory = [...chatHistory, currentChat];
-
-
-    console.log("length of chatHistory = " + chatHistory.length );
-
     channelContexts[channelName].chattingHistory = chatHistory;
+
+    // ISEO-TBD: 
+    // Need to data needed for contact summary as well.
+    // <note> What about active channel?
+    let lastReadIndex = getLastReadIndex(channelName);
+
+    channelContexts[channelName].flag_new_msg = checkIfAnyNewMsg(lastReadIndex, channelContexts[channelName].chattingHistory);
+    channelContexts[channelName].msg_summary = msg.slice(0,25) + "...";
+    channelContexts[channelName].datestamp = now.toDateString();
+
+    // set the global indicator as well.
+    if(channelContexts[channelName].flag_new_msg==true)
+    {
+      setNewMsgArrived(true);
+    }
 
     setChannelContexts(channelContexts);
 
@@ -320,7 +334,14 @@ export function MessageContextProvider(props) {
       }
       else {
           // return TRUE only if the direction of message is received.
-          return (chatHistory[chatHistory.length-1].direction==0)? false: true;
+          // <note> In some cases, the DB is not updated yet.
+          // At least we should keep both message window and summary window in sync.
+          // Let's check if there is any received message in between lastReadIndex and the last message
+          for(let index = chatHistory.length-1; index>=lastReadIndex; index--)
+          {
+              if(chatHistory[index].direction==1) return true;
+          }
+          return false;
       }
   }
 
@@ -423,9 +444,13 @@ export function MessageContextProvider(props) {
 
   useEffect(()=>{
 
-    console.log("chatSocket = " + chatSocket);
-
-  },[chatSocket]);
+    localStorage.setItem("webSocket", JSON.stringify(chatSocket));
+    
+    //let tempSocket = JSON.parse(localStorage.webSocket);
+    //let tempAlert = JSON.parse(localStorage.alertSound);
+    console.log("tempSocket=" +  localStorage.webSocket);
+    console.log("chatSocket=" +  JSON.stringify(chatSocket));
+  });
 
   return (
     <MessageContext.Provider value={{ dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded , checkIfAnyNewMsgArrived}}>

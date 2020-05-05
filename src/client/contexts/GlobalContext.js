@@ -8,7 +8,9 @@ export function GlobalProvider(props) {
   const [friendsList, setFriends] = useState();	
   const [currentUser, setCurrentUser] = useState(null);
   const [friendsMap, setFriendsMap] = useState();
-  
+
+  console.log("GlobalProvider: currentUser = " + currentUser);
+
   function isUserLoggined()
   {
   	if(currentUser!=null) return true;

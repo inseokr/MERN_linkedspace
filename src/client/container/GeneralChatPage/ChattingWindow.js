@@ -57,14 +57,11 @@ function ChattingWindow() {
         let chatHistory   = getChattingHistory();
         let lastReadIndex = getLastReadIndex("");
         let output        = [];
-
-        console.log("chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
-
+        //console.log("chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
         let newMsgMarked = false;
         
         for(let index=0; index<chatHistory.length; index++)
         {
-            // ISEO-TBD: need to find the first RX message beyond the lastReadIndex
             let newMsgFlag = false;
 
             if(newMsgMarked==false)
@@ -84,33 +81,30 @@ function ChattingWindow() {
 
     function loadChattingHistory()
     {
-        console.log("loadChattingHistory");
-
-        if(messagesEndRef.current==undefined) 
-        {
-            // ISEO-TBD: It's so weird!!!
-            // Hmm... I suspect that there is a bug... it may just need time??? how about
-            // So indeed it is a bug!! Gosh... 
-            //setTimeout(() => {  console.log("World!"); }, 500);
-            console.log("reference is not ready, just return empty");
-            return "";
-        }
-
-        console.log("reference is ready and read chatting history now");
-
-        scrollToBottom();
         return (getChatHistory());
     }
-    
+
     useEffect(() => {
         scrollToBottom();
     }, [numOfMsgHistory]);
 
+    function triggerScroll()
+    {
+        // ISEO-TBD: It's very interesting bug, but I should re-schedule the scrollToBottom with some delay.
+        // I assume it's happening because React is doing things in parallel and the scroll operation is made
+        // while the data is still being loaded.
+        const timer = setTimeout(() => {
+            scrollToBottom();
+        }, 100);
+
+        return "";
+    }
     return (
-        <>
+        <div>
             {loadChattingHistory()}
+            {triggerScroll()}
             <div ref={messagesEndRef}/>
-        </>
+        </div>
     )
 }
 
