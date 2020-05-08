@@ -55,6 +55,7 @@ export function MessageContextProvider(props) {
   {
       let ws = new WebSocket("ws://"+window.location.hostname+":3030");
       setSocketCreated(true);
+      setWebSocket(ws);
 
       let audio = new Audio(messageAlertSound);
       setAlertSound(audio);

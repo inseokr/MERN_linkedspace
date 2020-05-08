@@ -40,6 +40,7 @@ const wss = new WebSocket.Server({ port: 3030});
 var socketToUserMap = [];
 var userToSocketMap = [];
 var channelIdToSocketList = [];
+var socketToChannelIdMap = [];
 
 async function registerSocketToChannels(currentSocket, user_name)
 {
@@ -131,8 +132,19 @@ function addSocketToChannel(channelId, socket_)
         });
 
         channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
-        console.log("addSocketToChannel, channel = " + channelId);
-        console.log("length = " + channelIdToSocketList[channelId].length);
+        //console.log("addSocketToChannel, channel = " + channelId);
+        //console.log("length = " + channelIdToSocketList[channelId].length);
+    }
+
+
+    // Update socketToChannelIdMap
+    if(socketToChannelIdMap[socket_.id]==undefined)
+    {
+        socketToChannelIdMap[socket_.id] = [channelId];
+    }
+    else 
+    {
+        socketToChannelIdMap[socket_.id] = [...socketToChannelIdMap[socket_.id], channelId];
     }
 }
 
@@ -209,6 +221,34 @@ function routeMessage(data, incomingSocket)
 
 }
 
+// remove the socket from all the maps
+function removeSocket(socket_)
+{
+    // 0. need to know the asscciated user information from socket
+    let userName = socketToUserMap[socket_.id];
+
+    // 1. socketToUserMap
+    delete socketToUserMap[socket_.id];
+
+    // 2. userToSocketMap
+    // <note> There could be multiple sockets for the same user.
+    userToSocketMap[userName] = userToSocketMap.filter(item => item!=socket_);
+
+    // 3. channelIdToSocketList 
+    // <Note> It may need to go through whole channel??
+    // <Note> We need to build reverse map as well
+    let registeredChannels = socketToChannelIdMap[socket_.id];
+
+    if(registeredChannels!=undefined)
+    {
+        registeredChannels.forEach(channel => removeSocketToChannel(channel, socket_));
+    }
+    else
+    {
+        console.log("removeSocket: socket is not registered yet");
+    }
+}
+
 module.exports = function() {
 
     wss.on('connection', function connection(ws) {
@@ -242,8 +282,9 @@ module.exports = function() {
 
         ws.on('close', function () {
             // ISEO-TBD: Need to remove this socket from all the map.
+            // List all the maps to be updated.
+            removeSocket(ws);
             console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
-
         });
     });
 }
