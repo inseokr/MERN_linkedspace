@@ -239,5 +239,11 @@ module.exports = function() {
                 routeMessage(data, ws);
             }
         });
+
+        ws.on('close', function () {
+            // ISEO-TBD: Need to remove this socket from all the map.
+            console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
+
+        });
     });
 }

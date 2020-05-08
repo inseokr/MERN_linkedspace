@@ -53,16 +53,11 @@ export function MessageContextProvider(props) {
 //    if(sessionStorage.getItem('socketCreated')===null)
   if(socketCreated==false)
   {
-      console.log("creating WebSocket");
-      localStorage.setItem("socketCreated", "true");
       let ws = new WebSocket("ws://"+window.location.hostname+":3030");
       setSocketCreated(true);
-      setWebSocket(ws);
-      localStorage.setItem("webSocket", JSON.stringify(ws));
 
       let audio = new Audio(messageAlertSound);
       setAlertSound(audio);
-      localStorage.setItem("alertSound", JSON.stringify(audio));
   }
   else {
       // ISEO: not sure how it will be called upon every message reception?
@@ -87,8 +82,6 @@ export function MessageContextProvider(props) {
 
       chatSocket.onclose = () => {
           console.log("Disconnected");
-          // Do we need to reconnected
-          localStorage.removeItem("socketCreated");
       }
   }
 
@@ -443,13 +436,6 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(()=>{
-
-    localStorage.setItem("webSocket", JSON.stringify(chatSocket));
-    
-    //let tempSocket = JSON.parse(localStorage.webSocket);
-    //let tempAlert = JSON.parse(localStorage.alertSound);
-    console.log("tempSocket=" +  localStorage.webSocket);
-    console.log("chatSocket=" +  JSON.stringify(chatSocket));
   });
 
   return (

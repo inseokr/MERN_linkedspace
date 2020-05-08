@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, {createContext, useState} from "react";
 import sampleProfile from "../../assets/images/Chinh - Vy.jpg";
 
 export const GlobalContext = createContext();
@@ -14,7 +14,7 @@ export function GlobalProvider(props) {
   function isUserLoggined()
   {
   	if(currentUser!=null) return true;
-  	else false;
+  	else return false;
   }
 
   function getProfilePicture(user_name)
