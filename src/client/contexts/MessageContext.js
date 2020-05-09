@@ -34,7 +34,7 @@ export function MessageContextProvider(props) {
 
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
 
-  const [currChanneInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
+  const [currChannelInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
 
   //const [chattingHistory, addMsgToChatHistory] = useState([]);
 
@@ -128,8 +128,8 @@ export function MessageContextProvider(props) {
     //                11(--> I'm doing good)
     // size of length: 12(It will be the next message to be read)
     // So it doesn't matter!!
-    var data = { channel_id: currChanneInfo.channelName, 
-                 lastReadIndex: dmChannelContexts[currChanneInfo.channelName].chattingHistory.length};
+    var data = { channel_id: currChannelInfo.channelName, 
+                 lastReadIndex: dmChannelContexts[currChannelInfo.channelName].chattingHistory.length};
 
     console.log("pushCurrentChannelToDB: lastReadIndex = " + data.lastReadIndex);
     const result = await axios.post('/chatting/update', data)
@@ -201,9 +201,9 @@ export function MessageContextProvider(props) {
   }
 
   function getChattingHistory() {
-      console.log("getChattingHistory of " + currChanneInfo.channelName);
+      console.log("getChattingHistory of " + currChannelInfo.channelName);
 
-      if(dmChannelContexts[currChanneInfo.channelName]===undefined)
+      if(dmChannelContexts[currChannelInfo.channelName]===undefined)
       {
         // no history
         return [];
@@ -211,7 +211,7 @@ export function MessageContextProvider(props) {
       else 
       {
         console.log("Channel was found!!");
-        return dmChannelContexts[currChanneInfo.channelName].chattingHistory;
+        return dmChannelContexts[currChannelInfo.channelName].chattingHistory;
       }
   }
 
@@ -224,8 +224,8 @@ export function MessageContextProvider(props) {
 
           // need to append header
           // @CSD:channel_id:sender_name:msg
-          //chatSocket.send(''.concat("CSD:{currChanneInfo.channelName}:", msg));
-          chatSocket.send("CSD:"+currChanneInfo.channelName+":"+currentUser.username+":"+msg);
+          //chatSocket.send(''.concat("CSD:{currChannelInfo.channelName}:", msg));
+          chatSocket.send("CSD:"+currChannelInfo.channelName+":"+currentUser.username+":"+msg);
           setWaitMessage(true);
           // it will echo locally added messages.
           // how to filter it out then? Server should not forward it back to me?
@@ -235,7 +235,7 @@ export function MessageContextProvider(props) {
           // let's add to new DBs
           // <note> I find it very inefficient...
           // we have to copy things all the time??
-          updateChatContext(msg, currChanneInfo.channelName, 0 , 0, currentUser.username);
+          updateChatContext(msg, currChannelInfo.channelName, 0 , 0, currentUser.username);
       }
       else {
           alertSound.play();
@@ -276,7 +276,7 @@ export function MessageContextProvider(props) {
 
   function getLastReadIndex(channel_id)
   {
-    let channel_name = (channel_id!=""? channel_id:currChanneInfo.channelName);
+    let channel_name = (channel_id!=""? channel_id:currChannelInfo.channelName);
 
     console.log("channel_name = " + channel_name);
 
@@ -349,7 +349,7 @@ export function MessageContextProvider(props) {
     console.log("loadChatHistory");
 
      // It's a special flag to indicate that the channel history is loaded.
-    if(currChanneInfo.channelName==channel_id)
+    if(currChannelInfo.channelName==channel_id)
     {
       console.log("setFlagNewlyLoaded!!!!!");
       setFlagNewlyLoaded(true);
@@ -440,7 +440,7 @@ export function MessageContextProvider(props) {
   });
 
   return (
-    <MessageContext.Provider value={{ dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded , checkIfAnyNewMsgArrived}}>
+    <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded , checkIfAnyNewMsgArrived}}>
       {props.children}
     </MessageContext.Provider>
   );

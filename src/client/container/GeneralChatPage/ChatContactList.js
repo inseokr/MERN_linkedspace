@@ -45,7 +45,12 @@ function ChatContactList() {
 
 		setClickStates([...contactClickStates]);
 
-		let channelInfo = {channelName: getDmChannelId(friendsList[index].username)};
+		let channelInfo = {channelName: getDmChannelId(friendsList[index].username), 
+                                      dm: {
+                                            name: friendsList[index].username,
+                                            distance: 1
+                                          }};
+
 		switchChattingChannel(channelInfo);
 		loadChattingDatabase();
 	}

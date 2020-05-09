@@ -8,8 +8,10 @@ import { MessageContext } from '../../contexts/MessageContext';
 
 function CommonHeader (){
 
-  const {loadFriendList, friendsList, setCurrentUser, currentUser, isUserLoggined, getDmChannelId } = useContext(GlobalContext);
+  const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined, getDmChannelId } = useContext(GlobalContext);
   const {loadChattingDatabase, switchChattingChannel} = useContext(MessageContext);
+
+  console.log("loading commonHeader");
 
   async function loadDataBases() {
     if(isUserLoggined()==true)
@@ -17,11 +19,13 @@ function CommonHeader (){
       console.log("loading databases");
 
       // ISEO-TBD: followinng 2 API should be called in sequence.
+      // It's not being called at all.
       console.log("loading friend list");
       const result1 = await loadFriendList();
       console.log("loading chatting Database");
-
       const result2 = await loadChattingDatabase();
+      console.log("loading social network DB");
+      const result3 = await loadSocialNetworkDb();
     }
     else
     {
@@ -56,7 +60,11 @@ function CommonHeader (){
       {
           console.log("useEffect of commonHeader");
           // how to prevent multiple loading?
-          let channelInfo = {channelName: getDmChannelId(friendsList[0].username)};
+          let channelInfo = {channelName: getDmChannelId(friendsList[0].username), 
+                                      dm: {
+                                            name: friendsList[0].username,
+                                            distance: 1
+                                          }};
           switchChattingChannel(channelInfo);
           loadChattingDatabase();
       }

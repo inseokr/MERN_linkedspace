@@ -1,0 +1,118 @@
+.network_board {
+  display: inline-grid;
+  border: 1px solid #dee2e6!important;
+  grid-template-columns:180px; 
+  grid-auto-rows: 60px;
+  background-image: url("../../../assets/images/wooden_background_v1.jpeg") !important;
+  opacity: 1;
+} 
+
+.network_board .profile_picture { 
+  grid-row-start: 1; 
+  grid-row-end: 4; 
+  text-align: center;
+}
+
+.network_board .friend_information { 
+  grid-row-start: 4; 
+  grid-row-end: 5; 
+  text-align: center;
+}
+
+.network_board .action { 
+  grid-row-start: 5; 
+  grid-row-end: 6; 
+  text-align: center;
+  margin-top: 15px;
+}
+
+.bold_fonts {
+    margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    line-height: 1.4em !important;
+    color: #484848 !important;
+}
+
+.normal_fonts {
+    #margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 1.75em !important;
+    color: #484848 !important;
+}
+
+.bottom-shadow {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.bottom-shadow:after {
+  content: "";
+  display: block;
+  height: 8px;
+  background: transparent;
+  background: -moz-linear-gradient(top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, rgba(0,0,0,0.4) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(   startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+}
+
+.bottom-shadow div {
+  padding: 5px;
+}
+
+
+.connection_pannel {
+  top: 155px;
+  left: 8%;
+  height: 80px;
+  width: 300px;
+  position: fixed;
+  border-bottom-style:ridge;
+  border-top-style:ridge;
+}
+
+.connection_image {
+  position: relative;
+  top: 4px;
+  width: 80px;
+}
+
+.image1 {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  height: 70px;
+}
+
+.image2 {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  height: 70px;
+}
+
+.image3 {
+  position: absolute;
+  top: 0;
+  left: 40px;
+  height: 70px;
+}
+
+.image4 {
+  position: absolute;
+  top: 0;
+  left: 60px;
+  height: 70px;
+}
+
+.connection_caption {
+  position: relative;
+  top: 35%;
+  left: 0;
+}

@@ -3,6 +3,7 @@ import './app.css';
 import CommonHeader from './components/Header/CommonHeader';
 import LandingPage from './container/LandingPage/LandingPage';
 import GeneralChatMainPage from './container/GeneralChatPage/GeneralChatMainPage';
+import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 import Map from "./container/MapPage/index";
 
@@ -43,6 +44,9 @@ export default class App extends Component {
               </Route>
               <Route exact path="/Messages">
                   <GeneralChatMainPage />
+              </Route>
+              <Route exact path="/MyNetworks">
+                  <MyNetworkPage />
               </Route>
               <Route exact path="/">
                 <LandingPage />

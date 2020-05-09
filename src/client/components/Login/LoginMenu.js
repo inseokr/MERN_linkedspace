@@ -28,11 +28,11 @@ function LoginMenu()
           
           <ul class="navbar-nav ml-auto">
               <li class="nav-item">
-                <a class="nav-link" href="/mynetwork">
+                <Link class="nav-link" to="/MyNetworks">
                     My Network
                     <span class="fa fa-comment"></span>
                     <span class="newMsgSignature">2</span>
-                </a>
+                </Link>
               </li>
               <Link class="nav-link" to="/Messages">
                 Messages

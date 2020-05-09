@@ -8,6 +8,7 @@ export function GlobalProvider(props) {
   const [friendsList, setFriends] = useState();	
   const [currentUser, setCurrentUser] = useState(null);
   const [friendsMap, setFriendsMap] = useState();
+  const [network_info, setNetwork_Info] = useState(null);
 
   console.log("GlobalProvider: currentUser = " + currentUser);
 
@@ -62,8 +63,17 @@ export function GlobalProvider(props) {
       });
   }
 
+  async function loadSocialNetworkDb()
+  {
+    await fetch('/mynetwork/networkinfo')
+      .then(res => res.json())
+      .then(network => {
+        setNetwork_Info(network);
+      });
+  }
+
   return (
-    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, getProfilePicture, getDmChannelId }}>
+    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, loadSocialNetworkDb, network_info, loadSocialNetworkDb, getProfilePicture, getDmChannelId }}>
       {props.children}
     </GlobalContext.Provider>
   );

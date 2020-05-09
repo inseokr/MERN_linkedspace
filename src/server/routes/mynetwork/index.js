@@ -26,7 +26,6 @@ module.exports = function(app) {
 
 	}
 
-
 	function getSummaryOfUser(user_id) {
 
 		return new Promise(resolve => {
@@ -45,7 +44,6 @@ module.exports = function(app) {
 		});
 
 	}
-
 
 	function pushFriendReqstList(list, friend){
 		return new Promise(resolve => {
@@ -178,6 +176,14 @@ module.exports = function(app) {
 
 		});
 	});
+
+	router.get("/networkinfo", function(req, res){
+
+		buildMyNetworkList(req).then((networkInfo) => {
+			res.json(networkInfo);
+		});
+	});
+
 
 	router.get("/friend_list", function(req, res){
 		
