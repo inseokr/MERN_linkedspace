@@ -8,9 +8,10 @@ import { MessageContext } from '../../contexts/MessageContext';
 
 function ChatContactList() {
 
-	console.log("ChatContactList");
+	console.log("!!!!!!! Creating ChatContactList !!!!!");
+
 	const {friendsList, getDmChannelId} = useContext(GlobalContext);
-	const {switchChattingChannel, loadChattingDatabase, dmChannelContexts} = useContext(MessageContext);
+	const {switchChattingChannel, currChannelInfo, loadChattingDatabase, dmChannelContexts} = useContext(MessageContext);
 
 	// create initial state based on friendsList
 	let initClickStates = [];
@@ -23,7 +24,7 @@ function ChatContactList() {
 
 	for(var i=0; i< friendsList.length; i++)
 	{
-		initClickStates.push((i==0)?1: 0);
+		initClickStates.push((getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)? 1: 0);
 	}
 	
 	const [clickStates, setClickStates] = useState(initClickStates);

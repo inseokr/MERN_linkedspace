@@ -1,11 +1,21 @@
-import React, {useContext, useEffect} from 'react' 
+import React, {useContext, useEffect} from 'react'
+import {Link} from 'react-router-dom' 
 import './mynetwork_style.css'
 import { GlobalContext } from '../../contexts/GlobalContext'
+import { MessageContext } from '../../contexts/MessageContext'
 
 
 function DirectFriends()
 {
 	const {network_info} = useContext(GlobalContext);
+	const {switchDmByFriendName} = useContext(MessageContext);
+
+	function handleClick(evt){
+	    // param is the argument you passed to the function
+	    // e is the event object that returned
+		console.log("handleClick, index = " + evt.target.value);
+		switchDmByFriendName(network_info.direct_friends_list[evt.target.value].username);
+	};
 
 	function getDirectFriends()
 	{
@@ -13,7 +23,8 @@ function DirectFriends()
 
 		const profile_style = {
 			maxWidth: "100%", 
-			marginTop:"10px"
+			maxHeight: "100%",
+			marginTop: "10px"
 		}
 
         if(network_info==null) return friends;
@@ -34,11 +45,11 @@ function DirectFriends()
 						<span class="normal_fonts">{network_info.direct_friends_list[i].address.city+","+network_info.direct_friends_list[i].address.state}</span>
 					</div>
 
-					<form role="form" action={"/mynetwork/"+network_info.direct_friends_list[i].id+"/friend_accept"} method="post">
+					<Link to="/Messages">
 						<div class="action">
-							<button class="btn btn-info">Message</button>
+							<button class="btn btn-info" onClick={handleClick} value={i}>Message</button>
 						</div>
-					</form>
+					</Link>
 				</div>
 			);
 		}

@@ -47,7 +47,7 @@ export function MessageContextProvider(props) {
 
   const [chatMainPageLoaded, setChatMainPageLoaded] = useState(false);
 
-  const {currentUser, setCurrentUser, friendsList} = useContext(GlobalContext);
+  const {currentUser, getDmChannelId, setCurrentUser, friendsList} = useContext(GlobalContext);
 
   // create or connect messaging socket
 //    if(sessionStorage.getItem('socketCreated')===null)
@@ -143,6 +143,7 @@ export function MessageContextProvider(props) {
 
   function switchChattingChannel(channelInfo)
   {
+    console.log("switchChattingChannel, channelInfo = " + channelInfo.channelName);
     // save some of information back to database
     pushCurrentChannelToDB();
     setCurrChannelInfo(channelInfo);
@@ -436,11 +437,24 @@ export function MessageContextProvider(props) {
 
   }
 
+  function switchDmByFriendName(name)
+  {
+    let channelInfo = {channelName: getDmChannelId(name),
+                        dm: {
+                          name: name,
+                          distance: 1
+                        }};
+    switchChattingChannel(channelInfo);
+  }
+
   useEffect(()=>{
   });
 
   return (
-    <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, chatMainPageLoaded, setChatMainPageLoaded, switchChattingChannel, numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, checkNewlyLoaded , checkIfAnyNewMsgArrived}}>
+    <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, chatMainPageLoaded, 
+                                      setChatMainPageLoaded, switchDmByFriendName, switchChattingChannel, 
+                                      numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, 
+                                      checkNewlyLoaded , checkIfAnyNewMsgArrived}}>
       {props.children}
     </MessageContext.Provider>
   );

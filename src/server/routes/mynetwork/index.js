@@ -32,9 +32,10 @@ module.exports = function(app) {
 			User.findById(user_id, function(err, curr_user){
 				var friend = 
 				{
-					profile_picture: "../public/user_resources/pictures/Chinh - Vy.jpg",
-					name: curr_user.firstname+curr_user.lastname, 
-					address: {city: "San Jose", state: "CA"},
+					profile_picture: curr_user.profile_picture,
+					name: curr_user.firstname+" "+curr_user.lastname, 
+					address: {city: curr_user.address.city, state: curr_user.address.state},
+					username: curr_user.username,
 					id: user_id
 				}; 
 
