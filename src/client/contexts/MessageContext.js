@@ -362,13 +362,16 @@ export function MessageContextProvider(props) {
                      chattingHistory: buildHistoryFromDb(history)};
 
     // ISEO-TBD: make it sure that dmChannelContexts[chnnale_id] is defined.
-    dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
-    dmChannel.msg_summary  = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].message.slice(0,25) + "...";
-    dmChannel.datestamp    = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].datestamp;
-
-    if(dmChannel.flag_new_msg==true)
+    if(dmChannel.chattingHistory.length)
     {
-        setNewMsgArrived(true);
+      dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
+      dmChannel.msg_summary  = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].message.slice(0,25) + "...";
+      dmChannel.datestamp    = dmChannel.chattingHistory[dmChannel.chattingHistory.length-1].datestamp;
+    
+      if(dmChannel.flag_new_msg==true)
+      {
+          setNewMsgArrived(true);
+      }
     }
 
     let dmChannelContextArray = dmChannelContexts;

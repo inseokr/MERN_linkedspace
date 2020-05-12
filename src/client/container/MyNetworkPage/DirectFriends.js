@@ -13,6 +13,7 @@ function DirectFriends()
 	function handleClick(evt){
 	    // param is the argument you passed to the function
 	    // e is the event object that returned
+	    //evt.preventDefault();
 		console.log("handleClick, index = " + evt.target.value);
 		switchDmByFriendName(network_info.direct_friends_list[evt.target.value].username);
 	};

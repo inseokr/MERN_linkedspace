@@ -38,6 +38,7 @@ function LoginMenu()
                 Messages
               {newMsgMarker}
               </Link>
+              <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
               <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
               <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
               <li class="nav-item">
