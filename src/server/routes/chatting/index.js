@@ -23,11 +23,40 @@ module.exports = function(app) {
 		chatDbHandler.findChatChannel("iseo-dm-justin").then((channel) => {
 			if(channel!=null)
 			{
-				console.log("channel found");
+				//console.log("channel found");
 				res.json(channel);
 				return;
 			}
 		})
+	});
+
+	router.post("/update", function(req,res){
+		let result = {op_result: "sucess"};
+
+		console.log("chatting update called, channel = " + req.body.channel_id + "index= " + req.body.lastReadIndex);
+
+		// update channel DB in User DB
+		User.findOne({username: req.user.username}, function(err, user){
+			if(err)
+			{
+				result = {op_result: "failed"};
+				console.log("User not found");
+				res.json(result);
+				return;
+			}
+
+			// find the channel and update the index.
+			user.chatting_channels.dm_channels.forEach((channel) => {
+				if(channel.name==req.body.channel_id)
+				{
+					console.log("Found channel and now the index is being udpated");
+					channel.lastReadIndex = req.body.lastReadIndex;
+					user.save();
+					res.json(result);
+					return;
+				}
+			});
+		});
 	});
 
 	router.post("/new", function(req, res){
@@ -36,7 +65,7 @@ module.exports = function(app) {
 		    {
 		      let result = {bNewlyCreated: false, channel: channel};
 
-		      console.log("Channel exits already. returning the channel");
+		      //console.log("Channel exits already. returning the channel");
 
 		      res.json(result);
 		      return;
@@ -60,7 +89,7 @@ module.exports = function(app) {
 		    let numberOfPushedMembers = 0;
 		    for (index = 0; index < req.body.members.length; index++)
 		    {
-		      console.log("index = " + index);
+		      //console.log("index = " + index);
 
 		      chatDbHandler.findChatPartyByName(req.body.members[index]).then((memberInfo) => {
 		            numberOfPushedMembers++;
@@ -69,7 +98,7 @@ module.exports = function(app) {
 
 		            if(req.body.members.length==numberOfPushedMembers)
 		            {
-		              console.log("Saving it to the database"); 
+		              //console.log("Saving it to the database"); 
 		              newChannel.save();
 		              chatDbHandler.addChannelToUser(newChannel);
 		            }
@@ -80,7 +109,7 @@ module.exports = function(app) {
 
 		    res.json(result);
 
-		    console.log("Channel just created");
+		    //console.log("Channel just created");
 	  	});
 
 	});

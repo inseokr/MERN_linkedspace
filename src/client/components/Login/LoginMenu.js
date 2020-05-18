@@ -1,59 +1,73 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import '../../app.css';
 import Search from "../../container/SearchPage/SearchPage"
 import {Link} from 'react-router-dom';
+import {GlobalContext} from "../../contexts/GlobalContext";
+import {MessageContext} from "../../contexts/MessageContext";
 
-export default class LoginMenu extends Component {
-  state = { };
 
-  componentDidMount() {
-  }
+function LoginMenu()
+{
+  const {currentUser} = useContext(GlobalContext);
+  const {checkIfAnyNewMsgArrived} = useContext(MessageContext);
 
-  render() {
-    return (
-    	<>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <div class="container">
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
-            <a class="navbar-brand" href="/">LinkedSpaces</a>
-            
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="/mynetwork">
-                      My Network
+  let newMsgMarker = (checkIfAnyNewMsgArrived()==true)?
+                      <> 
                       <span class="fa fa-comment"></span>
-                      <span class="num">2</span>
-                  </a>
-                </li>
-                <li class="nav-item"><Link class="nav-link" to="/Messages">Messages</Link></li>
-                <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
-                <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
-                <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/logout" style={{position: 'relative'}}>
-                    Logout
-                  </a>
-                </li>
+                      <span class="newMsgSignature">N</span></>: "";                      
+  
+  return (
+  	<>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
+          <a class="navbar-brand" href="/">LinkedSpaces</a>
+          
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <Link class="nav-link" to="/MyNetworks">
+                    My Network
+                    <span class="fa fa-comment"></span>
+                    <span class="newMsgSignature">2</span>
+                </Link>
+              </li>
+              <Link class="nav-link" to="/Messages">
+                Messages
+              {newMsgMarker}
+              </Link>
+              <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
+              <li class="nav-item">
+                <Link class="nav-link" to="/listing/landlord/5eb832f7e77326810c3bd086">Show Listing Test
+                </Link>
+              </li>
+              <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
+              <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout" style={{position: 'relative'}}>
+                  Logout
+                </a>
+              </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/profile">
-                        <img class="img-responsive center rounded-circle"
-                              style={{
-                                        maxHeight: '70%',
-                                        height: '30px'
-                                      }
-                                     }
-                              src="/public/user_resources/pictures/profile_pictures/default_profile.jpg"/>
-                    </a>
-                </li>
-            </ul>
-          </div>
+              <li class="nav-item">
+                  <a class="nav-link" href="/profile">
+                      <img class="img-responsive center rounded-circle"
+                            style={{
+                                      maxHeight: '70%',
+                                      height: '30px'
+                                    }
+                                   }
+                            src={currentUser.profile_picture}/>
+                  </a>
+              </li>
+          </ul>
         </div>
-        </nav>
-      </>
-    );
-  }
+      </div>
+      </nav>
+    </>
+  );
  }
+
+ export default LoginMenu;

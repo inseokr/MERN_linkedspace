@@ -297,29 +297,29 @@ app.post('/profile/:user_id/file_delete', function(req, res) {
 
 app.get("/public/user_resources/pictures/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/${fileName}`));
 });
 app.get("/public/user_resources/pictures/landlord/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/landlord/${fileName}`));
 });
 app.get("/public/user_resources/pictures/profile_pictures/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("Profile picture: received file name=" + fileName)
+  //console.log("Profile picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/profile_pictures/${fileName}`));
 });
 
 app.get("/public/user_resources/pictures/tenant/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/tenant/${fileName}`));
 });
 
 app.get("/scripts/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("script: received file name=" + fileName)
+  //console.log("script: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/scripts/${fileName}`));
 });
 

@@ -1,5 +1,4 @@
-import React, { Component, useState, useContext} from 'react';
-import  {useRef, useEffect } from 'react';
+import React, { Component, useState, useContext, useRef, useEffect} from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css';
 import ChattingMessageBox from './ChattingMessageBox';
@@ -10,49 +9,102 @@ import sampleProfile from '../../../assets/images/Chinh - Vy.jpg';
 
 function ChattingWindow() {
 
-    const divRef = React.createRef();
-    const {numOfMsgHistory, getChattingHistory, updateChatHistory} = useContext(MessageContext);
+    const messagesEndRef = useRef(null);
+
+    const {numOfMsgHistory, getChattingHistory, loadChattingDatabase, getLastReadIndex} = useContext(MessageContext);
     const {getProfilePicture} = useContext(GlobalContext);
 
-    let bFirstLoad = true;
+    //const [numOfHistory, setNumOfHistory] = useState(0);
 
     console.log("loading Chatting Window");
 
+    const scrollToBottom = () => {
+
+        console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
+
+        if(messagesEndRef.current!=undefined)
+        {
+            messagesEndRef.current.scrollIntoView({block: "end", inline: "nearest"});
+
+            // smooth option won't be used to load the first history.
+            if(numOfMsgHistory>0)
+            { 
+                console.log("changing behavior to smooth");
+                //messagesEndRef.current.scrollIntoView({behavior: "smooth"});
+            }
+        }
+    }
+
+
+    function getNewMessageMarker()
+    {
+        return <hr className="newMessage" />;
+    }
+
+    function getCurMessageBox(chat, new_msg_marker)
+    {
+        return <ChattingMessageBox
+                    msg_direction={chat.direction}
+                    profile_picture={getProfilePicture(chat.username)}
+                    message={chat.message}
+                    timestamp={chat.timestamp}
+                    new_msg={new_msg_marker}
+                />;
+    }
+
+    function getChatHistory()
+    {
+        let chatHistory   = getChattingHistory();
+        let lastReadIndex = getLastReadIndex("");
+        let output        = [];
+        //console.log("chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
+        let newMsgMarked = false;
+        
+        for(let index=0; index<chatHistory.length; index++)
+        {
+            let newMsgFlag = false;
+
+            if(newMsgMarked==false)
+            {
+                if(index>=lastReadIndex && (chatHistory[index].direction == 1))
+                {
+                    newMsgFlag = true;
+                    newMsgMarked = true;
+                }
+            }
+            output = [...output, getCurMessageBox(chatHistory[index], newMsgFlag)];
+        }
+
+        return output;
+    }
+
+
     function loadChattingHistory()
     {
-        let chatHistory = getChattingHistory().map(function (chat, index) {
-            return <ChattingMessageBox
-                msg_direction={chat.direction}
-                profile_picture={getProfilePicture(chat.username)}
-                message={chat.message}
-                timestamp={chat.timestamp}
-            />;
-        });
-        return chatHistory;
+        return (getChatHistory());
     }
-    
-    useEffect(() => {
-        /*
-        if(bFirstLoad==true)
-        {
-            console.log("block to  end");
-            divRef.current.scrollIntoView({block: "end"});
-            bFirstLoad = false;
-        }
-        else 
-        {
-            console.log("block to start");
-            divRef.current.scrollIntoView({block: "start"});
-        }*/
-        divRef.current.scrollIntoView({block: "end"});
-        divRef.current.scrollIntoView({behavior: 'smooth'});
-    });
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [numOfMsgHistory]);
+
+    function triggerScroll()
+    {
+        // ISEO-TBD: It's very interesting bug, but I should re-schedule the scrollToBottom with some delay.
+        // I assume it's happening because React is doing things in parallel and the scroll operation is made
+        // while the data is still being loaded.
+        const timer = setTimeout(() => {
+            scrollToBottom();
+        }, 100);
+
+        return "";
+    }
     return (
-        <>
+        <div>
             {loadChattingHistory()}
-            <div ref={divRef}/>
-        </>
+            {triggerScroll()}
+            <div ref={messagesEndRef}/>
+        </div>
     )
 }
 

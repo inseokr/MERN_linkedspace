@@ -40,27 +40,52 @@ const wss = new WebSocket.Server({ port: 3030});
 var socketToUserMap = [];
 var userToSocketMap = [];
 var channelIdToSocketList = [];
+var socketToChannelIdMap = [];
 
-// ISEO-TBD: this map is not being used
-var channelIdToUserList = []; 
+async function registerSocketToChannels(currentSocket, user_name)
+{
+    console.log("getChannels");
+    let channels = await chatDbHandler.getChannels(user_name);
+
+    console.log("go through channels");
+    channels.dm_channels.forEach(function each(channel) {
+                addSocketToChannel(channel.name, currentSocket);
+            });
+}
 
 function updateUserSocketMap(currentSocket, user_name)
 {
+    let bDuplicate = false;
     // <note> The socket list should be dynamically updated.
     // How to remove a specific socket from the list then?
     // We may have multiple sockets?
     // check if the user_name exists in the array
-    (userToSocketMap[user_name]==undefined) ?
-        userToSocketMap[user_name] = [currentSocket] :
-        userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
+    if(userToSocketMap[user_name]==undefined)
+    {
+        userToSocketMap[user_name] = [currentSocket];
+    }
+    else
+    {
+        userToSocketMap[user_name].forEach((socket) => {
+            if(currentSocket.id===socket.id)
+            {
+                bDuplicate = true;
+                return;
+            }
+        });
+
+    }
+
+    if(bDuplicate==true) return;
 
     console.log("Updating socketToUserMap for user = " + user_name);
+    userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
     socketToUserMap[currentSocket.id] = user_name;
 
     // <TBD> When is the right point to do this?
     // We may consult DB here and get the list of channels for this user and update it.
-    addSocketToChannel("iseo-dm-justin", currentSocket);
+    registerSocketToChannels(currentSocket, user_name);
 }
 
 function handleCtrlMsg(rxMsg) {
@@ -91,9 +116,36 @@ function addUserToChannel(channelId, user)
 
 function addSocketToChannel(channelId, socket_)
 {
-    (channelIdToSocketList[channelId]==undefined) ?
-        channelIdToSocketList[channelId] = [socket_] :
+    if(channelIdToSocketList[channelId]==undefined)
+    {
+        channelIdToSocketList[channelId] = [socket_];
+    }
+    else
+    {
+        // check if there is any duplicate
+        channelIdToSocketList[channelId].forEach( (socket) => {
+            if(socket.id==socket_.id)
+            {
+                //console.log("duplciate sockets");
+                return;
+            }
+        });
+
         channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
+        //console.log("addSocketToChannel, channel = " + channelId);
+        //console.log("length = " + channelIdToSocketList[channelId].length);
+    }
+
+
+    // Update socketToChannelIdMap
+    if(socketToChannelIdMap[socket_.id]==undefined)
+    {
+        socketToChannelIdMap[socket_.id] = [channelId];
+    }
+    else 
+    {
+        socketToChannelIdMap[socket_.id] = [...socketToChannelIdMap[socket_.id], channelId];
+    }
 }
 
 function removeSocketToChannel(channelId, socket_)
@@ -103,7 +155,7 @@ function removeSocketToChannel(channelId, socket_)
 
     channelIdToSocketList[channelId].forEach(socket =>
     {
-        if(socket!=socket_) newList = [...newList, socket];
+        if(socket.id!=socket_.id) newList = [...newList, socket];
     })
 
     channelIdToSocketList[channelId] = newList;
@@ -169,11 +221,35 @@ function routeMessage(data, incomingSocket)
 
 }
 
-module.exports = function() {
+// remove the socket from all the maps
+function removeSocket(socket_)
+{
+    // 0. need to know the asscciated user information from socket
+    let userName = socketToUserMap[socket_.id];
 
-    // <note> register DM channel for testing
-    // between justin and iseo
-    channelIdToUserList["iseo-dm-justin"] = ["iseo", "justin"];
+    // 1. socketToUserMap
+    delete socketToUserMap[socket_.id];
+
+    // 2. userToSocketMap
+    // <note> There could be multiple sockets for the same user.
+    userToSocketMap[userName] = userToSocketMap.filter(item => item!=socket_);
+
+    // 3. channelIdToSocketList 
+    // <Note> It may need to go through whole channel??
+    // <Note> We need to build reverse map as well
+    let registeredChannels = socketToChannelIdMap[socket_.id];
+
+    if(registeredChannels!=undefined)
+    {
+        registeredChannels.forEach(channel => removeSocketToChannel(channel, socket_));
+    }
+    else
+    {
+        console.log("removeSocket: socket is not registered yet");
+    }
+}
+
+module.exports = function() {
 
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();
@@ -182,7 +258,7 @@ module.exports = function() {
 
         ws.on('message', function incoming(data) {
 
-            console.log("Chat Server: received data = " + data);
+            console.log("Chat Server: received data = " + data + "id = " + ws.id);
             // It goes through all sockets registered to this server
             const result = handleCtrlMsg(data);
 
@@ -202,6 +278,13 @@ module.exports = function() {
             else {
                 routeMessage(data, ws);
             }
+        });
+
+        ws.on('close', function () {
+            // ISEO-TBD: Need to remove this socket from all the map.
+            // List all the maps to be updated.
+            removeSocket(ws);
+            console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
         });
     });
 }

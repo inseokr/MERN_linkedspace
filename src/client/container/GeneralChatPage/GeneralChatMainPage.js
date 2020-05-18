@@ -25,11 +25,16 @@ export default class GeneralChatMainPage extends Component {
 
   componentDidMount() {
     console.log("GeneralChatMainPage is being loaded");
-    this.context.loadChattingDatabase();
+    //this.context.loadChattingDatabase();
+    this.context.setChatMainPageLoaded(true);
+  }
 
+  componentWillMount() {
+    console.log("GeneralChatMainPage WillMount called");
   }
 
   render() {
+    
     return (
       <div className="GeneralChatMainWrapper bg-light">
           <div className="MessageLeftPanel">

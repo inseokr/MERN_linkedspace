@@ -44,7 +44,7 @@ function WriteChat() {
             id="ChattingMessage"
             cols="50"
             placeholder="Write a message..."
-			value={chatMessage}
+			      value={chatMessage}
             onChange={handleChangeChatMessage}
             onKeyPress={handleKeyPress}
             onClick={cleanMessage}
