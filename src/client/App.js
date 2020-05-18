@@ -6,6 +6,7 @@ import GeneralChatMainPage from './container/GeneralChatPage/GeneralChatMainPage
 import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 import Map from "./container/MapPage/index";
+import ListingLandlordMainPage from "./container/ListingPage/landlord/ListingLandlordMainPage";
 
 import {
   BrowserRouter as Router,
@@ -18,6 +19,8 @@ import { Redirect, Route }        from 'react-router';
 import { SearchProvider }         from './contexts/SearchContext';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { GlobalProvider }         from './contexts/GlobalContext';
+import { CurrentListingProvider } from './contexts/CurrentListingContext';
+
 
 export default class App extends Component {
   state = { };
@@ -28,6 +31,9 @@ export default class App extends Component {
 
   componentDidMount() {
     document.title = 'LinkedSpaces';
+
+    console.log("App componentDidMount")
+    console.log("props = " + JSON.stringify(this.props))
   }
 
   render() {
@@ -50,7 +56,10 @@ export default class App extends Component {
               </Route>
               <Route exact path="/">
                 <LandingPage />
-              </Route>              
+              </Route>
+              < CurrentListingProvider >
+                <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
+              </CurrentListingProvider>
             </Switch>
           </Router>
           </MessageContextProvider>

@@ -401,6 +401,29 @@ router.get("/:list_id/show", function(req, res){
 });
 
 
+router.get("/:list_id/fetch", function(req, res){
+	// Clean all resources such as pictures.
+
+	console.log("REACT: fetch landlord listing request with listing id = " + req.params.list_id);
+	// Get landlord listing.
+    LandlordRequest.findById(req.params.list_id, function(err, foundListing){
+    	if(err)
+    	{
+    		console.log("Listing not found");
+    		return;
+    	}
+		var facilities = [];
+		var amenities = [];
+
+		preprocessListing(foundListing, facilities, amenities);
+		console.log("ISEO: list_id = " + req.params.list_id );
+
+		listing_info = 
+			{ listing: foundListing, accessibleSpaces: facilities, availableAmenities: amenities, list_id: req.params.list_id}
+		res.json(listing_info);
+	});
+});
+
 router.delete("/:list_id", function(req, res){
 	// Clean all resources such as pictures.
 

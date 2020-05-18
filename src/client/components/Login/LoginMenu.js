@@ -39,6 +39,10 @@ function LoginMenu()
               {newMsgMarker}
               </Link>
               <li class="nav-item"><a class="nav-link" href="/listing">Post listing</a></li>
+              <li class="nav-item">
+                <Link class="nav-link" to="/listing/landlord/5eb832f7e77326810c3bd086">Show Listing Test
+                </Link>
+              </li>
               <li class="nav-item"><a class="nav-link" href="/listing/show_active_listing">My Active Listing</a></li>
               <li class="nav-item"><a class="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
               <li class="nav-item">
