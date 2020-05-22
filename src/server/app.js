@@ -40,6 +40,8 @@ const expressValidator = require('express-validator');
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
 
+var reactBase = 'C:/webdev/mern/MERN_linkedspace/src/client'
+
 const os = require('os');
 
 var url = process.env.DATABASEURL || "mongodb://localhost/Linkedspaces";
@@ -51,6 +53,7 @@ app.set("view engine", "ejs");
 app.set('views', viewPath);
 
 app.use(express.static(__dirname + "/public"));
+app.use(express.static(reactBase));
 
 app.use(methodOverride("_method"));
 app.use(flash());
@@ -324,7 +327,7 @@ app.get("/scripts/:filename", function(req, res){
 });
 
 app.listen(process.env.PORT, process.env.IP, function(){
-//app.listen(5000, "10.0.0.194", function(){
+//app.listen(6000, process.env.IP, function(){
    console.log("Linkedspaces Has Started!" + "PORT = " + process.env.PORT + " IP = " + process.env.IP);
 });
 
@@ -346,4 +349,11 @@ app.get('/auth/facebook', passport.authenticate('facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/listing',
                                     failureRedirect: '/login' }));
+
+app.get('*', (req,res) => {
+  console.log("ISEO: URL = " + req.url);
+  console.log("ISEO: URL = " + req.originalUrl);
+  res.locals.lastUrl = req.url;
+  res.redirect("/#");
+});
 
