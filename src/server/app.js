@@ -31,6 +31,9 @@ var fileUpload         = require('express-fileupload');
 var facebook           = require('./facebook.js');
 var nodemailer         = require('nodemailer');
 var chatServer         = require('./chatting_server');
+
+var cors              = require('cors');
+
 var serverPath         = "./src/server";
 
 const parseurl         = require('parseurl');
@@ -51,6 +54,8 @@ app.use(bodyParser());
 
 app.set("view engine", "ejs");
 app.set('views', viewPath);
+
+app.use(cors());
 
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(reactBase));
@@ -350,10 +355,11 @@ app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/listing',
                                     failureRedirect: '/login' }));
 
-app.get('*', (req,res) => {
-  console.log("ISEO: URL = " + req.url);
-  console.log("ISEO: URL = " + req.originalUrl);
-  res.locals.lastUrl = req.url;
-  res.redirect("/#");
-});
+//app.get(['/app','/app/*'], (req,res) => {
+//  console.log("ISEO: URL = " + req.originalUrl);
+//  res.sendFile(path.join(__dirname, '../../public', 'index.html'));
+//});
 
+app.get('/*', function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+});
