@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import '../../app.css';
 import Search from '../../container/SearchPage/SearchPage';
-import { SearchContext } from '../../contexts/SearchContext';
 
 import './MessageStyle.css';
 

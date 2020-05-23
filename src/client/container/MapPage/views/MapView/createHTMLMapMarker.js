@@ -1,4 +1,4 @@
-const createHTMLMapMarker = ({ OverlayView = google.maps.OverlayView,  ...args }) => {
+const createHTMLMapMarker = ({ OverlayView = google.maps.OverlayView, ...args }) => {
   class HTMLMapMarker extends OverlayView {
     constructor() {
       super();
@@ -8,26 +8,27 @@ const createHTMLMapMarker = ({ OverlayView = google.maps.OverlayView,  ...args }
     }
 
     createDiv() {
-      this.div = document.createElement('div');
-      this.div.style.position = 'absolute';
+      this.div = document.createElement("div");
+      this.div.style.position = "absolute";
       if (this.html) {
         this.div.innerHTML = this.html;
       }
-      google.maps.event.addDomListener(this.div, 'click', event => {
-        google.maps.event.trigger(this, 'click');
+      google.maps.event.addDomListener(this.div, "click", event => {
+        google.maps.event.trigger(this, "click");
       });
     }
 
     appendDivToOverlay() {
       const panes = this.getPanes();
-      panes.overlayLayer.appendChild(this.div);
+      panes.overlayImage.appendChild(this.div);
     }
 
     positionDiv() {
       const point = this.getProjection().fromLatLngToDivPixel(this.latlng);
+      let offset = 25;
       if (point) {
-        this.div.style.left = `${point.x}px`;
-        this.div.style.top = `${point.y}px`;
+        this.div.style.left = `${point.x - offset}px`;
+        this.div.style.top = `${point.y - offset}px`;
       }
     }
 
