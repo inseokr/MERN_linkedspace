@@ -24,7 +24,7 @@ function ListingComponent(props) {
             {listing.pictures.map(function (picture) {
               return (
                 <Carousel.Item>
-                  <img src={picture.path} alt={picture.caption}/>
+                  <img src={picture.path} alt={picture.caption} className={"carouselImage"}/>
                 </Carousel.Item>
               )
             })}
