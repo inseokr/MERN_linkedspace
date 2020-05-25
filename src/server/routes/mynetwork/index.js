@@ -26,16 +26,16 @@ module.exports = function(app) {
 
 	}
 
-
 	function getSummaryOfUser(user_id) {
 
 		return new Promise(resolve => {
 			User.findById(user_id, function(err, curr_user){
 				var friend = 
 				{
-					profile_picture: "../public/user_resources/pictures/Chinh - Vy.jpg",
-					name: curr_user.firstname+curr_user.lastname, 
-					address: {city: "San Jose", state: "CA"},
+					profile_picture: curr_user.profile_picture,
+					name: curr_user.firstname+" "+curr_user.lastname, 
+					address: {city: curr_user.address.city, state: curr_user.address.state},
+					username: curr_user.username,
 					id: user_id
 				}; 
 
@@ -45,7 +45,6 @@ module.exports = function(app) {
 		});
 
 	}
-
 
 	function pushFriendReqstList(list, friend){
 		return new Promise(resolve => {
@@ -178,6 +177,14 @@ module.exports = function(app) {
 
 		});
 	});
+
+	router.get("/networkinfo", function(req, res){
+
+		buildMyNetworkList(req).then((networkInfo) => {
+			res.json(networkInfo);
+		});
+	});
+
 
 	router.get("/friend_list", function(req, res){
 		

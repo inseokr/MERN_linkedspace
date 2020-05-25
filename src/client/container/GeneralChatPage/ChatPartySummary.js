@@ -1,17 +1,38 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 import OnlineStatus from "./OnlineStatus";
+import {MessageContext} from "../../contexts/MessageContext";
 
+
+// ISEO-TBD
+// currChanneInfo only includes DM channel information
+// We may consider adding more information
 function ChatPartySummary() {
+
+  let {currChannelInfo} = useContext(MessageContext);
+
+  function getSocialDistanceString(distance)
+  {
+    switch(distance)
+    {
+      case 1: return "1st";
+      case 2: return "2nd";
+      case 3: return "3rd";
+      case 4: return "4th";
+      default: return "";
+    }
+
+  }
+
 
   return (
     <>
         <div className="ChatPartyName">
-        	Chinh Le
+          {(currChannelInfo!=undefined)? currChannelInfo.dm.name: "Chinh, Le"}
         </div>
         <div className="SocialDistance">
-        	1st
+          {(currChannelInfo!=undefined)? getSocialDistanceString(currChannelInfo.dm.distance): "1st"}
         </div>
         <OnlineStatus />
     </>

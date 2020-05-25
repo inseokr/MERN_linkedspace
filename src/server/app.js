@@ -31,6 +31,9 @@ var fileUpload         = require('express-fileupload');
 var facebook           = require('./facebook.js');
 var nodemailer         = require('nodemailer');
 var chatServer         = require('./chatting_server');
+
+var cors              = require('cors');
+
 var serverPath         = "./src/server";
 
 const parseurl         = require('parseurl');
@@ -39,6 +42,8 @@ const expressValidator = require('express-validator');
 
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
+
+var reactBase = 'C:/webdev/mern/MERN_linkedspace/src/client'
 
 const os = require('os');
 
@@ -50,7 +55,10 @@ app.use(bodyParser());
 app.set("view engine", "ejs");
 app.set('views', viewPath);
 
+app.use(cors());
+
 app.use(express.static(__dirname + "/public"));
+app.use(express.static(reactBase));
 
 app.use(methodOverride("_method"));
 app.use(flash());
@@ -297,34 +305,34 @@ app.post('/profile/:user_id/file_delete', function(req, res) {
 
 app.get("/public/user_resources/pictures/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/${fileName}`));
 });
 app.get("/public/user_resources/pictures/landlord/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/landlord/${fileName}`));
 });
 app.get("/public/user_resources/pictures/profile_pictures/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("Profile picture: received file name=" + fileName)
+  //console.log("Profile picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/profile_pictures/${fileName}`));
 });
 
 app.get("/public/user_resources/pictures/tenant/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/tenant/${fileName}`));
 });
 
 app.get("/scripts/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("script: received file name=" + fileName)
+  //console.log("script: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/scripts/${fileName}`));
 });
 
 app.listen(process.env.PORT, process.env.IP, function(){
-//app.listen(5000, "10.0.0.194", function(){
+//app.listen(6000, process.env.IP, function(){
    console.log("Linkedspaces Has Started!" + "PORT = " + process.env.PORT + " IP = " + process.env.IP);
 });
 
@@ -347,3 +355,11 @@ app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/listing',
                                     failureRedirect: '/login' }));
 
+//app.get(['/app','/app/*'], (req,res) => {
+//  console.log("ISEO: URL = " + req.originalUrl);
+//  res.sendFile(path.join(__dirname, '../../public', 'index.html'));
+//});
+
+app.get('/*', function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+});

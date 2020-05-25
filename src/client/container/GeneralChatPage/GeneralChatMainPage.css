@@ -179,8 +179,9 @@
 .MessageTimeStamp {
 	position: absolute;
 	bottom: 5px;
-	right:5px;
+	right:30px;
 	color: rgb(72, 72, 72) !important;
+	font-size: 75%;
 }
 
 .MessageContents {
@@ -188,6 +189,7 @@
 	padding-top: 20px;
 	padding-left: 20px;
 	padding-right: 20px;
+	word-wrap: break-word;
 }
 
 .MessageContactList{
@@ -240,6 +242,12 @@
 	border-left-width: 5px;
 
 	padding-top: 2px;
+}
+
+.NewMessageIndicator {
+    border-left-style: solid !important;
+    border-left-color: #dc3545 !important;
+    border-left-width: 5px !important;
 }
 
 .imgFitToGrid {
@@ -328,4 +336,13 @@
 	border-style: solid !important;
 	border-color: gray;
 	border-width: 0.1rem;
+}
+
+.newMessage {
+	border-top: 1px solid red;
+}
+
+.newMessage:after {
+	content: 'New';
+	color: red;
 }

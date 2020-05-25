@@ -27,7 +27,6 @@ module.exports = function(app) {
   });
 
   router.get("/getLastMenu", function(req, res){
-    console.log("getLastMenu is called for user = " + req.user);
     res.json(app.locals.lastReactMenu);
     app.locals.lastReactMenu = "";
   });
@@ -102,7 +101,10 @@ module.exports = function(app) {
   router.get("/logout", function(req,res){
     req.logout();
     req.flash("success", "Logged you out!");
-    app.locals.currentUser[req.user.username] = null;
+    
+    if(req.user!=null)
+      app.locals.currentUser[req.user.username] = null;
+    
     res.redirect("/");
   });
 
@@ -132,6 +134,7 @@ module.exports = function(app) {
           User.findOne({username:req.body.username}, function(err, user) {
             if (err) { console.log("User Not Found"); return; }
             app.locals.currentUser[req.user.username] = user;
+            app.locals.profile_picture = user.profile_picture;
             //console.log("Updating current user = " + app.locals.currentUser );
           });
         }

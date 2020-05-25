@@ -15,6 +15,7 @@
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.1.8",
     "babel-polyfill": "^6.26.0",
+    "cors": "^2.8.5",
     "express": "^4.16.3",
     "express-validator": "^6.4.0",
     "image-webpack-loader": "^6.0.0",

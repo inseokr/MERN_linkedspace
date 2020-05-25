@@ -4,11 +4,18 @@ import './GeneralChatMainPage.css';
 
 function ChattingMessageBox(props) {
 
+    let newMsgMarker = "";
+
+    if(props.new_msg==true)
+    {
+        newMsgMarker = <hr className="newMessage" />;
+    }
+
     if(props.msg_direction=="0")
     {
       return (
+        <>
         <div className="ChattingMessageBoxWrapper AlignToLeft">
-            
             <div className="ProfilePicture">
                 <img className="center rounded-circle imgLeftMsgBox" src={props.profile_picture} alt="myFriend" />
             </div>
@@ -23,11 +30,14 @@ function ChattingMessageBox(props) {
             </div>
 
         </div>
+        </>
       );
     } 
     else 
     {
       return (
+        <>
+        {newMsgMarker}
         <div className="ChattingMessageBoxWrapper AlignToRight">
 
             <div className="ProfilePicture">
@@ -43,6 +53,7 @@ function ChattingMessageBox(props) {
                 </div>
             </div>
         </div>
+        </>
       );
     }
 }
