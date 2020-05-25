@@ -14,11 +14,9 @@ function LandingPage() {
         <CssBaseline />
         <Box className="App" component="div" display="flex" flexDirection="column">
           <Grid container>
-            <Grid container item xs={6}>
-              <Grid item xs={12}>
-                <FilterView/>
-              </Grid>
-              <Grid item xs={12}>
+            <Grid item xs={6}>
+              <FilterView/>
+              <Grid item xs={12} alignContent="stretch">
                 <ListView/>
               </Grid>
             </Grid>

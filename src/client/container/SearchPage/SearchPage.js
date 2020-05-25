@@ -47,8 +47,8 @@ export default class Search extends Component {
   render() {
 
     if(this.state.EnterKeyPressed) {
-      const {changeSearch} = this.context;
-      changeSearch(this.state.query);
+      const {setSearch} = this.context;
+      setSearch(this.state.query);
       return <Redirect to='/Map' />
     } else {
       return (

@@ -2,49 +2,58 @@ import React, { createContext, useEffect, useRef, useState } from 'react';
 
 export const ListingsContext = createContext();
 
-const GOOGLE_MAP_API_KEY = 'AIzaSyDfAArJl_Tr9w-KFszZQoLfyXUdFZzy9zs';
+const GOOGLE_MAP_API_KEY = 'AIzaSyANrYzQMIHxXFiNglY8gAiXZglXr_JZW_E';
 
 export function ListingsProvider(props) {
-  const googleMapRef = useRef();
-  let googleMap = null;
-
   const [mapLoaded, setMapLoaded] = useState(false);
   const [listings, setListings] = useState([]);
   const [listingsByBounds, setListingsByBounds] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
   const [zoom, setZoom] = useState(9);
-  const [search, setSearch] = useState("Fremont, CA, USA");
+  const [search, setSearch] = useState("");
   const [place, setPlace] = useState("");
   const [price, setPrice] = useState([1, 1000]);
   const [date, setDate] = useState("");
 
   async function changeSearch(search) {
-    getGeometryFromSearchString(search).then(
+    return getGeometryFromSearchString(search).then(
       response => {
         if (response.status === "OK") {
           setSearch(search);
           let geometry = response.results[0].geometry;
-          console.log("TESTSTSTS", geometry);
-          // let bounds = new window.google.maps.LatLngBounds();
-          // console.log("getGeometryFromSearchString", bounds);
-          // filterListingsByBounds(geometry.viewport, geometry.location, zoom);
+          console.log("getGeometryFromSearchString", response);
+          return geometry
         }
       }
     );
   }
 
+  async function getGeometryFromSearchString(search) {
+    return await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + search + '&key=' + GOOGLE_MAP_API_KEY)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson;
+      });
+  }
+
+  function isInsideBounds(coordinates, northeast, southwest) {
+    const normalizeDegrees = v => v < 0 ? 360 + v % 360 : v % 360;
+    return southwest.lat < coordinates.lat &&
+      northeast.lat > coordinates.lat &&
+      normalizeDegrees(coordinates.lng - southwest.lng) < normalizeDegrees(northeast.lng - southwest.lng)
+  }
+
   function filterListingsByBounds(bounds, center, zoom) {
-    let filteredListings = [];
+    let newFilteredListings = [];
     for (let listing of listings) {
-      if (bounds.contains(listing.rental_property_information.coordinates)) {
-        filteredListings.push(listing);
+      if (isInsideBounds(listing.rental_property_information.coordinates, bounds.northeast, bounds.southwest)) {
+        newFilteredListings.push(listing);
       }
     }
     setCenter(center);
     setZoom(zoom);
-    setListingsByBounds(filteredListings);
-    filterListings(place, price, date);
+    setListingsByBounds(newFilteredListings);
   }
 
   function filterListings(place, price, date) {
@@ -63,14 +72,6 @@ export function ListingsProvider(props) {
     setPrice(price);
     setDate(date);
     setFilteredListings(newFilteredListings);
-  }
-
-  async function getGeometryFromSearchString(search) {
-    return await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + search + '&key=' + GOOGLE_MAP_API_KEY)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        return responseJson;
-      });
   }
 
   async function getListInformation() {
@@ -106,25 +107,30 @@ export function ListingsProvider(props) {
   }
 
   useEffect(() => {
-    loadGoogleMapScript(() => {
-      setMapLoaded(true);
-      console.log("test", googleMapRef, zoom, center, mapLoaded);
-      // googleMap = new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center});
-      // console.log("GSDFGWERFWED", googleMap.getBounds());
-    });
-  }, [mapLoaded]);
+    filterListings(place, price, date);
+  }, [listingsByBounds]);
 
   useEffect(() => {
+    const searchQuery = search.length > 0 ? search : "Fremont, CA, USA";
+    changeSearch(searchQuery)
+      .then(response => {
+        console.log("useEffect by search", searchQuery, response);
+        filterListingsByBounds(response.viewport, response.location, zoom);
+      });
+  }, [search]);
+
+  useEffect(() => {
+    loadGoogleMapScript(() => {
+      setMapLoaded(true);
+    });
     getListInformation()
       .then(response => {
         setListings(response);
-        setListingsByBounds(response);
-        setFilteredListings(response);
       });
   }, []);
 
   return (
-    <ListingsContext.Provider value={{googleMapRef, mapLoaded, changeSearch, filteredListings, filterListingsByBounds, filterListings, center, zoom, search, place, price, date}}>
+    <ListingsContext.Provider value={{mapLoaded, setSearch, filteredListings, filterListingsByBounds, filterListings, center, zoom, search, place, price, date}}>
       {props.children}
     </ListingsContext.Provider>
   );

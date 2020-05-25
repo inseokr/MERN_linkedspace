@@ -12,21 +12,19 @@ function FilterView() {
 
   return (
     <div>
-      <Grid component="main">
-        <CssBaseline />
-        <Grid container item={true}>
-          <Grid item xs={3}>
-            <SearchFilter/>
-          </Grid>
-          <Grid item xs={3}>
-            <PlaceFilter/>
-          </Grid>
-          <Grid item xs={3}>
-            <PriceFilter/>
-          </Grid>
-          <Grid item xs={3}>
-            <DateFilter/>
-          </Grid>
+      <CssBaseline />
+      <Grid container direction="row" justify="space-evenly">
+        <Grid item xs={3}>
+          SearchFilter
+        </Grid>
+        <Grid item xs={3}>
+          PlaceFilter
+        </Grid>
+        <Grid item xs={3}>
+          PriceFilter
+        </Grid>
+        <Grid item xs={3}>
+          DateFilter
         </Grid>
       </Grid>
     </div>

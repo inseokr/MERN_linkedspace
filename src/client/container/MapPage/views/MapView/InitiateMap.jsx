@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
 import Map from './Map'
 
-// const GOOGLE_MAP_API_KEY = 'AIzaSyDfAArJl_Tr9w-KFszZQoLfyXUdFZzy9zs';
+// const GOOGLE_MAP_API_KEY = 'AIzaSyANrYzQMIHxXFiNglY8gAiXZglXr_JZW_E';
 //
 // function loadGoogleMapScript(callback) { // Load the google map script
 //   if (typeof window.google === 'object' && typeof window.google.maps === 'object') {
