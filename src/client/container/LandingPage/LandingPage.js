@@ -4,7 +4,7 @@ import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from "../MapPage/index";
 import Search from "../SearchPage/SearchPage";
-import {SearchContext} from "../../contexts/SearchContext";
+import {ListingsContext} from "../../contexts/ListingsContext";
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -20,7 +20,7 @@ import {SearchContext} from "../../contexts/SearchContext";
 
 export default class LandingPage extends Component {
 	// <note> can we have multiple contexts?
-	static contextType = SearchContext;
+	static contextType = ListingsContext;
 
 	state = {
 		lastMenu : "",

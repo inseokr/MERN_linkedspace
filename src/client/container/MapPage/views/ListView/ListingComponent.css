@@ -1,0 +1,22 @@
+img {
+    width: 400px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.description {
+    height: 100%;
+    padding: 10px;
+}
+
+.description__title {
+    font-size: 6px;
+}
+
+.description__address {
+    font-size: 8px;
+}
+
+.description__bullets {
+    font-size: 4px;
+}

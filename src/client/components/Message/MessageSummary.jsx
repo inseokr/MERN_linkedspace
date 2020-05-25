@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import '../../app.css';
-import { SearchContext } from '../../contexts/SearchContext';
 import './MessageStyle.css';
 
 function MessageSummary(props) {
