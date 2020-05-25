@@ -16,11 +16,10 @@ import {
 
 import { Redirect, Route }        from 'react-router';
 
-import { SearchProvider }         from './contexts/SearchContext';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { GlobalProvider }         from './contexts/GlobalContext';
+import { ListingsProvider }       from './contexts/ListingsContext';
 import { CurrentListingProvider } from './contexts/CurrentListingContext';
-
 
 export default class App extends Component {
   state = { };
@@ -32,38 +31,38 @@ export default class App extends Component {
   componentDidMount() {
     document.title = 'LinkedSpaces';
 
-    console.log("App componentDidMount")
-    console.log("props = " + JSON.stringify(this.props))
+    console.log("App componentDidMount");
+    console.log("props = " + JSON.stringify(this.props));
   }
 
   render() {
     return (
       <GlobalProvider>
-        <SearchProvider>
-          < MessageContextProvider >
-          <Router>
-            <CommonHeader/>
-            <ModalLoginForm/>
-            <Switch>
-              <Route exact path="/Map">
-                <Map />
-              </Route>
-              <Route exact path="/Messages">
+        <ListingsProvider>
+          <MessageContextProvider>
+            <Router>
+              <CommonHeader/>
+              <ModalLoginForm/>
+              <Switch>
+                <Route exact path="/Map">
+                  <Map/>
+                </Route>
+                <Route exact path="/Messages">
                   <GeneralChatMainPage />
-              </Route>
-              <Route exact path="/MyNetworks">
+                </Route>
+                <Route exact path="/MyNetworks">
                   <MyNetworkPage />
-              </Route>
-              <Route exact path="/">
-                <LandingPage />
-              </Route>
-              < CurrentListingProvider >
+                </Route>
+                <Route exact path="/">
+                  <LandingPage />
+                </Route>
+              </Switch>
+              <CurrentListingProvider>
                 <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
               </CurrentListingProvider>
-            </Switch>
-          </Router>
+            </Router>
           </MessageContextProvider>
-        </SearchProvider>
+        </ListingsProvider>
       </GlobalProvider>
     );
   }

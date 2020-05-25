@@ -9,9 +9,10 @@ var User          = require("../models/user");
 var async         = require("async");
 var nodemailer    = require("nodemailer");
 var crypto        = require("crypto");
-var TenantRequest = require("../models/listing/tenant_request");
 var node          = require("deasync");
 var async         = require("async");
+var TenantRequest = require("../models/listing/tenant_request");
+var LandlordRequest = require("../models/listing/landlord_request");
 
 
 node.loop = node.runLoopOnce;
@@ -19,7 +20,7 @@ node.loop = node.runLoopOnce;
 module.exports = function(app) {
 
   router.get("/getLoginStatus", function(req, res){
-    if(req.user==undefined) 
+    if(req.user==undefined)
       res.json(null);
     else
       res.json(app.locals.currentUser[req.user.username]);
@@ -34,7 +35,7 @@ module.exports = function(app) {
     console.log("getData is called");
 
     // read listing information from database.
-    TenantRequest.find({}).then(function (listings) {
+    LandlordRequest.find({}).then(function (listings) {
       res.send(listings);
       console.log("getData = " + listings);
     });
@@ -125,7 +126,7 @@ module.exports = function(app) {
           res.redirect("/");
           done();
         }
-        else 
+        else
         {
           req.flash("success", "Welcome back to LinkedSpaces " + req.body.username);
           res.redirect("/homepage");
