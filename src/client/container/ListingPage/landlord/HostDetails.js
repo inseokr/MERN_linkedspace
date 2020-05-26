@@ -7,7 +7,7 @@ import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 
 function HostDetails()
 {
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
 		<>
@@ -39,8 +39,8 @@ function HostDetails()
 			    <div style={{marginTop:"10px"}}>Contact</div>
 			    <div className="sub_title" style={{marginTop:"10px !important"}}>
 			      <ul  style={{listStyleType:"none"}}>
-			        <li> Phone Number: {listing_info.listing.contact.phone} </li>
-			        <li id="email"> E-mail: {listing_info.listing.contact.email} </li>
+			        <li> Phone Number: {currentListing.listing.contact.phone} </li>
+			        <li id="email"> E-mail: {currentListing.listing.contact.email} </li>
 			      </ul>
 			    </div>
 			  </div>

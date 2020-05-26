@@ -7,6 +7,7 @@ import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 import Map from "./container/MapPage/index";
 import ListingLandlordMainPage from "./container/ListingPage/landlord/ListingLandlordMainPage";
+import ShowActiveListingPage   from "./container/ListingPage/ShowActiveListingPage";
 
 import {
   BrowserRouter as Router,
@@ -50,6 +51,7 @@ export default class App extends Component {
                 <Route exact path="/Messages">
                   <GeneralChatMainPage />
                 </Route>
+                
                 <Route exact path="/MyNetworks">
                   <MyNetworkPage />
                 </Route>
@@ -58,6 +60,9 @@ export default class App extends Component {
                 </Route>
               </Switch>
               <CurrentListingProvider>
+                <Route exact path="/ActiveListing">
+                  <ShowActiveListingPage />
+                </Route>
                 <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
               </CurrentListingProvider>
             </Router>

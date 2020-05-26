@@ -7,7 +7,7 @@ import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 
 function RentalTerm()
 {
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
 		<>
@@ -20,15 +20,15 @@ function RentalTerm()
 			  <div className="row sub_title wooden_background" style={{paddingTop:"8px"}}>
 			    <div className="col-4" >
 			      <ul>
-			        <li> Asking Price: {listing_info.listing.rental_terms.asking_price} </li>
-			        <li> Security Deposit: {listing_info.listing.rental_terms.security_deposit} </li>
+			        <li> Asking Price: {currentListing.listing.rental_terms.asking_price} </li>
+			        <li> Security Deposit: {currentListing.listing.rental_terms.security_deposit} </li>
 			      </ul>
 			    </div>
 
 			    <div className="col-6" >
 			      <ul>
-			        <li> Rental Duration: {listing_info.listing.rental_terms.duration} months</li>
-			        <li> Move-in available date: from {listing_info.listing.move_in_date.month}/{listing_info.listing.move_in_date.date}/{listing_info.listing.move_in_date.year}</li>
+			        <li> Rental Duration: {currentListing.listing.rental_terms.duration} months</li>
+			        <li> Move-in available date: from {currentListing.listing.move_in_date.month}/{currentListing.listing.move_in_date.date}/{currentListing.listing.move_in_date.year}</li>
 			      </ul>
 			    </div>
 			  </div>
