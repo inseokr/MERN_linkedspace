@@ -1,3 +1,109 @@
+.modal-app {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.blur > .modal-overlay {
+    -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -ms-filter: blur(10px);
+    -o-filter: blur(10px);
+    filter: blur(10px);
+}
+
+#modal {
+    max-width: 600px;
+    max-height: calc(100% - 96px);
+    padding: 30px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    position: relative;
+    overflow-y: auto;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    background-color: #fff;
+    text-align: left;
+}
+
+.modal-container {
+    opacity: 1;
+    -webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    -o-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    height: 100%;
+    outline: none;
+}
+
+.modal-overlay {
+    opacity: 1;
+    -webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    -o-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    position: fixed;
+    -ms-touch-action: none;
+    touch-action: none;
+    background-color: whitesmoke;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-subtitle {
+    margin: 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.modal-title {
+    text-align: center;
+}
+
+.modal-window-container {
+    text-align: center;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    outline: 0;
+    -webkit-animation: fadeIn 0.2s 0s ease-in-out forwards;
+    animation: fadeIn 0.2s 0s ease-in-out forwards;
+    z-index: 100;
+}
+
+.filter-button {
+    border-radius: 15px;
+    border-width: 1px;
+    border-color: darkgray;
+}
+
+.filter-button:focus {
+    outline: none;
+    border-color: black;
+}
+
 .loader {
     margin: 100px auto auto;
     border: 16px solid gray;

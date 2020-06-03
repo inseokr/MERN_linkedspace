@@ -2,7 +2,7 @@ import React, { Fragment, PureComponent } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 
-class Modal extends PureComponent {
+class Index extends PureComponent {
   componentDidMount() {
     document.addEventListener("click", this.closeModal, false);
   }
@@ -20,10 +20,10 @@ class Modal extends PureComponent {
   render = () =>
     createPortal(
       <Fragment>
-        <div className="overlay" />
-        <div className="window-container">
+        <div className="modal-overlay" />
+        <div className="modal-window-container">
           <div className="modal-container">
-            <div ref={node => (this.modal = node)} className="modal">
+            <div ref={node => (this.modal = node)} id="modal">
               {this.props.children}
             </div>
           </div>
@@ -33,9 +33,9 @@ class Modal extends PureComponent {
     );
 }
 
-Modal.propTypes = {
+Index.propTypes = {
   children: PropTypes.node.isRequired,
   toggleModal: PropTypes.func.isRequired
 };
 
-export default Modal;
+export default Index;

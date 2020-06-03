@@ -40,7 +40,6 @@ function Map() {
   }, [filteredListings]);
 
   const initGoogleMap = () => { // Initialize the google map
-    console.log("initGoogleMap", googleMapRef);
     return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center});
   };
 
@@ -63,7 +62,7 @@ function Map() {
     return {lat: center.lat(), lng: center.lng()}
   };
 
-  return <div ref={googleMapRef} style={{height: '100vh', width: '100%'}}/>;
+  return <div id="mapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>;
 }
 
 export default Map;
