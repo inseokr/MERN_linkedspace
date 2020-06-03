@@ -36,19 +36,9 @@ export default class ListingLandlordMainPage extends Component {
         //this.context.fetchCurrentListing(this.props.match.params.id);
     }
 
-/* 
-                <ListingCoverPage />
-                <ListingIntro />
-                <LocationInfo />
-                <ExploreHome />
-                <HomeDetails />
-                <RentalTerm />
-                <HostDetails />
-                <ListingControlButtons />
-                */
     render() {
 
-        if(this.context.listing_info==undefined)
+        if(this.context.currentListing==undefined)
         {
             return (<> </>)
         }

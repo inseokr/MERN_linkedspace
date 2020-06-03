@@ -43,7 +43,7 @@
     fill: The initial value. The image will fill its given area, even if it means losing its aspect ratio. -->
 
     <%if(listing_info.listing.num_of_pictures_uploaded>0) {%>
-    <img src="<%=listing_info.listing.pictures[0].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>" align="right" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 70%;">
+    <img src="<%=listing_info.listing.pictures[0].path%>" align="right" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 70%;">
     <% } %>
   </div>
 
@@ -68,7 +68,7 @@
         Hosted by In Seo
       </div>
       <div style="max-width:100px; margin-top:20px;">
-        <img src="inseo_profile.jpg" class="center rounded-circle" style="width:100%; max-height:100%">
+        <img src="/public/user_resources/pictures/inseo_profile.jpg" class="center rounded-circle" style="width:100%; max-height:100%">
       </div>
 
       <div style="margin-left:30px;>
@@ -142,7 +142,7 @@
   <div class="col-3">
     <div class=" thumbnail" background-color:#f2f2f2;>
       <img class="img-responsive"
-           src="<%=listing_info.listing.pictures[picIndex].path.split("/")[listing_info.listing.pictures[picIndex].path.split("/").length-1]%>">
+           src="<%=listing_info.listing.pictures[picIndex].path%>">
       <div class="caption-full ">
         <h4 class="pull-right inner_contents"><%=listing_info.listing.pictures[picIndex].caption%></h4>
         <p></p>
@@ -231,7 +231,7 @@
 
 <div class="row" style="margin-top: 30px;">
   <div class="col-3">
-    <img src="yoobin_justin.jpg" class="center rounded-circle" style="width:100%; max-height:100%; margin-left: 25px;">
+    <img src="/public/user_resources/pictures/yoobin_justin.jpg" class="center rounded-circle" style="width:100%; max-height:100%; margin-left: 25px;">
   </div>
 
   <div class="col-4 _1ezjrwzo" style="margin-left: 50px;">

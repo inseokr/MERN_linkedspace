@@ -8,14 +8,14 @@ import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 function getMap()
 {
 /* ISEO-TBD: get the map information 		        
-{`https://maps.googleapis.com/maps/api/geocode/json?address=${listing_info.listing.rental_property_information.location.street},+${listing_info.listing.rental_property_information.location.city},+${listing_info.listing.rental_property_information.location.state}&key=AIzaSyDhNOl53GKZUx7LI66vSng7VUWkHTUgVnE`}
+{`https://maps.googleapis.com/maps/api/geocode/json?address=${currentListing.listing.rental_property_information.location.street},+${currentListing.listing.rental_property_information.location.city},+${currentListing.listing.rental_property_information.location.state}&key=AIzaSyDhNOl53GKZUx7LI66vSng7VUWkHTUgVnE`}
 */
 	return "Under Construction"
 }
 
 function LocationInfo()
 {
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
 		<div className="row no_border">
@@ -25,7 +25,7 @@ function LocationInfo()
 		        Location
 		      </div>
 		      <div className="inner_contents" style={{marginTop:"5px"}}>
-		        {listing_info.listing.rental_property_information.location.street}, {listing_info.listing.rental_property_information.location.city}, {listing_info.listing.rental_property_information.location.state}, {listing_info.listing.rental_property_information.location.zipcode}, {listing_info.listing.rental_property_information.location.country}
+		        {currentListing.listing.rental_property_information.location.street}, {currentListing.listing.rental_property_information.location.city}, {currentListing.listing.rental_property_information.location.state}, {currentListing.listing.rental_property_information.location.zipcode}, {currentListing.listing.rental_property_information.location.country}
 		      </div>
 		      <textarea id="map_url" style={{display:"none"}}>
 		      	{getMap()}
@@ -44,7 +44,7 @@ function LocationInfo()
 		        Neighborhood
 		      </div>
 		      <div className="inner_contents" style={{marginTop:"2px", whiteSpace:"pre-line"}}>
-		        {listing_info.listing.summary_of_neighborhood}
+		        {currentListing.listing.summary_of_neighborhood}
 		      </div>
 		    </div>
 
@@ -53,7 +53,7 @@ function LocationInfo()
 		        Transportation
 		      </div>
 		      <div className="inner_contents" style={{marginTop:"2px",whiteSpace:"pre-line"}}>
-		        {listing_info.listing.summary_of_transportation}
+		        {currentListing.listing.summary_of_transportation}
 		      </div>
 		    </div>
 		  </div>

@@ -6,17 +6,17 @@ import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 
 function ListingIntro()
 {
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
 	  <div className="row">
 	    <div className="col-7">
 	      <div className="_tw4pe52">
-	        {listing_info.listing.num_of_total_guests} guests {listing_info.listing.num_of_bedrooms}  bedroom {listing_info.listing.num_of_total_baths} bath
+	        {currentListing.listing.num_of_total_guests} guests {currentListing.listing.num_of_bedrooms}  bedroom {currentListing.listing.num_of_total_baths} bath
 	      </div>
 
 	      <div className="_1ezjrwzo" style={{marginTop:"20px !important", whiteSpace:"pre-line"}}>
-	        {listing_info.listing.summary_of_listing}
+	        {currentListing.listing.summary_of_listing}
 	      </div>
 	    </div> 
 

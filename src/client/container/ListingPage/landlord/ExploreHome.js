@@ -31,7 +31,7 @@ function getListingPictures(listing_info)
 
 function ExploreHome()
 {
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
 		<>
@@ -41,7 +41,7 @@ function ExploreHome()
 			</div>
 
 			<div className="row no_border">
-				{getListingPictures(listing_info)}
+				{getListingPictures(currentListing)}
 			</div>
 			<hr/>
 		</>

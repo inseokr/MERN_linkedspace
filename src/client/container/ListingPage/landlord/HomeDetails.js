@@ -39,7 +39,7 @@ function formatListInfo(info)
 
 function HomeDetails()
 {
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
 		<>
@@ -50,7 +50,7 @@ function HomeDetails()
 			{/* Available Amenities */}
 			<div style={{marginTop:"20px"}}>
 			  <div className="row sub_title wooden_background rounded-top rounded-bottom">
-			  	{formatListInfo(listing_info.availableAmenities)}
+			  	{formatListInfo(currentListing.availableAmenities)}
 			  </div>
 			</div>
 
@@ -62,7 +62,7 @@ function HomeDetails()
 
 			<div style={{marginTop:"20px"}}>
 			  <div className="row sub_title wooden_background rounded-top rounded-bottom">
-			  	{formatListInfo(listing_info.accessibleSpaces)}
+			  	{formatListInfo(currentListing.accessibleSpaces)}
 			  </div>
 			</div> 
 

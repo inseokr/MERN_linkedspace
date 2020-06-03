@@ -7,12 +7,12 @@ import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 function ListingCoverPage()
 {
 
-	const {listing_info} = useContext(CurrentListingContext);
+	const {currentListing} = useContext(CurrentListingContext);
 
-	let listingCaption = (listing_info.listing.num_of_pictures_uploaded>0) ?
-							listing_info.listing.pictures[0].caption: ""
-	let listingImage = 	 (listing_info.listing.num_of_pictures_uploaded>0) ?
-		    				<img src={listing_info.listing.pictures[0].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]} 
+	let listingCaption = (currentListing.listing.num_of_pictures_uploaded>0) ?
+							currentListing.listing.pictures[0].caption: ""
+	let listingImage = 	 (currentListing.listing.num_of_pictures_uploaded>0) ?
+		    				<img src={currentListing.listing.pictures[0].path.split("/")[currentListing.listing.pictures[0].path.split("/").length-1]} 
 		    				     align="right" style={{width:'100%', maxHeight:'100%', objectFit:' cover', objectPosition: '100% 70%'}}/> : ""
 	
 	return (
@@ -20,7 +20,7 @@ function ListingCoverPage()
 		  <div class="col-3 wooden_background no_border" style={{height:' 500px', marginLeft:' 30px', backgroundColor:'#f2f2f2'}}>
 		    <div className='listingCoverLogo'> LinkedSpaces </div>
 		    <div style={{marginTop:'20px'}}>
-		    	<div class="show_title">BEAUTIFUL HOME IN {listing_info.listing.rental_property_information.location.city.toUpperCase()}
+		    	<div class="show_title">BEAUTIFUL HOME IN {currentListing.listing.rental_property_information.location.city.toUpperCase()}
 		    	</div>
 		    </div>
 
