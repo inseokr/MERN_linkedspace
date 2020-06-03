@@ -48,7 +48,9 @@ export default class Search extends Component {
 
     if(this.state.EnterKeyPressed) {
       const {setSearch} = this.context;
-      setSearch(this.state.query);
+      const {query} = this.state;
+      const searchQuery = query.length > 0 ? query : "Fremont, CA, USA";
+      setSearch(searchQuery);
       return <Redirect to='/Map' />
     } else {
       return (
