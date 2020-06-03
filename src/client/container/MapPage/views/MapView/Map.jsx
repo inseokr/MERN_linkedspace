@@ -40,7 +40,6 @@ function Map() {
   }, [filteredListings]);
 
   const initGoogleMap = () => { // Initialize the google map
-    console.log("initGoogleMap", googleMapRef);
     return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center});
   };
 
