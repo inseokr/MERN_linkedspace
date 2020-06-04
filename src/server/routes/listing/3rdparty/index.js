@@ -1,24 +1,23 @@
-var express       = require("express");
-var router        = express.Router();
-var passport      = require("passport");
-var User 	      = require("../../../models/user");
-var TenantRequest = require("../../../models/listing/tenant_request");
-var node          = require("deasync");
-var path          = require("path");
-var fs            = require("fs");
+var express            = require("express");
+var router             = express.Router();
+var passport           = require("passport");
+var User 	           = require("../../../models/user");
+var node               = require("deasync");
+var path               = require("path");
+var fs                 = require("fs");
+var _3rdPartyListing   = require("../../../models/listing/_3rdparty_listing");
 
 var serverPath         = "./src/server";
-var picturePath        = "./src/server/public/user_resources/pictures/3rdparty/"
+var picturePath        = "/public/user_resources/pictures/3rdparty/"
 
 node.loop = node.runLoopOnce;
 
 module.exports = function(app) {
 
-
 router.post('/file_upload', function(req, res) {
 
   let sampleFile = req.files.file_name;
-  let picPath = picturePath+sampleFile.name;
+  let picPath = serverPath+picturePath+sampleFile.name;
 
   console.log("file_upload: picPath=" + picPath);
     sampleFile.mv(picPath, function(err) {
@@ -36,7 +35,7 @@ router.post('/file_delete', function(req, res) {
 
 	console.log("file_delete: name = " + filename);
 
-	const picPath = picturePath+filename;
+	const picPath = serverPath + picturePath+filename;
 	fs.unlinkSync(picPath);
 	res.send('File Deleted!');
 });
@@ -44,31 +43,47 @@ router.post('/file_delete', function(req, res) {
 
 router.post("/new", function(req, res){
 
-	console.log("ISEO: 3rd party listing: body=" + JSON.stringify(req.body));
 
 	var filename = path.parse(req.body.file_name).base;
 
-	User.findById(req.params.user_id, function(err, curr_user){
 
-		if(err){
-			console.log("No user found with given user id");
-			res.send('no user found');
-			return;
-		}
+	var newListing = new _3rdPartyListing;
 
-		// let's create a database
+	newListing.requester.id       = req.user._id;
+	newListing.requester.username = req.user.username;
 
-		// rename the file with listing_id
-		let original_path = picturePath + filename;
-		let new_path = picturePath + req.params.user_id + "_" +filename;
-		fs.rename(original_path, new_path, function(err){
-			if(err) throw err;
-			console.log('File renamed successfully')
-		})
+	newListing.listingSource      = req.body.listingSource;
+	newListing.listingUrl         = req.body.sourceUrl;
+	newListing.listingSummary     = req.body.rentalSummary;
+	newListing.rentalPrice        = req.body.rentalPrice;
 
-	});
 
-	res.send('New Listing Created!');
+	// let's create a database
+
+	// rename the file with listing_id
+	let original_path = serverPath + picturePath + filename;
+	let new_path = serverPath + picturePath + newListing.requester.id + "_" +filename;
+	fs.rename(original_path, new_path, function(err){
+		if(err) throw err;
+		console.log('File renamed successfully')
+	})
+
+	// ISEO-TBD: The path should start from "/public/..."?
+	newListing.coverPhoto.path = picturePath + newListing.requester.id + "_" +filename;
+
+	newListing.save(function(err){
+		if(err) {
+	    	console.log("New Listing Save Failure");
+	    	res.render("/");
+	    }
+
+	    User.findById(req.user._id, function(err, foundUser){
+	    	foundUser._3rdparty_listing.push(newListing._id);
+	    	foundUser.save();
+    	});
+	})
+	
+	res.redirect("/");
 });
 
 

@@ -20,7 +20,7 @@ var _3rdPartyListingSchema = new mongoose.Schema({
     listingSummary: String,
 
     // rental price
-    rentalPrice: Number
+    rentalPrice: Number,
     
     coverPhoto: {
       path: String,

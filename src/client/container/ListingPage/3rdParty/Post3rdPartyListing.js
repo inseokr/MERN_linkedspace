@@ -5,6 +5,7 @@ import {InputGroup, FormControl} from 'react-bootstrap';
 import $ from 'jquery';
 
 
+
 function readURL(event, picIndex)
 {
 	let input = event.target;
@@ -138,7 +139,7 @@ function getCoverPhoto()
 function getListingLink()
 {
 	return (
-		<div style={{width: "85%"}}>
+		<div style={{width: "70%"}}>
 			<label class="control-label">URL to the listing</label>
 			<InputGroup>
 				<FormControl 
@@ -156,17 +157,15 @@ function getListingLink()
 function getListingPrice()
 {
 	return (
-		<div style={{width: "15%"}}>
+		<div style={{width: "20%"}}>
 			<label class="control-label">Price</label>
-			<InputGroup>
-				<FormControl 
-					placeholder="$1000"
-					aria-label="rental_price"
-					aria-describedby="retal_price"
-					id="rentalPrice"
-					name="rentalPrice"
-				/>
-			</InputGroup>
+
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">$</span>
+				</div>
+				<input type="text" class="form-control" id="rentalPrice" name="rentalPrice" placeholder="1000"/>
+			</div>
 		</div>
 	)	
 }
@@ -175,7 +174,7 @@ function getListingPrice()
 function getListingSummary()
 {
 	return (
-		<div style={{width: "80%"}}>
+		<div style={{width: "78%"}}>
 			<label class="control-label">Brief Summary of rental</label>
 			<InputGroup>
 				<FormControl 
@@ -202,9 +201,9 @@ function Post3rdPartyListing()
 	{
 		evt.preventDefault();
 
-	    myFormData.append("caption", $(`#imageCapture-1`).val());
 	    myFormData.append("file_name", $(`#imageDefaultUpload-1`).val())
 	    myFormData.append("source_url", $(`#sourceUrl`).val());
+	    myFormData.append("listing_source", $(`#listingSource`).val());
 	    myFormData.append("rental_price", $(`#rentalPrice`).val());
 	    myFormData.append("rental_summary", $(`#rentalSummary`).val());
 

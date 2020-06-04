@@ -330,6 +330,12 @@ app.post('/profile/:user_id/file_delete', function(req, res) {
   });
 });
 
+app.get("/public/user_resources/pictures/3rdparty/:filename", function(req, res){
+  var fileName = req.params.filename;
+  console.log("picture: received file name=" + fileName)
+  res.sendFile(path.join(__dirname, `/public/user_resources/pictures/3rdparty/${fileName}`));
+});
+
 app.get("/public/user_resources/pictures/:filename", function(req, res){
   var fileName = req.params.filename;
   //console.log("picture: received file name=" + fileName)

@@ -131,6 +131,13 @@ var UserSchema = new mongoose.Schema({
 		}
 	],
 
+	_3rdparty_listing: [ 
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "_3rdPartyListing"
+		}
+	],
+
 	// listing from my friends
 	incoming_tenant_listing: [
 		{
