@@ -1,9 +1,10 @@
 import React, { Component, useEffect, createContext, useContext } from 'react';
+import Checkbox from '@material-ui/core/Checkbox'
 import {Link} from 'react-router-dom';
 import '../../app.css';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
-function getListingContents(listingDB, listing_prefix)
+function getListingContents(listingDB, listing_prefix, type)
 {
     let listings = []
 
@@ -41,27 +42,50 @@ function getListingContents(listingDB, listing_prefix)
         }
     }
 
+    function getListingControls(listing, type)
+    {
+
+        if(type=="show all")
+        {
+            return (
+            <>
+                <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"/edit"} method="post">
+                    <div className="action">
+                        <button className="btn btn-info">Edit</button>
+                    </div>
+                </form>
+
+                <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"?_method=DELETE"} method="post">
+                    <div className="action">
+                        <button className="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </>
+            )
+
+        }
+        else
+        {
+            return (
+                <div>
+                  <input type="checkbox" value=""/>
+                  <label style={{marginLeft: "10px"}}>Check to add</label>
+                </div>
+            )
+        }
+    }
+
     for (let index=0; index<listingDB.length; index++)
     {
         let listing = 
             <div className="network_board">
                 <div className="profile_picture">
-                    {getCoverImg(listing_prefix, listingDB[index])}
+                    {getCoverImg(listing_prefix, listingDB[index], type)}
                     {getListingSourceInformation(listing_prefix, listingDB[index])}
                 </div>
                 
                 <div className="d-flex justify-content-between">
-                    <form role="form" action={"/listing/"+listing_prefix+"/"+listingDB[index].id+"/edit"} method="post">
-                        <div className="action">
-                            <button className="btn btn-info">Edit</button>
-                        </div>
-                    </form>
-
-                    <form role="form" action={"/listing/"+listing_prefix+"/"+listingDB[index].id+"?_method=DELETE"} method="post">
-                        <div className="action">
-                            <button className="btn btn-danger">Delete</button>
-                        </div>
-                    </form>
+                    {getListingControls(listingDB[index], type)}
                 </div>
             </div>
 
@@ -71,7 +95,7 @@ function getListingContents(listingDB, listing_prefix)
     return listings;
 } 
 
-function ShowActiveListingPage()
+function ShowActiveListingPage(props)
 {
     const {listing_info, fetchListingInfo} = useContext(CurrentListingContext);
 
@@ -84,6 +108,17 @@ function ShowActiveListingPage()
     // ISEO-TBD: not sure how to match it?
     let footer = "";
 
+    let tenantListing = 
+        (props.type=="show all") ? 
+            <div className="bottom-shadow">
+                <span style={{textAlign:"center"}}><h3> Room/House wanted  </h3></span>
+                <hr/>
+                <div className="d-flex justify-content-between flex-wrap">
+                    {getListingContents(listing_info.tenant_listing, "tenant", props.type)}
+                </div>
+            </div>       
+            : null;
+
     return (
         <>
             <div className="row">
@@ -92,25 +127,20 @@ function ShowActiveListingPage()
 
                 <div className="col-lg-6">
                     <div className="bottom-shadow">
-                        <span style={{textAlign:"center"}}><h3> Looking for tenants/roommates   </h3></span>
+                        <span style={{textAlign:"center"}}><h3> Listing from linkedspaces </h3></span>
                         <hr/>
                         <div className="d-flex justify-content-between flex-wrap">
-                            {getListingContents(listing_info.landlord_listing, "landlord")}
+                            {getListingContents(listing_info.landlord_listing, "landlord", props.type)}
                         </div>
                     </div>
 
-                    <div className="bottom-shadow">
-                        <span style={{textAlign:"center"}}><h3> Looking for rooms/house  </h3></span>
-                        <hr/>
-                        <div className="d-flex justify-content-between flex-wrap">
-                            {getListingContents(listing_info.tenant_listing, "tenant")}
-                        </div>
-                    </div>
+                    {tenantListing}
+
                     <div className="bottom-shadow">
                         <span style={{textAlign:"center"}}><h3> Listing from 3rd party  </h3></span>
                         <hr/>
                         <div className="d-flex justify-content-between flex-wrap">
-                            {getListingContents(listing_info._3rdparty_listing, "_3rdparty")}
+                            {getListingContents(listing_info._3rdparty_listing, "_3rdparty", props.type)}
                         </div>
                     </div> 
                 </div>

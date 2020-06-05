@@ -43,6 +43,7 @@ export default class App extends Component {
       <GlobalProvider>
         <ListingsProvider>
           <MessageContextProvider>
+            <CurrentListingProvider>
             <Router>
               <CommonHeader/>
               <ModalLoginForm/>
@@ -66,15 +67,14 @@ export default class App extends Component {
                   <Post3rdPartyListing />
                 </Route>
 
-                <CurrentListingProvider>
                   <Route exact path="/ActiveListing">
-                    <ShowActiveListingPage />
+                    <ShowActiveListingPage type="show all"/>
                   </Route>
 
                   <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
-                </CurrentListingProvider>
               </Switch>
             </Router>
+            </CurrentListingProvider>
           </MessageContextProvider>
         </ListingsProvider>
       </GlobalProvider>

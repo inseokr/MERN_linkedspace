@@ -93,6 +93,8 @@ class ListingInfo extends Component {
                             </Link>
                         </DialogActions>
                     </Dialog>
+
+
                 </div>
             )
         } else {

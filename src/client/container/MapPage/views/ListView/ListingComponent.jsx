@@ -4,14 +4,26 @@ import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
-import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
+import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
+import SimpleModal from '../../../../components/Modal/SimpleModal';
+import ShowActiveListingPage from "../../../ListingPage/ShowActiveListingPage"
+
 
 function ListingComponent(props) {
   const [index, setIndex] = useState(0);
+  const [modalShow, setModalShow] = useState(false);
   const {listing, toggle, mode} = props;
   const listingTitle = listing.rental_property_information.room_type + " " + listing.rental_property_information.unit_type;
   const listingAmenities = constructListingInformationBullets(listing.amenities);
   const listingAccessibleSpaces = constructListingInformationBullets(listing.accessible_spaces);
+
+  let showModal = () => {
+    setModalShow(true);
+  }
+
+  let hideModal = () => {
+    setModalShow(false);
+  }
 
   const handleSelect = (e) => {
     setIndex(e);
@@ -57,7 +69,6 @@ function ListingComponent(props) {
             {/* ISEO-TBD:  Let's add messaging icon */}
             <MessageEditorIcon clickHandler={toggle}/>
           </Paper>
-
         </Grid>
       </Grid>
       </ListItem>
@@ -96,10 +107,19 @@ function ListingComponent(props) {
               </Typography>
             ) : (<></>)}
 
-            {/* ISEO-TBD:  Let's add messaging icon */}
-            <MessageEditorIcon clickHandler={toggle}/>
-          </Paper>
+              <div className="flex-container" style={{justifyContent: "space-between"}}>
+                {/* ISEO-TBD:  Let's add messaging icon */}
+                <MessageEditorIcon clickHandler={toggle}/>
 
+                <SimpleModal show={modalShow} handleClose={hideModal}>
+                  <ShowActiveListingPage type="pick listing"/> 
+                </SimpleModal>
+                <button className="btn btn-info" onClick={showModal}>
+                  Add Listing
+                </button>
+              </div>
+
+          </Paper>
         </Grid>
       </Grid>
     </ListItem>
