@@ -25,6 +25,19 @@ var _3rdPartyListingSchema = new mongoose.Schema({
     coverPhoto: {
       path: String,
       caption: String
+    },
+
+    location: {
+      street: String,
+      city: String,
+      state: String,
+      country: String,
+      zipcode: Number
+    },
+
+    coordinates: {
+      lat: Number,
+      lng: Number
     }
 });
 

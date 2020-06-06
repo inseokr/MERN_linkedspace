@@ -86,8 +86,15 @@ router.get("/get_active_listing", function(req,res) {
 
 
             foundUser._3rdparty_listing.forEach(function(listing){
-                console.log("landlord listing found");
-                var llist = {id: listing._id , picture: listing.coverPhoto.path, url: listing.listingUrl, source: listing.listingSource}
+                console.log("3rd party listing found");
+                var llist = {id: listing._id , 
+                                 picture: listing.coverPhoto.path, 
+                                 url: listing.listingUrl, 
+                                 source: listing.listingSource, 
+                                 summary: listing.listingSummary,
+                                 location: listing.location,
+                                 coordinates: listing.coordinates
+                            }
                 _3rdparty_listing.push(llist);
             });
 

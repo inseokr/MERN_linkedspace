@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import '../../app.css';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
-function getListingContents(listingDB, listing_prefix, type)
+function getListingContents(listingDB, listing_prefix, type, listingControl)
 {
     let listings = []
 
@@ -33,7 +33,7 @@ function getListingContents(listingDB, listing_prefix, type)
         if(listing_prefix=="_3rdparty")
         {
             return (
-                <span style={{textAlign: "center", color: "Purple"}}> <h5> {listing.source} </h5> </span>
+                <span style={{textAlign: "center", color: "#332f2f"}}> <h6> {listing.source} </h6> </span>
             )
         }
         else
@@ -44,6 +44,17 @@ function getListingContents(listingDB, listing_prefix, type)
 
     function getListingControls(listing, type)
     {
+        function handleOnClick(evt)
+        {
+            if(evt.target.checked==true)
+            {
+                listingControl.add(listing)
+            }
+            else
+            {
+                listingControl.remove(listing)
+            }
+        }
 
         if(type=="show all")
         {
@@ -68,8 +79,8 @@ function getListingContents(listingDB, listing_prefix, type)
         {
             return (
                 <div>
-                  <input type="checkbox" value=""/>
-                  <label style={{marginLeft: "10px"}}>Check to add</label>
+                  <input type="checkbox" onClick={handleOnClick} value=""/>
+                  <label style={{marginLeft: "10px", color: "#6b2525"}}>Check to add</label>
                 </div>
             )
         }
@@ -130,7 +141,9 @@ function ShowActiveListingPage(props)
                         <span style={{textAlign:"center"}}><h3> Listing from linkedspaces </h3></span>
                         <hr/>
                         <div className="d-flex justify-content-between flex-wrap">
-                            {getListingContents(listing_info.landlord_listing, "landlord", props.type)}
+                            {getListingContents(listing_info.landlord_listing, 
+                                                "landlord", props.type, 
+                                                props.listingControl)}
                         </div>
                     </div>
 
@@ -140,7 +153,9 @@ function ShowActiveListingPage(props)
                         <span style={{textAlign:"center"}}><h3> Listing from 3rd party  </h3></span>
                         <hr/>
                         <div className="d-flex justify-content-between flex-wrap">
-                            {getListingContents(listing_info._3rdparty_listing, "_3rdparty", props.type)}
+                            {getListingContents(listing_info._3rdparty_listing, 
+                                                "_3rdparty", props.type, 
+                                                props.listingControl)}
                         </div>
                     </div> 
                 </div>

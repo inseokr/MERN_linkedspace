@@ -20,3 +20,11 @@
 .description__bullets {
     font-size: 4px;
 }
+
+.description__summary {
+	font-size: 6px;	
+}
+
+.childListing {
+	margin-left: 5%;
+}
