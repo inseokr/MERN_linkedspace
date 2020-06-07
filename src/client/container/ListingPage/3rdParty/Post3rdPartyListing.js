@@ -1,9 +1,12 @@
 import React, {useState, useEffect} from 'react';
+import {Redirect, useHistory} from 'react-router-dom'
 import '../common/step_wizard.css';
 import '../common/file_upload.css';
+
 import {InputGroup, FormControl} from 'react-bootstrap';
 import $ from 'jquery';
 
+import CollectLocationInfo from '../../../components/location/CollectLocationInfo'
 
 
 function readURL(event, picIndex)
@@ -193,30 +196,11 @@ function getListingSummary()
 
 function Post3rdPartyListing()
 {
+	const history = useHistory();
 	// ISEO-TBD
 	// : It should be replaced with contexts
 	let listing_info = {listing_id: 0}
 
-	function handleOnSubmit(evt)
-	{
-		evt.preventDefault();
-
-	    myFormData.append("file_name", $(`#imageDefaultUpload-1`).val())
-	    myFormData.append("source_url", $(`#sourceUrl`).val());
-	    myFormData.append("listing_source", $(`#listingSource`).val());
-	    myFormData.append("rental_price", $(`#rentalPrice`).val());
-	    myFormData.append("rental_summary", $(`#rentalSummary`).val());
-
-		$.ajax({
-		  enctype: 'multipart/form-data',
-		  url: `/listing/3rdparty/new`,
-		  type: 'POST',
-		  processData: false, // important
-		  contentType: false, // important
-		  dataType : 'application/json',
-		  data: myFormData
-		});
-	}
 
 	function getListingSource()
 	{
@@ -236,6 +220,12 @@ function Post3rdPartyListing()
 		);
 	}
 
+
+	function _exit()
+	{
+		evt.preventDefault();
+		history.push('/');
+	}
 
 	return (
 		<div>
@@ -285,6 +275,17 @@ function Post3rdPartyListing()
 					      		{getListingSummary()}
 
 					      	</div>
+					      	
+					      	<hr/>
+				      		
+				      		<div>
+				      			<div style={{textAlign:"center"}}>
+				            		<h5> Location </h5>
+				          		</div>
+				          		 <hr/>
+					      		<CollectLocationInfo />
+				      		</div>
+
 				      		<hr/>
 
 				      		<div>
@@ -295,8 +296,8 @@ function Post3rdPartyListing()
 				      		</div>
 
 				          <div style={{marginTop:"40px"}}>
-				            <a className="btn btn-success btn-lg float-left" href="/listing/3rdparty/new" value="Exit">Exit</a>
-				            <button className="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" onSubmit={handleOnSubmit} value="next">Submit</button>
+				            <button className="btn btn-success btn-lg float-left" onClick={_exit} value="Exit">Exit</button>
+				            <button className="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="submit">Submit</button>
 				          </div>
 				        </div>
 				      </div>

@@ -44,6 +44,8 @@ router.post('/file_delete', function(req, res) {
 router.post("/new", function(req, res){
 
 
+	console.log("3rd party listinng = " + JSON.stringify(req.body));
+
 	var filename = path.parse(req.body.file_name).base;
 
 
@@ -56,6 +58,9 @@ router.post("/new", function(req, res){
 	newListing.listingUrl         = req.body.sourceUrl;
 	newListing.listingSummary     = req.body.rentalSummary;
 	newListing.rentalPrice        = req.body.rentalPrice;
+
+	// set location information
+	newListing.location           = req.body.location;
 
 
 	// let's create a database
