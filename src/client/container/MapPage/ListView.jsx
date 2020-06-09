@@ -8,6 +8,7 @@ import AutoSizer from 'react-virtualized/dist/es/AutoSizer';
 import List from 'react-virtualized/dist/es/List';
 
 
+
 class ListView extends Component {
     static contextTypes = {
         list: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -21,6 +22,7 @@ class ListView extends Component {
             rowCount: props.data.length,
             scrollToIndex: undefined,
             useDynamicRowHeight: false,
+            modalShow: false
         };
 
         this._getRowHeight = this._getRowHeight.bind(this);
@@ -108,6 +110,7 @@ class ListView extends Component {
                     <div className={styles.address}>{datum.rental_budget}</div>
                     <div className={styles.address}>{datum.rental_duration}</div>
                     {additionalContent}
+
                 </div>
                 {useDynamicRowHeight && (
                     <span className={styles.height}>{datum.size}px</span>

@@ -4,7 +4,7 @@
   "description": "Boilerplate to build a full stack web application using React, Node.js, Express and Webpack.",
   "main": "src/server/index.js",
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "webpack --mode development",
     "start": "npm run build && node ./src/server/app.js",
     "client": "webpack-dev-server --mosrc/server/index.jsde development --devtool inline-source-map --hot",
     "server": "nodemon src/server/index.js",
@@ -19,6 +19,7 @@
     "express": "^4.16.3",
     "express-validator": "^6.4.0",
     "image-webpack-loader": "^6.0.0",
+    "jquery": "^3.5.1",
     "react": "^16.5.2",
     "react-bootstrap": "^1.0.0-beta.17",
     "react-dom": "^16.5.2",

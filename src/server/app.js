@@ -13,12 +13,16 @@ var express            = require("express"),
     nodemailer         = require("nodemailer"),
     crypto             = require("crypto")
 
+var fileUpload         = require('express-fileupload');
+    app.use(fileUpload());
+
 // routes
 var indexRoutes        = require("./routes/index")(app);
 var listingRoutes      = require("./routes/listing/index");
 var mynetworkRoutes    = require("./routes/mynetwork/index")(app);
 var landlordRoutes     = require("./routes/listing/landlord/index")(app);
 var tenantRoutes       = require("./routes/listing/tenant/index")(app);
+var _3rdpartyRoutes     = require("./routes/listing/3rdparty/index")(app);
 var profileRoutes      = require("./routes/profile/index");
 var chattingRoutes     = require("./routes/chatting/index")(app);
 
@@ -27,7 +31,7 @@ var path               = require("path");
 var LandlordRequest    = require("./models/listing/landlord_request");
 var TenantRequest      = require("./models/listing/tenant_request");
 
-var fileUpload         = require('express-fileupload');
+
 var facebook           = require('./facebook.js');
 var nodemailer         = require('nodemailer');
 var chatServer         = require('./chatting_server');
@@ -120,10 +124,11 @@ app.use("/listing", listingRoutes);
 app.use("/mynetwork", mynetworkRoutes);
 app.use("/listing/landlord", landlordRoutes);
 app.use("/listing/tenant", tenantRoutes);
+app.use("/listing/3rdparty", _3rdpartyRoutes);
 app.use("/profile", profileRoutes);
 app.use("/chatting", chattingRoutes);
 
-app.use(fileUpload());
+
 app.locals.profile_picture = "/public/user_resources/pictures/profile_pictures/default_profile.jpg";
 app.locals.lastReactMenu = "";
 app.locals.currentUser = [];
@@ -142,10 +147,32 @@ app.get('/drag_drop', function(req, res){
 res.render("drag_drop_demo_v1");
 });
 
+///////////////////////////////////////////////////////////////////////////////////
+// All the file upload will be defined in below
+// <note> File upload feature is not working well inside router.
+///////////////////////////////////////////////////////////////////////////////////
+/*app.post('/listing/3rdparty/file_upload', function(req, res) {
+
+  let sampleFile = req.files.file_name;
+  let picPath = "/public/user_resources/pictures/3rdparty/"+sampleFile.name;
+
+  console.log("file_upload: picPath=" + picPath);
+    // Use the mv() method to place the file somewhere on your server
+    sampleFile.mv(serverPath+picPath, function(err) {
+      if (err)
+        return res.status(500).send(err);
+      console.log("ISEO: Successful File upload");
+      
+      res.send('File uploaded!');
+  });
+
+});*/
+
 // ISEO: req.files were undefined if it's used in routers.
 // We need to address this problem later, but I will define it inside app.js for now.
 app.post('/listing/landlord/:list_id/file_upload', function(req, res) {
   console.log("file upload: listing_id: " + req.params.list_id);
+
   LandlordRequest.findById(req.params.list_id, function(err, foundListing){
   if (Object.keys(req.files).length == 0) {
     return res.status(400).send('No files were uploaded.');
@@ -301,6 +328,12 @@ app.post('/profile/:user_id/file_delete', function(req, res) {
     console.error(err);
   }
   });
+});
+
+app.get("/public/user_resources/pictures/3rdparty/:filename", function(req, res){
+  var fileName = req.params.filename;
+  console.log("picture: received file name=" + fileName)
+  res.sendFile(path.join(__dirname, `/public/user_resources/pictures/3rdparty/${fileName}`));
 });
 
 app.get("/public/user_resources/pictures/:filename", function(req, res){

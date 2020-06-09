@@ -188,7 +188,7 @@ module.exports = function(app) {
 
 	router.get("/friend_list", function(req, res){
 		
-		console.log("Get friend list");
+		//console.log("Get friend list");
 
 		res.json(app.locals.currentUser[req.user.username].direct_friends);
 	});

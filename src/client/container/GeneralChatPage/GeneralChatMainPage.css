@@ -24,7 +24,7 @@
 }
 
 .MessageLeftPanel {
-	grid-column: 4/6;
+	grid-column: var(--leftPanelColumn);
 	display: flex;
 	flex-flow: column;
 	height: 90vh;
@@ -36,7 +36,7 @@
 }
 
 .MessageRightPanel {
-	grid-column: 6/10;
+	grid-column: var(--rightPanelColumn);
 	display: flex;
 	flex-flow: column;
 	height: 90vh;
@@ -64,9 +64,6 @@
 	font-weight: bold;
 }
 
-.MessageEditIcon {
-	color: #a52a2a;
-}
 
 .SearchMessageBox{
 	height: 40px;

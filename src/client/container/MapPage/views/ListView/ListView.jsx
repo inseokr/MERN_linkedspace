@@ -5,8 +5,9 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListingComponent from './ListingComponent';
 
-function ListView() {
+function ListView(props) {
   const {filteredListings} = useContext(ListingsContext);
+  const {toggle, mode} = props;
 
   return (
     <div>
@@ -16,7 +17,7 @@ function ListView() {
             return (
               <div>
                 <Divider variant={"middle"}/>
-                <ListingComponent listing={listing}/>
+                <ListingComponent listing={listing} toggle={toggle} mode={mode} childSupported="false"/>
               </div>
             )
           })}

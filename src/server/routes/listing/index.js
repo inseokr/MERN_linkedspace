@@ -58,7 +58,7 @@ router.get("/show_active_listing", function(req,res){
 
 router.get("/get_active_listing", function(req,res) {
 
-    User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').exec(function(err, foundUser){
+    User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing').exec(function(err, foundUser){
         if(err){
             console.log(err);
         } else {
@@ -66,6 +66,7 @@ router.get("/get_active_listing", function(req,res) {
             console.log("get_active_listing");
             var tenant_listing = [];
             var landlord_listing = [];
+            var _3rdparty_listing = [];
 
             //<note> yes, landlord_listing array got screwed up after populate... darn...
             foundUser.tenant_listing.forEach(function(listing){
@@ -83,8 +84,22 @@ router.get("/get_active_listing", function(req,res) {
                 landlord_listing.push(llist);
             });
 
+
+            foundUser._3rdparty_listing.forEach(function(listing){
+                console.log("3rd party listing found");
+                var llist = {id: listing._id , 
+                                 picture: listing.coverPhoto.path, 
+                                 url: listing.listingUrl, 
+                                 source: listing.listingSource, 
+                                 summary: listing.listingSummary,
+                                 location: listing.location,
+                                 coordinates: listing.coordinates
+                            }
+                _3rdparty_listing.push(llist);
+            });
+
             // passing whole data structure may not be a good idea?
-            res.json({tenant_listing: tenant_listing, landlord_listing: landlord_listing});
+            res.json({tenant_listing: tenant_listing, landlord_listing: landlord_listing, _3rdparty_listing: _3rdparty_listing});
         }
     });
 });

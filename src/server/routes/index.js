@@ -32,12 +32,12 @@ module.exports = function(app) {
   });
 
   router.get("/getData", function(req, res){
-    console.log("getData is called");
+    //console.log("getData is called");
 
     // read listing information from database.
     LandlordRequest.find({}).then(function (listings) {
       res.send(listings);
-      console.log("getData = " + listings);
+      //console.log("getData = " + listings);
     });
   });
 

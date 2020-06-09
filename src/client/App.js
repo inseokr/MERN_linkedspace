@@ -8,6 +8,8 @@ import ModalLoginForm from './components/Login/ModalLoginForm';
 import Map from "./container/MapPage/index";
 import ListingLandlordMainPage from "./container/ListingPage/landlord/ListingLandlordMainPage";
 import ShowActiveListingPage   from "./container/ListingPage/ShowActiveListingPage";
+import PostListingPage         from "./container/ListingPage/PostListingPage";
+import Post3rdPartyListing     from "./container/ListingPage/3rdParty/Post3rdPartyListing";
 
 import {
   BrowserRouter as Router,
@@ -41,6 +43,7 @@ export default class App extends Component {
       <GlobalProvider>
         <ListingsProvider>
           <MessageContextProvider>
+            <CurrentListingProvider>
             <Router>
               <CommonHeader/>
               <ModalLoginForm/>
@@ -49,23 +52,29 @@ export default class App extends Component {
                   <Map/>
                 </Route>
                 <Route exact path="/Messages">
-                  <GeneralChatMainPage />
+                  <GeneralChatMainPage compact="false"/>
                 </Route>
-                
                 <Route exact path="/MyNetworks">
                   <MyNetworkPage />
                 </Route>
                 <Route exact path="/">
                   <LandingPage />
                 </Route>
-              </Switch>
-              <CurrentListingProvider>
-                <Route exact path="/ActiveListing">
-                  <ShowActiveListingPage />
+                <Route exact path="/PostListing">
+                  <PostListingPage />
                 </Route>
-                <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
-              </CurrentListingProvider>
+                <Route exact path="/3rdParty">
+                  <Post3rdPartyListing />
+                </Route>
+
+                  <Route exact path="/ActiveListing">
+                    <ShowActiveListingPage type="show all"/>
+                  </Route>
+
+                  <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
+              </Switch>
             </Router>
+            </CurrentListingProvider>
           </MessageContextProvider>
         </ListingsProvider>
       </GlobalProvider>
