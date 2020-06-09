@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useRef, useState } from 'react';
 
 export const ListingsContext = createContext();
 
-const GOOGLE_MAP_API_KEY = 'API_KEY';
+const GOOGLE_MAP_API_KEY = 'AIzaSyANrYzQMIHxXFiNglY8gAiXZglXr_JZW_E';
 
 export function ListingsProvider(props) {
   const [mapLoaded, setMapLoaded] = useState(false);

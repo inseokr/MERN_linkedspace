@@ -41,7 +41,6 @@ function ListingComponent(props) {
 
   }
 
-
   let showModal = () => {
     setModalShow(true);
   }
@@ -55,6 +54,32 @@ function ListingComponent(props) {
   };
 
   let listingControl = {add: addChildListing, remove: removeChildListing}
+
+
+  function addChildListingControl(childSupported)
+  {
+    if(childSupported==true)
+    {
+      return (
+        <div className="flex-container" style={{justifyContent: "space-between"}}>
+          {/* ISEO-TBD:  Let's add messaging icon */}
+          <MessageEditorIcon clickHandler={toggle}/>
+
+          <SimpleModal show={modalShow} handleClose={hideModal}>
+            <ShowActiveListingPage type="pick listing" listingControl={listingControl}/> 
+          </SimpleModal>
+          <button className="btn btn-info" onClick={showModal}>
+            Add Listing
+          </button>
+        </div>
+      )
+    }
+    else
+    {
+      return null;
+    }
+  }
+
   return (
     <>
     <div> 
@@ -89,18 +114,7 @@ function ListingComponent(props) {
                 {listingAccessibleSpaces}
               </Typography>
             ) : (<></>)}
-
-              <div className="flex-container" style={{justifyContent: "space-between"}}>
-                {/* ISEO-TBD:  Let's add messaging icon */}
-                <MessageEditorIcon clickHandler={toggle}/>
-
-                <SimpleModal show={modalShow} handleClose={hideModal}>
-                  <ShowActiveListingPage type="pick listing" listingControl={listingControl}/> 
-                </SimpleModal>
-                <button className="btn btn-info" onClick={showModal}>
-                  Add Listing
-                </button>
-              </div>
+            {addChildListingControl(props.childSupported)}
           </Paper>
         </Grid>
       </Grid>

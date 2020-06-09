@@ -17,7 +17,7 @@ function ListView(props) {
             return (
               <div>
                 <Divider variant={"middle"}/>
-                <ListingComponent listing={listing} toggle={toggle} mode={mode}/>
+                <ListingComponent listing={listing} toggle={toggle} mode={mode} childSupported="false"/>
               </div>
             )
           })}
