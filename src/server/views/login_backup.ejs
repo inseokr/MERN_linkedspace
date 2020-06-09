@@ -1,4 +1,4 @@
-<% include ./partials/header %> 
+<% include ./partials/header %>
 
 <h1>Login!</h1>
 <form action="/login" method="POST">
@@ -35,7 +35,7 @@
 		      </div>
 
 		      <div class="modal-footer d-flex justify-content-center">
-				  <fb:login-button 
+				  <fb:login-button
 					  scope="public_profile,email"
 					  onlogin="checkLoginState();">
 				  </fb:login-button>
@@ -47,7 +47,7 @@
 
 		<div class="text-center">
 		  <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Launch
-		    Modal Login Form</a>
+		    Index Login Form</a>
 		</div>
 	</div>
 
@@ -61,9 +61,9 @@
       xfbml      : true,
       version    : 'v3.2'
     });
-      
-    FB.AppEvents.logPageView();   
-      
+
+    FB.AppEvents.logPageView();
+
   };
 
   (function(d, s, id){
@@ -86,4 +86,4 @@
 
 </script>
 
-<% include ./partials/footer %> 
+<% include ./partials/footer %>
