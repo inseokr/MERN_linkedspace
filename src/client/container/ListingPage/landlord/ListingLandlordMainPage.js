@@ -24,7 +24,7 @@ export default class ListingLandlordMainPage extends Component {
         console.log("ListingLandlordMainPage: componentDidMount")
         
         if(this.props.match!=undefined)
-            this.context.fetchCurrentListing(this.props.match.params.id);
+            this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
     }
 
     componentWillMount() {

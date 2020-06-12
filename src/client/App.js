@@ -7,6 +7,7 @@ import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 import Map from "./container/MapPage/index";
 import ListingLandlordMainPage from "./container/ListingPage/landlord/ListingLandlordMainPage";
+import ListingTenantMainPage from "./container/ListingPage/tenant/ListingTenantMainPage";
 import ShowActiveListingPage   from "./container/ListingPage/ShowActiveListingPage";
 import PostListingPage         from "./container/ListingPage/PostListingPage";
 import Post3rdPartyListing     from "./container/ListingPage/3rdParty/Post3rdPartyListing";
@@ -72,6 +73,7 @@ export default class App extends Component {
                   </Route>
 
                   <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
+                  <Route path={"/listing/tenant/:id"} component={ListingTenantMainPage} />
               </Switch>
             </Router>
             </CurrentListingProvider>

@@ -272,6 +272,26 @@ router.get("/show", function(req, res){
 });
 
 
+router.get("/:list_id/fetch", function(req, res){
+
+	console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
+
+	TenantRequest.findById(req.params.list_id, function(err, foundListing){
+
+		if(err)
+		{
+			console.log("Listing not found");
+			return;
+		}
+
+		console.log("Found listing");
+
+		res.json(foundListing);
+	});
+
+});
+
+
 router.post("/:list_id/edit", function(req, res){
 	// Get tenant listing.
     TenantRequest.findById(req.params.list_id, function(err, foundListing){
