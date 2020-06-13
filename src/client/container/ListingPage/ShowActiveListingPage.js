@@ -21,7 +21,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl)
         else
         {
             return (
-                    <Link to={"/listing/"+listing_prefix+"/"+listing.id}>
+                    <Link to={"/listing/"+listing_prefix+"/"+listing.id+"/get"}>
                         <img className="img-responsive center" style={{maxHeight:"80%", maxWidth:"100%", marginTop:"10px"}} src={listing.picture}/>
                     </Link>
                 )
