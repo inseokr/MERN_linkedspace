@@ -65,7 +65,8 @@ function ChildListingsView(props)
 	  							              handleSelect={props.handleSelect} 
 	  							              listing={childListing}
 	  							              index={index}
-	  							              messageClickHandler={props.messageClickHandler}/>)
+	  							              messageClickHandler={props.messageClickHandler}
+	  							              removeHandler={props.removeHandler}/>)
 	  });
 
 	  return (

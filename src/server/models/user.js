@@ -38,7 +38,53 @@ var UserSchema = new mongoose.Schema({
 	    	}
     	],
 
-    	level_1_parents:
+    	// Related to Tenant Dashboard
+    	tenant_dashboard_level_1:
+    	[
+    		{
+	    		id: {
+	    			type: mongoose.Schema.Types.ObjectId,
+	    			ref: "ChattingChannelLevel1Parent"
+	    		},
+
+	    		dm_channels: 
+	    		[
+		    		{
+			    		id: {
+			    			type: mongoose.Schema.Types.ObjectId,
+			    			ref: "ChattingChannel"
+			    		},
+			    		name: String,
+			    		lastReadIndex: { type: Number, default: 0 } 
+		    		}
+	    		],
+
+	    		level_2_parents:
+	    		[
+		    		{
+			    		id: {
+			    			type: mongoose.Schema.Types.ObjectId,
+			    			ref: "ChattingChannelLevel2Parent"
+			    		},
+			    		
+		    			dm_channels:
+			    		[
+				    		{
+					    		id: {
+					    			type: mongoose.Schema.Types.ObjectId,
+					    			ref: "ChattingChannel"
+					    		},
+					    		name: String,
+					    		lastReadIndex: { type: Number, default: 0 } 
+				    		}
+			    		]
+			    	}
+		    	]
+		    }
+    	],
+
+    	// Related to landlord listing dashboard
+    	landlord_dashboard_level_1:
     	[
     		{
 	    		id: {

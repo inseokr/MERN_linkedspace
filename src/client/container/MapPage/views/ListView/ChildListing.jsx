@@ -28,6 +28,12 @@ function ChildListing(props)
 		props.clickHandler(props.index);
 	}
 
+	function removeListingHandler(e)
+	{
+		e.preventDefault();
+		props.removeHandler(childListing);
+	}
+
 	return (
 	  <ListItem>
 	    <Grid container className="childListing" onClick={listingClickHandler} style={borderStyle}>
@@ -54,7 +60,7 @@ function ChildListing(props)
                 {/* ISEO-TBD:  Let's add messaging icon */}
                 <MessageEditorIcon clickHandler={props.messageClickHandler}/>
 
-                <button className="btn btn-danger">
+                <button className="btn btn-danger" onClick={removeListingHandler}>
                   Remove
                 </button>
               </div>

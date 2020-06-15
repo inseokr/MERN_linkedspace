@@ -14,7 +14,7 @@ function SimpleModal(props)
       <section className="simpleModalMain">
       	{props.children}
       	<div className="flex-container" style={{justifyContent:"center"}}> 
-        	<button className="btn btn-info" onClick={props.handleClose}>Add selected listings</button>
+        	<button className="btn btn-info" onClick={props.handleClose}>{props.captionCloseButton}</button>
         </div>
       </section>
     </div>

@@ -68,6 +68,64 @@ var TenantRequestSchema = new mongoose.Schema({
       }
   	],
 
+    child_listings: 
+      {
+        _3rd_party_listings: [
+          {
+            id: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "_3rdPartyListing"
+            },
+
+            created_by: {
+              id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+              },
+              user_name: String
+            },
+
+            shared_user_group: [
+              {
+                id: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "User"
+                },
+                user_name: String
+              }
+            ]
+          }
+        ],
+
+        internal_listings: [
+          {
+            id: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "LandlordRequest"
+            },
+
+            created_by: {
+              id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+              },
+              user_name: String
+            },
+            
+            shared_user_group: [
+              {
+                id: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "User"
+                },
+                user_name: String
+              }
+            ]
+          }
+        ],
+      }
+    ,
+
   	// rental location
   	location: {
   		street: String,

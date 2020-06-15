@@ -14,7 +14,9 @@ var express            = require("express"),
     crypto             = require("crypto")
 
 var fileUpload         = require('express-fileupload');
+    
     app.use(fileUpload());
+    app.use(bodyParser());
 
 // routes
 var indexRoutes        = require("./routes/index")(app);
@@ -54,7 +56,7 @@ const os = require('os');
 var url = process.env.DATABASEURL || "mongodb://localhost/Linkedspaces";
 mongoose.connect(url,  { useNewUrlParser: true });
 //app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser());
+
 
 app.set("view engine", "ejs");
 app.set('views', viewPath);

@@ -352,6 +352,120 @@ router.get("/:filename", function(req, res){
   	res.sendFile(path.join(__dirname, `../../../public/user_resources/pictures/${fileName}`));
 });
 
+router.post("/addChild", function(req, res){
+
+	console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
+
+	TenantRequest.findById(req.body.parent_listing_id, function(err, foundListing){
+		if(err)
+		{
+			console.log("listing not found");
+			res.send('listing_not_found');
+			return;
+		}
+
+		if(req.body.listing_type=="_3rdparty")
+		{
+			console.log("listing  found");
+
+			let _3rdparty_listing = { id: req.body.child_listing_id, created_by: req.user._id, shared_user_group: []};
+
+			// let's check if it's a duplicate request.
+			let foundDuplicate = false;
+
+			console.log("foundListing = " + JSON.stringify(foundListing));
+
+			if(foundListing.child_listings.length>=1)
+			{
+				foundListing.child_listings.forEach(
+					listing => {
+						if(listing.id.equals(req.body.child_listing_id)) 
+						{
+							foundDuplicate = true;
+						}
+					}); 
+
+				if(foundDuplicate==true)
+				{
+					console.log("Duplicate request");
+					res.send("Duplicate request");
+					return;
+				}
+			}
+
+			// default user group
+			// 1. check if the parent listing is created by me
+			console.log("req.user._id="+req.user._id);
+			console.log("foundListing.requester.id="+foundListing.requester.id);
+
+			if(foundListing.requester.id.equals(req.user._id))
+			{
+				console.log("Updating user group, created by the current user");
+				let _user = {id: foundListing.requester.id, user_name: foundListing.requester.username};
+				_3rdparty_listing.shared_user_group.push(_user);
+				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
+			}
+			// tenant & creator of child listing
+			else
+			{
+				console.log("Updating user group, created by friend");
+
+				// <note> the 3rd party listing could be added by either tenant or friends.
+				// It's a friend case.
+				let _creatorOfParent = {id: foundListing.requester.id, user_name: foundListing.requester.username};
+				let _creatorOfChild  = {id: req.user._id, user_name: req.body.username};
+
+				_3rdparty_listing.shared_user_group.push(_creatorOfParent);
+				_3rdparty_listing.shared_user_group.push(_creatorOfChild);
+				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
+			}
+
+			foundListing.save();
+		}
+		else
+		{
+			// landlord listing
+		}
+
+		res.send("Successfully added");
+
+	});
+});
+
+
+router.post("/removeChild", function(req, res){
+
+	TenantRequest.findById(req.body.parent_listing_id, function(err, foundListing){
+		if(err)
+		{
+			console.log("listing not found");
+			res.send('listing_not_found');
+			return;
+		}
+
+		if(req.body.listing_type=="_3rdparty")
+		{
+			console.log("remove 3rd party listing");
+
+			if(foundListing.child_listings.length==0)
+			{
+				console.log("no child listing found");
+				res.send('no child lising found')
+				return;
+			}
+
+			// use filter to create a new array
+			let tempArray = foundListing.child_listings._3rd_party_listings.filter(listing => listing._id.equals(req.body.child_listing_id));
+
+			foundListing.child_listings = tempArray;
+
+			foundListing.save();
+		}
+
+		res.send('Child listing removed successfully');
+	});
+
+});
 
 
 function preprocessingListing(listing, preferences)
