@@ -93,6 +93,14 @@
     z-index: 100;
 }
 
+.modal-min-max-text-fields {
+    text-align: center;
+}
+
+.modal-slider {
+    text-align: center;
+}
+
 .filter-button {
     border-radius: 15px;
     border-width: 1px;
@@ -102,6 +110,33 @@
 .filter-button:focus {
     outline: none;
     border-color: black;
+}
+
+.submit-button {
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: black;
+    background-color: black;
+    color: white;
+    float: right;
+}
+
+.submit-button-grid {
+    padding-bottom: 0 !important;
+    padding-right: 0 !important;
+}
+
+.clear-button {
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: black;
+    background-color: white;
+    color: black;
+}
+
+.clear-button-grid {
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
 }
 
 .loader {

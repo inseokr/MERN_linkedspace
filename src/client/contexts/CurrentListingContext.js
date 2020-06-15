@@ -7,24 +7,22 @@ export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
 
-    async function fetchListingInfo()
-    {
-        console.log("fetchListingInfo")
+    async function fetchListingInfo() {
+      console.log("fetchListingInfo");
 
-	    fetch('/listing/get_active_listing')
-	  	.then(res => res.json())
-	  	.then(listing => {
-	  		console.log("listing = " + JSON.stringify(listing));
-	      	setListingInfo(listing)
-			}
-	  	)
+      fetch('/listing/get_active_listing')
+        .then(res => res.json())
+        .then(listing => {
+            console.log("listing = " + JSON.stringify(listing));
+            setListingInfo(listing)
+          }
+        )
     }
 
 
-    async function fetchCurrentListing(id)
-    {
+    async function fetchCurrentListing(id) {
         console.log("fetchCurrentListing is called with listing_id = " + id);
-        
+
         fetch('/listing/landlord/'+id+'/fetch')
         .then(res => res.json())
         .then(listing => {
@@ -35,7 +33,7 @@ export function CurrentListingProvider(props) {
     }
 
     return (
-        <CurrentListingContext.Provider value={{ listing_info, currentListing, fetchCurrentListing, fetchListingInfo}}>
+        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo}}>
             {props.children}
         </CurrentListingContext.Provider>
     );
