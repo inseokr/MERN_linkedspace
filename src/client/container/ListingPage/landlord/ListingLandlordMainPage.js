@@ -16,50 +16,48 @@ export default class ListingLandlordMainPage extends Component {
 
     constructor(props) {
         super(props);
-
         console.log("props = " + JSON.stringify(props));
     }
 
     componentDidMount() {
-        console.log("ListingLandlordMainPage: componentDidMount")
-        
-        if(this.props.match!=undefined)
-            this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
+      console.log("ListingLandlordMainPage: componentDidMount");
+
+      if(this.props.match!==undefined)
+        this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
     }
 
     componentWillMount() {
 
         console.log("ListingLandlordMainPage: componentWillMount");
         /* load listing information by listing ID */
-        // <note> this parameter will contain the value of ":id" in the followinng route path 
+        // <note> this parameter will contain the value of ":id" in the followinng route path
         // /listing/landlord/:id
         //this.context.fetchCurrentListing(this.props.match.params.id);
     }
 
     render() {
-
-        if(this.context.currentListing==undefined)
-        {
-            return (<> </>)
-        }
-
         // ISEO-TBD: not sure how to match it?
-        let footer = ""    
+        let footer = "";
         return (
-            <>
-                <ListingCoverPage />
-                <div className="container no_border" style={{marginTop:"20px"}}>
-                <ListingIntro />
-                <LocationInfo />
-                <ExploreHome />
-                <HomeDetails />
-                <RentalTerm />
-                <HostDetails />
-                <ListingControlButtons />
-                </div>
-                {footer}
-            </>
-
+          <>
+            {
+              this.context.currentListing ? (
+                <>
+                  <ListingCoverPage />
+                  <div className="container no_border" style={{marginTop:"20px"}}>
+                    <ListingIntro />
+                    <LocationInfo />
+                    <ExploreHome />
+                    <HomeDetails />
+                    <RentalTerm />
+                    <HostDetails />
+                    <ListingControlButtons />
+                  </div>
+                  {footer}
+                </>
+              ) : (<></>)
+            }
+          </>
         );
     }
 }

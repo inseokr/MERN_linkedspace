@@ -14,12 +14,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
   formControl: {
-    margin: theme.spacing(3),
+    margin: theme.spacing(1),
   },
-  modalButton: {
-    width: '50%',
-    margin: '0 auto',
-  }
 }));
 
 function PlaceFilter() {
@@ -104,19 +100,15 @@ function PlaceFilter() {
             </FormGroup>
           </FormControl>
           <Grid container spacing={5}>
-            <Grid item xs={6}>
-              <div className={classes.modalButton}>
-                <button className="filter-button" onClick={onClear}>
-                  Clear
-                </button>
-              </div>
+            <Grid item xs={6} className="clear-button-grid">
+              <button className="clear-button" onClick={onClear}>
+                Clear
+              </button>
             </Grid>
-            <Grid item xs={6}>
-              <div className={classes.modalButton}>
-                <button className="filter-button" onClick={() => {toggleModal(); onSubmit();}}>
-                  Submit
-                </button>
-              </div>
+            <Grid item xs={6} className="submit-button-grid">
+              <button className="submit-button" onClick={() => {toggleModal(); onSubmit();}}>
+                Submit
+              </button>
             </Grid>
           </Grid>
         </Modal>

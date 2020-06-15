@@ -1,16 +1,21 @@
-import React, { createContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import useToggleState from '../hooks/useToggleState';
+import createHTMLMapMarker from '../container/MapPage/views/MapView/createHTMLMapMarker';
 
 export const ListingsContext = createContext();
 
 const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
 
 export function ListingsProvider(props) {
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapLoaded, setMapLoaded] = useToggleState(false);
+
   const [listings, setListings] = useState([]);
   const [listingsByBounds, setListingsByBounds] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
+
   const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
   const [zoom, setZoom] = useState(9);
+
   const [search, setSearch] = useState("");
   const [places, setPlaces] = React.useState({Entire: true, Private: true, Shared: true});
   const [price, setPrice] = useState([1, 1000]);
@@ -24,6 +29,8 @@ export function ListingsProvider(props) {
           let geometry = response.results[0].geometry;
           console.log("getGeometryFromSearchString", response);
           return geometry
+        } else {
+          return {} // return an empty JSON if status is not OK
         }
       }
     );
@@ -75,11 +82,13 @@ export function ListingsProvider(props) {
   function filterListingsBySearch(search) {
     changeSearch(search)
       .then(response => {
-        if (document.getElementById('mapView')) { // Continue if element exists.
-          const mapViewProperties = document.getElementById('mapView').getBoundingClientRect();
-          filterListingsByBounds(response.viewport, response.location, getBoundsZoomLevel(response.viewport, {height: mapViewProperties.height, width: mapViewProperties.width}));
-        } else {
-          filterListingsByBounds(response.viewport, response.location, zoom);
+        if (Object.keys(response).length > 0) { // Continue if response is not empty.
+          if (document.getElementById('mapView')) { // Continue if element exists.
+            const mapViewProperties = document.getElementById('mapView').getBoundingClientRect();
+            filterListingsByBounds(response.viewport, response.location, getBoundsZoomLevel(response.viewport, {height: mapViewProperties.height, width: mapViewProperties.width}));
+          } else {
+            filterListingsByBounds(response.viewport, response.location, zoom);
+          }
         }
       });
   }
@@ -146,6 +155,30 @@ export function ListingsProvider(props) {
     }
   }
 
+  function initGoogleMap(googleMapRef, zoom, center) { // Initialize the google map
+    console.log("initGoogleMap", googleMapRef, zoom, center);
+    return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center, mapTypeControl: false, streetViewControl: false});
+  }
+
+  function createMarker(googleMap, coordinates) { // Construct a marker using createHTMLMapMarker
+    const latLng = new google.maps.LatLng(coordinates.lat, coordinates.lng);
+    return createHTMLMapMarker({
+      latlng: latLng,
+      map: googleMap,
+      html: `<img id="marker" src="/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg">`
+    });
+  }
+
+  function constructBounds(bounds) { // Construct the correct bounds object to use.
+    const td = bounds["Ya"];
+    const pd = bounds["Ua"];
+    return {"northeast": {"lat": td["j"], "lng": pd["j"]}, "southwest": {"lat": td["i"], "lng": pd["i"]}}
+  }
+
+  function centerCoordinates(center) { // Construct center object.
+    return {lat: center.lat(), lng: center.lng()}
+  }
+
   useEffect(() => {
     filterListings(places, price, date);
   }, [listingsByBounds]);
@@ -158,7 +191,9 @@ export function ListingsProvider(props) {
 
   useEffect(() => {
     loadGoogleMapScript(() => {
-      setMapLoaded(true);
+      if (!mapLoaded) {
+        setMapLoaded();
+      }
     });
     getListInformation()
       .then(response => {
@@ -167,7 +202,8 @@ export function ListingsProvider(props) {
   }, []);
 
   return (
-    <ListingsContext.Provider value={{mapLoaded, setSearch, filteredListings, filterListingsBySearch, filterListingsByBounds, filterListings, center, zoom, search, places, price, date}}>
+    <ListingsContext.Provider value={{mapLoaded, initGoogleMap, createMarker, constructBounds, centerCoordinates, getGeometryFromSearchString, getBoundsZoomLevel,
+                                      setSearch, filteredListings, filterListingsBySearch, filterListingsByBounds, filterListings, center, zoom, search, places, price, date}}>
       {props.children}
     </ListingsContext.Provider>
   );
