@@ -42,8 +42,13 @@ var ChattingChannelLevel2ParentSchema = new mongoose.Schema({
 		}
 	],
 
-	// channel_type: 2
-	// not defined yet.
+	_3rdparty_listing: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "_3rdPartyListing"
+		}
+	]
+
 });
 
 module.exports = mongoose.model("ChattingChannelLevel2Parent", ChattingChannelLevel2ParentSchema);

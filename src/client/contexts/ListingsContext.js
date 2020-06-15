@@ -4,7 +4,7 @@ import createHTMLMapMarker from '../container/MapPage/views/MapView/createHTMLMa
 
 export const ListingsContext = createContext();
 
-const GOOGLE_MAP_API_KEY = '';
+const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
 
 export function ListingsProvider(props) {
   const [mapLoaded, setMapLoaded] = useToggleState(false);

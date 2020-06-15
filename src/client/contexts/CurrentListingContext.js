@@ -6,6 +6,7 @@ export const CurrentListingContext = createContext();
 export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
+    const [childListings, setChildListings] = useState();
 
     async function fetchListingInfo() {
       console.log("fetchListingInfo");
@@ -20,17 +21,18 @@ export function CurrentListingProvider(props) {
     }
 
 
-    async function fetchCurrentListing(id) {
-        console.log("fetchCurrentListing is called with listing_id = " + id);
+  async function fetchCurrentListing(id, listing_type) {
+    console.log("fetchCurrentListing is called with listing_id = " + id + ", type = " + listing_type);
+    let _prefix = (listing_type==="landlord") ? "/listing/landlord/" : "/listing/tenant/";
 
-        fetch('/listing/landlord/'+id+'/fetch')
-        .then(res => res.json())
-        .then(listing => {
-            console.log("listing = " + JSON.stringify(listing));
-            setCurrentListing(listing)
-            }
-        )
-    }
+    fetch(_prefix+id+'/fetch')
+      .then(res => res.json())
+      .then(listing => {
+          console.log("listing = " + JSON.stringify(listing));
+          setCurrentListing(listing)
+        }
+      )
+  }
 
     return (
         <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo}}>

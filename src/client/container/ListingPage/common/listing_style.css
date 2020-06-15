@@ -55,7 +55,7 @@
 }
 
 ._so3dpm2 {
-    margin: 0px !important;
+    margin: 0px;
     word-wrap: break-word !important;
     font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
     font-size: 12px !important;
@@ -78,7 +78,6 @@
 }
 
 ._1ezjrwzo {
-    #margin: 0px !important;
     word-wrap: break-word !important;
     font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
     font-size: 16px !important;
@@ -88,7 +87,6 @@
 }
 
 .inner_contents {
-    #margin: 0px !important;
     word-wrap: break-word !important;
     font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
     font-size: 16px !important;
@@ -108,7 +106,6 @@
 }
 
 .sub_title {
-    margin: 0px !important;
     word-wrap: break-word !important;
     font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
     font-size: 16px !important;
