@@ -39,7 +39,7 @@ function TenantListingComponent(props) {
     // post to DB as well
     // 1. Need ID of current active listing
     var data = {parent_listing_id: listing._id,
-                child_listing_id:  childListing._id,
+                child_listing_id:  childListing.id,
                 username: currentUser.username,
                 listing_type: "_3rdparty"
                 };
@@ -62,7 +62,7 @@ function TenantListingComponent(props) {
     
     // post to DB as well
     var data = {parent_listing_id: listing._id,
-                child_listing_id:  childListing._id,
+                child_listing_id:  childListing.id,
                 listing_type: "_3rdparty"};
 
     const result = await axios.post('/listing/tenant/removeChild', data)

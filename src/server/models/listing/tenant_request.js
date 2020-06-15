@@ -72,9 +72,9 @@ var TenantRequestSchema = new mongoose.Schema({
       {
         _3rd_party_listings: [
           {
-            id: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "_3rdPartyListing"
+            listing_id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "_3rdPartyListing"
             },
 
             created_by: {

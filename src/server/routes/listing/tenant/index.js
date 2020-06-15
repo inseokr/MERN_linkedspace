@@ -276,16 +276,16 @@ router.get("/:list_id/fetch", function(req, res){
 
 	console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
-	TenantRequest.findById(req.params.list_id, function(err, foundListing){
-
+	TenantRequest.findById(req.params.list_id).populate('child_listings._3rd_party_listings.listing_id').exec(function(err, foundListing){
 		if(err)
 		{
 			console.log("Listing not found");
 			return;
 		}
 
-		console.log("Found listing");
+		//console.log("foundListing = " + JSON.stringify(foundListing));
 
+		// send child listings as well
 		res.json(foundListing);
 	});
 
@@ -368,7 +368,12 @@ router.post("/addChild", function(req, res){
 		{
 			console.log("listing  found");
 
-			let _3rdparty_listing = { id: req.body.child_listing_id, created_by: req.user._id, shared_user_group: []};
+			let _3rdparty_listing = { listing_id: null, 
+									  created_by: {id: null, user_name: ""}, shared_user_group: []};
+
+			console.log("child_listing_id = " + req.body.child_listing_id);
+
+			_3rdparty_listing.listing_id = req.body.child_listing_id;
 
 			// let's check if it's a duplicate request.
 			let foundDuplicate = false;
@@ -403,6 +408,10 @@ router.post("/addChild", function(req, res){
 				console.log("Updating user group, created by the current user");
 				let _user = {id: foundListing.requester.id, user_name: foundListing.requester.username};
 				_3rdparty_listing.shared_user_group.push(_user);
+				
+				_3rdparty_listing.created_by.id = req.user._id;
+				_3rdparty_listing.created_by.user_name = foundListing.requester.username;
+
 				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
 			}
 			// tenant & creator of child listing
@@ -414,6 +423,9 @@ router.post("/addChild", function(req, res){
 				// It's a friend case.
 				let _creatorOfParent = {id: foundListing.requester.id, user_name: foundListing.requester.username};
 				let _creatorOfChild  = {id: req.user._id, user_name: req.body.username};
+
+				_3rdparty_listing.created_by.id = foundListing.requester.id;
+				_3rdparty_listing.created_by.user_name = foundListing.requester.username;
 
 				_3rdparty_listing.shared_user_group.push(_creatorOfParent);
 				_3rdparty_listing.shared_user_group.push(_creatorOfChild);

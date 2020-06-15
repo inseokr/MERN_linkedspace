@@ -6,7 +6,6 @@ export const CurrentListingContext = createContext();
 export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
-    const [childListings, setChildListings] = useState();
 
     async function fetchListingInfo()
     {
