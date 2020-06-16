@@ -10,7 +10,7 @@ import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
 function ChildListing(props)
 {
 	console.log("ChildListing: clickState="+ props.clickState);
-	const listingTitle = props.listing.source;
+	const listingTitle = props.listing.listingSource;
 
 	let childListing = props.listing;
 
@@ -40,8 +40,8 @@ function ChildListing(props)
 	      <Grid item xs={4}>
 	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={props.handleSelect} className={"carousel"}>
 	          <Carousel.Item>
-	            <a href={childListing.url}>
-	              <img src={childListing.picture} alt={"Listing Picture"} className={"carouselImage"}/>
+	            <a href={childListing.listingUrl}>
+	              <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
 	            </a>
 	          </Carousel.Item>
 	        </Carousel>
@@ -53,7 +53,7 @@ function ChildListing(props)
 	            {listingTitle}
 	          </Typography>
 	          <Typography className={"description__summary"}>
-	            {childListing.summary}
+	            {childListing.listingSummary}
 	          </Typography>
 
 	          <div className="flex-container" style={{justifyContent: "space-between"}}>

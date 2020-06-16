@@ -9,6 +9,7 @@ import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPage from "../../../ListingPage/ShowActiveListingPage";
 import ChildListingsView from "./ChildListingsView";
 import {GlobalContext} from "../../../../contexts/GlobalContext";
+import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 import axios from 'axios';
 import $ from 'jquery';
 
@@ -17,6 +18,7 @@ function TenantListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const {currentUser} = useContext(GlobalContext);
+  const {currentListing, setCurrentListing, fetchCurrentListing} = useContext(CurrentListingContext);
   const {listing, toggle, mode} = props;
 
   const userName          = listing.requester.username;
@@ -25,18 +27,10 @@ function TenantListingComponent(props) {
   const rentalBudget      = "$"+ listing.rental_budget 
   const preferredLocation = listing.location.city + "," + listing.location.state + "," + listing.location.country;
 
-  //ISEO-TBD: It's just for testing purpose
-  const [ChildListings, setChildListings] = useState([]);
-
   async function addChildListing(childListing)
   {
     console.log("addChildListing");
-    let tempListings = [...ChildListings]
-    tempListings.push(childListing)
-    setChildListings(tempListings);
-    console.log("addChildListing, len="+tempListings.length);
-
-    // post to DB as well
+    
     // 1. Need ID of current active listing
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing.id,
@@ -47,27 +41,22 @@ function TenantListingComponent(props) {
     const result = await axios.post('/listing/tenant/addChild', data)
     .then(result => {
       console.log("addChildListing result = " + result);
+      fetchCurrentListing(currentListing._id, "tenant");
     })
     .catch(err => console.log(err));
   }
 
   async function removeChildListing(childListing)
   {
-    let tempListings = ChildListings.filter(function(item) {
-      return (item.id!==childListing.id)
-    })
-    
-    setChildListings(tempListings);
-    console.log("removeChildListing, len="+tempListings.length);
-    
     // post to DB as well
     var data = {parent_listing_id: listing._id,
-                child_listing_id:  childListing.id,
+                child_listing_id:  childListing._id,
                 listing_type: "_3rdparty"};
 
     const result = await axios.post('/listing/tenant/removeChild', data)
     .then(result => {
       console.log("removeChildListing result = " + result);
+      fetchCurrentListing(currentListing._id, "tenant");
     })
     .catch(err => console.log(err));
 
@@ -158,7 +147,6 @@ function TenantListingComponent(props) {
       <ChildListingsView handleSelect={handleSelect} 
                          messageClickHandler={toggle} 
                          listing={listing} 
-                         childListings = {ChildListings}
                          removeHandler = {removeChildListing}/>
     </div>
 

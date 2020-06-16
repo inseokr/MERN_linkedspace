@@ -467,9 +467,24 @@ router.post("/removeChild", function(req, res){
 			}
 
 			// use filter to create a new array
-			let tempArray = foundListing.child_listings._3rd_party_listings.filter(listing => listing._id.equals(req.body.child_listing_id));
+			let tempArray = [];
+			foundListing.child_listings._3rd_party_listings.forEach(listing => 
+				{
+					console.log("req.body.child_listing_id = " + req.body.child_listing_id);
+					console.log("ID to compare against = " + listing.listing_id);
+					if(listing.listing_id.equals(req.body.child_listing_id))
+					{
+						console.log(" remove it ");
+					}
+					else
+					{
+						console.log(" preserve this item");
+						tempArray.push(listing);
+					}
+				})
 
-			foundListing.child_listings = tempArray;
+			console.log("size of tempArray = " + tempArray.length);
+			foundListing.child_listings._3rd_party_listings = [...tempArray];
 
 			foundListing.save();
 		}
