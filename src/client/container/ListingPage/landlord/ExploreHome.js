@@ -15,7 +15,7 @@ function getListingPictures(listing_info)
 			  <div className="col-3">
 			    <div className=" thumbnail" style={{backgroundColor:'#f2f2f2'}}>
 			      <img className="img-responsive"
-			           src={listing_info.listing.pictures[picIndex].path.split("/")[listing_info.listing.pictures[picIndex].path.split("/").length-1]}/>
+			           src={listing_info.listing.pictures[picIndex].path}/>
 			      <div className="caption-full ">
 			        <h4 className="pull-right inner_contents">{listing_info.listing.pictures[picIndex].caption}</h4>
 			        <p></p>

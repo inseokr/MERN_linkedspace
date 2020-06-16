@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import "../../../app.css";
 import "../common/listing_style.css";
 
@@ -8,7 +8,7 @@ import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 function HostDetails()
 {
 	const {currentListing} = useContext(CurrentListingContext);
-	
+
 	return (
 		<>
 			<hr/>
@@ -18,7 +18,7 @@ function HostDetails()
 
 			<div className="row no_border" style={{marginTop:"30px"}}>
 			  <div className="col-3">
-			    <img src="yoobin_justin.jpg" className="center rounded-circle" style={{width:"100%", maxHeight:"100%", marginLeft:"25px"}}/>
+			    <img src={currentListing.listing.requester.id.profile_picture} className="center rounded-circle" style={{width:"100%", maxHeight:"100%", marginLeft:"25px"}}/>
 			  </div>
 
 			  <div className="col-4 _1ezjrwzo" style={{marginLeft:"50px"}}>

@@ -22,10 +22,10 @@ function ListingIntro()
 
 	    <div className="col-4" style={{marginLeft:"10px"}}>
 	      <div className="_tw4pe52">
-	        Hosted by In Seo
+	        Hosted by {currentListing.listing.requester.id.firstname+" "+currentListing.listing.requester.id.lastname}
 	      </div>
 	      <div style={{maxWidth:"100px", marginTop:"20px"}}>
-	        <img src="inseo_profile.jpg" className="center rounded-circle" style={{width:"100%", maxHeight:"100%"}}/>
+	        <img src={currentListing.listing.requester.id.profile_picture} className="center rounded-circle" style={{width:"100%", maxHeight:"100%"}}/>
 	      </div>
 
 	      <div style={{marginLeft:"30px"}}>

@@ -406,7 +406,7 @@ router.get("/:list_id/fetch", function(req, res){
 
 	console.log("REACT: fetch landlord listing request with listing id = " + req.params.list_id);
 	// Get landlord listing.
-    LandlordRequest.findById(req.params.list_id, function(err, foundListing){
+    LandlordRequest.findById(req.params.list_id).populate('requester.id').exec(function(err, foundListing){
     	if(err)
     	{
     		console.log("Listing not found");

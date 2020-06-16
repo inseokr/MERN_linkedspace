@@ -12,7 +12,7 @@ function ListingCoverPage()
 	let listingCaption = (currentListing.listing.num_of_pictures_uploaded>0) ?
 							currentListing.listing.pictures[0].caption: ""
 	let listingImage = 	 (currentListing.listing.num_of_pictures_uploaded>0) ?
-		    				<img src={currentListing.listing.pictures[0].path.split("/")[currentListing.listing.pictures[0].path.split("/").length-1]} 
+		    				<img src={currentListing.listing.pictures[0].path} 
 		    				     align="right" style={{width:'100%', maxHeight:'100%', objectFit:' cover', objectPosition: '100% 70%'}}/> : ""
 	
 	return (
