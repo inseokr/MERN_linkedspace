@@ -9,10 +9,12 @@ import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
 
 function ChildListing(props)
 {
+	const [modalShow, setModalShow] = useState(false);
+
 	console.log("ChildListing: clickState="+ props.clickState);
 	const listingTitle = props.listing.listingSource;
 
-	let childListing = props.listing;
+	let childListing = props.listing.listing_id;
 
 	console.log("childListing="+JSON.stringify(childListing));
 
@@ -21,6 +23,15 @@ function ChildListing(props)
 	  borderLeftColor: "#115399",
 	  borderLeftWidth: "5px"
 	} : {}
+
+
+	let showModal = () => {
+		setModalShow(true);
+	}
+
+	let handleClose = () => {
+		setModalShow(false);
+	}
 
 	function listingClickHandler(e)
 	{
@@ -33,6 +44,8 @@ function ChildListing(props)
 		e.preventDefault();
 		props.removeHandler(childListing);
 	}
+
+	let _childListing = {listing: props.listing, listingType: "_3rdparty"};
 
 	return (
 	  <ListItem>
@@ -58,8 +71,7 @@ function ChildListing(props)
 
 	          <div className="flex-container" style={{justifyContent: "space-between"}}>
                 {/* ISEO-TBD:  Let's add messaging icon */}
-                <MessageEditorIcon clickHandler={props.messageClickHandler}/>
-
+                <MessageEditorIcon clickHandler={props.messageClickHandler} callerType="child" childListing={_childListing}/>
                 <button className="btn btn-danger" onClick={removeListingHandler}>
                   Remove
                 </button>

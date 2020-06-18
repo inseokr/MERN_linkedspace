@@ -9,7 +9,7 @@ function GeneralChatHeader() {
   return (
     <>
         <div className="MessageHeaderLabel"> Messaging </div>
-        <MessageEditorIcon />
+        <MessageEditorIcon callerType="general"/>
     </>
   );
 }

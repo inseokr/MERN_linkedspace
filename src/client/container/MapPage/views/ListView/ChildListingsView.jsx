@@ -4,7 +4,6 @@ import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
-import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 import ChildListing from './ChildListing'
 
@@ -47,7 +46,7 @@ function ChildListingsView(props)
 	  	childListingsViews.push(<ChildListing clickState={clickStates[index]} 
 	  							              clickHandler={handleClickState} 
 	  							              handleSelect={props.handleSelect} 
-	  							              listing={childListing.listing_id}
+	  							              listing={childListing}
 	  							              index={index}
 	  							              messageClickHandler={props.messageClickHandler}
 	  							              removeHandler={props.removeHandler}/>)
