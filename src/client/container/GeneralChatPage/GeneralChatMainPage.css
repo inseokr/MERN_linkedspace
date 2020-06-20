@@ -295,19 +295,6 @@
 	padding-left:5px;
 }
 
-.OnlineStatus {
-	color: rgb(72, 72, 72) !important;
-	margin-left: 5px;
-}
-
-.doughnut { 
-    border: 3px solid #28a745;
-    border-radius: 15px;
-    height: 15px;
-    width: 15px;
-    margin-left: 70px;
-    margin-top: 5px;
-}
 
 .FileAttachIcon {
 	height: 24px; 

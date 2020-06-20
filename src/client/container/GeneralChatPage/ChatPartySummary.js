@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css'
-import OnlineStatus from "./OnlineStatus";
+import OnlineStatus from "../../components/Message/OnlineStatus";
 import {MessageContext} from "../../contexts/MessageContext";
 
 

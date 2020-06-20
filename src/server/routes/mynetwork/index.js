@@ -189,6 +189,7 @@ module.exports = function(app) {
 	router.get("/friend_list", function(req, res){
 		
 		//console.log("Get friend list");
+		// ISEO-TBD: NOOOOO... please don't rely on app.locals??
 
 		res.json(app.locals.currentUser[req.user.username].direct_friends);
 	});

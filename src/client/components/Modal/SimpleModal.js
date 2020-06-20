@@ -9,12 +9,15 @@ function SimpleModal(props)
   console.log("className = " + showHideClassName);
   console.log("children = " + props.children);
 
+  let additionalStyle = (props._width!=undefined)? 
+    { width: props._width} : {}; 
+
   return (
     <div className={showHideClassName}>
-      <section className="simpleModalMain">
+      <section className="simpleModalMain" style={additionalStyle}>
       	{props.children}
       	<div className="flex-container" style={{justifyContent:"center"}}> 
-        	<button className="btn btn-info" onClick={props.handleClose}>{props.captionCloseButton}</button>
+        	<button className="btn btn-info" onClick={props.handleClose} style={{marginBottom: "5px"}}>{props.captionCloseButton}</button>
         </div>
       </section>
     </div>

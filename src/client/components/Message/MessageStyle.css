@@ -7,8 +7,6 @@
     opacity: 1;
 }
 
-
-
 .network_board .profile_picture {
     grid-row-start: 1;
     grid-row-end: 4;
@@ -172,4 +170,46 @@
 
 .MessageEditIcon {
     color: #a52a2a;
+}
+
+
+.imgCover {
+    object-fit: cover !important;
+    width: 60px;
+}
+
+.friendName {
+}
+
+.OnlineStatus {
+    color: rgb(72, 72, 72) !important;
+    margin-left: 5px;
+}
+
+.doughnut { 
+    border: 3px solid #28a745;
+    border-radius: 15px;
+    height: 15px;
+    width: 15px;
+    margin-left: 70px;
+    margin-top: 5px;
+}
+
+
+.friendWrapper {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-auto-rows: 80px;
+    justify-items: start;
+    align-items: center;
+}
+
+.boldHeader {
+    font-weight: bold;
+    margin: auto;
+}
+
+.onlineWrapper {
+    display: grid;
+    grid-template-columns: 1fr 8fr;
 }

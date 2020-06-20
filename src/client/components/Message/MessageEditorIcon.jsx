@@ -79,6 +79,13 @@ function MessageEditorIcon(props) {
 	}
 
 
+	let user_group = [];
+
+	if(_childListing!=undefined)
+	{
+		user_group = _childListing.listing.shared_user_group;
+	}
+
 	return (
 	<>
 		<div class="MessageEditIcon" onClick={messageEditorOnClick}>
@@ -88,8 +95,8 @@ function MessageEditorIcon(props) {
 				</path>
 			</svg>
 		</div>
-		<SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation">
-			<PickChattingParty /> 
+		<SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
+			<PickChattingParty group={user_group}/> 
 		</SimpleModal>
 	</>
 	);
