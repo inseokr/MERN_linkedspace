@@ -7,7 +7,6 @@ import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPage from "../../../ListingPage/ShowActiveListingPage"
-import ChildListingsView from "./ChildListingsView" 
 
 
 function ListingComponent(props) {
@@ -119,10 +118,6 @@ function ListingComponent(props) {
         </Grid>
       </Grid>
     </ListItem>
-      <ChildListingsView handleSelect={handleSelect} 
-                         messageClickHandler={toggle} 
-                         listing={listing} 
-                         childListings = {ChildListings}/>
     </div>
 
     </>
