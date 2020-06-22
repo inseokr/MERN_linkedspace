@@ -169,14 +169,14 @@ module.exports = function(app) {
 		});
 	}
 
-	router.get("/", function(req, res){
+	/*router.get("/", function(req, res){
 
 		buildMyNetworkList(req).then((networkInfo) => {
 
 			res.render("mynetwork/mynetwork_main", {network_info: networkInfo});
 
 		});
-	});
+	});*/
 
 	router.get("/networkinfo", function(req, res){
 
@@ -216,7 +216,7 @@ module.exports = function(app) {
 					curr_user.save();
 
 					// Let's render with updated database...
-					res.redirect("/mynetwork");
+					res.redirect("/MyNetworks");
 				});
 			}
 		});
@@ -224,6 +224,8 @@ module.exports = function(app) {
 	});
 
 	router.post("/:friend_id/friend_accept", function(req, res){
+
+		console.log("ISEO:friend_accept");
 
 		User.findById(req.params.friend_id, function(err, friend){
 
@@ -274,7 +276,7 @@ module.exports = function(app) {
 					    function (err, val) {
 							curr_user.save();
 							// Let's render with updated database...
-							res.redirect("/mynetwork");
+							res.redirect("/MyNetworks");
 					});
 					
 				});
