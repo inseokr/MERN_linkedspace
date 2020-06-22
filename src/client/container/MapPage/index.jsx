@@ -13,26 +13,25 @@ function LandingPage() {
 
   const [rightPaneMode, setRightPaneMode] = useState("Map");
 
-  function toggleRightPaneMode()
-  {
-      if(rightPaneMode=="Map") 
-        setRightPaneMode("Message")
-      else
-        setRightPaneMode("Map")
+  function toggleRightPaneMode() {
+      if (rightPaneMode==="Map") {
+        setRightPaneMode("Message");
+      } else {
+        setRightPaneMode("Map");
+      }
   }
 
-  let rightPane = (rightPaneMode=="Map")? <InitiateMap /> : <GeneralChatMainPage compact="true"/>
-
+  let rightPane = (rightPaneMode==="Map")? <InitiateMap /> : <GeneralChatMainPage compact="true"/>;
   return (
 
     <div>
       <Grid component="main">
         <CssBaseline />
         <Box className="App" component="div" display="flex" flexDirection="column">
-          <Grid container>
+          <Grid container alignContent="stretch">
             <Grid item xs={6}>
               <FilterView/>
-              <Grid item xs={12} alignContent="stretch">
+              <Grid item xs={12}>
                 <ListView toggle={toggleRightPaneMode} mode={rightPaneMode}/>
               </Grid>
             </Grid>

@@ -54,13 +54,13 @@ function CommonHeader (){
       if(currentUser!=null)
       {
         if(friendsList==undefined) loadFriendList();
-      } 
+      }
 
-      if(friendsList!=undefined && friendsList.length!=0) 
+      if(friendsList!=undefined && friendsList.length!=0)
       {
           console.log("useEffect of commonHeader");
           // how to prevent multiple loading?
-          let channelInfo = {channelName: getDmChannelId(friendsList[0].username), 
+          let channelInfo = {channelName: getDmChannelId(friendsList[0].username),
                                       dm: {
                                             name: friendsList[0].username,
                                             distance: 1
@@ -74,7 +74,7 @@ function CommonHeader (){
   return (
       <div className="navBarContainer">
         <LinkedSpaceHeader />
-        { isUserLoggined()==true 
+        { isUserLoggined()===true
           ? <LoginMenu />
           : <NoLoginMenu />
         }

@@ -55,9 +55,9 @@ export default class Search extends Component {
     } else {
       return (
         <div>
-          <form class="btn btn-default btn-lg">
-            <i class="fa fa-search searchIcon"/>
-            <input class="searchInput"
+          <form className="btn btn-default btn-lg">
+            <i className="fa fa-search searchIcon"/>
+            <input className="searchInput"
                    placeholder="City, State, Country"
                    ref={input => this.search = input}
                    onKeyDown={this.handleKeyDown}
