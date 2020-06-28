@@ -11,6 +11,8 @@ const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 
 node.loop = node.runLoopOnce;
 
+
+
 module.exports = function(app) {
 
 router.post("/new", function(req, res){
@@ -307,8 +309,27 @@ router.post("/:list_id/edit", function(req, res){
 });
 
 
+
+
 router.post("/:list_id/addUserGroup", function(req, res){
 	TenantRequest.findById(req.params.list_id, function(err, foundListing){
+
+		function checkDuplicate(list, name)
+		{
+			if(list.length>=1)
+			{
+				list.forEach(
+					_user => {
+						if(_user.username==name) 
+						{
+							return true;
+						}
+					});
+			}
+			return false;
+		}
+
+
     	if(err)
     	{
     		console.log("Listing not found");
@@ -332,15 +353,35 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    	{
 	    		case 1: 
 	    			// find the ID of the friend
+	    			if(checkDuplicate(foundListing.shared_user_group, _friend.username)==true)
+	    			{
+	    				console.log("Duplicate found");
+	    				res.json({result: "Duplicate found"});
+	    				return;
+	    			}
 	    			foundListing.shared_user_group.push({id: _friend._id, username: _friend.username});
 	    			break;
 	    		case 2:
 	    			if(childInfo.type==0)
 	    			{
+		    			if(checkDuplicate(foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group, _friend.username)==true)
+		    			{
+		    				console.log("Duplicate found");
+		    				res.json({result: "Duplicate found"});
+		    				return;
+		    			}
+
 	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
 	    			}
 	    			else
 	    			{
+		    			if(checkDuplicate(foundListing.child_listings.internal_listings[childInfo.index].shared_user_group, _friend.username)==true)
+		    			{
+		    				console.log("Duplicate found");
+		    				res.json({result: "Duplicate found"});
+		    				return;
+		    			}
+
 	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
 	    			}
 	    			break;

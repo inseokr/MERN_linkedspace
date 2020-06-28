@@ -11,7 +11,7 @@ function PickChattingParty(props) {
 	let _listingId = props.listing_id;
 
 	const {friendsList, currentUser} = useContext(GlobalContext);
-	const {addContactList} = useContext(MessageContext);
+	const {loadChattingDatabase, addContactList} = useContext(MessageContext);
 	let Header =
 	<div className="boldHeader">
 	  <h4> New message </h4>
@@ -31,6 +31,8 @@ function PickChattingParty(props) {
 		// ==> and current friend will be added through a callback or handler defined in
 		// ==> MessageContext.
 		addContactList(_friend);
+		
+		loadChattingDatabase();
 	}
 
 	function getFriend(_friend)

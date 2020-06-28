@@ -14,7 +14,7 @@ function ChatContactList() {
 
 	console.log("!!!!!!! Creating ChatContactList !!!!!");
 
-	const {getDmChannelId} = useContext(GlobalContext);
+	const {currentUser, getDmChannelId} = useContext(GlobalContext);
 	const {switchChattingChannel, 
 		   currChannelInfo, 
 		   loadChattingDatabase, 
@@ -71,6 +71,10 @@ function ChatContactList() {
 	for(var i = 0; i<friendsList.length; i++)
 	{
 		console.log("user name = " + friendsList[i].username);
+		
+		if(currentUser.username==friendsList[i].username)
+			continue;
+		
 		// construct channel specific information
 		// 1. any indication of new message
 		// : It should have been kept in context? Upon database loading.

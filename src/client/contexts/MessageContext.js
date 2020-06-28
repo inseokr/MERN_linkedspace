@@ -358,12 +358,12 @@ export function MessageContextProvider(props) {
                         (currentListing!=undefined)? 
                           currentListing.shared_user_group:null, 
                         (currentListing!=undefined)?
-                          currentListing.child_listings._3rd_party_listings[childIndex]:null
+                          currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group:null
                       ];
 
     let dmChannels = [];
 
-    console.log("ISEO: chattingContextType = "+chattingContextType);
+    console.log("ISEO: chattingContextType = "+chattingContextType + " childIndex = " + childIndex);
     console.log("ISEO: length of array = "+_listArray[chattingContextType].length);
 
     for(let i=0; i < _listArray[chattingContextType].length; i++)
