@@ -8,7 +8,9 @@ var _3rdPartyListingSchema = new mongoose.Schema({
          ref: "User"
       },
       username: String
-    },	  
+    },
+
+    listingType: {type: String, default: "_3rdparty"},	  
 
     // 3rd party ID
     listingSource: {type: String, default: "craigslist"},

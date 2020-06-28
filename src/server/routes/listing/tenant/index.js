@@ -7,6 +7,8 @@ var node          = require("deasync");
 var path          = require("path");
 var fs            = require("fs");
 
+const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
+
 node.loop = node.runLoopOnce;
 
 module.exports = function(app) {
@@ -305,6 +307,59 @@ router.post("/:list_id/edit", function(req, res){
 });
 
 
+router.post("/:list_id/addUserGroup", function(req, res){
+	TenantRequest.findById(req.params.list_id, function(err, foundListing){
+    	if(err)
+    	{
+    		console.log("Listing not found");
+    		return;
+    	}
+    	let chattingType = req.body.chattingType;
+    	let childInfo    = req.body.childInfo;
+    	let friend       = req.body.friend;
+
+    	console.log("friend = " + JSON.stringify(friend));
+
+    	userDbHandler.getUserByName(friend.username).then((_friend)=> {
+    		if(_friend==null)
+    		{
+    			console.log("Friend not found");
+    			res.json({result: "Friend not found"})
+    			return;
+    		}
+	    	// 1. check duplicate.
+	    	switch(chattingType)
+	    	{
+	    		case 1: 
+	    			// find the ID of the friend
+	    			foundListing.shared_user_group.push({id: _friend._id, username: _friend.username});
+	    			break;
+	    		case 2:
+	    			if(childInfo.type==0)
+	    			{
+	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
+	    			}
+	    			else
+	    			{
+	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
+	    			}
+	    			break;
+	    		default:
+	    			console.log("Unknown chattingType");
+	    			res.json({result: "Unknown chattingType"}); 
+	    			return;
+	    	}
+
+	    	foundListing.save();
+
+	    	res.json({result: "Added successfully"});
+	    	return;
+    	});
+
+	});
+});
+
+
 router.delete("/:list_id", function(req, res){
 	// Clean all resources such as pictures.
 
@@ -369,7 +424,7 @@ router.post("/addChild", function(req, res){
 			console.log("listing  found");
 
 			let _3rdparty_listing = { listing_id: null, 
-									  created_by: {id: null, user_name: ""}, shared_user_group: []};
+									  created_by: {id: null, username: ""}, shared_user_group: []};
 
 			console.log("child_listing_id = " + req.body.child_listing_id);
 
@@ -406,11 +461,11 @@ router.post("/addChild", function(req, res){
 			if(foundListing.requester.id.equals(req.user._id))
 			{
 				console.log("Updating user group, created by the current user");
-				let _user = {id: foundListing.requester.id, user_name: foundListing.requester.username};
+				let _user = {id: foundListing.requester.id, username: foundListing.requester.username};
 				_3rdparty_listing.shared_user_group.push(_user);
 				
 				_3rdparty_listing.created_by.id = req.user._id;
-				_3rdparty_listing.created_by.user_name = foundListing.requester.username;
+				_3rdparty_listing.created_by.username = foundListing.requester.username;
 
 				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
 			}
@@ -421,11 +476,11 @@ router.post("/addChild", function(req, res){
 
 				// <note> the 3rd party listing could be added by either tenant or friends.
 				// It's a friend case.
-				let _creatorOfParent = {id: foundListing.requester.id, user_name: foundListing.requester.username};
-				let _creatorOfChild  = {id: req.user._id, user_name: req.body.username};
+				let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username};
+				let _creatorOfChild  = {id: req.user._id, username: req.body.username};
 
 				_3rdparty_listing.created_by.id = foundListing.requester.id;
-				_3rdparty_listing.created_by.user_name = foundListing.requester.username;
+				_3rdparty_listing.created_by.username = foundListing.requester.username;
 
 				_3rdparty_listing.shared_user_group.push(_creatorOfParent);
 				_3rdparty_listing.shared_user_group.push(_creatorOfChild);

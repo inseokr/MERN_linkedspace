@@ -44,8 +44,8 @@ export default class App extends Component {
     return (
       <GlobalProvider>
         <ListingsProvider>
-          <MessageContextProvider>
-            <CurrentListingProvider>
+          <CurrentListingProvider>
+            <MessageContextProvider>
             <Router>
               <CommonHeader/>
               <ModalLoginForm/>
@@ -80,8 +80,8 @@ export default class App extends Component {
                   </Route>
               </Switch>
             </Router>
-            </CurrentListingProvider>
-          </MessageContextProvider>
+            </MessageContextProvider>
+          </CurrentListingProvider>
         </ListingsProvider>
       </GlobalProvider>
     );

@@ -5,6 +5,7 @@ import messageAlertSound from "../../assets/musics/eventually.mp3";
 import axios from 'axios';
 
 import { GlobalContext } from './GlobalContext';
+import { CurrentListingContext } from './CurrentListingContext';
 
 export const MessageContext = createContext();
 
@@ -32,6 +33,13 @@ export function MessageContextProvider(props) {
 
   const [newMsgArrived, setNewMsgArrived] = useState(false);
 
+  // channelType
+  // 0: general chatting, not associated with any listing
+  // 1: level 1 listing associated chatting channel
+  // 2: level 2 listing associated chatting channel, either 3rd party listing or linkedspace created
+  // <note> Format of channelName
+  // q1. why do we need to have user information inside channelName? Can't we just use mongoDB channelID instead?
+  // ==> How to switch channel context through contact list?
   const initialCurrChannelInfo = {channelName: "iseo-dm-justin", channelType: 0};
 
   const [currChannelInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
@@ -48,6 +56,72 @@ export function MessageContextProvider(props) {
   const [chatMainPageLoaded, setChatMainPageLoaded] = useState(false);
 
   const {currentUser, getDmChannelId, setCurrentUser, friendsList} = useContext(GlobalContext);
+
+  // messaging contexts related to posting
+  // <note> we may need the whole listing DB?
+  // question> Does dashboard has the listing DB?
+  const {currentListing} = useContext(CurrentListingContext);
+  
+  // chattingContextType
+  // 0: general chatting 
+  // 1: general chatting related to posting,  either tenant or landlord
+  // 2: chatting related to child listing, either _3rdparty or internal
+  const [chattingContextType, setChattingContextType] = useState(0);
+  const [childType, setChildType] = useState(0);
+  const [childIndex, setChildIndex] = useState(0);
+
+
+  function getContactList()
+  {
+      if(chattingContextType==0)
+      {
+        if(friendsList==undefined) return null;
+
+        return friendsList;
+      }
+      else
+      {
+        if(chattingContextType==1)
+        {
+          return currentListing.shared_user_group;
+        }
+        else
+        {
+          if(childType==0)
+          {
+            return currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group;
+          }
+          else
+          {
+            return currentListing.child_listings.internal_listings[childIndex].shared_user_group;
+          }
+        }
+
+      }
+  }
+
+  async function addContactList(_friend)
+  {
+    // 1. update database through API
+    // + update shared_user_group
+    const post_url = '/listing/'+currentListing.listingType+'/'+currentListing._id+'/addUserGroup';
+
+    const data = {
+      friend: {id: _friend.id, username: _friend.username},
+      chattingType: chattingContextType,
+      childInfo: {type: childType, index: childIndex}
+    };
+
+    const result = await axios.post(post_url, data)
+      .then(result =>
+      {
+        // ID of chatting channel will be returned.
+        // update dmChannelContexts
+        console.log("addContactList: result = " + result);
+      })
+      .catch(err => console.log(err));
+
+  }
 
   // create or connect messaging socket
 //    if(sessionStorage.getItem('socketCreated')===null)
@@ -254,22 +328,52 @@ export function MessageContextProvider(props) {
       }
   }
 
+  function getDmChannel(friend_name)
+  {
+    let dmChannelNameSuffix = 
+      (currentUser.username>friend_name)?
+       friend_name + "-dm-" +  currentUser.username:
+       currentUser.username + "-dm-" + friend_name;
+    
+    let dmChannelNamePrefix = "";
+
+    if(chattingContextType!=0)
+    {
+      dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": "-child-");  
+    }
+
+    let dmChannel = {channel_id: 
+                     dmChannelNamePrefix+dmChannelNameSuffix,
+                     members: []};
+
+    dmChannel.members.push(friend_name);
+    dmChannel.members.push(currentUser.username);
+
+    return dmChannel;
+  }
+
   function getListOfDmChannels()
   {
+    const _listArray = [friendsList, 
+                        (currentListing!=undefined)? 
+                          currentListing.shared_user_group:null, 
+                        (currentListing!=undefined)?
+                          currentListing.child_listings._3rd_party_listings[childIndex]:null
+                      ];
+
     let dmChannels = [];
 
-    for(let i=0; i < friendsList.length; i++)
+    console.log("ISEO: chattingContextType = "+chattingContextType);
+    console.log("ISEO: length of array = "+_listArray[chattingContextType].length);
+
+    for(let i=0; i < _listArray[chattingContextType].length; i++)
     {
-      let dmChannel = {channel_id: 
-                       (currentUser.username>friendsList[i].username)?
-                       friendsList[i].username + "-dm-" +  currentUser.username:
-                       currentUser.username + "-dm-" + friendsList[i].username,
-                       members: []};
+      let _currUser = _listArray[chattingContextType][i];
 
-      dmChannel.members.push(friendsList[i].username);
-      dmChannel.members.push(currentUser.username);
-
-      dmChannels.push(dmChannel);
+      if(_currUser.username!=currentUser.username)
+      {
+        dmChannels.push(getDmChannel(_currUser.username));
+      }
     }
 
     return dmChannels;
@@ -397,6 +501,7 @@ export function MessageContextProvider(props) {
     // ISEO-TBD: it will be good time to register the user again?
     chatSocket.send("CSC:Register:"+currentUser.username);
 
+    console.log("ISEO: getListOfDmChannels");
     let dmChannels = getListOfDmChannels();
 
     console.log("number of channels = " + dmChannels.length);
@@ -457,7 +562,8 @@ export function MessageContextProvider(props) {
     <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, chatMainPageLoaded, 
                                       setChatMainPageLoaded, switchDmByFriendName, switchChattingChannel, 
                                       numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, 
-                                      checkNewlyLoaded , checkIfAnyNewMsgArrived}}>
+                                      checkNewlyLoaded , checkIfAnyNewMsgArrived, addContactList, getContactList,
+                                      setChattingContextType, setChildType, setChildIndex}}>
       {props.children}
     </MessageContext.Provider>
   );

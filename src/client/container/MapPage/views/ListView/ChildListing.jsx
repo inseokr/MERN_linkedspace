@@ -71,7 +71,7 @@ function ChildListing(props)
 
 	          <div className="flex-container" style={{justifyContent: "space-between"}}>
                 {/* ISEO-TBD:  Let's add messaging icon */}
-                <MessageEditorIcon clickHandler={props.messageClickHandler} callerType="child" childListing={_childListing}/>
+                <MessageEditorIcon clickHandler={props.messageClickHandler} callerType="child" childListing={_childListing} index={props.index}/>
                 <button className="btn btn-danger" onClick={removeListingHandler}>
                   Remove
                 </button>

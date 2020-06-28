@@ -4,11 +4,13 @@ var async         = require("async");
 // create DM channel
 async function getUserByName_(name)
 {
+  console.log("getUserByName_: name = " + name);
+
   return new Promise(resolve => {
     User.findOne({username: name}, function(err, foundUser){
       if(err || foundUser==null)
       {
-        console.log("No user found with given user name");  
+        console.log("No user found with given user name");
         return;
       }
       else 

@@ -4,6 +4,8 @@ import './MessageStyle.css';
 import PickChattingParty from './PickChattingParty';
 import SimpleModal from '../Modal/SimpleModal';
 
+import { MessageContext } from '../../contexts/MessageContext';
+
 
 function clickHandler()
 {
@@ -13,7 +15,9 @@ function clickHandler()
 function MessageEditorIcon(props) {
 
 	const [modalShow, setModalShow] = useState(false);
-	
+
+	const {setChattingContextType, setChildType, setChildIndex} = useContext(MessageContext);
+
 	let onClickHandler = clickHandler;
 
 	// "generaL": general messaging without any listing associated
@@ -49,12 +53,17 @@ function MessageEditorIcon(props) {
 			// We may just call onClickHandler for now.
 			// <note> The only corner case will be when there is no friend at all?
 			onClickHandler();
+			setChattingContextType(1);
 		}
 		else if(messageEditorCallerType=="child")
 		{
+			setChattingContextType(2);
 			// need to know the type of listing
 			if(_childListing.listingType=="_3rdparty")
 			{
+				setChildType(0);
+				setChildIndex(props.index);
+
 				// check the size of shared_user_group and launch modal to add chatting party
 				if(_childListing.listing.shared_user_group.length<=1)
 				{
@@ -67,6 +76,7 @@ function MessageEditorIcon(props) {
 			}
 			else
 			{
+				setChildType(1);
 				// TBD: not handling local listing yet.
 				onClickHandler();		
 			}

@@ -9,6 +9,19 @@ var LandlordRequestSchema = new mongoose.Schema({
     username: String
   },
 
+  listingType: {type: String, default: "landlord"},
+
+  shared_user_group: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      },
+      username: String
+    }
+  ],
+
+
   // 0. Initial State
   // 1. Being reviewed by middlemen or landlord
   // 2. Connected with at least with one tenant
@@ -24,7 +37,7 @@ var LandlordRequestSchema = new mongoose.Schema({
           type: mongoose.Schema.Types.ObjectId,
           ref: "User"
         },
-        user_name: String,
+        username: String,
         // 1: middlemen, 2: landlord
         type: Number,
 

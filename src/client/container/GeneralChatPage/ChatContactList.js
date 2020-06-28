@@ -6,17 +6,27 @@ import ContactSummary from './ContactSummary';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
+
+// ISEO-TBD:
+// It's currently based on friendsList.
+// Let's get it from MessageContext instead.
 function ChatContactList() {
 
 	console.log("!!!!!!! Creating ChatContactList !!!!!");
 
-	const {friendsList, getDmChannelId} = useContext(GlobalContext);
-	const {switchChattingChannel, currChannelInfo, loadChattingDatabase, dmChannelContexts} = useContext(MessageContext);
+	const {getDmChannelId} = useContext(GlobalContext);
+	const {switchChattingChannel, 
+		   currChannelInfo, 
+		   loadChattingDatabase, 
+		   dmChannelContexts,
+		   getContactList} = useContext(MessageContext);
 
 	// create initial state based on friendsList
 	let initClickStates = [];
 
-	if(friendsList==undefined)
+	let friendsList = getContactList();
+
+	if(friendsList==null)
 	{
 		console.log("friendsList is not available yet.");
 		return;
@@ -68,11 +78,19 @@ function ChatContactList() {
 		// 2. latest message
 		let channel_name = getDmChannelId(friendsList[i].username);
 
-		let channelSummary = {flag_new_msg: dmChannelContexts[channel_name].flag_new_msg,
-		                      timestamp:    dmChannelContexts[channel_name].datestamp,
-			                  msg_summary:  dmChannelContexts[channel_name].msg_summary};
 
-		contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />);
+		if(dmChannelContexts[channel_name]==undefined)
+		{
+			console.log("channel_name= "+channel_name+" not defined yet");
+		}
+		else
+		{
+			let channelSummary = {flag_new_msg: dmChannelContexts[channel_name].flag_new_msg,
+			                      timestamp:    dmChannelContexts[channel_name].datestamp,
+				                  msg_summary:  dmChannelContexts[channel_name].msg_summary};
+
+			contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />);
+		}
 	}
 
   	return (

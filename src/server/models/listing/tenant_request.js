@@ -9,6 +9,8 @@ var TenantRequestSchema = new mongoose.Schema({
       username: String
   	},
 
+    listingType: {type: String, default: "tenant"},
+
   	// roommates if any
   	roommates: [
       {
@@ -51,7 +53,7 @@ var TenantRequestSchema = new mongoose.Schema({
              	type: mongoose.Schema.Types.ObjectId,
              	ref: "User"
              },
-          user_name: String,
+          username: String,
           // 1: middlemen, 2: landlord
           type: Number,
           // reference to the rental post
@@ -68,6 +70,18 @@ var TenantRequestSchema = new mongoose.Schema({
       }
   	],
 
+
+    // list of user engaged in chatting regarding this posting
+    shared_user_group: [
+      {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User"
+        },
+        username: String
+      }
+    ],
+
     child_listings: 
       {
         _3rd_party_listings: [
@@ -82,7 +96,7 @@ var TenantRequestSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User"
               },
-              user_name: String
+              username: String
             },
 
             shared_user_group: [
@@ -91,7 +105,7 @@ var TenantRequestSchema = new mongoose.Schema({
                   type: mongoose.Schema.Types.ObjectId,
                   ref: "User"
                 },
-                user_name: String
+                username: String
               }
             ]
           }
@@ -99,7 +113,7 @@ var TenantRequestSchema = new mongoose.Schema({
 
         internal_listings: [
           {
-            id: {
+            listing_id: {
               type: mongoose.Schema.Types.ObjectId,
               ref: "LandlordRequest"
             },
@@ -109,7 +123,7 @@ var TenantRequestSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User"
               },
-              user_name: String
+              username: String
             },
             
             shared_user_group: [
@@ -118,7 +132,7 @@ var TenantRequestSchema = new mongoose.Schema({
                   type: mongoose.Schema.Types.ObjectId,
                   ref: "User"
                 },
-                user_name: String
+                username: String
               }
             ]
           }

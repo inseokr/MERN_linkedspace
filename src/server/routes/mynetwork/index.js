@@ -282,7 +282,6 @@ module.exports = function(app) {
 				});
 			}
 		});
-
 	});
 
 	router.get("/:filename", function(req, res){

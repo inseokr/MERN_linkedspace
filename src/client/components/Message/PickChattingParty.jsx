@@ -3,12 +3,15 @@ import '../../app.css';
 import './MessageStyle.css';
 import OnlineStatus from './OnlineStatus';
 import {GlobalContext} from '../../contexts/GlobalContext';
+import {MessageContext} from '../../contexts/MessageContext';
 
 function PickChattingParty(props) {
 
 	let _group = props.group;
+	let _listingId = props.listing_id;
 
 	const {friendsList, currentUser} = useContext(GlobalContext);
+	const {addContactList} = useContext(MessageContext);
 
 	let Header = 
 		<div className="boldHeader">
@@ -16,11 +19,26 @@ function PickChattingParty(props) {
 			<hr/>
 		</div> 
 
+	function handleClickFriend(_friend)
+	{
+		// ISEO-TBD:
+		// update chatting context with selected friends
+		// selected friend will be added to shared_user_group
+		// <problem1> how to find a specific _3rd_party_listings?
+		// child_listings._3rd_party_listings.push(_3rdparty_listing);
+		// ==> It needs parent listing ID and the ID to find _3rd_party_listings
+		// ==> I guess it's better to be handled inside MessageContext
+		// ==> parent componet should update the current active listing information
+		// ==> and current friend will be added through a callback or handler defined in
+		// ==> MessageContext.
+		addContactList(_friend);
+	}
+
 	function getFriend(_friend)
 	{
 		return (
 			<>
-			<div className="friendWrapper">
+			<div className="friendWrapper" onClick={() => handleClickFriend(_friend)}>
 				<div>
 		    		<img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
 		    	</div>
@@ -40,7 +58,7 @@ function PickChattingParty(props) {
 	{
 		_group.forEach(user =>
 		{
-			if(user.user_name==name) 
+			if(user.username==name) 
 			{
 				return true;
 			}

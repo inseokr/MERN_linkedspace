@@ -48,6 +48,8 @@ async function registerSocketToChannels(currentSocket, user_name)
     let channels = await chatDbHandler.getChannels(user_name);
 
     console.log("go through channels");
+
+    // ISEO-TBD: we should register listing related channels as well
     channels.dm_channels.forEach(function each(channel) {
                 addSocketToChannel(channel.name, currentSocket);
             });
