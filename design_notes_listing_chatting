@@ -1,0 +1,93 @@
+How to create modal to select chatting partner
+
+Let's list the number of components
+
+ChildListing
+ChildListingsView
+TenantListingComponent
+TenantDashboardListView
+
+1. where to define the modal?
++ this modal's needed for both parent and child
++ so let's define it in the main page. 
++ there is another modal in TenantListingComponent.
++ but the nodal will be controlled through message editor.
++ why can't we have the modal inside the message editor instead?
++ let's say we define it inside the message editor.
+
+2. what happens to the nodal exactly?
++ need to know the following context
+  * CurrentListing
++ What happens after the selection?
+  * clickHander will be called, but some contexts needed
+  * the message page will be initialized based on the current selection
+  : Probably we could add information about the contact just selected?
+  * a new channel should be created if there is no such channel.
+  * we may introduce a state inside MesageContext and set the newly added chat members... 
+
+import SimpleModal from '../../../../components/Modal/SimpleModal';
+                  <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation">
+          			<PickChattingParty /> 
+        		</SimpleModal>
+
+
+Can we use hook to control modal??
+
+
+1. dmChannelContexts
+{channel_id:, channel_type:, last_read_index: chattingHistory: [{message:, timestamp:}]}
+  // <question> can we use map?
+
+ loadChattingDatabase
+
+ getListOfDmChannels();
+ + dmChannel
+ {channel_id:, members}
+ <note> channel_id: user_name#1-dm-user_name#2
+ Task#1. getListOfDmChannels should be revisted 
+ case 1> level 1 parent
+ * how to create a channel? do we need to create all the channels?
+ * it will be easier to create a channel when requested, and also the channel could be created by the other party as well, i.e someone who got the listing.
+ q1> do we need separate API to create DM channel? 
+ <note> "/chatting/new" is used now. Most likely we should use other API? Not really. It does pass type of channel already. Let's find a way to reuse it.
+ q2> the channel will be added to user.chatting_channels.dm_channels by default. But we should save it to other array depending on the chatting channel type.
+ Got it... I know what should be done by now. Here comes the sequence.
+
+ 1. determine the channel_type
+ 1.1 parent type
+ 1> name of channel
+ : [channel_db_id]-user_a-dm-user_b
+ <note> do we need to have user name from the channel ID? kind of... hmm... 
+ <note> switchDmByFriendName
+ : it will switch context by friend name. It's called from MyNetworks.
+ problem1> it's too long if both parent/child ID are used. let's see how channel ID is used.
+ usage1> pushCurrentChannelToDB
+ : Searching the dm_channels and compare the name of channel to find a channel to update. Why can't we use channel_id instead?
+let channelInfo = {channelName: getDmChannelId(friendsList[index].username), 
+                                      dm: {
+                                            name: friendsList[index].username,
+                                            distance: 1
+                                          }};
+
+I don't see any reason not to use the ID of mongoDB.
+<note> The only caveat will be that it will wait for the context ID from node.js.
+
+TBDs
+1. registerSocketToChannels should be adjusted to register listing related channels
+<note> We may use the channel ID in chatting channel DB.
+2. How to switch context through contact list?
+: We need to know the channel ID... how to get the channel ID?
+	+ how about keeping the channel ID information inside the contact list?
+3. ChatContactList may need re-factoring
+	+ friendsList, getDmChannelId is used in the case of general chat
+	+ case 1> level 1 parent
+	 	* It contains the list DM channels
+	 	* We should be able to get the friend information through channel_channel.
+	 	* chatting_channels.members has all the information
+	 	* So technically we have the all the information needed, channel ID and the friend associated with it.
+	+ case 2> level 2 parent
+		* I don't see much difference from level 1. it will have the array dm_channels inside leve_2_parents.
+		<NOTE> we may need to populate the member information. so that we could easily access user information of friend to chat with?
+
+Question> I wonder if we need channel_level1/2_parent at all? 
+==> The chatting information inside User DB has a user specific data.

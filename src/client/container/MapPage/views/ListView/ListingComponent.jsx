@@ -20,33 +20,30 @@ function ListingComponent(props) {
   //ISEO-TBD: It's just for testing purpose
   const [ChildListings, setChildListings] = useState([]);
 
-  function addChildListing(listing)
-  {
+  function addChildListing(listing) {
     console.log("addChildListing");
-    let tempListings = [...ChildListings]
-    tempListings.push(listing)
+    let tempListings = [...ChildListings];
+    tempListings.push(listing);
     setChildListings(tempListings);
     console.log("addChildListing, len="+tempListings.length);
   }
 
-  function removeChildListing(listing)
-  {
+  function removeChildListing(listing) {
     let tempListings = ChildListings.filter(function(item) {
       return (item.id!==listing.id)
-    })
-    
+    });
+
     setChildListings(tempListings);
     console.log("removeChildListing, len="+tempListings.length);
-
   }
 
   let showModal = () => {
     setModalShow(true);
-  }
+  };
 
   let hideModal = () => {
     setModalShow(false);
-  }
+  };
 
   const handleSelect = (e) => {
     setIndex(e);
@@ -55,33 +52,29 @@ function ListingComponent(props) {
   let listingControl = {add: addChildListing, remove: removeChildListing}
 
 
-  function addChildListingControl(childSupported)
-  {
-    if(childSupported==true)
-    {
+  function addChildListingControl(childSupported) {
+    if(childSupported) {
       return (
         <div className="flex-container" style={{justifyContent: "space-between"}}>
           {/* ISEO-TBD:  Let's add messaging icon */}
           <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
 
           <SimpleModal show={modalShow} handleClose={hideModal}>
-            <ShowActiveListingPage type="pick listing" listingControl={listingControl}/> 
+            <ShowActiveListingPage type="pick listing" listingControl={listingControl}/>
           </SimpleModal>
           <button className="btn btn-info" onClick={showModal}>
             Add Listing
           </button>
         </div>
       )
-    }
-    else
-    {
-      return null;
+    } else {
+      return <></>;
     }
   }
 
   return (
     <>
-    <div> 
+    <div>
     <ListItem>
       <Grid container>
         <Grid item xs={4}>

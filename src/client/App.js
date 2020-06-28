@@ -41,45 +41,50 @@ export default class App extends Component {
   }
 
   render() {
+    console.log("WDFWDCWEDISDWEKRIWEDWED", this.state);
     return (
       <GlobalProvider>
         <ListingsProvider>
           <CurrentListingProvider>
             <MessageContextProvider>
-            <Router>
-              <CommonHeader/>
-              <ModalLoginForm/>
-              <Switch>
-                <Route exact path="/Map">
-                  <Map/>
-                </Route>
-                <Route exact path="/Messages">
-                  <GeneralChatMainPage compact="false"/>
-                </Route>
-                <Route exact path="/MyNetworks">
-                  <MyNetworkPage />
-                </Route>
-                <Route exact path="/">
-                  <LandingPage />
-                </Route>
-                <Route exact path="/PostListing">
-                  <PostListingPage />
-                </Route>
-                <Route exact path="/3rdParty">
-                  <Post3rdPartyListing />
-                </Route>
-
+              <Router>
+                <CommonHeader/>
+                <ModalLoginForm/>
+                <Switch>
+                  <Route exact path="/Map">
+                    <Map/>
+                  </Route>
+                  <Route exact path="/Messages">
+                    <GeneralChatMainPage compact="false"/>
+                  </Route>
+                  <Route exact path="/MyNetworks">
+                    <MyNetworkPage />
+                  </Route>
+                  <Route exact path="/">
+                    <LandingPage />
+                  </Route>
+                  <Route exact path="/PostListing">
+                    <PostListingPage />
+                  </Route>
+                  <Route exact path="/3rdParty">
+                    <Post3rdPartyListing />
+                  </Route>
                   <Route exact path="/ActiveListing">
                     <ShowActiveListingPage type="show all"/>
                   </Route>
 
                   <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
                   <Route path={"/listing/tenant/:id/get"} component={ListingTenantMainPage} />
-                  <Route path={"/listing/tenant/:id/dashboard"}>
-                    <TenantListingDashboard />
-                  </Route>
-              </Switch>
-            </Router>
+                  <Route
+                    path={"/listing/tenant/:id/dashboard"}
+                    render={({
+                      match
+                    }) => (
+                      <TenantListingDashboard match={match} />
+                    )}
+                  />
+                </Switch>
+              </Router>
             </MessageContextProvider>
           </CurrentListingProvider>
         </ListingsProvider>

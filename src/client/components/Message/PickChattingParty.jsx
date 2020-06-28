@@ -12,12 +12,11 @@ function PickChattingParty(props) {
 
 	const {friendsList, currentUser} = useContext(GlobalContext);
 	const {addContactList} = useContext(MessageContext);
-
-	let Header = 
-		<div className="boldHeader">
-			<h4> New message </h4>
-			<hr/>
-		</div> 
+	let Header =
+	<div className="boldHeader">
+	  <h4> New message </h4>
+	  <hr/>
+	</div>;
 
 	function handleClickFriend(_friend)
 	{
@@ -64,29 +63,26 @@ function PickChattingParty(props) {
 			}
 		})
 
-
 		return false;
 	}
+	
+	function getListOfFriends() {
+	// go through the list of direct friends
+	let friends = friendsList.map((friend=> {
+	  // <note> need to skip friend in the shared_group
+	  if((name !== currentUser.username) && !checkGroup(friend.username)) {
+	    return getFriend(friend);
+	  }
+	}));
 
-	function getListOfFriends()
-	{
-		// go through the list of direct friends
-		let friends = friendsList.map((friend=> {
-			// <note> need to skip friend in the shared_group
-			if((name != currentUser.username) && checkGroup(friend.username)==false)
-			{
-				return getFriend(friend);
-			}
-		}))
-
-		return friends;
+	return friends;
 	}
 
 	return (
-	  <div className="container">
-	  	{Header}
-	  	{getListOfFriends()}
-	  </div>
+		<div className="container">
+		  {Header}
+		  {getListOfFriends()}
+		</div>
 	);
-	}
+}
 export default PickChattingParty;
