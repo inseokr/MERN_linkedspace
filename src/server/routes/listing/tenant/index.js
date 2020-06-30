@@ -312,21 +312,21 @@ router.post("/:list_id/edit", function(req, res){
 
 
 router.post("/:list_id/addUserGroup", function(req, res){
+
 	TenantRequest.findById(req.params.list_id, function(err, foundListing){
 
-		function checkDuplicate(list, name)
+		function checkDuplicate(user_list, name)
 		{
-			if(list.length>=1)
+			let bDuplicate = false;
+
+			if(user_list.length>=1)
 			{
-				list.forEach(
-					_user => {
-						if(_user.username==name) 
-						{
-							return true;
-						}
-					});
+				bDuplicate = user_list.some(
+					_user => _user.username===name 
+					);
 			}
-			return false;
+
+			return bDuplicate;
 		}
 
 
@@ -359,7 +359,9 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    				res.json({result: "Duplicate found"});
 	    				return;
 	    			}
-	    			foundListing.shared_user_group.push({id: _friend._id, username: _friend.username});
+	    			foundListing.shared_user_group.push({id: _friend._id, 
+	    				                                 username: _friend.username,
+	    				                             	 profile_picture: _friend.profile_picture});
 	    			break;
 	    		case 2:
 	    			if(childInfo.type==0)
@@ -371,7 +373,9 @@ router.post("/:list_id/addUserGroup", function(req, res){
 		    				return;
 		    			}
 
-	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
+	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
+	    					                                                                                     username: _friend.username,
+	    					                                                                                     profile_picture: _friend.profile_picture});
 	    			}
 	    			else
 	    			{
@@ -382,7 +386,9 @@ router.post("/:list_id/addUserGroup", function(req, res){
 		    				return;
 		    			}
 
-	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
+	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
+	    					                                                                                   username: _friend.username,
+	    					                                                                                   profile_picture: _friend.profile_picture});
 	    			}
 	    			break;
 	    		default:

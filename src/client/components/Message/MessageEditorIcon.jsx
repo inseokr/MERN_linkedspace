@@ -15,7 +15,10 @@ function clickHandler()
 function MessageEditorIcon(props) {
 
 	const [modalShow, setModalShow] = useState(false);
-	const {setChattingContextType, setChildType, setChildIndex} = useContext(MessageContext);
+	const {setChattingContextType, 
+		   setChildType, 
+		   setChildIndex, 
+		   loadChattingDatabase}    = useContext(MessageContext);
 
 	let onClickHandler = clickHandler;
 
@@ -70,12 +73,14 @@ function MessageEditorIcon(props) {
 				}
 				else
 				{
+					loadChattingDatabase();
 					onClickHandler();
 				}
 			}
 			else
 			{
 				setChildType(1);
+				loadChattingDatabase();
 				// TBD: not handling local listing yet.
 				onClickHandler();
 			}
