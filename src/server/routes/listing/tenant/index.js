@@ -397,12 +397,16 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    			return;
 	    	}
 
-	    	foundListing.save();
-
-	    	res.json({result: "Added successfully"});
-	    	return;
-    	});
-
+	    	foundListing.save((err) => {
+	    		if(err)
+	    		{
+	    			res.json({result: "DB save failure"});
+	    			return;
+	    		}
+	    		console.log("ISEO: user added successfully");
+		    	res.json({result: "Added successfully"});
+	    	});
+	    });
 	});
 });
 

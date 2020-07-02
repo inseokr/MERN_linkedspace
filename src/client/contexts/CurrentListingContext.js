@@ -24,13 +24,16 @@ export function CurrentListingProvider(props) {
     console.log("fetchCurrentListing is called with listing_id = " + id + ", type = " + listing_type);
     let _prefix = (listing_type==="landlord") ? "/listing/landlord/" : "/listing/tenant/";
 
-    fetch(_prefix+id+'/fetch')
+    const result = await fetch(_prefix+id+'/fetch')
       .then(res => res.json())
       .then(listing => {
           console.log("listing = " + JSON.stringify(listing));
-          setCurrentListing(listing)
+          setCurrentListing(listing);
+          return 1;
         }
       )
+
+    return 0;
   }
 
     return (

@@ -60,7 +60,7 @@ export function MessageContextProvider(props) {
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const {currentListing} = useContext(CurrentListingContext);
+  const {currentListing , fetchCurrentListing} = useContext(CurrentListingContext);
   
   // chattingContextType
   // 0: general chatting 
@@ -89,15 +89,37 @@ export function MessageContextProvider(props) {
         {
           if(childType==0)
           {
-            return currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group;
+            if(currentListing.child_listings._3rd_party_listings[childIndex]==undefined)
+            {
+              setChattingContextType(0);
+              return null;
+            }
+            else
+            {
+              return currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group;
+            }
           }
           else
           {
-            return currentListing.child_listings.internal_listings[childIndex].shared_user_group;
+            if(currentListing.child_listings.internal_listings[childIndex]==undefined)
+            {
+              setChattingContextType(0);
+              return null;
+            }
+            else
+            {
+              return currentListing.child_listings.internal_listings[childIndex].shared_user_group;
+            }
           }
         }
 
       }
+  }
+
+  async function reloadChattingDbWithCurrentListing()
+  {
+    const result = await fetchCurrentListing(currentListing._id, "tenant");
+    loadChattingDatabase();
   }
 
   async function addContactList(_friend)
@@ -118,9 +140,14 @@ export function MessageContextProvider(props) {
         // ID of chatting channel will be returned.
         // update dmChannelContexts
         console.log("addContactList: result = " + result);
+        // ISEO-TBD: currentListing is not updated yet.
+        // option#1: add the new user locally
+        // option#2: reload the currentListing
+        reloadChattingDbWithCurrentListing();
       })
-      .catch(err => console.log(err));
-
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   // create or connect messaging socket

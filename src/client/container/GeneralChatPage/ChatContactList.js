@@ -29,7 +29,10 @@ function ChatContactList() {
 	if(friendsList==null)
 	{
 		console.log("friendsList is not available yet.");
-		return;
+		return (
+			<>
+	    	</>
+	    );
 	}
 
 	for(var i=0; i< friendsList.length; i++)

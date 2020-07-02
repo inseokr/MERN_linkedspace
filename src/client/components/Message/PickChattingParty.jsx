@@ -18,7 +18,7 @@ function PickChattingParty(props) {
 	  <hr/>
 	</div>;
 
-	function handleClickFriend(_friend)
+	async function handleClickFriend(_friend)
 	{
 		// ISEO-TBD:
 		// update chatting context with selected friends
@@ -31,8 +31,7 @@ function PickChattingParty(props) {
 		// ==> and current friend will be added through a callback or handler defined in
 		// ==> MessageContext.
 		addContactList(_friend);
-		
-		loadChattingDatabase();
+		//loadChattingDatabase();
 	}
 
 	function getFriend(_friend)
