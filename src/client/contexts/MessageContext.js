@@ -55,7 +55,7 @@ export function MessageContextProvider(props) {
 
   const [chatMainPageLoaded, setChatMainPageLoaded] = useState(false);
 
-  const {currentUser, getDmChannelId, setCurrentUser, friendsList} = useContext(GlobalContext);
+  const {currentUser, setCurrentUser, friendsList} = useContext(GlobalContext);
 
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
@@ -355,7 +355,7 @@ export function MessageContextProvider(props) {
       }
   }
 
-  function getDmChannel(friend_name)
+  function getDmChannelId(friend_name)
   {
     let dmChannelNameSuffix = 
       (currentUser.username>friend_name)?
@@ -369,8 +369,13 @@ export function MessageContextProvider(props) {
       dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": "-child-");  
     }
 
+    return (dmChannelNamePrefix+dmChannelNameSuffix);
+  }
+
+  function getDmChannel(friend_name)
+  {
     let dmChannel = {channel_id: 
-                     dmChannelNamePrefix+dmChannelNameSuffix,
+                     getDmChannelId(friend_name),
                      members: []};
 
     dmChannel.members.push(friend_name);
@@ -587,7 +592,7 @@ export function MessageContextProvider(props) {
 
   return (
     <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, chatMainPageLoaded, 
-                                      setChatMainPageLoaded, switchDmByFriendName, switchChattingChannel, 
+                                      setChatMainPageLoaded, switchDmByFriendName, switchChattingChannel, getDmChannelId, 
                                       numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, 
                                       checkNewlyLoaded , checkIfAnyNewMsgArrived, addContactList, getContactList,
                                       setChattingContextType, setChildType, setChildIndex}}>

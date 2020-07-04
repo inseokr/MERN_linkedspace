@@ -32,14 +32,6 @@ export function GlobalProvider(props) {
     }
   }
 
-  function getDmChannelId(friend_name)
-  {
-    let dmChannelId = (currentUser.username>friend_name)?
-                       friend_name + "-dm-" +  currentUser.username:
-                       currentUser.username + "-dm-" + friend_name;
-    return dmChannelId
-  }
-
   function buildFriendsMap(friends)
   {
     let tempFriendsMap = [];
@@ -73,7 +65,7 @@ export function GlobalProvider(props) {
   }
 
   return (
-    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, loadSocialNetworkDb, network_info, loadSocialNetworkDb, getProfilePicture, getDmChannelId }}>
+    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, loadSocialNetworkDb, network_info, loadSocialNetworkDb, getProfilePicture }}>
       {props.children}
     </GlobalContext.Provider>
   );

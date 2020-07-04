@@ -14,12 +14,13 @@ function ChatContactList() {
 
 	console.log("!!!!!!! Creating ChatContactList !!!!!");
 
-	const {currentUser, getDmChannelId} = useContext(GlobalContext);
+	const {currentUser} = useContext(GlobalContext);
 	const {switchChattingChannel, 
 		   currChannelInfo, 
 		   loadChattingDatabase, 
 		   dmChannelContexts,
-		   getContactList} = useContext(MessageContext);
+		   getContactList,
+		   getDmChannelId} = useContext(MessageContext);
 
 	// create initial state based on friendsList
 	let initClickStates = [];
@@ -83,6 +84,10 @@ function ChatContactList() {
 		// : It should have been kept in context? Upon database loading.
 		//   Check the last read index and the total number of messages in channel DB.
 		// 2. latest message
+		//
+		// <note> the channel_name will be different if it's a chatting about posting.
+		// peer name won't be good enough if it's related with posting
+		// what's the format of channel_id? 
 		let channel_name = getDmChannelId(friendsList[i].username);
 
 

@@ -8,8 +8,8 @@ import { MessageContext } from '../../contexts/MessageContext';
 
 function CommonHeader (){
 
-  const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined, getDmChannelId } = useContext(GlobalContext);
-  const {loadChattingDatabase, switchChattingChannel} = useContext(MessageContext);
+  const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined} = useContext(GlobalContext);
+  const {loadChattingDatabase, switchChattingChannel, getDmChannelId} = useContext(MessageContext);
 
   console.log("loading commonHeader");
 
