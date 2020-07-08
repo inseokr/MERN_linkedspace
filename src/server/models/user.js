@@ -200,12 +200,7 @@ var UserSchema = new mongoose.Schema({
 		    },
 
 		    friend_name: String,
-
-  			received_date: {
-  				month: String,
-  				date: Number,
-  				year: String
-  			},
+  			received_date: Date,
 		}
 	],
 

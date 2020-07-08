@@ -7,10 +7,11 @@ export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
 
-    async function fetchListingInfo() {
-      console.log("fetchListingInfo");
-
-      fetch('/listing/get_active_listing')
+    async function fetchListingInfo(_type) {
+      // type
+      // + own: created by the user
+      // + friend: forwarded from other users
+      fetch('/listing/get_active_listing/'+_type)
         .then(res => res.json())
         .then(listing => {
             console.log("listing = " + JSON.stringify(listing));

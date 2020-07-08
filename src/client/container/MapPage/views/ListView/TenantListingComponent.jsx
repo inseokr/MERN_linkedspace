@@ -82,7 +82,7 @@ function TenantListingComponent(props) {
         <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
 
         <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
-          <ShowActiveListingPage type="pick listing" listingControl={listingControl}/>
+          <ShowActiveListingPage type="child" listingControl={listingControl}/>
         </SimpleModal>
         <button className="btn btn-info" onClick={showModal}>
           Add Listing

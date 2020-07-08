@@ -1,4 +1,4 @@
-import React, { Component, useEffect, createContext, useContext } from 'react';
+import React, { Component, useEffect, createContext, useContext, useState } from 'react';
 import Checkbox from '@material-ui/core/Checkbox'
 import {Link} from 'react-router-dom';
 import '../../app.css';
@@ -42,7 +42,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
       }
     }
 
-    if(type==="show all") {
+    if(type==="own") {
       return (
         <>
           <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"/edit"} method="post">
@@ -58,11 +58,22 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
           </form>
         </>
       )
-    } else {
+    } else if(type==="child") {
       return (
         <div>
           <input type="checkbox" onClick={handleOnClick} value=""/>
           <label style={{marginLeft: "10px", color: "#6b2525"}}>Check to add</label>
+        </div>
+      )
+    } else {
+      // 1. listing creator
+      // 2. date received
+      let date = new Date(listing.timestamp);
+
+      return (
+        <div className='d-flex justify-content-around'>
+          <span>From {listing.friend.username}</span>
+          <span>{date.toDateString() + " " + date.toLocaleTimeString()} </span> 
         </div>
       )
     }
@@ -89,10 +100,20 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
 
 function ShowActiveListingPage(props)
 {
+  console.log("ShowActiveListingPage");
+
   const {listing_info, fetchListingInfo} = useContext(CurrentListingContext);
+  const [page_type, setPageType] = useState("own");
+
+  // 1. own: show the listings created by the current users
+  // 2. friend: show the listings forwarded from friends
+  // 3. child: listing page used to add child listing
+  if(page_type!=props.type) setPageType(props.type);
+
+  // ISEO-TBD: fetching should be executed always?
 
   if(listing_info===undefined) {
-    fetchListingInfo();
+    fetchListingInfo(page_type);
     return (<> No listing available </>);
   }
 
@@ -100,7 +121,7 @@ function ShowActiveListingPage(props)
   let footer = "";
 
   let tenantListing =
-    (props.type==="show all") ?
+    (props.type==="own" || props.type==="friend") ?
       <div className="bottom-shadow">
         <span style={{textAlign:"center"}}><h3> Room/House wanted  </h3></span>
         <hr/>
@@ -109,6 +130,10 @@ function ShowActiveListingPage(props)
         </div>
       </div>
       : null;
+
+  //useEffect(() => {
+  //  fetchListingInfo(page_type);
+  //});
 
   return (
     <>

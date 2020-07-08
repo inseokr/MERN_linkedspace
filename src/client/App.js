@@ -70,9 +70,11 @@ export default class App extends Component {
                     <Post3rdPartyListing />
                   </Route>
                   <Route exact path="/ActiveListing">
-                    <ShowActiveListingPage type="show all"/>
+                    <ShowActiveListingPage type="own"/>
                   </Route>
-
+                  <Route exact path="/ShowListingFromFriends">
+                    <ShowActiveListingPage type="friend"/>
+                  </Route>
                   <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
                   <Route path={"/listing/tenant/:id/get"} component={ListingTenantMainPage} />
                   <Route

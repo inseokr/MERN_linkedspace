@@ -5,6 +5,8 @@ import "../common/listing_style.css";
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 import GetRatingDeco from '../../../components/decos/GetRatingDeco';
 import FormatListItems from '../../../components/decos/FormatListItems';
+import axios from 'axios';
+import { Alert } from 'react-alert';
 
 export default class ListingTenantMainPage extends Component {
   static contextType = CurrentListingContext;
@@ -156,13 +158,28 @@ export default class ListingTenantMainPage extends Component {
 
 
   getListingControls() {
+    
+    async function forward2friend(_this)
+    {
+      const post_url = "/listing/tenant/"+_this.props.match.params.id+"/forward";
+      const result = await axios.post(post_url).then(result =>
+      {
+        console.log("result = " + result.data.result);
+        alert("Result = " + result.data.result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    }
+
     return (
       <div style={{marginTop:"30px"}}>
         <input type="text" defaultValue="Hello World" id="post_link" style={{color:"white", borderStyle:"none"}}/>
-
         <div className="d-flex justify-content-start">
           <button className="btn btn-primary">Copy link of this posting</button>
-          <button className="btn btn-info" style={{marginLeft:"70px "}}>Send listing to friends</button>
+         
+          <button className="btn btn-info" style={{marginLeft:"70px "} } onClick={() => forward2friend(this)}>Send listing to friends</button>
           <Link to={"/listing/tenant/"+this.props.match.params.id+"/dashboard"}>
             <button className="btn btn-danger" style={{marginLeft:"70px "}}>Dashboard</button>
           </Link>

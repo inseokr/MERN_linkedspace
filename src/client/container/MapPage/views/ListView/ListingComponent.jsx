@@ -60,7 +60,7 @@ function ListingComponent(props) {
           <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
 
           <SimpleModal show={modalShow} handleClose={hideModal}>
-            <ShowActiveListingPage type="pick listing" listingControl={listingControl}/>
+            <ShowActiveListingPage type="child" listingControl={listingControl}/>
           </SimpleModal>
           <button className="btn btn-info" onClick={showModal}>
             Add Listing
