@@ -1,4 +1,4 @@
-import React, { Component, useEffect, createContext, useContext, useState } from 'react';
+import React, { Component, createContext, useContext, useState, useEffect} from 'react';
 import Checkbox from '@material-ui/core/Checkbox'
 import {Link} from 'react-router-dom';
 import '../../app.css';
@@ -102,18 +102,13 @@ function ShowActiveListingPage(props)
 {
   console.log("ShowActiveListingPage");
 
-  const {listing_info, fetchListingInfo} = useContext(CurrentListingContext);
-  const [page_type, setPageType] = useState("own");
+  const {listing_info} = useContext(CurrentListingContext);
 
   // 1. own: show the listings created by the current users
   // 2. friend: show the listings forwarded from friends
   // 3. child: listing page used to add child listing
-  if(page_type!=props.type) setPageType(props.type);
-
   // ISEO-TBD: fetching should be executed always?
-
   if(listing_info===undefined) {
-    fetchListingInfo(page_type);
     return (<> No listing available </>);
   }
 
@@ -130,10 +125,6 @@ function ShowActiveListingPage(props)
         </div>
       </div>
       : null;
-
-  //useEffect(() => {
-  //  fetchListingInfo(page_type);
-  //});
 
   return (
     <>

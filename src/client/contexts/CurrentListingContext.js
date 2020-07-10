@@ -6,18 +6,30 @@ export const CurrentListingContext = createContext();
 export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
+    const [ListingInfoType, setListingInfoType] = useState("");
+
+
+    function cleanupListingInfoType()
+    {
+      setListingInfoType("");
+    }
 
     async function fetchListingInfo(_type) {
-      // type
-      // + own: created by the user
-      // + friend: forwarded from other users
-      fetch('/listing/get_active_listing/'+_type)
-        .then(res => res.json())
-        .then(listing => {
-            console.log("listing = " + JSON.stringify(listing));
-            setListingInfo(listing)
-          }
-        )
+
+      if(ListingInfoType!=_type)
+      {
+        setListingInfoType(_type);
+        // type
+        // + own: created by the user
+        // + friend: forwarded from other users
+        fetch('/listing/get_active_listing/'+_type)
+          .then(res => res.json())
+          .then(listing => {
+              console.log("listing = " + JSON.stringify(listing));
+              setListingInfo(listing)
+            }
+          )
+      }
     }
 
 
@@ -38,7 +50,7 @@ export function CurrentListingProvider(props) {
   }
 
     return (
-        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo}}>
+        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType}}>
             {props.children}
         </CurrentListingContext.Provider>
     );

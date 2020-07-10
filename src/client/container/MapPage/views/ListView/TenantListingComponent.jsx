@@ -6,7 +6,7 @@ import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import SimpleModal from '../../../../components/Modal/SimpleModal';
-import ShowActiveListingPage from "../../../ListingPage/ShowActiveListingPage";
+import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper";
 import ChildListingsView from "./ChildListingsView";
 import {GlobalContext} from "../../../../contexts/GlobalContext";
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
@@ -82,7 +82,7 @@ function TenantListingComponent(props) {
         <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
 
         <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
-          <ShowActiveListingPage type="child" listingControl={listingControl}/>
+          <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
         </SimpleModal>
         <button className="btn btn-info" onClick={showModal}>
           Add Listing

@@ -6,7 +6,7 @@ import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import SimpleModal from '../../../../components/Modal/SimpleModal';
-import ShowActiveListingPage from "../../../ListingPage/ShowActiveListingPage"
+import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper"
 
 
 function ListingComponent(props) {
@@ -60,7 +60,7 @@ function ListingComponent(props) {
           <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
 
           <SimpleModal show={modalShow} handleClose={hideModal}>
-            <ShowActiveListingPage type="child" listingControl={listingControl}/>
+            <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
           </SimpleModal>
           <button className="btn btn-info" onClick={showModal}>
             Add Listing
