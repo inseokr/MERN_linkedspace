@@ -3,6 +3,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import {Link} from 'react-router-dom';
 import '../../app.css';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
+import GetRatingDeco from '../../components/decos/GetRatingDeco';
 
 function getListingContents(listingDB, listing_prefix, type, listingControl) {
   let listings = [];
@@ -71,9 +72,14 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
       let date = new Date(listing.timestamp);
 
       return (
-        <div className='d-flex justify-content-around'>
-          <span>From {listing.friend.username}</span>
-          <span>{date.toDateString() + " " + date.toLocaleTimeString()} </span> 
+        <div className='tenantListingSummary'>
+          <div className='friendSummary'>
+            <span className="panel-subtitle"> {listing.friend.firstname} {listing.friend.lastname}</span>
+            <span className="socialDistance">
+              {GetRatingDeco(1)}
+            </span>
+          </div>
+          <span className="panel-subtitle"> {date.toDateString() + " " + date.toLocaleTimeString()} </span>
         </div>
       )
     }
