@@ -1,4 +1,4 @@
-import React, { Component, useState, useContext } from 'react';
+import React, { Component, useState, useContext , useEffect} from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 
@@ -33,9 +33,23 @@ function ChatContactList() {
 	    );
 	}
 
+    var bFoundDefaultContact = false;
+
+	// ISEO-TBD:
 	for(var i=0; i< friendsList.length; i++)
 	{
-		initClickStates.push((getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)? 1: 0);
+		console.log("current channel name = " + currChannelInfo.channelName);
+		console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
+
+		if(getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)
+		{
+			bFoundDefaultContact = true;
+			initClickStates.push(1);
+		}
+		else
+		{
+			initClickStates.push(0);
+		}
 	}
 	
 	const [clickStates, setClickStates] = useState(initClickStates);
@@ -101,6 +115,14 @@ function ChatContactList() {
 			contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />);
 		}
 	}
+
+	useEffect(()=> {
+		if(bFoundDefaultContact==false && friendsList.length>1)
+		{
+			bFoundDefaultContact = true;
+			handleClickState(0);
+		}
+	});
 
   	return (
 	    <>
