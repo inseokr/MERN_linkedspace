@@ -3,8 +3,6 @@ import './mynetwork_style.css'
 import { GlobalContext } from '../../contexts/GlobalContext'
 
 
-// ISEO-TBD:
-// It turned out that the GlobalContext is not being created yet?
 function MyNetworkLeftPane()
 {
 	const {network_info} = useContext(GlobalContext);

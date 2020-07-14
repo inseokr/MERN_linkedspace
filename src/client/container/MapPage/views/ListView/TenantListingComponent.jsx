@@ -78,7 +78,6 @@ function TenantListingComponent(props) {
   function addChildListingControl() {
     return (
       <div className="flex-container" style={{justifyContent: "space-between"}}>
-        {/* ISEO-TBD:  Let's add messaging icon */}
         <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
 
         <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">

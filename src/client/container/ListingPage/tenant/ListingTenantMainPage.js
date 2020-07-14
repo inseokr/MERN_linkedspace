@@ -194,7 +194,6 @@ export default class ListingTenantMainPage extends Component {
       return (<> </>)
     }
 
-    // ISEO-TBD: not sure how to match it?
     let footer = "";
     let rentalUnitType = (this.context.currentListing.rental_preferences.rent_whole_unit === "off") ?
       this.context.currentListing.rental_preferences.num_of_rooms+"bedroom(s)" :

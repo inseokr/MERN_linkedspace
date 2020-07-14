@@ -36,7 +36,6 @@ export default class ListingLandlordMainPage extends Component {
     }
 
     render() {
-        // ISEO-TBD: not sure how to match it?
         let footer = "";
         return (
           <>

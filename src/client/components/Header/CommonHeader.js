@@ -18,7 +18,7 @@ function CommonHeader (){
     {
       console.log("loading databases");
 
-      // ISEO-TBD: followinng 2 API should be called in sequence.
+      // note: followinng 2 API should be called in sequence.
       // It's not being called at all.
       console.log("loading friend list");
       const result1 = await loadFriendList();

@@ -20,7 +20,7 @@ function PickChattingParty(props) {
 
 	async function handleClickFriend(_friend)
 	{
-		// ISEO-TBD:
+		// note:
 		// update chatting context with selected friends
 		// selected friend will be added to shared_user_group
 		// <problem1> how to find a specific _3rd_party_listings?

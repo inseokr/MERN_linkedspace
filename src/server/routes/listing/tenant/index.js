@@ -462,7 +462,7 @@ router.post("/addChild", function(req, res){
 
 	console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
-	TenantRequest.findById(req.body.parent_listing_id, function(err, foundListing){
+	TenantRequest.findById(req.body.parent_listing_id).populate('requester.id').exec(function(err, foundListing){
 		if(err)
 		{
 			console.log("listing not found");
@@ -512,7 +512,7 @@ router.post("/addChild", function(req, res){
 			if(foundListing.requester.id.equals(req.user._id))
 			{
 				console.log("Updating user group, created by the current user");
-				let _user = {id: foundListing.requester.id, username: foundListing.requester.username};
+				let _user = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
 				_3rdparty_listing.shared_user_group.push(_user);
 				
 				_3rdparty_listing.created_by.id = req.user._id;

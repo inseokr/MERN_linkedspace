@@ -73,6 +73,9 @@ export function MessageContextProvider(props) {
 
   function getContactList()
   {
+
+      console.log("ISEO-TBD: getContactList: chattingContextType %d, childType = %s, childIndex = %d ", chattingContextType, childType, childIndex );
+
       if(chattingContextType==0)
       {
         if(friendsList==undefined) return null;
@@ -140,9 +143,6 @@ export function MessageContextProvider(props) {
         // ID of chatting channel will be returned.
         // update dmChannelContexts
         console.log("addContactList: result = " + result);
-        // ISEO-TBD: currentListing is not updated yet.
-        // option#1: add the new user locally
-        // option#2: reload the currentListing
         reloadChattingDbWithCurrentListing();
       })
       .catch(err => {
@@ -216,7 +216,7 @@ export function MessageContextProvider(props) {
     if(numOfMsgHistory==0) return;
 
     // update last read index
-    // ISEO-TBD: What't the proper index value?
+    // note: What't the proper index value?
     // It may point to sending message as well if the last message is sending.
     // How are we going to handle this then? 
     // case 1> 
@@ -423,7 +423,7 @@ export function MessageContextProvider(props) {
       console.log("current channel = " + currentUser.chatting_channels.dm_channels[i].name);
       if(currentUser.chatting_channels.dm_channels[i].name==channel_name)
       {
-        // ISEO-TBD: This value may contain old data.
+        // note: This value may contain old data.
         // let's use context information instead
         return currentUser.chatting_channels.dm_channels[i].lastReadIndex; 
       }
@@ -497,7 +497,6 @@ export function MessageContextProvider(props) {
     let dmChannel = {channel_id: channel_id, channel_type: 0, last_read_index: lastReadIndex,
                      chattingHistory: buildHistoryFromDb(history)};
 
-    // ISEO-TBD: make it sure that dmChannelContexts[chnnale_id] is defined.
     if(dmChannel.chattingHistory.length)
     {
       dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
@@ -515,9 +514,8 @@ export function MessageContextProvider(props) {
 
     setChannelContexts(dmChannelContextArray);
 
-    // ISEO-TBD: somehow it's not changing ??
-    console.log("channel ID = " + dmChannelContexts[channel_id].channel_id);
-    console.log("length of chattingHistory = " + dmChannelContexts[channel_id].chattingHistory.length);
+    //console.log("channel ID = " + dmChannelContexts[channel_id].channel_id);
+    //console.log("length of chattingHistory = " + dmChannelContexts[channel_id].chattingHistory.length);
 
     setNumOfMsgHistory(dmChannelContexts[channel_id].chattingHistory.length);
   }
@@ -530,7 +528,7 @@ export function MessageContextProvider(props) {
     // clear new message arrival;
     setNewMsgArrived(false);
 
-    // ISEO-TBD: it will be good time to register the user again?
+    // note: it will be good time to register the user again?
     chatSocket.send("CSC:Register:"+currentUser.username);
 
     console.log("ISEO: getListOfDmChannels");
@@ -548,7 +546,7 @@ export function MessageContextProvider(props) {
 
       console.log("creating channels = " + dmChannels[i].channel_id);
 
-      // ISEO-TBD: problem in handling the result!!
+      // note: problem in handling the result!!
       const result = await axios.post('/chatting/new', data)
         .then(result => 
         {

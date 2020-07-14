@@ -15,9 +15,9 @@ function clickHandler()
 function MessageEditorIcon(props) {
 
 	const [modalShow, setModalShow] = useState(false);
-	const {setChattingContextType, 
-		   setChildType, 
-		   setChildIndex, 
+	const {setChattingContextType,  chattingContextType,
+		   setChildType, 		    childType,
+		   setChildIndex,           childIndex,
 		   loadChattingDatabase}    = useContext(MessageContext);
 
 	let onClickHandler = clickHandler;
@@ -73,15 +73,12 @@ function MessageEditorIcon(props) {
 				}
 				else
 				{
-					loadChattingDatabase();
 					onClickHandler();
 				}
 			}
 			else
 			{
 				setChildType(1);
-				loadChattingDatabase();
-				// TBD: not handling local listing yet.
 				onClickHandler();
 			}
 		}
@@ -99,6 +96,12 @@ function MessageEditorIcon(props) {
 	{
 		user_group = _childListing.listing.shared_user_group;
 	}
+
+
+	useEffect(()=>{
+		// DB will be loaded only after chattingContextType is updated properly
+		loadChattingDatabase();
+	}, [chattingContextType]);
 
 	return (
 	<>

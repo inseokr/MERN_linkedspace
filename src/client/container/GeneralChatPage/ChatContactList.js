@@ -7,9 +7,6 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
 
-// ISEO-TBD:
-// It's currently based on friendsList.
-// Let's get it from MessageContext instead.
 function ChatContactList() {
 
 	console.log("!!!!!!! Creating ChatContactList !!!!!");
