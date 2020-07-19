@@ -14,7 +14,6 @@ function ChattingMessageBox(props) {
     if(props.msg_direction=="0")
     {
       return (
-        <>
         <div className="ChattingMessageBoxWrapper AlignToLeft">
             <div className="ProfilePicture">
                 <img className="center rounded-circle imgLeftMsgBox" src={props.profile_picture} alt="myFriend" />
@@ -30,7 +29,6 @@ function ChattingMessageBox(props) {
             </div>
 
         </div>
-        </>
       );
     } 
     else 

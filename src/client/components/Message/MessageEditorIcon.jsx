@@ -100,7 +100,9 @@ function MessageEditorIcon(props) {
 
 	useEffect(()=>{
 		// DB will be loaded only after chattingContextType is updated properly
-		loadChattingDatabase();
+		//console.log("MessageEditorIcon: loadChattingDatabase");
+		// ISEO-TBD: loadChattingDatabase is called multiple times
+		//loadChattingDatabase();
 	}, [chattingContextType]);
 
 	return (

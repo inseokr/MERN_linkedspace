@@ -65,8 +65,7 @@ function CommonHeader (){
                                             name: friendsList[0].username,
                                             distance: 1
                                           }};
-          switchChattingChannel(channelInfo);
-          loadChattingDatabase();
+          switchChattingChannel(channelInfo, true);
       }
 
   }, [currentUser, friendsList]);

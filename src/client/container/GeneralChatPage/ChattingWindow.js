@@ -1,4 +1,6 @@
 import React, { Component, useState, useContext, useRef, useEffect} from 'react';
+import shortid from 'shortid';
+
 import '../../app.css';
 import './GeneralChatMainPage.css';
 import ChattingMessageBox from './ChattingMessageBox';
@@ -11,7 +13,7 @@ function ChattingWindow() {
 
     const messagesEndRef = useRef(null);
 
-    const {numOfMsgHistory, getChattingHistory, loadChattingDatabase, getLastReadIndex} = useContext(MessageContext);
+    const {numOfMsgHistory, getChattingHistory, getLastReadIndex} = useContext(MessageContext);
     const {getProfilePicture} = useContext(GlobalContext);
 
     //const [numOfHistory, setNumOfHistory] = useState(0);
@@ -41,15 +43,22 @@ function ChattingWindow() {
         return <hr className="newMessage" />;
     }
 
+
     function getCurMessageBox(chat, new_msg_marker)
     {
-        return <ChattingMessageBox
-                    msg_direction={chat.direction}
-                    profile_picture={getProfilePicture(chat.username)}
-                    message={chat.message}
-                    timestamp={chat.timestamp}
-                    new_msg={new_msg_marker}
-                />;
+        console.log("getCurMessageBox: chat.msg = " + chat.message);
+        
+        return (
+            <div key={shortid.generate()}>
+                <ChattingMessageBox
+                            msg_direction={chat.direction}
+                            profile_picture={getProfilePicture(chat.username)}
+                            message={chat.message}
+                            timestamp={chat.timestamp}
+                            new_msg={new_msg_marker}
+                />
+            </div>
+        ) 
     }
 
     function getChatHistory()
@@ -57,7 +66,8 @@ function ChattingWindow() {
         let chatHistory   = getChattingHistory();
         let lastReadIndex = getLastReadIndex("");
         let output        = [];
-        //console.log("chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
+        console.log("getChatHistory: chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
+        
         let newMsgMarked = false;
         
         for(let index=0; index<chatHistory.length; index++)
@@ -81,7 +91,11 @@ function ChattingWindow() {
 
     function loadChattingHistory()
     {
-        return (getChatHistory());
+        console.log("ISEO: loadChattingHistory!!!!!!!!!!!!!!!!!!!!!!")
+        var history = getChatHistory();
+        console.log("ISEO: length of history = " + history.length)
+
+        return (history);
     }
 
     useEffect(() => {

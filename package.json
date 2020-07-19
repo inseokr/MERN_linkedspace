@@ -30,6 +30,7 @@
     "react-router-dom": "^5.1.2",
     "react-search-box": "^2.0.2",
     "react-sound": "^1.2.0",
+    "shortid": "^2.2.15",
     "uuid": "^7.0.3",
     "websocket": "^1.0.31"
   },

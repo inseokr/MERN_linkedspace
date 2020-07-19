@@ -1,4 +1,5 @@
 import React, { Component, useContext } from 'react';
+import shortid from 'shortid';
 import '../../app.css';
 import './MessageStyle.css';
 import OnlineStatus from './OnlineStatus';
@@ -37,20 +38,20 @@ function PickChattingParty(props) {
 	function getFriend(_friend)
 	{
 		return (
-			<>
-			<div className="friendWrapper" onClick={() => handleClickFriend(_friend)}>
-				<div>
-		    		<img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
-		    	</div>
-		    	<div className="friendName">
-		    		<h5> {_friend.username} </h5>
-		    	</div>
-		    	<div>
-		    		<OnlineStatus marginLeft="auto"/>	
-		    	</div>
+			<div key={shortid.generate()}>
+				<div className="friendWrapper" key={_friend.id} onClick={() => handleClickFriend(_friend)}>
+					<div>
+			    		<img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
+			    	</div>
+			    	<div className="friendName">
+			    		<h5> {_friend.username} </h5>
+			    	</div>
+			    	<div>
+			    		<OnlineStatus marginLeft="auto"/>	
+			    	</div>
+				</div>
+				<hr/>
 			</div>
-			<hr/>
-			</>
 			)
 	}
 

@@ -1,4 +1,5 @@
 import React, { Component, useState, useContext , useEffect} from 'react';
+import shortid from 'shortid';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 
@@ -38,11 +39,13 @@ function ChatContactList() {
 	// ISEO-TBD:
 	for(var i=0; i< friendsList.length; i++)
 	{
-		console.log("current channel name = " + currChannelInfo.channelName);
+		console.log("ChatContactList: currChannelInfo.channelName = " + currChannelInfo.channelName);
 		console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
 
 		if(getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)
 		{
+			console.log("found default contact!!!");
+
 			bFoundDefaultContact = true;
 			initClickStates.push(1);
 		}
@@ -54,7 +57,7 @@ function ChatContactList() {
 	
 	const [clickStates, setClickStates] = useState(initClickStates);
 
-	function handleClickState(index) {
+	async function handleClickState(index) {
 
 		console.log("handleClickState, index="+index);
 
@@ -77,56 +80,84 @@ function ChatContactList() {
                                             distance: 1
                                           }};
 
-		switchChattingChannel(channelInfo);
-		loadChattingDatabase();
+        // We need to make it sure that loadChattingDatabase should be called in sequence.
+		switchChattingChannel(channelInfo, true); // second parameter tells if loadChattingDatabase is needed
+		//loadChattingDatabase();
 	}
 
-	let contacts = [];
 
-	for(var i = 0; i<friendsList.length; i++)
+	function buildContacts()
 	{
-		console.log("user name = " + friendsList[i].username);
-		
-		if(currentUser.username==friendsList[i].username)
-			continue;
-		
-		// construct channel specific information
-		// 1. any indication of new message
-		// : It should have been kept in context? Upon database loading.
-		//   Check the last read index and the total number of messages in channel DB.
-		// 2. latest message
-		//
-		// <note> the channel_name will be different if it's a chatting about posting.
-		// peer name won't be good enough if it's related with posting
-		// what's the format of channel_id? 
-		let channel_name = getDmChannelId(friendsList[i].username);
 
+		let contacts = [];
 
-		if(dmChannelContexts[channel_name]==undefined)
+		for(var i = 0; i<friendsList.length; i++)
 		{
-			console.log("channel_name= "+channel_name+" not defined yet");
-		}
-		else
-		{
-			let channelSummary = {flag_new_msg: dmChannelContexts[channel_name].flag_new_msg,
-			                      timestamp:    dmChannelContexts[channel_name].datestamp,
-				                  msg_summary:  dmChannelContexts[channel_name].msg_summary};
+			console.log("user name = " + friendsList[i].username);
+			
+			if(currentUser.username==friendsList[i].username)
+				continue;
+			
+			// construct channel specific information
+			// 1. any indication of new message
+			// : It should have been kept in context? Upon database loading.
+			//   Check the last read index and the total number of messages in channel DB.
+			// 2. latest message
+			//
+			// <note> the channel_name will be different if it's a chatting about posting.
+			// peer name won't be good enough if it's related with posting
+			// what's the format of channel_id? 
+			let channel_name = getDmChannelId(friendsList[i].username);
 
-			contacts.push(<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />);
+
+			if(dmChannelContexts[channel_name]==undefined)
+			{
+				console.log("channel_name= "+channel_name+" not defined yet");
+			}
+			else
+			{
+				let channelSummary = {flag_new_msg: dmChannelContexts[channel_name].flag_new_msg,
+				                      timestamp:    dmChannelContexts[channel_name].datestamp,
+					                  msg_summary:  dmChannelContexts[channel_name].msg_summary};
+				console.log("channel_name= "+channel_name+" being added");
+
+				//ISEO-TBD: it's very annoying.... I have to add key information to each item here??
+				contacts.push(<div key={shortid.generate()}>
+								<ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />
+							  </div>);
+			}
 		}
+
+		return contacts;
 	}
 
-	useEffect(()=> {
-		if(bFoundDefaultContact==false && friendsList.length>1)
+	function clickDefaultContact()
+	{
+		if(bFoundDefaultContact==false && friendsList.length>=1)
 		{
 			bFoundDefaultContact = true;
 			handleClickState(0);
 		}
-	});
+	}
+
+	useEffect(()=> {
+
+		// ISEO: dmChannelContexts are being updated by loadChatHistory but somehoe ChatContactList is not being reloaded even if dmChannelContexts are being updated....WHY!!
+		console.log("ChatContactList:dmChannelContexts being updated with channel name = " + currChannelInfo.channelName);
+
+		clickDefaultContact();
+	},[dmChannelContexts]);
+
+	
+	let summary = (dmChannelContexts[getDmChannelId(friendsList[0].username)]==undefined) ? "empty" : "not empty";
+
+    console.log("ChatContactList is being rendered with friend " + getDmChannelId(friendsList[0].username));
+
+    clickDefaultContact();
 
   	return (
 	    <>
-	    	{contacts}
+	    	{buildContacts()}
 	    </>
   	);
 }

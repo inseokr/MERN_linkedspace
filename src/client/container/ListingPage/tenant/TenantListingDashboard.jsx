@@ -15,6 +15,7 @@ import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 
 function TenantListingDashBoard(props) {
+
   const {mapLoaded, initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel} = useContext(ListingsContext);
   const googleMapRef = useRef(null);
   let googleMap = null;
