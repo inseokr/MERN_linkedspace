@@ -78,7 +78,7 @@ function TenantListingComponent(props) {
   function addChildListingControl() {
     return (
       <div className="flex-container" style={{justifyContent: "space-between"}}>
-        <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
+        <MessageEditorIcon clickHandler={toggle} callerType="parent" parent_listing={currentListing}/>
 
         <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>

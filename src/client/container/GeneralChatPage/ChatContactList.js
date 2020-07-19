@@ -149,10 +149,6 @@ function ChatContactList() {
 	},[dmChannelContexts]);
 
 	
-	let summary = (dmChannelContexts[getDmChannelId(friendsList[0].username)]==undefined) ? "empty" : "not empty";
-
-    console.log("ChatContactList is being rendered with friend " + getDmChannelId(friendsList[0].username));
-
     clickDefaultContact();
 
   	return (

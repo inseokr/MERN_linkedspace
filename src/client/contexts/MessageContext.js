@@ -85,7 +85,7 @@ export function MessageContextProvider(props) {
     setNewMsgArrived(false);
 
     //setCurrChannelInfo(initialCurrChannelInfo);
-    
+
     setWaitMessage(false);
     setFlagNewlyLoaded(false);
 
@@ -99,6 +99,7 @@ export function MessageContextProvider(props) {
   {
 
       console.log("ISEO-TBD: getContactList: chattingContextType %d, childType = %s, childIndex = %d ", chattingContextType, childType, childIndex );
+      console.log("currentListing = " + JSON.stringify(currentListing));
 
       if(chattingContextType==0)
       {
@@ -420,7 +421,7 @@ export function MessageContextProvider(props) {
     const _listArray = [friendsList, 
                         (currentListing!=undefined)? 
                           currentListing.shared_user_group:null, 
-                        (currentListing!=undefined)?
+                        (currentListing!=undefined && currentListing.child_listings._3rd_party_listings[childIndex]!=undefined)?
                           currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group:null
                       ];
 

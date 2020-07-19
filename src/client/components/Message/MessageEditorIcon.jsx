@@ -46,6 +46,7 @@ function MessageEditorIcon(props) {
 
 	function messageEditorOnClick()
 	{
+		console.log("messageEditorOnClick: caller type = " + messageEditorCallerType);
 		// check if there is any chatting party for this message context
 		// 1. need to know where this message editor located
 		// case 1> parent
@@ -56,6 +57,17 @@ function MessageEditorIcon(props) {
 			// <note> The only corner case will be when there is no friend at all?
 			onClickHandler();
 			setChattingContextType(1);
+
+			console.log("shared_user_group: length = " + props.parent_listing.shared_user_group.length);
+
+			if(props.parent_listing.shared_user_group.length<1)
+			{
+				showModal();
+			}
+			else
+			{
+				onClickHandler();
+			}
 		}
 		else if(messageEditorCallerType=="child")
 		{

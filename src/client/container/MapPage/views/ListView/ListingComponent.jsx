@@ -57,7 +57,7 @@ function ListingComponent(props) {
       return (
         <div className="flex-container" style={{justifyContent: "space-between"}}>
           {/* ISEO-TBD:  Let's add messaging icon */}
-          <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
+          <MessageEditorIcon clickHandler={toggle} callerType="parent" parent_listing={listing}/>
 
           <SimpleModal show={modalShow} handleClose={hideModal}>
             <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
