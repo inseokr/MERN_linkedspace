@@ -635,7 +635,7 @@ export function MessageContextProvider(props) {
     console.log("ISEO: Loading chatting database... ");
     
     loadChattingDatabase();
-  }, [currChannelInfo, dmChannelContexts, numOfMsgHistory, channelContextLength]);
+  }, [currChannelInfo, channelContextLength]);
 
   return (
     <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, 
