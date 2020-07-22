@@ -99,8 +99,13 @@ module.exports = function(app) {
 		            if(req.body.members.length==numberOfPushedMembers)
 		            {
 		              console.log("Saving it to the database"); 
-		              newChannel.save();
-		              chatDbHandler.addChannelToUser(newChannel);
+		              newChannel.save(function (err, product, numAffected) {
+		              	if(err)
+		              	{
+		              		console.log("newChannel.save failed with err = " + err);
+		              	}
+		              	chatDbHandler.addChannelToUser(newChannel);
+		              });
 		            }
 		      });
 		    }

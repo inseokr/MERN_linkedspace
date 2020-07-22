@@ -23,7 +23,14 @@ function ChatContactList() {
 	// create initial state based on friendsList
 	let initClickStates = [];
 
-	let friendsList = getContactList();
+
+	function  removeCurrentUserFromList(_list)
+	{
+		var filtered = _list.filter(function (_item) { return _item.username!=currentUser.username;});
+		return filtered;
+	}
+
+	let friendsList = removeCurrentUserFromList(getContactList());
 
 	if(friendsList==null)
 	{
@@ -37,21 +44,30 @@ function ChatContactList() {
     var bFoundDefaultContact = false;
 
 	// ISEO-TBD:
+	console.log("friendsList.length = " + friendsList.length);
+
 	for(var i=0; i< friendsList.length; i++)
 	{
-		console.log("ChatContactList: currChannelInfo.channelName = " + currChannelInfo.channelName);
-		console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
-
-		if(getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)
+		if(friendsList[i].username==currentUser.username)
 		{
-			console.log("found default contact!!!");
-
-			bFoundDefaultContact = true;
-			initClickStates.push(1);
+			console.log("Skipping it");
 		}
 		else
 		{
-			initClickStates.push(0);
+			console.log("ChatContactList: currChannelInfo.channelName = " + currChannelInfo.channelName);
+			console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
+
+			if(getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)
+			{
+				console.log("found default contact!!!");
+
+				bFoundDefaultContact = true;
+				initClickStates.push(1);
+			}
+			else
+			{
+				initClickStates.push(0);
+			}
 		}
 	}
 	

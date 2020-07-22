@@ -35,6 +35,8 @@ router.post("/new", function(req, res){
         newListing.rental_budget = req.body.rental_budget;
 				newListing.coordinates = {"lat": 0, "lng": 0};
 
+		newListing.shared_user_group.push({id: req.user._id, username:req.user.username, profile_picture: req.user.profile_picture});
+
         newListing.save(function(err){
 
         if(err) {

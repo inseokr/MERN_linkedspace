@@ -5,6 +5,7 @@ import PickChattingParty from './PickChattingParty';
 import SimpleModal from '../Modal/SimpleModal';
 
 import { MessageContext } from '../../contexts/MessageContext';
+import { GlobalContext } from '../../contexts/GlobalContext';
 
 
 function clickHandler()
@@ -19,6 +20,7 @@ function MessageEditorIcon(props) {
 		   setChildType, 		    childType,
 		   setChildIndex,           childIndex,
 		   loadChattingDatabase}    = useContext(MessageContext);
+    const {currentUser} 		    = useContext(GlobalContext);
 
 	let onClickHandler = clickHandler;
 
@@ -60,7 +62,11 @@ function MessageEditorIcon(props) {
 
 			console.log("shared_user_group: length = " + props.parent_listing.shared_user_group.length);
 
-			if(props.parent_listing.shared_user_group.length<1)
+			if(props.parent_listing.shared_user_group.length<1 || 
+			   ((props.parent_listing.shared_user_group.length==1)
+			   	&& (currentUser.username==props.parent_listing.shared_user_group[0].username)
+			   )
+			  )
 			{
 				showModal();
 			}
