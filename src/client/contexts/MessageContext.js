@@ -398,7 +398,7 @@ export function MessageContextProvider(props) {
 
     if(chattingContextType!=0)
     {
-      dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": "-child-");  
+      dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": "-child-"+childIndex+"-");  
     }
 
     return (dmChannelNamePrefix+dmChannelNameSuffix);
