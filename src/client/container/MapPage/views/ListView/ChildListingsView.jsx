@@ -15,6 +15,9 @@ function ChildListingsView(props)
 	const [clickStates, setClickStates] = useState(initClickStates);
 	const {currentListing} = useContext(CurrentListingContext);
 
+
+	console.log("ISEO: ChildListingsView is being loaded again");
+
 	function handleClickState(index) {
 
 		console.log("handleClickState, index="+index);

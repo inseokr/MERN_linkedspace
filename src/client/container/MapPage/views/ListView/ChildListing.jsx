@@ -9,7 +9,7 @@ import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
 
 function ChildListing(props)
 {
-	const [modalShow, setModalShow] = useState(false);
+	//const [modalShow, setModalShow] = useState(false);
 
 	console.log("ChildListing: clickState="+ props.clickState);
 	const listingTitle = props.listing.listingSource;
@@ -25,13 +25,13 @@ function ChildListing(props)
 	} : {}
 
 
-	let showModal = () => {
-		setModalShow(true);
-	}
+	//let showModal = () => {
+	//	setModalShow(true);
+	//}
 
-	let handleClose = () => {
-		setModalShow(false);
-	}
+	//let handleClose = () => {
+	//	setModalShow(false);
+	//}
 
 	function listingClickHandler(e)
 	{

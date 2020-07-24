@@ -13,14 +13,19 @@ function clickHandler()
 	alert("Default clickHandler")
 }
 
+
+// ISEO-TBD: this page will be re-rendered.... 
+// ChildListingsView seems to be reloaded again when the message editor is clicked again.
 function MessageEditorIcon(props) {
 
 	const [modalShow, setModalShow] = useState(false);
-	const {setChattingContextType,  chattingContextType,
+	const {setChattingContextType,
 		   setChildType, 		    childType,
 		   setChildIndex,           childIndex,
 		   loadChattingDatabase}    = useContext(MessageContext);
     const {currentUser} 		    = useContext(GlobalContext);
+
+    var modalFlag = false;
 
 	let onClickHandler = clickHandler;
 
@@ -32,6 +37,7 @@ function MessageEditorIcon(props) {
 	let _childListing = props.childListing;
 
 	let showModal = () => {
+
 		setModalShow(true);
 	}
 
@@ -46,9 +52,11 @@ function MessageEditorIcon(props) {
 	}
 
 
-	function messageEditorOnClick()
+	function messageEditorOnClick(evt)
 	{
-		console.log("messageEditorOnClick: caller type = " + messageEditorCallerType);
+
+		evt.stopPropagation();
+
 		// check if there is any chatting party for this message context
 		// 1. need to know where this message editor located
 		// case 1> parent
@@ -58,9 +66,8 @@ function MessageEditorIcon(props) {
 			// We may just call onClickHandler for now.
 			// <note> The only corner case will be when there is no friend at all?
 			onClickHandler();
-			setChattingContextType(1);
 
-			console.log("shared_user_group: length = " + props.parent_listing.shared_user_group.length);
+			setChattingContextType(1);
 
 			if(props.parent_listing.shared_user_group.length<1 || 
 			   ((props.parent_listing.shared_user_group.length==1)
@@ -78,6 +85,9 @@ function MessageEditorIcon(props) {
 		else if(messageEditorCallerType=="child")
 		{
 			setChattingContextType(2);
+
+			// ISEO-TBD: dang...the following call will trigger the reload of MessageEditor
+			// and all the state will be gone when it's reloaded??
 			// need to know the type of listing
 			if(_childListing.listingType=="_3rdparty")
 			{
@@ -85,7 +95,9 @@ function MessageEditorIcon(props) {
 				setChildIndex(props.index);
 
 				// check the size of shared_user_group and launch modal to add chatting party
-				if(_childListing.listing.shared_user_group.length<=1)
+				if(_childListing.listing.shared_user_group.length<1 ||
+					((_childListing.listing.shared_user_group.length==1) 
+						&& (currentUser.username==_childListing.listing.shared_user_group[0].username)))
 				{
 					showModal();
 				}
@@ -121,10 +133,15 @@ function MessageEditorIcon(props) {
 		//console.log("MessageEditorIcon: loadChattingDatabase");
 		// ISEO-TBD: loadChattingDatabase is called multiple times
 		//loadChattingDatabase();
-	}, [chattingContextType]);
+	//}, [chattingContextType, modalShow]);
+	}, [modalShow]);
+
 
 	return (
 	<>
+		<SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
+			<PickChattingParty group={user_group}/>
+		</SimpleModal>
 		<div className="MessageEditIcon" onClick={messageEditorOnClick}>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor"
 			width="24" height="24" focusable="false">
@@ -132,9 +149,6 @@ function MessageEditorIcon(props) {
 				</path>
 			</svg>
 		</div>
-		<SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
-			<PickChattingParty group={user_group}/>
-		</SimpleModal>
 	</>
 	);
 	}
