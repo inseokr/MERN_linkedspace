@@ -51,7 +51,6 @@ function LoginMenu()
                   Listing From Friends
                 </Link>
               </li>
-              <li className="nav-item"><a className="nav-link" href="/listing/tenant/tenant_dashboard">Dashboard</a></li>
               <li className="nav-item">
                 <a className="nav-link" href="/logout" style={{position: 'relative'}}>
                   Logout
