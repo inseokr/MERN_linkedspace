@@ -71,17 +71,27 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
       // 2. date received
       let date = new Date(listing.timestamp);
 
-      return (
-        <div className='tenantListingSummary'>
-          <div className='friendSummary'>
-            <span className="panel-subtitle"> {listing.friend.firstname} {listing.friend.lastname}</span>
-            <span className="socialDistance">
-              {GetRatingDeco(1)}
-            </span>
+      if(listing.friend==undefined)
+      {
+        // update is in progress
+        return (
+          <>
+          </>
+          )
+      } 
+      else {
+        return (
+          <div className='tenantListingSummary'>
+            <div className='friendSummary'>
+              <span className="panel-subtitle"> {listing.friend.firstname} {listing.friend.lastname}</span>
+              <span className="socialDistance">
+                {GetRatingDeco(1)}
+              </span>
+            </div>
+            <span className="panel-subtitle"> {date.toDateString() + " " + date.toLocaleTimeString()} </span>
           </div>
-          <span className="panel-subtitle"> {date.toDateString() + " " + date.toLocaleTimeString()} </span>
-        </div>
-      )
+        )
+      }
     }
   }
 
