@@ -6,17 +6,37 @@ export const CurrentListingContext = createContext();
 export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
+    const [ListingInfoType, setListingInfoType] = useState("");
 
-    async function fetchListingInfo() {
-      console.log("fetchListingInfo");
 
-      fetch('/listing/get_active_listing')
-        .then(res => res.json())
-        .then(listing => {
-            console.log("listing = " + JSON.stringify(listing));
-            setListingInfo(listing)
-          }
-        )
+    function cleanupListingInfoType()
+    {
+      setListingInfoType("");
+    }
+
+    async function fetchListingInfo(_type) {
+
+      console.log("ISEO: fetchListingInfo: _type =" + _type);
+      console.log("ISEO: ListingInfoType =" + ListingInfoType);
+
+      if(ListingInfoType!=_type)
+      {
+        setListingInfoType(_type);
+        // type
+        // + own: created by the user
+        // + friend: forwarded from other users
+        console.log("get_active_listing: type = " + _type);
+
+        if(_type=="child") _type = "own";
+
+        fetch('/listing/get_active_listing/'+_type)
+          .then(res => res.json())
+          .then(listing => {
+              console.log("listing = " + JSON.stringify(listing));
+              setListingInfo(listing)
+            }
+          )
+      }
     }
 
 
@@ -24,17 +44,20 @@ export function CurrentListingProvider(props) {
     console.log("fetchCurrentListing is called with listing_id = " + id + ", type = " + listing_type);
     let _prefix = (listing_type==="landlord") ? "/listing/landlord/" : "/listing/tenant/";
 
-    fetch(_prefix+id+'/fetch')
+    const result = await fetch(_prefix+id+'/fetch')
       .then(res => res.json())
       .then(listing => {
           console.log("listing = " + JSON.stringify(listing));
-          setCurrentListing(listing)
+          setCurrentListing(listing);
+          return 1;
         }
       )
+
+    return 0;
   }
 
     return (
-        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo}}>
+        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType}}>
             {props.children}
         </CurrentListingContext.Provider>
     );

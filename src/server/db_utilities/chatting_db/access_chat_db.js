@@ -66,7 +66,7 @@ function addChannelToUser(chat_channel)
 	chat_channel.members.forEach(member => {
 	    userDbHandler.getUserById(member.id).then((foundUser) => {
 
-        //console.log("addChannelToUser: foundUser = " + foundUser);
+        console.log("addChannelToUser: foundUser = " + foundUser);
         
 	    	if(foundUser)
 	    	{
@@ -75,6 +75,7 @@ function addChannelToUser(chat_channel)
             if(channel.name == chat_channel.channel_id)
             {
               // duplicate exists;
+              console.log("duplicate found");
               return;
             }
 

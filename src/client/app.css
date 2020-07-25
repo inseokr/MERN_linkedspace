@@ -46,3 +46,30 @@ span.newMsgSignature {
   color: #fff;
   right:20px !important;
 }
+
+.panel-subtitle {
+    margin: 0px !important;
+    word-wrap: break-word !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.3333333333333333em !important;
+    color: #484848 !important;
+}
+
+.tenantListingSummary {
+  display: flex;
+  flex-direction: column;
+}
+
+.friendSummary {
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+
+}
+
+.socialDistance {
+  margin-left: 5px;
+  margin-top: -8px;
+}

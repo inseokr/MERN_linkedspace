@@ -65,7 +65,7 @@ module.exports = function(app) {
 		    {
 		      let result = {bNewlyCreated: false, channel: channel};
 
-		      //console.log("Channel exits already. returning the channel");
+		      console.log("Channel exits already. returning the channel");
 
 		      res.json(result);
 		      return;
@@ -98,9 +98,14 @@ module.exports = function(app) {
 
 		            if(req.body.members.length==numberOfPushedMembers)
 		            {
-		              //console.log("Saving it to the database"); 
-		              newChannel.save();
-		              chatDbHandler.addChannelToUser(newChannel);
+		              console.log("Saving it to the database"); 
+		              newChannel.save(function (err, product, numAffected) {
+		              	if(err)
+		              	{
+		              		console.log("newChannel.save failed with err = " + err);
+		              	}
+		              	chatDbHandler.addChannelToUser(newChannel);
+		              });
 		            }
 		      });
 		    }
@@ -109,7 +114,7 @@ module.exports = function(app) {
 
 		    res.json(result);
 
-		    //console.log("Channel just created");
+		    console.log("Channel just created");
 	  	});
 
 	});

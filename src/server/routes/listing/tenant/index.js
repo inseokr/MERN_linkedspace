@@ -35,6 +35,8 @@ router.post("/new", function(req, res){
         newListing.rental_budget = req.body.rental_budget;
 				newListing.coordinates = {"lat": 0, "lng": 0};
 
+		newListing.shared_user_group.push({id: req.user._id, username:req.user.username, profile_picture: req.user.profile_picture});
+
         newListing.save(function(err){
 
         if(err) {
@@ -312,21 +314,21 @@ router.post("/:list_id/edit", function(req, res){
 
 
 router.post("/:list_id/addUserGroup", function(req, res){
+
 	TenantRequest.findById(req.params.list_id, function(err, foundListing){
 
-		function checkDuplicate(list, name)
+		function checkDuplicate(user_list, name)
 		{
-			if(list.length>=1)
+			let bDuplicate = false;
+
+			if(user_list.length>=1)
 			{
-				list.forEach(
-					_user => {
-						if(_user.username==name) 
-						{
-							return true;
-						}
-					});
+				bDuplicate = user_list.some(
+					_user => _user.username===name 
+					);
 			}
-			return false;
+
+			return bDuplicate;
 		}
 
 
@@ -359,7 +361,9 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    				res.json({result: "Duplicate found"});
 	    				return;
 	    			}
-	    			foundListing.shared_user_group.push({id: _friend._id, username: _friend.username});
+	    			foundListing.shared_user_group.push({id: _friend._id, 
+	    				                                 username: _friend.username,
+	    				                             	 profile_picture: _friend.profile_picture});
 	    			break;
 	    		case 2:
 	    			if(childInfo.type==0)
@@ -371,7 +375,9 @@ router.post("/:list_id/addUserGroup", function(req, res){
 		    				return;
 		    			}
 
-	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
+	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
+	    					                                                                                     username: _friend.username,
+	    					                                                                                     profile_picture: _friend.profile_picture});
 	    			}
 	    			else
 	    			{
@@ -382,7 +388,9 @@ router.post("/:list_id/addUserGroup", function(req, res){
 		    				return;
 		    			}
 
-	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, username: _friend.username});
+	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
+	    					                                                                                   username: _friend.username,
+	    					                                                                                   profile_picture: _friend.profile_picture});
 	    			}
 	    			break;
 	    		default:
@@ -391,12 +399,16 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    			return;
 	    	}
 
-	    	foundListing.save();
-
-	    	res.json({result: "Added successfully"});
-	    	return;
-    	});
-
+	    	foundListing.save((err) => {
+	    		if(err)
+	    		{
+	    			res.json({result: "DB save failure"});
+	    			return;
+	    		}
+	    		console.log("ISEO: user added successfully");
+		    	res.json({result: "Added successfully"});
+	    	});
+	    });
 	});
 });
 
@@ -452,7 +464,7 @@ router.post("/addChild", function(req, res){
 
 	console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
-	TenantRequest.findById(req.body.parent_listing_id, function(err, foundListing){
+	TenantRequest.findById(req.body.parent_listing_id).populate('requester.id').exec(function(err, foundListing){
 		if(err)
 		{
 			console.log("listing not found");
@@ -502,7 +514,7 @@ router.post("/addChild", function(req, res){
 			if(foundListing.requester.id.equals(req.user._id))
 			{
 				console.log("Updating user group, created by the current user");
-				let _user = {id: foundListing.requester.id, username: foundListing.requester.username};
+				let _user = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
 				_3rdparty_listing.shared_user_group.push(_user);
 				
 				_3rdparty_listing.created_by.id = req.user._id;
@@ -517,8 +529,8 @@ router.post("/addChild", function(req, res){
 
 				// <note> the 3rd party listing could be added by either tenant or friends.
 				// It's a friend case.
-				let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username};
-				let _creatorOfChild  = {id: req.user._id, username: req.body.username};
+				let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
+				let _creatorOfChild  = {id: req.user._id, username: req.body.username, profile_picture: req.user.profile_picture};
 
 				_3rdparty_listing.created_by.id = foundListing.requester.id;
 				_3rdparty_listing.created_by.username = foundListing.requester.username;
@@ -641,28 +653,61 @@ function preprocessingListing(listing, preferences)
 }
 
 // forward listing to direct friends
-router.put("/:list_id/forward", function(req, res){
+router.post("/:list_id/forward", function(req, res){
 
-	var listing_info = { id: req.params.list_id, friend_id: app.locals.curr_user._id, received_date: {month: "Mar", date: 20, year: "2019"} };
+	function checkDuplicate(list, id)
+	{
+		let bDuplicate = false;
 
-	app.locals.curr_user.direct_friends.forEach(function(friend){
+		if(list.length>=1)
+		{
+			bDuplicate = list.some(
+				_list => _list.id.equals(id) 
+				);
+		}
 
-		// Need to find the friend object and then update it.
-		User.findById(friend.id, function(err, foundUser){
-			if(err)
-			{
-				console.log("User not found with given id");
-				return;
-			}
+		return bDuplicate;
+	}
 
-			foundUser.incoming_tenant_listing.push(listing_info);
-			foundUser.save();
-			req.flash("success", "Listing Forwarded Successfully");
-			res.redirect("/");
+	console.log("forward: post");
+	User.findById(req.user._id, function(err, foundUser){
 
+		if(err)
+		{
+			console.log("User not found");
+			return;
+		}
+
+		var listing_info = { id: req.params.list_id, 
+			                 friend_id: req.user._id, 
+			                 received_date: Date.now()};
+		let forwardCount = 0;
+
+		foundUser.direct_friends.forEach(function(friend){
+
+			// Need to find the friend object and then update it.
+			const result = User.findById(friend.id, function(err, foundFriend){
+				if(err)
+				{
+					console.log("No friend found with given ID");
+					return 0;
+				}
+
+				// let's check duplicate records
+				if(checkDuplicate(foundFriend.incoming_tenant_listing, listing_info.id)==true)
+				{
+					return 1;
+				}
+				foundFriend.incoming_tenant_listing.push(listing_info);
+				foundFriend.save();
+				return 2;
+			});
+
+			if(result==2) forwardCount++; 
 		});
+		console.log("forwardCount="+forwardCount);
+		res.json({result : 'Listing forwarded successfully'});
 	});
-
 
 });
 

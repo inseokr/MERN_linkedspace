@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import shortid from 'shortid';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -13,6 +14,9 @@ function ChildListingsView(props)
 	let initClickStates = [];
 	const [clickStates, setClickStates] = useState(initClickStates);
 	const {currentListing} = useContext(CurrentListingContext);
+
+
+	console.log("ISEO: ChildListingsView is being loaded again");
 
 	function handleClickState(index) {
 
@@ -43,13 +47,15 @@ function ChildListingsView(props)
 
 	    currentListing.child_listings._3rd_party_listings.map(function(childListing, index) {
 	  	console.log("childListingsViews: index="+index);
-	  	childListingsViews.push(<ChildListing clickState={clickStates[index]} 
+	  	childListingsViews.push(<div key={shortid.generate()}>
+	  								<ChildListing clickState={clickStates[index]} 
 	  							              clickHandler={handleClickState} 
 	  							              handleSelect={props.handleSelect} 
 	  							              listing={childListing}
 	  							              index={index}
 	  							              messageClickHandler={props.messageClickHandler}
-	  							              removeHandler={props.removeHandler}/>)
+	  							              removeHandler={props.removeHandler}/>
+	  							</div>)
 	  });
 
 	  return (

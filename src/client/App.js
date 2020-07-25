@@ -9,7 +9,7 @@ import Map from "./container/MapPage/index";
 import ListingLandlordMainPage from "./container/ListingPage/landlord/ListingLandlordMainPage";
 import ListingTenantMainPage from "./container/ListingPage/tenant/ListingTenantMainPage";
 import TenantListingDashboard from "./container/ListingPage/tenant/TenantListingDashboard";
-import ShowActiveListingPage   from "./container/ListingPage/ShowActiveListingPage";
+import ShowActiveListingPageWrapper   from "./container/ListingPage/ShowActiveListingPageWrapper";
 import PostListingPage         from "./container/ListingPage/PostListingPage";
 import Post3rdPartyListing     from "./container/ListingPage/3rdParty/Post3rdPartyListing";
 
@@ -70,9 +70,11 @@ export default class App extends Component {
                     <Post3rdPartyListing />
                   </Route>
                   <Route exact path="/ActiveListing">
-                    <ShowActiveListingPage type="show all"/>
+                    <ShowActiveListingPageWrapper type="own" listingControl="" />
                   </Route>
-
+                  <Route exact path="/ShowListingFromFriends">
+                    <ShowActiveListingPageWrapper type="friend" listingControl=""/>
+                  </Route>
                   <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
                   <Route path={"/listing/tenant/:id/get"} component={ListingTenantMainPage} />
                   <Route

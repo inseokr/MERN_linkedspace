@@ -5,7 +5,7 @@ import OnlineStatus from "../../components/Message/OnlineStatus";
 import {MessageContext} from "../../contexts/MessageContext";
 
 
-// ISEO-TBD
+// ISEO-TBD:
 // currChanneInfo only includes DM channel information
 // We may consider adding more information
 function ChatPartySummary() {

@@ -6,7 +6,7 @@ import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import SimpleModal from '../../../../components/Modal/SimpleModal';
-import ShowActiveListingPage from "../../../ListingPage/ShowActiveListingPage"
+import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper"
 
 
 function ListingComponent(props) {
@@ -57,10 +57,10 @@ function ListingComponent(props) {
       return (
         <div className="flex-container" style={{justifyContent: "space-between"}}>
           {/* ISEO-TBD:  Let's add messaging icon */}
-          <MessageEditorIcon clickHandler={toggle} callerType="parent"/>
+          <MessageEditorIcon clickHandler={toggle} callerType="parent" parent_listing={listing}/>
 
           <SimpleModal show={modalShow} handleClose={hideModal}>
-            <ShowActiveListingPage type="pick listing" listingControl={listingControl}/>
+            <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
           </SimpleModal>
           <button className="btn btn-info" onClick={showModal}>
             Add Listing

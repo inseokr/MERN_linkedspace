@@ -1,4 +1,5 @@
 import React, { Component, useContext } from 'react';
+import shortid from 'shortid';
 import '../../app.css';
 import './MessageStyle.css';
 import OnlineStatus from './OnlineStatus';
@@ -18,9 +19,9 @@ function PickChattingParty(props) {
 	  <hr/>
 	</div>;
 
-	function handleClickFriend(_friend)
+	async function handleClickFriend(_friend)
 	{
-		// ISEO-TBD:
+		// note:
 		// update chatting context with selected friends
 		// selected friend will be added to shared_user_group
 		// <problem1> how to find a specific _3rd_party_listings?
@@ -31,27 +32,26 @@ function PickChattingParty(props) {
 		// ==> and current friend will be added through a callback or handler defined in
 		// ==> MessageContext.
 		addContactList(_friend);
-		
-		loadChattingDatabase();
+		//loadChattingDatabase();
 	}
 
 	function getFriend(_friend)
 	{
 		return (
-			<>
-			<div className="friendWrapper" onClick={() => handleClickFriend(_friend)}>
-				<div>
-		    		<img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
-		    	</div>
-		    	<div className="friendName">
-		    		<h5> {_friend.username} </h5>
-		    	</div>
-		    	<div>
-		    		<OnlineStatus marginLeft="auto"/>	
-		    	</div>
+			<div key={shortid.generate()}>
+				<div className="friendWrapper" key={_friend.id} onClick={() => handleClickFriend(_friend)}>
+					<div>
+			    		<img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
+			    	</div>
+			    	<div className="friendName">
+			    		<h5> {_friend.username} </h5>
+			    	</div>
+			    	<div>
+			    		<OnlineStatus marginLeft="auto"/>	
+			    	</div>
+				</div>
+				<hr/>
 			</div>
-			<hr/>
-			</>
 			)
 	}
 

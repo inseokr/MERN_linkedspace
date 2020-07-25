@@ -8,8 +8,8 @@ import { MessageContext } from '../../contexts/MessageContext';
 
 function CommonHeader (){
 
-  const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined, getDmChannelId } = useContext(GlobalContext);
-  const {loadChattingDatabase, switchChattingChannel} = useContext(MessageContext);
+  const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined} = useContext(GlobalContext);
+  const {loadChattingDatabase, switchChattingChannel, getDmChannelId} = useContext(MessageContext);
 
   console.log("loading commonHeader");
 
@@ -18,7 +18,7 @@ function CommonHeader (){
     {
       console.log("loading databases");
 
-      // ISEO-TBD: followinng 2 API should be called in sequence.
+      // note: followinng 2 API should be called in sequence.
       // It's not being called at all.
       console.log("loading friend list");
       const result1 = await loadFriendList();
@@ -65,8 +65,7 @@ function CommonHeader (){
                                             name: friendsList[0].username,
                                             distance: 1
                                           }};
-          switchChattingChannel(channelInfo);
-          loadChattingDatabase();
+          switchChattingChannel(channelInfo, true);
       }
 
   }, [currentUser, friendsList]);
