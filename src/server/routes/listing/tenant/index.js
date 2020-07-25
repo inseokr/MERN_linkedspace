@@ -529,8 +529,8 @@ router.post("/addChild", function(req, res){
 
 				// <note> the 3rd party listing could be added by either tenant or friends.
 				// It's a friend case.
-				let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username};
-				let _creatorOfChild  = {id: req.user._id, username: req.body.username};
+				let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
+				let _creatorOfChild  = {id: req.user._id, username: req.body.username, profile_picture: req.user.profile_picture};
 
 				_3rdparty_listing.created_by.id = foundListing.requester.id;
 				_3rdparty_listing.created_by.username = foundListing.requester.username;

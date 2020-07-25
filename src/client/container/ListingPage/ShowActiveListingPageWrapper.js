@@ -10,13 +10,17 @@ export default class ShowActiveListingPageWrapper extends Component {
     super(props);
 
     this.state = {pageType: props.type};
+
+    console.log("ShowActiveListingPageWrapper: constructor");
   }
 
   componentDidMount() {
+    console.log("ShowActiveListingPageWrapper: componentDidMount");
     this.context.fetchListingInfo(this.props.type);
   }
 
   componentWillUnmount() {
+    console.log("ShowActiveListingPageWrapper: componentWillUnmount");
     this.context.cleanupListingInfoType();
   }
 
@@ -26,6 +30,8 @@ export default class ShowActiveListingPageWrapper extends Component {
   }
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
+
+    console.log("ShowActiveListingPageWrapper: getSnapshotBeforeUpdate");
     
     if(prevProps.type!=this.props.type)
     {

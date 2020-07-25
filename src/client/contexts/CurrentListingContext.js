@@ -16,12 +16,19 @@ export function CurrentListingProvider(props) {
 
     async function fetchListingInfo(_type) {
 
+      console.log("ISEO: fetchListingInfo: _type =" + _type);
+      console.log("ISEO: ListingInfoType =" + ListingInfoType);
+
       if(ListingInfoType!=_type)
       {
         setListingInfoType(_type);
         // type
         // + own: created by the user
         // + friend: forwarded from other users
+        console.log("get_active_listing: type = " + _type);
+
+        if(_type=="child") _type = "own";
+
         fetch('/listing/get_active_listing/'+_type)
           .then(res => res.json())
           .then(listing => {
