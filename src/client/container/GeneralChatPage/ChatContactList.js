@@ -26,6 +26,8 @@ function ChatContactList() {
 
 	function  removeCurrentUserFromList(_list)
 	{
+		if(_list==null) return null;
+		
 		var filtered = _list.filter(function (_item) { return _item.username!=currentUser.username;});
 		return filtered;
 	}
