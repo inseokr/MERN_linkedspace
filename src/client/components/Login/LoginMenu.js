@@ -15,6 +15,20 @@ function LoginMenu()
                       <>
                       <span className="fa fa-comment"></span>
                       <span className="newMsgSignature">N</span></>: "";
+  
+  function editProfile()
+  {
+      return (
+        <img className="img-responsive center rounded-circle"
+          style={{
+                    maxHeight: '70%',
+                    height: '30px'
+                  }
+                 }
+          src={currentUser.profile_picture} alt="Edit Profile"/>
+      )
+  }
+
 
   return (
   	<>
@@ -59,13 +73,7 @@ function LoginMenu()
 
               <li className="nav-item">
                   <a className="nav-link" href="/profile">
-                      <img className="img-responsive center rounded-circle"
-                            style={{
-                                      maxHeight: '70%',
-                                      height: '30px'
-                                    }
-                                   }
-                            src={currentUser.profile_picture}/>
+                      {editProfile()}
                   </a>
               </li>
           </ul>
