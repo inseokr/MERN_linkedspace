@@ -1,4 +1,4 @@
-const createHTMLMapMarker = ({ OverlayView = google.maps.OverlayView, ...args }) => {
+const createHTMLMapMarker = ({ OverlayView = window.google.maps.OverlayView, ...args }) => {
   class HTMLMapMarker extends OverlayView {
     constructor() {
       super();
@@ -13,8 +13,8 @@ const createHTMLMapMarker = ({ OverlayView = google.maps.OverlayView, ...args })
       if (this.html) {
         this.div.innerHTML = this.html;
       }
-      google.maps.event.addDomListener(this.div, "click", event => {
-        google.maps.event.trigger(this, "click");
+      window.google.maps.event.addDomListener(this.div, "click", event => {
+        window.google.maps.event.trigger(this, "click");
       });
     }
 

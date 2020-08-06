@@ -54,9 +54,9 @@ export default class ShowActiveListingPageWrapper extends Component {
   render() {
     console.log("render");
     return (
-      <>
+      <div>
       <ShowActiveListingPage type={this.props.type} listingControl={this.props.listingControl}/>
-      </>
+      </div>
     );
   }
 }

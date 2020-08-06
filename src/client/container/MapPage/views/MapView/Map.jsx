@@ -14,14 +14,14 @@ function Map() {
 
     googleMap.addListener('dragend', function () {
       const idleListener = googleMap.addListener('idle', function () {
-        google.maps.event.removeListener(idleListener);
+        window.google.maps.event.removeListener(idleListener);
         filterListingsByBounds(constructBounds(googleMap.getBounds()), centerCoordinates(googleMap.getCenter()), zoom);
       });
     });
 
     googleMap.addListener('zoom_changed', function () {
       const idleListener = googleMap.addListener('idle', function () {
-        google.maps.event.removeListener(idleListener);
+        window.google.maps.event.removeListener(idleListener);
         filterListingsByBounds(constructBounds(googleMap.getBounds()), centerCoordinates(googleMap.getCenter()), googleMap.getZoom());
       });
     });

@@ -38,10 +38,10 @@ export default class ListingLandlordMainPage extends Component {
     render() {
         let footer = "";
         return (
-          <>
+          <div>
             {
               this.context.currentListing ? (
-                <>
+                <div>
                   <ListingCoverPage />
                   <div className="container no_border" style={{marginTop:"20px"}}>
                     <ListingIntro />
@@ -53,10 +53,10 @@ export default class ListingLandlordMainPage extends Component {
                     <ListingControlButtons />
                   </div>
                   {footer}
-                </>
-              ) : (<></>)
+                </div>
+              ) : (<div></div>)
             }
-          </>
+          </div>
         );
     }
 }

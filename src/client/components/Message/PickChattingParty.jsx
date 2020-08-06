@@ -72,7 +72,7 @@ function PickChattingParty(props) {
 	// go through the list of direct friends
 	let friends = friendsList.map((friend=> {
 	  // <note> need to skip friend in the shared_group
-	  if((name !== currentUser.username) && !checkGroup(friend.username)) {
+	  if((friend.username !== currentUser.username) && !checkGroup(friend.username)) {
 	    return getFriend(friend);
 	  }
 	}));

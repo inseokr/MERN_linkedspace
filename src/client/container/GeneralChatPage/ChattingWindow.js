@@ -6,7 +6,7 @@ import './GeneralChatMainPage.css';
 import ChattingMessageBox from './ChattingMessageBox';
 import { MessageContext } from '../../contexts/MessageContext';
 import { GlobalContext } from '../../contexts/GlobalContext';
-import sampleProfile from '../../../assets/images/Chinh - Vy.jpg';
+import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
 
 
 function ChattingWindow() {

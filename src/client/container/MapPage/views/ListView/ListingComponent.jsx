@@ -68,12 +68,12 @@ function ListingComponent(props) {
         </div>
       )
     } else {
-      return <></>;
+      return <div></div>;
     }
   }
 
   return (
-    <>
+    <div>
     <div>
     <ListItem>
       <Grid container>
@@ -100,12 +100,12 @@ function ListingComponent(props) {
               <Typography className={"description__bullets"} color={"textSecondary"} gutterBottom>
                 {listingAmenities}
               </Typography>
-            ) : (<></>)}
+            ) : (<div></div>)}
             {listingAccessibleSpaces.length > 0 ? (
               <Typography className={"description__bullets"} color={"textSecondary"} gutterBottom>
                 {listingAccessibleSpaces}
               </Typography>
-            ) : (<></>)}
+            ) : (<div></div>)}
             {addChildListingControl(props.childSupported)}
           </Paper>
         </Grid>
@@ -113,7 +113,7 @@ function ListingComponent(props) {
     </ListItem>
     </div>
 
-    </>
+    </div>
   );
 }
 

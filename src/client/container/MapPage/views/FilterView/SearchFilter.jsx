@@ -32,7 +32,7 @@ function SearchFilter() {
     setSearch(value);
   };
 
-  const onSubmit = () => {
+  const onSubmit = (event) => {
     event.preventDefault();
     if (interimSearch !== search && search.length > 0) {
       filterListingsBySearch(interimSearch);

@@ -36,14 +36,14 @@ export default class ListingTenantMainPage extends Component {
   getNumOfRoomMates() {
     if(this.context.currentListing.num_of_requested_roommates>0) {
       return (
-        <>
+        <div>
           <div className="sub_title" style={{marginTop: "20px "}}>
             Additional tenant?
           </div>
           <div className="_1ezjrwzo">
             {this.context.currentListing.num_of_requested_roommates}
           </div>
-        </>
+        </div>
       )
     }
     else return null;
@@ -95,7 +95,7 @@ export default class ListingTenantMainPage extends Component {
     preprocessingListing(this.context.currentListing, preferences);
 
     return (
-      <>
+      <div>
         <div className="_1xzp5ma3">
           Rental Preferences
         </div>
@@ -105,7 +105,7 @@ export default class ListingTenantMainPage extends Component {
             {FormatListItems(preferences, 3)}
           </div>
         </div>
-      </>
+      </div>
     )
   }
 
@@ -144,7 +144,7 @@ export default class ListingTenantMainPage extends Component {
 
   getContactInformation() {
     return (
-      <>
+      <div>
         <div style={{marginTop:"10px"}}>Contact</div>
         <div className="sub_title" style={{marginTop:"10px "}}>
           <ul  style={{listStyleType:"none"}}>
@@ -152,7 +152,7 @@ export default class ListingTenantMainPage extends Component {
             <li> E-mail: {this.context.currentListing.email} </li>
           </ul>
         </div>
-      </>
+      </div>
     )
   }
 
@@ -191,7 +191,7 @@ export default class ListingTenantMainPage extends Component {
   render() {
 
     if(this.context.currentListing===undefined) {
-      return (<> </>)
+      return (<div> </div>)
     }
 
     let footer = "";
@@ -199,7 +199,7 @@ export default class ListingTenantMainPage extends Component {
       this.context.currentListing.rental_preferences.num_of_rooms+"bedroom(s)" :
       "Whole unit";
     return (
-      <>
+      <div>
         <div className="row">
 
           <div className="col-3" style={{height:"600px", marginLeft:"30px", border:"none"}}>
@@ -295,7 +295,7 @@ export default class ListingTenantMainPage extends Component {
         </div>
 
         {footer}
-      </>
+      </div>
     );
   }
 }

@@ -10,7 +10,7 @@ function HostDetails()
 	const {currentListing} = useContext(CurrentListingContext);
 
 	return (
-		<>
+		<div>
 			<hr/>
 			<div className="_1xzp5ma3" style={{marginTop:"40px"}}>
 			  Interested in this property?
@@ -45,7 +45,7 @@ function HostDetails()
 			    </div>
 			  </div>
 			</div>
-		</>
+		</div>
 	);
 }
 

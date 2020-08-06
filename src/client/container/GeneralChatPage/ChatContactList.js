@@ -38,8 +38,8 @@ function ChatContactList() {
 	{
 		console.log("friendsList is not available yet.");
 		return (
-			<>
-	    	</>
+			<div>
+	    	</div>
 	    );
 	}
 
@@ -167,12 +167,13 @@ function ChatContactList() {
 	},[dmChannelContexts]);
 
 	
-    clickDefaultContact();
+	//ISEO-TBD: this may lead to infinite rendering
+    //clickDefaultContact();
 
   	return (
-	    <>
+	    <div>
 	    	{buildContacts()}
-	    </>
+	    </div>
   	);
 }
 

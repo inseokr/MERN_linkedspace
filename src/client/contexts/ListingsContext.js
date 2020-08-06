@@ -161,7 +161,7 @@ export function ListingsProvider(props) {
   }
 
   function createMarker(googleMap, coordinates) { // Construct a marker using createHTMLMapMarker
-    const latLng = new google.maps.LatLng(coordinates.lat, coordinates.lng);
+    const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
     return createHTMLMapMarker({
       latlng: latLng,
       map: googleMap,

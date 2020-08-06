@@ -59,9 +59,9 @@ function ChildListingsView(props)
 	  });
 
 	  return (
-	  		<>
+	  		<div>
 	  			{childListingsViews}
-	  		</>
+	  		</div>
 	  	)
 	}
 	else
