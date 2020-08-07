@@ -50,7 +50,6 @@ export default class App extends Component {
   }
 
   render() {
-    console.log("WDFWDCWEDISDWEKRIWEDWED", this.state);
     return (
       <GlobalProvider>
         <ListingsProvider>

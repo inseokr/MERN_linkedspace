@@ -375,8 +375,8 @@ app.get("/scripts/:filename", function(req, res){
   res.sendFile(path.join(__dirname, `/scripts/${fileName}`));
 });
 
-app.listen(process.env.PORT, process.env.IP, function(){
-//app.listen(6000, process.env.IP, function(){
+//app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(3000, process.env.IP, function(){
    console.log("Linkedspaces Has Started!" + "PORT = " + process.env.PORT + " IP = " + process.env.IP);
 });
 

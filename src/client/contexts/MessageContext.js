@@ -389,6 +389,8 @@ export function MessageContextProvider(props) {
 
   function getDmChannelId(friend_name)
   {
+    if(currentUser==null) return "";
+    
     let dmChannelNameSuffix = 
       (currentUser.username>friend_name)?
        friend_name + "-dm-" +  currentUser.username:
