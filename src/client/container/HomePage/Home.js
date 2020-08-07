@@ -44,7 +44,7 @@ export default class Home extends Component {
 
   	// ISEO: how can I show home when fetchedMenu fails?
   	//if(this.state.fetchedMenu==false) return null;
-  	if(this.state.fetchedMenu==false) return (<> <div> <h2> Home </h2> </div> </>);;
+  	if(this.state.fetchedMenu==false) return (<div> <h2> Home </h2> </div>);;
 
   	let output;
 
@@ -59,9 +59,9 @@ export default class Home extends Component {
   	}
 
   	return (
-	  	<>
+	  	<div>
 	  		{output}
-	  	</>
+	  	</div>
   	);
   }
 

@@ -27,7 +27,7 @@ function ChatPartySummary() {
 
 
   return (
-    <>
+    <React.Fragment>
         <div className="ChatPartyName">
           {(currChannelInfo!=undefined)? currChannelInfo.dm.name: "Chinh, Le"}
         </div>
@@ -35,7 +35,7 @@ function ChatPartySummary() {
           {(currChannelInfo!=undefined)? getSocialDistanceString(currChannelInfo.dm.distance): "1st"}
         </div>
         <OnlineStatus />
-    </>
+    </React.Fragment>
   );
 }
 

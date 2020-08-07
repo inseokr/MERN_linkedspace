@@ -12,12 +12,26 @@ function LoginMenu()
   const {checkIfAnyNewMsgArrived} = useContext(MessageContext);
 
   let newMsgMarker = (checkIfAnyNewMsgArrived()==true)?
-                      <>
+                      <div>
                       <span className="fa fa-comment"></span>
-                      <span className="newMsgSignature">N</span></>: "";
+                      <span className="newMsgSignature">N</span></div>: "";
+  
+  function editProfile()
+  {
+      return (
+        <img className="img-responsive center rounded-circle"
+          style={{
+                    maxHeight: '70%',
+                    height: '30px'
+                  }
+                 }
+          src={currentUser.profile_picture} alt="Edit Profile"/>
+      )
+  }
+
 
   return (
-  	<>
+  	<div>
     <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
       <div className="container">
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,27 +66,21 @@ function LoginMenu()
                 </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/logout" style={{position: 'relative'}}>
+                <Link className="nav-link" to="/Logout">
                   Logout
-                </a>
+                </Link>
               </li>
 
               <li className="nav-item">
-                  <a className="nav-link" href="/profile">
-                      <img className="img-responsive center rounded-circle"
-                            style={{
-                                      maxHeight: '70%',
-                                      height: '30px'
-                                    }
-                                   }
-                            src={currentUser.profile_picture}/>
-                  </a>
+                <Link className="nav-link" to="/EditProfile">
+                      {editProfile()}
+                </Link>
               </li>
           </ul>
         </div>
       </div>
       </nav>
-    </>
+    </div>
   );
  }
 

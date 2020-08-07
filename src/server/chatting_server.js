@@ -80,7 +80,7 @@ function updateUserSocketMap(currentSocket, user_name)
 
     if(bDuplicate==true) return;
 
-    console.log("Updating socketToUserMap for user = " + user_name);
+    //console.log("Updating socketToUserMap for user = " + user_name);
     userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
     socketToUserMap[currentSocket.id] = user_name;
@@ -179,7 +179,7 @@ function processChatMsgHeader(data)
         return {targets: null, id: channel_id, message: msg};
     }
     else {
-        console.log("channel found. channel ID = " + channel_id)
+        //console.log("channel found. channel ID = " + channel_id)
         targetSockets = getListOfSocketsByChannelId(channel_id);
         return {targets: targetSockets, id: channel_id, sender: sender, message: msg};
     }
@@ -198,7 +198,7 @@ function routeMessage(data, incomingSocket)
                 return;
             }
             // add to history
-            console.log("Writer = " + socketToUserMap[incomingSocket.id]);
+            //console.log("Writer = " + socketToUserMap[incomingSocket.id]);
 
             const chat = {writer: socketToUserMap[incomingSocket.id], message: message, timestamp: Date.now()};
             channel.chat_history.push(chat);
@@ -206,11 +206,11 @@ function routeMessage(data, incomingSocket)
 
             targets.forEach(function each(target) {
                 if (target!=incomingSocket && target.readyState === WebSocket.OPEN) {
-                    console.log("forwarding the packet");
+                    //console.log("forwarding the packet");
                     target.send(data);
                 }
                 else {
-                    console.log("Same socket");
+                    //console.log("Same socket");
                 }
             });
         });         
@@ -256,11 +256,11 @@ module.exports = function() {
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();
         
-        console.log("New connection: UUID = " + ws.id);
+        //console.log("New connection: UUID = " + ws.id);
 
         ws.on('message', function incoming(data) {
 
-            console.log("Chat Server: received data = " + data + "id = " + ws.id);
+            //console.log("Chat Server: received data = " + data + "id = " + ws.id);
             // It goes through all sockets registered to this server
             const result = handleCtrlMsg(data);
 
@@ -272,7 +272,7 @@ module.exports = function() {
                         // <note> we may need to keep 2 separate mapping then?
                         // <note> how to handle the case when there are multiple sockets for the same users?
                         updateUserSocketMap(ws, result[2]);
-                        console.log("Yay, now I could register the socket");
+                        //console.log("Yay, now I could register the socket");
                         break;
                     default: break;
                 }
@@ -286,7 +286,7 @@ module.exports = function() {
             // ISEO-TBD: Need to remove this socket from all the map.
             // List all the maps to be updated.
             removeSocket(ws);
-            console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
+            //console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
         });
     });
 }

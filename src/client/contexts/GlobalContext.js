@@ -1,5 +1,5 @@
 import React, {createContext, useState} from "react";
-import sampleProfile from "../../assets/images/Chinh - Vy.jpg";
+import sampleProfile from "../assets/images/Chinh - Vy.jpg";
 
 export const GlobalContext = createContext();
 

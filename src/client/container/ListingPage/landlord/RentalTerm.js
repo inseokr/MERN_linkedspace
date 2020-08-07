@@ -10,7 +10,7 @@ function RentalTerm()
 	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
-		<>
+		<div>
 			<hr/>
 			<div className="_1xzp5ma3" style={{marginTop:"40px"}}>
 			  Rental terms
@@ -33,7 +33,7 @@ function RentalTerm()
 			    </div>
 			  </div>
 			</div> {/* Rental terms*/}
-		</>
+		</div>
 	);
 }
 

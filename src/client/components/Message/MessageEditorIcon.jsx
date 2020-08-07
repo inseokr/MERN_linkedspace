@@ -138,7 +138,7 @@ function MessageEditorIcon(props) {
 
 
 	return (
-	<>
+	<div>
 		<SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
 			<PickChattingParty group={user_group}/>
 		</SimpleModal>
@@ -149,7 +149,7 @@ function MessageEditorIcon(props) {
 				</path>
 			</svg>
 		</div>
-	</>
+	</div>
 	);
 	}
 

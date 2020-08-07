@@ -3,7 +3,7 @@
   border: 1px solid #dee2e6!important;
   grid-template-columns:180px; 
   grid-auto-rows: 60px;
-  background-image: url("../../../assets/images/wooden_background_v1.jpeg") !important;
+  background-image: url("../../assets/images/wooden_background_v1.jpeg") !important;
   opacity: 1;
 } 
 

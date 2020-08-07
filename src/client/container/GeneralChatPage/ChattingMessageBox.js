@@ -34,7 +34,7 @@ function ChattingMessageBox(props) {
     else 
     {
       return (
-        <>
+        <React.Fragment>
         {newMsgMarker}
         <div className="ChattingMessageBoxWrapper AlignToRight">
 
@@ -51,7 +51,7 @@ function ChattingMessageBox(props) {
                 </div>
             </div>
         </div>
-        </>
+        </React.Fragment>
       );
     }
 }

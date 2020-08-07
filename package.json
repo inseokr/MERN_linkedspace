@@ -5,13 +5,15 @@
   "main": "src/server/index.js",
   "scripts": {
     "build": "webpack --mode development",
-    "start": "npm run build && node ./src/server/app.js",
+    "client_start": "npm run build && react-scripts start",
+    "start": "concurrently \"node ./src/server/app.js\" \"npm run client_start\"",
     "client": "webpack-dev-server --mosrc/server/index.jsde development --devtool inline-source-map --hot",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Sandeep Raveesh",
   "license": "ISC",
+  "proxy": "http://10.0.0.54:3000",
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.1.8",
     "babel-polyfill": "^6.26.0",
@@ -35,8 +37,8 @@
     "websocket": "^1.0.31"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
@@ -93,7 +95,7 @@
     "react-redux": "^5.0.6",
     "react-router-dom": "^5.1.2",
     "react-router-native": "^5.1.2",
-    "react-scripts": "1.1.5",
+    "react-scripts": "^1.1.5",
     "react-virtualized": "^9.21.1",
     "semantic-ui-react": "^0.76.0",
     "style-loader": "^0.23.1",

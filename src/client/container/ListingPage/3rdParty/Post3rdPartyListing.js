@@ -221,7 +221,7 @@ function Post3rdPartyListing()
 	}
 
 
-	function _exit()
+	function _exit(evt)
 	{
 		evt.preventDefault();
 		history.push('/');

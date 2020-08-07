@@ -1,0 +1,99 @@
+Let's make node.js as a API server.
+
+Currently browser will send the URL request to backend server first.
+
+Let's not rush... I need to go back to fundamental.
+Let's see how react and node.js work together first.
+
+Question 1> 
+
+
+
+Trial#1: run client using react-scripts
+
+problem1> how to start it?
+
+"scripts": {
+    "build": "webpack --mode development",
+    "client_start": "react-scripts start",
+    "start": "npm run build && node ./src/server/app.js",
+    "client": "webpack-dev-server --mosrc/server/index.jsde development --devtool inline-source-map --hot",
+    "server": "nodemon src/server/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+
+  npm client_start won't work.
+  Please use "npm run client_start" instead.
+
+  problem2> It's looking for index.js
+  index.js is located at {project_root}/src/index.js
+  In my project, it's located at {project_root}/src/client
+  	option1> how to change the directory?
+  	** Hmm... google search doesn't get me a good answer yet... 
+
+  	webpack has a webpack.config.js file, which is used for specifying the configuration settings. It typically looks something like this:
+
+	const path = require('path');
+
+	module.exports = {
+	  entry: './src/index.js',
+	  output: {
+	    path: path.resolve(__dirname, 'dist'),
+	    filename: 'bundle.js'
+	  }
+	};
+
+	I noticed the necessary adjustment, but why not  working???
+	Why array instead of just single item? What is babel-polyfill by the way?
+
+	entry: ['babel-polyfill', './src/client/index.js'],
+    output: {
+      path: path.join(__dirname, outputDirectory),
+      filename: 'bundle.js'
+    },
+
+    It doesn't work!!!! Dang...
+    Option2> Let's just try react part only with some adjustement... 
+
+    I was able to run it. Here comes the steps.
+    1> copy all the files under client directory under "/src" directories
+    2> adjust the entry point accordingly
+    3> move asset directory to one level up
+
+    Now I have another problem.... compilation errors... dang... it doesn't understand <>??
+
+
+      13 |
+  14 |   let newMsgMarker = (checkIfAnyNewMsgArrived()==true)?
+> 15 |                       <>
+     |                        ^
+  16 |                       <span className="fa fa-comment"></span>
+  17 |                       <span className="newMsgSignature">N</span></>: "";
+
+
+  hmmm... somehow it doesn't understand "<>" why is that?
+  ==> May need to upgrade Babel?
+  #npm -save install @babel/core
+  Nope... I still have the problem... dang... I'm using this syntax everywhere... should find a way to address it. 
+  #npm --
+
+
+
+ Lots of interesting problems.... dang... it turned out lots of warnings in my codes...
+
+ I got it working... we should add the following item to package.json
+ "proxy": "http://localhost:3030"
+
+ However we should handle login/signup page though.
+ It's currently handled by node.js.
+
+ What do we need then?
+
+ 1. implement react login/signup
+ 2. re-factor project structure
+ 3. fix all the warnings
+ 4. <> not supported
+ 5. chatting per listing rendering problem.
+
+ 
+
