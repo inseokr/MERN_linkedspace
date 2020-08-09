@@ -9,6 +9,7 @@ function FriendRecommendation()
 
 	const profile_style = {
 		maxWidth: "100%", 
+		maxHeight: "100%",
 		marginTop: "10px"
 	};
 
@@ -30,7 +31,7 @@ function FriendRecommendation()
 					<div class="friend_information">
 						<span class="bold_fonts">{network_info.recommended_friends_list[i].name}</span>
 						<br />
-						<span class="normal_fonts">{network_info.recommended_friends_list[i].address.city + "," + network_info.recommended_friends_list[i].address.state}</span>
+						<span class="normal_fonts">{network_info.recommended_friends_list[i].address.city},{network_info.recommended_friends_list[i].address.state}</span>
 					</div>
 
 					<form role="form" action={"/mynetwork/"+network_info.recommended_friends_list[i].id+"/friend_request"} method="post">
@@ -85,12 +86,12 @@ function FriendRecommendation()
 			<div class="bottom-shadow">
 				<span style={{textAlign:"center"}}><h3> Friends Recommendation </h3></span>
 				<hr/>
-				<div class="d-flex justify-content-between">
+				<div class="d-flex justify-content-between" style={{flexWrap: "wrap"}}>
 					{getRecommendedFriends()}
 				</div>
 
 				<hr/>
-				<div class="d-flex justify-content-between">
+				<div class="d-flex justify-content-between" style={{flexWrap: "wrap"}}>
 					{getPendingFriendRequest()}
 				</div>
 			</div>

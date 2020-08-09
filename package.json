@@ -13,7 +13,7 @@
   },
   "author": "Sandeep Raveesh",
   "license": "ISC",
-  "proxy": "http://10.0.0.54:3000",
+  "proxy": "http://localhost:3000",
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.1.8",
     "babel-polyfill": "^6.26.0",

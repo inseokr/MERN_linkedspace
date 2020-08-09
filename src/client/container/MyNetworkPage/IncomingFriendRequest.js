@@ -13,6 +13,7 @@ function IncomingFriendRequest()
 
 		let profile_style = {
 			maxWidth: "100%",
+			maxHeight: "100%",
 			marginTop:"10px"
 		};
 
@@ -30,7 +31,7 @@ function IncomingFriendRequest()
 					<div class="friend_information">
 						<span class="bold_fonts">{network_info.incoming_friends_request_list[i].name}</span>
 						<br />
-						<span class="normal_fonts">{network_info.incoming_friends_request_list[i].address.city}+","+{network_info.incoming_friends_request_list[i].address.state}</span>
+						<span class="normal_fonts">{network_info.incoming_friends_request_list[i].address.city},{network_info.incoming_friends_request_list[i].address.state}</span>
 					</div>
 
 					<form role="form" action={"/mynetwork/"+network_info.incoming_friends_request_list[i].id+"/friend_accept"} method="post">
