@@ -1,4 +1,4 @@
-import React, { Component, createContext, useContext, useState, useEffect} from 'react';
+import React, { Component, createContext, useContext, useState, useEffect, Fragment} from 'react';
 import Checkbox from '@material-ui/core/Checkbox'
 import {Link} from 'react-router-dom';
 import '../../app.css';
@@ -45,7 +45,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
 
     if(type==="own") {
       return (
-        <div>
+        <React.Fragment>
           <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"/edit"} method="post">
             <div className="action">
               <button className="btn btn-info">Edit</button>
@@ -57,14 +57,14 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
               <button className="btn btn-danger">Delete</button>
             </div>
           </form>
-        </div>
+        </React.Fragment>
       )
     } else if(type==="child") {
       return (
-        <div>
+        <React.Fragment>
           <input type="checkbox" onClick={handleOnClick} value=""/>
           <label style={{marginLeft: "10px", color: "#6b2525"}}>Check to add</label>
-        </div>
+        </React.Fragment>
       )
     } else {
       // 1. listing creator
