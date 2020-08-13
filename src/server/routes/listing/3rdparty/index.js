@@ -53,6 +53,7 @@ router.post("/new", function(req, res){
 
 	newListing.requester.id       = req.user._id;
 	newListing.requester.username = req.user.username;
+	newListing.requester.profile_picture = req.user.profile_picture;
 
 	newListing.listingSource      = req.body.listingSource;
 	newListing.listingUrl         = req.body.sourceUrl;
