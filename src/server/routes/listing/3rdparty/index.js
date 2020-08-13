@@ -79,7 +79,8 @@ router.post("/new", function(req, res){
 	newListing.save(function(err){
 		if(err) {
 	    	console.log("New Listing Save Failure");
-	    	res.render("/");
+	    	console.log("error = " + err);
+	    	res.redirect("/");
 	    }
 
 	    User.findById(req.user._id, function(err, foundUser){
