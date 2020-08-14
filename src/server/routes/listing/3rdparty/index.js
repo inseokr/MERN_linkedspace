@@ -94,6 +94,46 @@ router.post("/new", function(req, res){
 });
 
 
+
+router.post("/:listing_id/new", function(req, res){
+
+	_3rdPartyListing.findById(req.params.listing_id, function(err, foundListing){
+
+		console.log("Updating 3rdparty posting");
+
+		var filename = path.parse(req.body.file_name).base;
+	    
+	    foundListing.listingSource = req.body.listingSource;
+	    foundListing.listingUrl = req.body.sourceUrl;
+	    foundListing.listingSummary = req.body.rentalSummary;
+	    foundListing.rentalPrice = req.body.rentalPrice;
+	    foundListing.location = req.body.location;
+
+
+	    let original_path = serverPath + picturePath + filename;
+		let new_path = serverPath + picturePath + foundListing.requester.id + "_" +filename;
+		fs.rename(original_path, new_path, function(err){
+			if(err) throw err;
+			console.log('File renamed successfully')
+		})
+
+
+		// ISEO-TBD: The path should start from "/public/..."?
+		foundListing.coverPhoto.path = picturePath + foundListing.requester.id + "_" +filename;
+
+    	foundListing.save(function(err){
+
+    		if(err) {
+		    	console.log("Listing Save Failure");
+    			res.redirect("/");
+    		}
+
+			res.redirect("/");
+    	});
+
+	});
+});
+
 return router;
 
 }

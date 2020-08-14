@@ -46,11 +46,11 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
     if(type==="own") {
       return (
         <React.Fragment>
-          <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"/edit"} method="post">
+          <Link to={{pathname: "/3rdParty", listing_db: listing}}>
             <div className="action">
               <button className="btn btn-info">Edit</button>
             </div>
-          </form>
+          </Link>
 
           <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"?_method=DELETE"} method="post">
             <div className="action">
