@@ -73,3 +73,13 @@ span.newMsgSignature {
   margin-left: 5px;
   margin-top: -8px;
 }
+
+.ToggleMapAndMessage {
+    display: flex;
+    justify-content: space-around;
+    position: fixed;
+    top: 15px;
+    right: 10px;
+    z-index: 2000;
+
+}

@@ -9,6 +9,7 @@ import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboar
 import InitiateMap from '../../MapPage/views/MapView/InitiateMap';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
+import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
 
 import { ListingsContext } from '../../../contexts/ListingsContext';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
@@ -106,6 +107,7 @@ function TenantListingDashBoard(props) {
         <Grid component="main">
           <CssBaseline />
           <Box className="App" component="div" display="flex" flexDirection="column">
+            <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={toggleRightPaneMode}/>
             <Grid container alignContent="stretch">
               <Grid item xs={6}>
                 <FilterView/>
