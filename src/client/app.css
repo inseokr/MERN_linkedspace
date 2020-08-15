@@ -74,12 +74,35 @@ span.newMsgSignature {
   margin-top: -8px;
 }
 
-.ToggleMapAndMessage {
+.SlidingToggleSwitch {
     display: flex;
     justify-content: space-around;
     position: fixed;
-    top: 15px;
+    top: 38px;
     right: 10px;
     z-index: 2000;
+}
 
+.ToggleCaption {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 1rem;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
+}
+
+.SelectedCaption {
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 500;
+}
+
+.ToggleLeft {
+  margin-top: 3px;
+  margin-right: 4px;
+}
+
+.ToggleRight {
+  margin-top: 3px;
+  margin-left: 4px;
 }
