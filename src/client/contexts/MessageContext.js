@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import ChattingMessageBox from "../container/GeneralChatPage/ChattingMessageBox";
-import sampleProfile from "../assets/images/Chinh - Vy.jpg";
 import messageAlertSound from "../assets/musics/eventually.mp3";
 import axios from 'axios';
 

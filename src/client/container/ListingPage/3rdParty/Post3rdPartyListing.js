@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {Redirect, useHistory} from 'react-router-dom'
+import {Redirect, useHistory, useLocation} from 'react-router-dom';
+import shortid from 'shortid';
+
 import '../common/step_wizard.css';
 import '../common/file_upload.css';
 
@@ -194,13 +196,43 @@ function getListingSummary()
 
 
 
-function Post3rdPartyListing()
+
+function Post3rdPartyListing(props)
 {
 	const history = useHistory();
+	const [currentListing, setCurrentListing] = useState(null);
+	const [currentLocation, setCurrentLocation] = useState(null);
+	const [listingId, setListingId] = useState("");
 	// ISEO-TBD
 	// : It should be replaced with contexts
 	let listing_info = {listing_id: 0}
 
+
+	function loadListingData(listing)
+	{
+		if(listing==null) return;
+
+		$('#listingSource').val(listing.source);
+		$('#sourceUrl').val(listing.url);
+		$('#rentalPrice').val(listing.price);
+		$('#rentalSummary').val(listing.summary);
+		// Let's load the data!!
+
+		if(listing.picture!=undefined)
+		{
+			$('#imagePreview-1').css('background-image', 'url('+listing.picture+')');
+
+			$("#imagePreview-1").css('background-position', '0% 10%');
+			$("#imagePreview-1").css('background-size', '100%');
+
+			$("#imagePreview-1").hide();
+			$("#imagePreview-1").fadeIn(650);
+
+			$("#previewLabel-1").css('opacity', 0);
+
+			$("#avatar-upload-1").css('display', 'inline-block');
+		}
+	}
 
 	function getListingSource()
 	{
@@ -208,11 +240,11 @@ function Post3rdPartyListing()
 
 		return (
 		 <div class="form-group" style={{width:"30%"}}>
-          <label class="control-label">Listing Source</label>
+          <label className="control-label">Listing Source</label>
 			<select className="form-control" required="required" name="listingSource" id="listingSource" style={{width:"80%"}} placeholder="">
                 {listOfSources.map(function(source, idx){
                 	return (
-                		<option value={source}> {source} </option>
+                		<option key={shortid.generate()} value={source}> {source} </option>
                 	)
                 })}      
             </select>
@@ -226,6 +258,22 @@ function Post3rdPartyListing()
 		evt.preventDefault();
 		history.push('/');
 	}
+
+
+	if(props.location!=undefined && props.location.listing_db!=undefined)
+	{
+		if(currentListing==null)
+		{
+			setCurrentListing(props.location.listing_db);
+			setCurrentLocation(props.location.listing_db.location);
+			setListingId(props.location.listing_db.id+'/');
+		}
+	}
+
+	useEffect(() => {
+		console.log("useEffect called");
+		loadListingData(currentListing);
+  	}, currentListing);
 
 	return (
 		<div>
@@ -246,7 +294,7 @@ function Post3rdPartyListing()
 				    </div>
 				</div>
 
-				<form role="form" action="/listing/3rdparty/new" method="POST">
+				<form role="form" action={"/listing/3rdparty/"+listingId+"new"} method="POST">
 
 				    <div className="row setup-content" id="step-1" style={{marginTop:"30px"}}>
 				      <div className="col-md-6 offset-md-3">
@@ -283,7 +331,7 @@ function Post3rdPartyListing()
 				            		<h5> Location </h5>
 				          		</div>
 				          		 <hr/>
-					      		<CollectLocationInfo />
+					      		<CollectLocationInfo location={currentLocation}/>
 				      		</div>
 
 				      		<hr/>

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, Fragment } from 'react';
 import '../../app.css';
 import Search from "../../container/SearchPage/SearchPage"
 import {Link} from 'react-router-dom';
@@ -12,9 +12,9 @@ function LoginMenu()
   const {checkIfAnyNewMsgArrived} = useContext(MessageContext);
 
   let newMsgMarker = (checkIfAnyNewMsgArrived()==true)?
-                      <div>
+                      <React.Fragment>
                       <span className="fa fa-comment"></span>
-                      <span className="newMsgSignature">N</span></div>: "";
+                      <span className="newMsgSignature">N</span></React.Fragment>: "";
   
   function editProfile()
   {

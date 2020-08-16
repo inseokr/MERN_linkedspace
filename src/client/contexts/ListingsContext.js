@@ -157,6 +157,9 @@ export function ListingsProvider(props) {
 
   function initGoogleMap(googleMapRef, zoom, center) { // Initialize the google map
     console.log("initGoogleMap", googleMapRef, zoom, center);
+
+    if(window.google==undefined) return null;
+    
     return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center, mapTypeControl: false, streetViewControl: false});
   }
 

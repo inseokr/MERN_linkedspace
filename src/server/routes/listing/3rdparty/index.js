@@ -53,6 +53,7 @@ router.post("/new", function(req, res){
 
 	newListing.requester.id       = req.user._id;
 	newListing.requester.username = req.user.username;
+	newListing.requester.profile_picture = req.user.profile_picture;
 
 	newListing.listingSource      = req.body.listingSource;
 	newListing.listingUrl         = req.body.sourceUrl;
@@ -79,7 +80,8 @@ router.post("/new", function(req, res){
 	newListing.save(function(err){
 		if(err) {
 	    	console.log("New Listing Save Failure");
-	    	res.render("/");
+	    	console.log("error = " + err);
+	    	res.redirect("/");
 	    }
 
 	    User.findById(req.user._id, function(err, foundUser){
@@ -91,6 +93,46 @@ router.post("/new", function(req, res){
 	res.redirect("/");
 });
 
+
+
+router.post("/:listing_id/new", function(req, res){
+
+	_3rdPartyListing.findById(req.params.listing_id, function(err, foundListing){
+
+		console.log("Updating 3rdparty posting");
+
+		var filename = path.parse(req.body.file_name).base;
+	    
+	    foundListing.listingSource = req.body.listingSource;
+	    foundListing.listingUrl = req.body.sourceUrl;
+	    foundListing.listingSummary = req.body.rentalSummary;
+	    foundListing.rentalPrice = req.body.rentalPrice;
+	    foundListing.location = req.body.location;
+
+
+	    let original_path = serverPath + picturePath + filename;
+		let new_path = serverPath + picturePath + foundListing.requester.id + "_" +filename;
+		fs.rename(original_path, new_path, function(err){
+			if(err) throw err;
+			console.log('File renamed successfully')
+		})
+
+
+		// ISEO-TBD: The path should start from "/public/..."?
+		foundListing.coverPhoto.path = picturePath + foundListing.requester.id + "_" +filename;
+
+    	foundListing.save(function(err){
+
+    		if(err) {
+		    	console.log("Listing Save Failure");
+    			res.redirect("/");
+    		}
+
+			res.redirect("/");
+    	});
+
+	});
+});
 
 return router;
 

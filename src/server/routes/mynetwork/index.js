@@ -100,9 +100,9 @@ module.exports = function(app) {
 					   (requestedAlready(curr_user, user._id)==false) &&
 					   (isDirectFriend(curr_user, user._id)==false))
 					{
-						var friend = {profile_picture: "../public/user_resources/pictures/Chinh - Vy.jpg", 
+						var friend = {profile_picture: user.profile_picture, 
 						              name: user.firstname + user.lastname, 
-						              address: {city: "San Jose", state: "CA"},
+						              address: {city: user.address.city, state: user.address.state},
 						              id: user._id};
 						recommended_friends_list.push(friend);
 					}

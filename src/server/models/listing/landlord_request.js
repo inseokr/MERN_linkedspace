@@ -6,7 +6,8 @@ var LandlordRequestSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
     },
-    username: String
+    username: String,
+    profile_picture: String
   },
 
   listingType: {type: String, default: "landlord"},
@@ -67,7 +68,7 @@ var LandlordRequestSchema = new mongoose.Schema({
       city: String,
       state: String,
       country: String,
-      zipcode: Number
+      zipcode: String
     },
     coordinates: {
       lat: Number,

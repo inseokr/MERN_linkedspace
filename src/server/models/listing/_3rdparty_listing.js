@@ -34,7 +34,7 @@ var _3rdPartyListingSchema = new mongoose.Schema({
       city: String,
       state: String,
       country: String,
-      zipcode: Number
+      zipcode: String
     },
 
     coordinates: {
