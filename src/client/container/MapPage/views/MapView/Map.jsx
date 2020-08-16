@@ -30,7 +30,7 @@ function Map() {
       let bounds = new window.google.maps.LatLngBounds();
       filteredListings.map(listing => {
         const coordinates = listing.rental_property_information.coordinates;
-        const marker = createMarker(googleMap, coordinates);
+        const marker = createMarker(googleMap, coordinates, "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg");
         marker.addListener("click", () => {
           alert("Clicked!");
         });
@@ -38,29 +38,6 @@ function Map() {
       });
     }
   }, [filteredListings]);
-
-  // const initGoogleMap = () => { // Initialize the google map
-  //   return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center});
-  // };
-  //
-  // const createMarker = (coordinates) => {
-  //   const latLng = new google.maps.LatLng(coordinates.lat, coordinates.lng);
-  //   return createHTMLMapMarker({
-  //     latlng: latLng,
-  //     map: googleMap,
-  //     html: `<img id="marker" src="/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg">`
-  //   });
-  // };
-  //
-  // const constructBounds = (bounds) => {
-  //   const td = bounds["Ya"];
-  //   const pd = bounds["Ua"];
-  //   return {"northeast": {"lat": td["j"], "lng": pd["j"]}, "southwest": {"lat": td["i"], "lng": pd["i"]}}
-  // };
-  //
-  // const centerCoordinates = (center) => {
-  //   return {lat: center.lat(), lng: center.lng()}
-  // };
 
   return <div id="mapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>;
 }
