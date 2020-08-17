@@ -4,9 +4,9 @@ import '../../app.css';
 import Search from '../SearchPage/SearchPage';
 import MessageSummary from '../../components/Message/MessageSummary';
 
-import myFriend1 from '../../../assets/images/Peter.jpg';
-import myFriend2 from '../../../assets/images/Joongho.jpg';
-import myFriend3 from '../../../assets/images/Chinh - Vy.jpg';
+import myFriend1 from '../../assets/images/Peter.jpg';
+import myFriend2 from '../../assets/images/Joongho.jpg';
+import myFriend3 from '../../assets/images/Chinh - Vy.jpg';
 
 function MessageSummaryPanel() {
   const msg1 = {

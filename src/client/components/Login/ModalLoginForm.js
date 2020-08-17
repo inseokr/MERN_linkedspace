@@ -1,9 +1,11 @@
 
 import React, { Component } from 'react';
+import {Link, Redirect} from 'react-router-dom';
 import '../../app.css';
 
 var modalContentStyle = {
-	width: '300px !important'
+	marginTop: '70px',
+	width: '300px'
 };
 
 var modalTitleStyle = {
@@ -13,7 +15,7 @@ var modalTitleStyle = {
 var mdFormStyle = {
 	margin: 'auto',
 	marginTop: '20px',
-	marginBottom: '10px !important'
+	marginBottom: '10px'
 };
 
 var facebookImgStyle = {
@@ -26,7 +28,7 @@ var strikeThroughStyle = {
 };
 
 var mdFormBottom = {
-	marginBottom: '10px !important'
+	marginBottom: '10px'
 };
 
 var mdFormBackground = {
@@ -34,19 +36,34 @@ var mdFormBackground = {
 };
 
 var marginBottom5x = {
-	marginBottom: '5px !important'
+	marginBottom: '5px'
 };
 
 export default class ModalLoginForm extends Component {
   state = { };
 
+  constructor(props) {
+  	super(props);
+  }
+
   componentDidMount() {
   }
 
+
   render() {
+	console.log("rendering ModalLoginForm. display = " + this.props.display);
+	const displayStyle = (this.props.display==true) ? {display: "block", opacity: "1"} : {display: "none"};
+
+	if(this.props.display==false) {
+		return (
+			<div>
+				<Redirect to='/' />
+			</div>
+			);
+	}
+
     return (
-    	<>
-		<div className="modal fade" id="modalLoginForm" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">
+		<div className="modal fade" style={displayStyle} id="modalLoginForm" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">
 
 		  <div className="modal-dialog" role="document">
 
@@ -105,7 +122,6 @@ export default class ModalLoginForm extends Component {
 		  </div>
 
 		</div>
-        </>
     );
   }
  }

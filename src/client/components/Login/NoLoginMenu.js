@@ -1,16 +1,35 @@
 import React, { Component } from 'react';
+import {Link} from 'react-router-dom';
 import '../../app.css';
 import Search from "../../container/SearchPage/SearchPage"
+
+function handleOnClick() {
+  console.log("Login Clicked");
+}
+
 
 export default class NoLoginMenu extends Component {
   state = { };
 
+  constructor(props) {
+    super(props);
+
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+  }
+
   componentDidMount() {
   }
 
+
+  handleLoginClick() {
+    console.log("handleLoginClick");
+    this.props.loginClickHandler();
+  } 
+
+
   render() {
     return (
-    	<>
+    	<div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div className="container">
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,17 +42,19 @@ export default class NoLoginMenu extends Component {
                 <a className="nav-link" href="#">About</a>
               </li>
 
-              <li className="nav-item">
-                <a href="/react_login" data-toggle = "modal" data-target= "#modalLoginForm" className="nav-link">Login</a>
+              <li className="nav-item" >
+                 <a className="nav-link" onClick={this.handleLoginClick} href="#">Login</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/signup" >Sign up</a>
+                <Link className="nav-link" to="/Signup">
+                  Sign up
+                </Link>
               </li>
             </ul>
           </div>
         </div>
         </nav>
-        </>
+        </div>
     );
   }
  }

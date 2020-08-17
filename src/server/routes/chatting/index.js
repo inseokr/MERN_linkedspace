@@ -65,7 +65,7 @@ module.exports = function(app) {
 		    {
 		      let result = {bNewlyCreated: false, channel: channel};
 
-		      console.log("Channel exits already. returning the channel");
+		      //console.log("Channel exists already. returning the channel");
 
 		      res.json(result);
 		      return;

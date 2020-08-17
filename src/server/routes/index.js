@@ -101,11 +101,14 @@ module.exports = function(app) {
   router.get("/logout", function(req,res){
     req.logout();
     req.flash("success", "Logged you out!");
+
+    console.log("logout called");
     
     if(req.user!=null)
       app.locals.currentUser[req.user.username] = null;
-    
-    res.redirect("/");
+
+    res.send({result: "successful logout"});
+    //res.redirect("/homepage");
   });
 
   //show login form

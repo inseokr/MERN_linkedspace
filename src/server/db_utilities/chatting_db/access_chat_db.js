@@ -44,7 +44,7 @@ async function getListOfChannelsByUserName(name)
 async function getChannelByChannelId(channelName)
 {
   return new Promise(resolve => {
-  	console.log("getChannelByChannelId with channelName = " + channelName);
+  	//console.log("getChannelByChannelId with channelName = " + channelName);
 
     ChatChannel.findOne({channel_id: channelName}, function(err, foundChannel){
       if(err || foundChannel===null)

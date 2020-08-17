@@ -91,7 +91,6 @@ function TenantListingComponent(props) {
   }
 
   return (
-    <>
     <div>
     <ListItem key={listing.requester.id}>
       <Grid container>
@@ -145,8 +144,6 @@ function TenantListingComponent(props) {
                          listing={listing}
                          removeHandler = {removeChildListing}/>
     </div>
-
-    </>
   );
 }
 

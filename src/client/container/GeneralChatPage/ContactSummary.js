@@ -3,7 +3,7 @@ import '../../app.css';
 import './GeneralChatMainPage.css'
 
 
-import sampleProfile from '../../../assets/images/Chinh - Vy.jpg';
+import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
 
 function ContactSummary(props) {
 

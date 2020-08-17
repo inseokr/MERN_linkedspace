@@ -50,7 +50,7 @@ export default class LandingPage extends Component {
 	render() {
 
 		const {lastMenu} = this.state;
-		let pageToRender = <></>;
+		let pageToRender = <div></div>;
 		if (lastMenu === "map") {
 			console.log("is this even being called",lastMenu);
 			pageToRender = <Map/>

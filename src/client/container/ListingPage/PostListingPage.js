@@ -53,7 +53,7 @@ function PostListingPage(props)
   });
 
   return(
-    <> 
+    <div> 
       <div className="row">
         <div className="col-md-4" style={{marginLeft:"20px"}}>
           <div style={{marginTop:"20px"}}>
@@ -71,7 +71,7 @@ function PostListingPage(props)
           </form>
         </div>
       </div>
-    </>
+    </div>
     ) 
 }
 

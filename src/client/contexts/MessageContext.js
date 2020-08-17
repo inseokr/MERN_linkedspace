@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import ChattingMessageBox from "../container/GeneralChatPage/ChattingMessageBox";
-import sampleProfile from "../../assets/images/Chinh - Vy.jpg";
-import messageAlertSound from "../../assets/musics/eventually.mp3";
+import sampleProfile from "../assets/images/Chinh - Vy.jpg";
+import messageAlertSound from "../assets/musics/eventually.mp3";
 import axios from 'axios';
 
 import { GlobalContext } from './GlobalContext';
@@ -389,6 +389,8 @@ export function MessageContextProvider(props) {
 
   function getDmChannelId(friend_name)
   {
+    if(currentUser==null) return "";
+    
     let dmChannelNameSuffix = 
       (currentUser.username>friend_name)?
        friend_name + "-dm-" +  currentUser.username:

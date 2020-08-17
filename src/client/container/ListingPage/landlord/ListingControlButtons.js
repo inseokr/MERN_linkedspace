@@ -36,9 +36,9 @@ function ListingControlButtons()
 		  </div>  : ""
 
 	return (
-		<>
+		<div>
 			{controlButtons}
-		</>
+		</div>
 	);
 }
 

@@ -6,7 +6,7 @@ import LoginMenu from '../Login/LoginMenu';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
-function CommonHeader (){
+function CommonHeader (props){
 
   const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined} = useContext(GlobalContext);
   const {loadChattingDatabase, switchChattingChannel, getDmChannelId} = useContext(MessageContext);
@@ -75,7 +75,7 @@ function CommonHeader (){
         <LinkedSpaceHeader />
         { isUserLoggined()===true
           ? <LoginMenu />
-          : <NoLoginMenu />
+          : <NoLoginMenu loginClickHandler={props.loginClickHandler}/>
         }
       </div>
   );

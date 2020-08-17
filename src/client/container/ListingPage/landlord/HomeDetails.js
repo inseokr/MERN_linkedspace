@@ -42,7 +42,7 @@ function HomeDetails()
 	const {currentListing} = useContext(CurrentListingContext);
 	
 	return (
-		<>
+		<div>
 			<div className="_1xzp5ma3">
 			  Amenities available to you
 			</div>
@@ -66,7 +66,7 @@ function HomeDetails()
 			  </div>
 			</div> 
 
-		</>
+		</div>
 	);
 }
 

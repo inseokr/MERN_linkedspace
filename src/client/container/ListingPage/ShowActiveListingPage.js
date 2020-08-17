@@ -45,7 +45,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
 
     if(type==="own") {
       return (
-        <>
+        <div>
           <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"/edit"} method="post">
             <div className="action">
               <button className="btn btn-info">Edit</button>
@@ -57,7 +57,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
               <button className="btn btn-danger">Delete</button>
             </div>
           </form>
-        </>
+        </div>
       )
     } else if(type==="child") {
       return (
@@ -75,8 +75,8 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
       {
         // update is in progress
         return (
-          <>
-          </>
+          <div>
+          </div>
           )
       } 
       else {
@@ -125,7 +125,7 @@ function ShowActiveListingPage(props)
   // 3. child: listing page used to add child listing
   // ISEO-TBD: fetching should be executed always?
   if(listing_info===undefined) {
-    return (<> No listing available </>);
+    return (<div> No listing available </div>);
   }
 
   // ISEO-TBD: not sure how to match it?
@@ -143,7 +143,7 @@ function ShowActiveListingPage(props)
       : null;
 
   return (
-    <>
+    <div>
       <div className="row">
         <div className="col-lg-3">
         </div>
@@ -176,7 +176,7 @@ function ShowActiveListingPage(props)
         </div>
       </div>
       {footer}
-    </>
+    </div>
   );
 }
 

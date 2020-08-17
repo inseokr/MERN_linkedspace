@@ -5,6 +5,8 @@ import LandingPage from './container/LandingPage/LandingPage';
 import GeneralChatMainPage from './container/GeneralChatPage/GeneralChatMainPage';
 import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
+import Signup from './components/Login/Signup';
+import Logout from './components/Login/Logout';
 import Map from "./container/MapPage/index";
 import ListingLandlordMainPage from "./container/ListingPage/landlord/ListingLandlordMainPage";
 import ListingTenantMainPage from "./container/ListingPage/tenant/ListingTenantMainPage";
@@ -12,6 +14,7 @@ import TenantListingDashboard from "./container/ListingPage/tenant/TenantListing
 import ShowActiveListingPageWrapper   from "./container/ListingPage/ShowActiveListingPageWrapper";
 import PostListingPage         from "./container/ListingPage/PostListingPage";
 import Post3rdPartyListing     from "./container/ListingPage/3rdParty/Post3rdPartyListing";
+import EditProfileMain         from "./container/EditProfilePage/EditProfileMain";
 
 import {
   BrowserRouter as Router,
@@ -26,11 +29,17 @@ import { GlobalProvider }         from './contexts/GlobalContext';
 import { ListingsProvider }       from './contexts/ListingsContext';
 import { CurrentListingProvider } from './contexts/CurrentListingContext';
 
+
 export default class App extends Component {
-  state = { };
 
   constructor(props) {
     super(props);
+    this.state = {showLoginModal: false };
+  }
+
+  clickHandler() {
+      console.log("loginClickHander called");
+      this.setState({showLoginModal: true});
   }
 
   componentDidMount() {
@@ -41,15 +50,14 @@ export default class App extends Component {
   }
 
   render() {
-    console.log("WDFWDCWEDISDWEKRIWEDWED", this.state);
     return (
       <GlobalProvider>
         <ListingsProvider>
           <CurrentListingProvider>
             <MessageContextProvider>
               <Router>
-                <CommonHeader/>
-                <ModalLoginForm/>
+                <CommonHeader loginClickHandler={this.clickHandler.bind(this)}/>
+                <ModalLoginForm display={this.state.showLoginModal}/>
                 <Switch>
                   <Route exact path="/Map">
                     <Map/>
@@ -65,6 +73,15 @@ export default class App extends Component {
                   </Route>
                   <Route exact path="/PostListing">
                     <PostListingPage />
+                  </Route>
+                  <Route exact path="/Signup">
+                    <Signup />
+                  </Route>
+                  <Route exact path="/Logout">
+                    <Logout />
+                  </Route>
+                  <Route exact path="/EditProfile">
+                    <EditProfileMain />
                   </Route>
                   <Route exact path="/3rdParty">
                     <Post3rdPartyListing />
