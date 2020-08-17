@@ -158,17 +158,17 @@ export function ListingsProvider(props) {
   function initGoogleMap(googleMapRef, zoom, center) { // Initialize the google map
     console.log("initGoogleMap", googleMapRef, zoom, center);
 
-    if(window.google==undefined) return null;
-    
+    if(window.google===undefined) return null;
+
     return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center, mapTypeControl: false, streetViewControl: false});
   }
 
-  function createMarker(googleMap, coordinates) { // Construct a marker using createHTMLMapMarker
+  function createMarker(googleMap, coordinates, imgSource) { // Construct a marker using createHTMLMapMarker
     const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
     return createHTMLMapMarker({
       latlng: latLng,
       map: googleMap,
-      html: `<img id="marker" src="/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg">`
+      html: `<img id="marker" src="${imgSource}">`
     });
   }
 

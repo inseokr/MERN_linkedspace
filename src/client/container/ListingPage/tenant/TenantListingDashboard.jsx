@@ -29,6 +29,7 @@ function TenantListingDashBoard(props) {
 
   useEffect(() => {
     if (rightPaneMode === "Map") {
+      let bounds = new window.google.maps.LatLngBounds();
       googleMap = initGoogleMap(googleMapRef, zoom, center);
 
       if (currentListing) {
@@ -42,11 +43,20 @@ function TenantListingDashBoard(props) {
         getGeometryFromSearchString(address).then(
           response => {
             if (response.status === "OK") {
-              let geometry = response.results[0].geometry;
+              const geometry = response.results[0].geometry;
               if (document.getElementById('tenantListingDashboardMapView')) { // Continue if element exists.
                 const mapViewProperties = document.getElementById('tenantListingDashboardMapView').getBoundingClientRect();
-                setCenter(geometry.location);
+                const location = geometry.location;
+                setCenter(location);
                 setZoom(getBoundsZoomLevel(geometry.viewport, {height: mapViewProperties.height, width: mapViewProperties.width}));
+                // Location of where the tenant would prefer to stay.
+                const imgSource = currentListing.profile_pictures.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : currentListing.profile_pictures[0].path;
+                const marker = createMarker(googleMap, location, imgSource);
+                marker.addListener("click", () => {
+                  alert("Clicked!");
+                });
+                bounds.extend(location);
+                googleMap.fitBounds(bounds);
               }
             }
           }
@@ -69,8 +79,15 @@ function TenantListingDashBoard(props) {
               getGeometryFromSearchString(address).then(
                 response => {
                   if (response.status === "OK") {
-                    let geometry = response.results[0].geometry;
-                    createMarker(googleMap, geometry.location);
+                    const geometry = response.results[0].geometry;
+                    const location = geometry.location;
+                    const imgSource = thirdPartyListing.listing_id.coverPhoto.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.coverPhoto.path;
+                    const marker = createMarker(googleMap, location, imgSource);
+                    marker.addListener("click", () => {
+                      alert("Clicked!");
+                    });
+                    bounds.extend(location);
+                    googleMap.fitBounds(bounds);
                   }
                 }
               );
@@ -81,10 +98,7 @@ function TenantListingDashBoard(props) {
 
           }
         }
-
-        const bounds = new window.google.maps.LatLngBounds();
-        createMarker(googleMap, center);
-        bounds.extend(center);
+        // googleMap.fitBounds(bounds);
       }
     }
   }, [currentListing, zoom, rightPaneMode]);
@@ -92,6 +106,10 @@ function TenantListingDashBoard(props) {
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, "tenant");
   }, [props]);
+
+  const markerOperations = () => {
+
+  };
 
   const toggleRightPaneMode = () => {
     if (rightPaneMode === "Map") {
