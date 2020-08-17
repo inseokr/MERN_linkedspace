@@ -104,7 +104,9 @@
 .filter-button {
     border-radius: 15px;
     border-width: 1px;
-    border-color: darkgray;
+    border-color: none;
+    padding: 2px 20px;
+    border-style: solid;
 }
 
 .filter-button:focus {
