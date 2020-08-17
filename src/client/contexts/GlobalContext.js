@@ -5,7 +5,7 @@ export const GlobalContext = createContext();
 
 export function GlobalProvider(props) {
 
-  const [friendsList, setFriends] = useState();	
+  const [friendsList, setFriends] = useState();
   const [currentUser, setCurrentUser] = useState(null);
   const [friendsMap, setFriendsMap] = useState();
   const [network_info, setNetwork_Info] = useState(null);
@@ -20,9 +20,9 @@ export function GlobalProvider(props) {
 
   function getProfilePicture(user_name)
   {
-    if(user_name==undefined) return sampleProfile;
+    if(user_name===undefined) return sampleProfile;
 
-    if(user_name==currentUser.username)
+    if(user_name===currentUser.username)
     {
       return currentUser.profile_picture;
     }
@@ -65,7 +65,7 @@ export function GlobalProvider(props) {
   }
 
   return (
-    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, loadSocialNetworkDb, network_info, loadSocialNetworkDb, getProfilePicture }}>
+    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, loadSocialNetworkDb, network_info, getProfilePicture }}>
       {props.children}
     </GlobalContext.Provider>
   );

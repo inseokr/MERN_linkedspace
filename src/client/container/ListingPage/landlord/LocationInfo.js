@@ -38,7 +38,10 @@ function LocationInfo() {
       );
 
       const bounds = new window.google.maps.LatLngBounds();
-      createMarker(googleMap, center);
+      const marker = createMarker(googleMap, center, "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg");
+      marker.addListener("click", () => {
+        alert("Clicked!");
+      });
       bounds.extend(center);
     }
   }, [zoom]);
