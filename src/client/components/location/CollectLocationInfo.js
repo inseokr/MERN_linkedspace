@@ -4,10 +4,35 @@ import shortid from 'shortid';
 import $ from 'jquery';
 
 
-function CollectLocationInfo()
+function CollectLocationInfo(props)
 {
-
 	let listOfStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
+
+	const [location, setLocation] = useState(null);
+
+	function loadDefaultValue(location)
+	{
+		if(location==null) return;
+		$('#street').val(location.street);
+		$('#city').val(location.city);
+		$('#state').val(location.state);
+		$('#zipcode').val(location.zipcode);
+		$('#country').val(location.country);
+	}
+
+	if(props.location!=undefined)
+	{
+		if(location==null)
+		{
+			setLocation(props.location);
+		}
+	}
+
+	useEffect(() => {
+		console.log("useEffect called");
+		loadDefaultValue(location);
+  	}, location);
+
 
 	return (
 		<div>

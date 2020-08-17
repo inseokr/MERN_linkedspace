@@ -28,6 +28,8 @@ router.post("/new", function(req, res){
 		//add username and id
         newListing.requester.id = req.user._id;
         newListing.requester.username = req.user.username;
+        newListing.requester.profile_picture = req.user.profile_picture;
+        
         newListing.location = req.body.location;
         newListing.move_in_date = req.body.move_in_date;
         newListing.rental_duration = req.body.rental_duration;

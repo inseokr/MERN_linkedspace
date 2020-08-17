@@ -83,9 +83,9 @@ export default class App extends Component {
                   <Route exact path="/EditProfile">
                     <EditProfileMain />
                   </Route>
-                  <Route exact path="/3rdParty">
-                    <Post3rdPartyListing />
-                  </Route>
+                  
+                  <Route exact path="/3rdParty" component={Post3rdPartyListing} />
+
                   <Route exact path="/ActiveListing">
                     <ShowActiveListingPageWrapper type="own" listingControl="" />
                   </Route>

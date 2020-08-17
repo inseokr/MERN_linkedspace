@@ -188,8 +188,7 @@ function EditProfileMain()
  
     if(currentUser.gender=="M")
     {
-      // DOM doesn't need to add "#"
-      document.getElementById("male").checked = true;
+      $('#male').prop("checked", true);
     }
     else
     {
@@ -208,8 +207,9 @@ function EditProfileMain()
 
        $("#previewLabel").css('opacity', 0);
 
-       var picturePreviewId = document.getElementById("avatar-upload");
-       picturePreviewId.style.display = "inline-block";
+       //var picturePreviewId = document.getElementById("avatar-upload");
+       $("#avatar-upload").css('display', 'inline-block');
+       //picturePreviewId.style.display = "inline-block";
     }
   }
 

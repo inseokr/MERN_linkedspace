@@ -91,6 +91,7 @@ router.get("/get_active_listing/own", function(req,res) {
                                  source: listing.listingSource, 
                                  summary: listing.listingSummary,
                                  location: listing.location,
+                                 price: listing.rentalPrice,
                                  coordinates: listing.coordinates
                             }
                 _3rdparty_listing.push(llist);
