@@ -26,9 +26,13 @@ function TenantListingDashBoard(props) {
   const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
   const [zoom, setZoom] = useState(9);
   const [rightPaneMode, setRightPaneMode] = useState("Map");
+  const [showMessage, setShowMessage] = useState(true);
 
   useEffect(() => {
     if (rightPaneMode === "Map") {
+      
+      if(window.google==undefined) return;
+
       let bounds = new window.google.maps.LatLngBounds();
       googleMap = initGoogleMap(googleMapRef, zoom, center);
 
@@ -111,11 +115,26 @@ function TenantListingDashBoard(props) {
 
   };
 
-  const toggleRightPaneMode = () => {
+  const updateRightPane = (reload) => {
+
     if (rightPaneMode === "Map") {
       setRightPaneMode("Message");
-    } else {
-      setRightPaneMode("Map");
+    } 
+    else {
+
+      if(reload==true)
+      {
+        setShowMessage(false);
+
+        setTimeout(()=> {
+          setShowMessage(true);
+        }, 100);
+      }
+      else
+      {
+        setRightPaneMode("Map");
+      }
+
     }
   };
 
@@ -125,20 +144,25 @@ function TenantListingDashBoard(props) {
         <Grid component="main">
           <CssBaseline />
           <Box className="App" component="div" display="flex" flexDirection="column">
-            <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={toggleRightPaneMode}/>
+            <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane}/>
             <Grid container alignContent="stretch">
               <Grid item xs={6}>
                 <FilterView/>
                 <Grid item xs={12}>
-                  <TenantDashboardListView toggle={toggleRightPaneMode} mode={rightPaneMode}/>
+                  <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode}/>
                 </Grid>
               </Grid>
               <Grid className="map" item xs={6}>
                 {rightPaneMode === "Map" ? (
                   <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
-                ) : (
-                  <GeneralChatMainPage compact="true"/>
-                )}
+                ) :
+                ( 
+                  (showMessage==true)?
+                    (
+                      <GeneralChatMainPage compact="true"/>
+                    ) : (<div> </div>)
+                )
+                }
               </Grid>
             </Grid>
           </Box>

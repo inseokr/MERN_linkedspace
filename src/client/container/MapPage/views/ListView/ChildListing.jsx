@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
+import {MessageContext} from '../../../../contexts/MessageContext';
 
 
 function ChildListing(props)
 {
 	//const [modalShow, setModalShow] = useState(false);
+	const {setChattingContextType,
+		   setChildType, 		    childType,
+		   setChildIndex,           childIndex,
+		   loadChattingDatabase}    = useContext(MessageContext);
 
 	console.log("ChildListing: clickState="+ props.clickState);
 	const listingTitle = props.listing.listingSource;
@@ -24,19 +29,35 @@ function ChildListing(props)
 	  borderLeftWidth: "5px"
 	} : {}
 
+	let _childListing = {listing: props.listing, listingType: "_3rdparty"};
 
-	//let showModal = () => {
-	//	setModalShow(true);
-	//}
+	function updateMessageContext()
+	{
+		setChattingContextType(2);
 
-	//let handleClose = () => {
-	//	setModalShow(false);
-	//}
+		// ISEO-TBD: dang...the following call will trigger the reload of MessageEditor
+		// and all the state will be gone when it's reloaded??
+		// need to know the type of listing
+		if(_childListing.listingType=="_3rdparty")
+		{
+			setChildType(0);
+			setChildIndex(props.index);
+			props.messageClickHandler(true);
+		}
+		else
+		{
+			setChildType(1);
+			props.messageClickHandler(true);
+		}
+	}
 
 	function listingClickHandler(e)
 	{
 		//e.preventDefault();
 		props.clickHandler(props.index);
+
+		//update the message context
+		updateMessageContext();
 	}
 
 	function removeListingHandler(e)
@@ -45,7 +66,6 @@ function ChildListing(props)
 		props.removeHandler(childListing);
 	}
 
-	let _childListing = {listing: props.listing, listingType: "_3rdparty"};
 
 	return (
 	  <ListItem>
