@@ -20,7 +20,7 @@ function CollectLocationInfo(props)
 		$('#country').val(location.country);
 	}
 
-	if(props.location!=undefined)
+	if(props!=undefined && props.location!=undefined)
 	{
 		if(location==null)
 		{
