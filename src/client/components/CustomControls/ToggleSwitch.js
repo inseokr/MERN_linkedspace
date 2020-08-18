@@ -12,7 +12,7 @@ export default function ToggleSwitch(props) {
 
   function handleChange(checked) {
     setChecked(checked);
-    props.clickHandler();
+    props.clickHandler(false);
 
     console.log("checked="+checked);
 

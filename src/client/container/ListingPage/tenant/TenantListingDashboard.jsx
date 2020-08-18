@@ -118,7 +118,10 @@ function TenantListingDashBoard(props) {
   const updateRightPane = (reload) => {
 
     if (rightPaneMode === "Map") {
-      setRightPaneMode("Message");
+      if(reload==false)
+      {
+        setRightPaneMode("Message");
+      }
     } 
     else {
 
