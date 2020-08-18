@@ -73,7 +73,7 @@ function ChildListing(props)
 	      <Grid item xs={4}>
 	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={props.handleSelect} className={"carousel"}>
 	          <Carousel.Item>
-	            <a href={childListing.listingUrl}>
+	            <a href={childListing.listingUrl} target="_blank">
 	              <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
 	            </a>
 	          </Carousel.Item>

@@ -11,7 +11,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
   function getCoverImg(listing_prefix, listing) {
     if(listing_prefix==="_3rdparty") {
       return (
-        <a href={listing.url}>
+        <a href={listing.url} target="_blank">
           <img className="img-responsive center" style={{maxHeight:"80%", maxWidth:"100%", marginTop:"10px"}} src={listing.picture}/>
         </a>
       )
