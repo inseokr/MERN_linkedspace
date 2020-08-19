@@ -44,6 +44,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
     }
 
     if(type==="own") {
+      let listing_url_type = (listing_prefix==="_3rdparty") ? "3rdparty": listing_prefix;
       return (
         <React.Fragment>
           <Link to={{pathname: "/3rdParty", listing_db: listing}}>
@@ -52,7 +53,7 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
             </div>
           </Link>
 
-          <form role="form" action={"/listing/"+listing_prefix+"/"+listing.id+"?_method=DELETE"} method="post">
+          <form role="form" action={"/listing/"+listing_url_type+"/"+listing.id+"?_method=DELETE"} method="post">
             <div className="action">
               <button className="btn btn-danger">Delete</button>
             </div>

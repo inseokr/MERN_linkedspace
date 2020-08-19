@@ -88,9 +88,13 @@ function ChildListing(props)
 	          <Typography className={"description__summary"}>
 	            {childListing.listingSummary}
 	          </Typography>
-
-	          <div className="flex-container" style={{justifyContent: "space-between"}}>
-                <MessageEditorIcon clickHandler={props.messageClickHandler} callerType="child" childListing={_childListing} index={props.index}/>
+	          <Typography> Price: ${childListing.rentalPrice} </Typography>
+	          <Typography> City: {childListing.location.city} </Typography>
+	          <div className="flex-container" style={{justifyContent: "space-between", marginTop: "40px"}}>
+	          	<div className="flex-container" style={{justifyContent: "flex-start"}}>
+		          	<img className="img-responsive center rounded-circle" src={childListing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
+			        <Typography style={{marginTop: "10px", marginLeft: "5px"}}> Hosted by {childListing.requester.username} </Typography>
+                </div>
                 <button className="btn btn-danger" onClick={removeListingHandler}>
                   Remove
                 </button>

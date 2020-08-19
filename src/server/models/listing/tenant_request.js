@@ -6,7 +6,8 @@ var TenantRequestSchema = new mongoose.Schema({
          type: mongoose.Schema.Types.ObjectId,
          ref: "User"
       },
-      username: String
+      username: String,
+      profilePicture: String
   	},
 
     listingType: {type: String, default: "tenant"},

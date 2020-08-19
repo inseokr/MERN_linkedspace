@@ -1,6 +1,10 @@
 #marker {
-    border: 2px solid black !important;
+    border: none;
     width: 30px !important;
     height: 30px !important;
     border-radius: 50% !important;
+}
+
+.marker_selected {
+    border: 2px solid black;
 }

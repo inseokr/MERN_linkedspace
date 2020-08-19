@@ -168,7 +168,7 @@ export function ListingsProvider(props) {
     return createHTMLMapMarker({
       latlng: latLng,
       map: googleMap,
-      html: `<img id="marker" src="${imgSource}">`
+      html: `<img style={{border-style: "none"}} id="marker" className="marker_selected" src="${imgSource}">`
     });
   }
 

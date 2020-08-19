@@ -44,7 +44,7 @@ router.post('/file_delete', function(req, res) {
 router.post("/new", function(req, res){
 
 
-	console.log("3rd party listinng = " + JSON.stringify(req.body));
+	console.log("3rd party listinn = " + JSON.stringify(req.body));
 
 	var filename = path.parse(req.body.file_name).base;
 
@@ -52,7 +52,7 @@ router.post("/new", function(req, res){
 	var newListing = new _3rdPartyListing;
 
 	newListing.requester.id       = req.user._id;
-	newListing.requester.username = req.user.username;
+	newListing.requester.username = req.user.firstname + " " + req.user.lastname;
 	newListing.requester.profile_picture = req.user.profile_picture;
 
 	newListing.listingSource      = req.body.listingSource;
@@ -131,6 +131,32 @@ router.post("/:listing_id/new", function(req, res){
 			res.redirect("/");
     	});
 
+	});
+});
+
+router.delete("/:list_id", function(req, res){
+	// Clean all resources such as pictures.
+
+	// Get landlord listing.
+    _3rdPartyListing.findById(req.params.list_id, function(err, foundListing){
+    	if(err)
+    	{
+    		console.log("Listing not found");
+    		return;
+    	}
+
+    	try {
+    		if(foundListing.coverPhoto.path!=""){
+    			fs.unlinkSync(foundListing.coverPhoto.path);
+    		}
+	    } catch(err){
+	    	console.error(err);	
+	    }
+
+		foundListing.remove();	    
+
+    	req.flash("success", "Listing Deleted Successfully");
+		res.redirect("/");
 	});
 });
 
