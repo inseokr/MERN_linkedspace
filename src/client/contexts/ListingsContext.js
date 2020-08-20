@@ -163,12 +163,16 @@ export function ListingsProvider(props) {
     return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center, mapTypeControl: false, streetViewControl: false});
   }
 
-  function createMarker(googleMap, coordinates, imgSource) { // Construct a marker using createHTMLMapMarker
+  function createMarker(googleMap, coordinates, imgSource, marker_selected) { // Construct a marker using createHTMLMapMarker
+    
     const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
+    const _html = (marker_selected==true)?
+    `<img id="marker_selected" src="${imgSource}">`:
+    `<img id="marker_default" src="${imgSource}">`;
     return createHTMLMapMarker({
       latlng: latLng,
       map: googleMap,
-      html: `<img style={{border-style: "none"}} id="marker" className="marker_selected" src="${imgSource}">`
+      html: _html
     });
   }
 

@@ -1,10 +1,15 @@
-#marker {
-    border: none;
-    width: 30px !important;
-    height: 30px !important;
+#marker_selected {
+    border: 2px solid rgb(17, 83, 153) !important;
+    height: 60px !important;
+    max-height: 70%;
     border-radius: 50% !important;
 }
 
-.marker_selected {
-    border: 2px solid black;
+#marker_default { 
+    border: none;
+   
+    height: 50px !important;
+    max-height: 70%;
+
+    border-radius: 50% !important;
 }

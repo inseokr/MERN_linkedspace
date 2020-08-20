@@ -1,4 +1,4 @@
-import React, {createContext, useState} from "react";
+import React, {createContext, useState, useEffect} from "react";
 import axios from 'axios';
 
 export const CurrentListingContext = createContext();
@@ -7,6 +7,7 @@ export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
     const [currentListing, setCurrentListing] = useState();
     const [ListingInfoType, setListingInfoType] = useState("");
+    const [currentChildIndex, setCurrentChildIndex] = useState(0);
 
 
     function cleanupListingInfoType()
@@ -39,25 +40,28 @@ export function CurrentListingProvider(props) {
       }
     }
 
+    useEffect(() => {
+    }, [currentChildIndex]);
 
-  async function fetchCurrentListing(id, listing_type) {
-    console.log("fetchCurrentListing is called with listing_id = " + id + ", type = " + listing_type);
-    let _prefix = (listing_type==="landlord") ? "/listing/landlord/" : "/listing/tenant/";
+    async function fetchCurrentListing(id, listing_type) {
+      console.log("fetchCurrentListing is called with listing_id = " + id + ", type = " + listing_type);
+      let _prefix = (listing_type==="landlord") ? "/listing/landlord/" : "/listing/tenant/";
 
-    const result = await fetch(_prefix+id+'/fetch')
-      .then(res => res.json())
-      .then(listing => {
-          console.log("listing = " + JSON.stringify(listing));
-          setCurrentListing(listing);
-          return 1;
-        }
-      )
+      const result = await fetch(_prefix+id+'/fetch')
+        .then(res => res.json())
+        .then(listing => {
+            console.log("listing = " + JSON.stringify(listing));
+            setCurrentListing(listing);
+            return 1;
+          }
+        )
 
-    return 0;
-  }
+      return 0;
+    }
+
 
     return (
-        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType}}>
+        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType, currentChildIndex, setCurrentChildIndex}}>
             {props.children}
         </CurrentListingContext.Provider>
     );

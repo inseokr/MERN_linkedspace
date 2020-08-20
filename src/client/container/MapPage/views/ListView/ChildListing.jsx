@@ -6,6 +6,7 @@ import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import {MessageContext} from '../../../../contexts/MessageContext';
+import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 
 
 function ChildListing(props)
@@ -15,6 +16,7 @@ function ChildListing(props)
 		   setChildType, 		    childType,
 		   setChildIndex,           childIndex,
 		   loadChattingDatabase}    = useContext(MessageContext);
+    const {setCurrentChildIndex} 	= useContext(CurrentListingContext);
 
 	console.log("ChildListing: clickState="+ props.clickState);
 	const listingTitle = props.listing.listingSource;
@@ -55,6 +57,8 @@ function ChildListing(props)
 	{
 		//e.preventDefault();
 		props.clickHandler(props.index);
+
+		setCurrentChildIndex(props.index);
 
 		//update the message context
 		updateMessageContext();

@@ -21,7 +21,7 @@ function TenantListingDashBoard(props) {
   const googleMapRef = useRef(null);
   let googleMap = null;
 
-  const {currentListing, fetchCurrentListing} = useContext(CurrentListingContext);
+  const {currentListing, currentChildIndex, fetchCurrentListing} = useContext(CurrentListingContext);
 
   const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
   const [zoom, setZoom] = useState(9);
@@ -73,7 +73,7 @@ function TenantListingDashBoard(props) {
           const internalListings = childListings.internal_listings;
 
           if (thirdPartyListings.length > 0) {
-            thirdPartyListings.map(thirdPartyListing => {
+            thirdPartyListings.map((thirdPartyListing, index) => {
               const address = thirdPartyListing.listing_id.location.street + " " +
                 thirdPartyListing.listing_id.location.city + " " +
                 thirdPartyListing.listing_id.location.state + " " +
@@ -85,8 +85,9 @@ function TenantListingDashBoard(props) {
                   if (response.status === "OK") {
                     const geometry = response.results[0].geometry;
                     const location = geometry.location;
-                    const imgSource = thirdPartyListing.listing_id.coverPhoto.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.coverPhoto.path;
-                    const marker = createMarker(googleMap, location, imgSource);
+                    const imgSource = thirdPartyListing.listing_id.requester.profile_picture.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.requester.profile_picture;
+                    const marker = createMarker(googleMap, location, imgSource, (index==currentChildIndex));
+
                     marker.addListener("click", () => {
                       alert("Clicked!");
                     });
@@ -105,7 +106,7 @@ function TenantListingDashBoard(props) {
         // googleMap.fitBounds(bounds);
       }
     }
-  }, [currentListing, zoom, rightPaneMode]);
+  }, [currentListing, zoom, rightPaneMode, currentChildIndex]);
 
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, "tenant");
