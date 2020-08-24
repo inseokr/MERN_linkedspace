@@ -100,8 +100,6 @@ function TenantListingDashBoard(props) {
                     const imgSource = thirdPartyListing.listing_id.requester.profile_picture.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.requester.profile_picture;
                     const marker = createMarker(googleMap, location, imgSource, (index==currentChildIndex));
 
-                    //console.log("ISEO-TBD: addListener with index = " + index);
-
                     marker.addListener("click", (clickedIndex=index) => {
 
                       console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);

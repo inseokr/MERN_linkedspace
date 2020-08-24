@@ -109,8 +109,15 @@ export default class ChildListingsView extends Component {
 		this.context.currentListing.child_listings._3rd_party_listings.map(function(childListing, index) {
 		console.log("childListingsViews: index="+index);
 
-		if(listClickStates[index]==undefined) listClickStates[index] = 0;
-		
+		if(this.state.clickStates.length==0 && index==0) 
+		{
+			listClickStates[index] = 1;
+		}
+		else
+		{
+			if(listClickStates[index]==undefined) listClickStates[index] = 0;
+		}
+
 		let curRef = React.createRef();
 		refArray.push(curRef);
 
