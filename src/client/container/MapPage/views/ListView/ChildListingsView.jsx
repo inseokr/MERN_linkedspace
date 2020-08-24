@@ -100,8 +100,7 @@ export default class ChildListingsView extends Component {
 
 	buildChildListingViews(){
 
-		console.log("buildChildListingViews");
-
+		// build it only if there is any change in the number of child listing
 		let refArray = [];
 		let _childListingViews = [];
 		let listClickStates = [...this.state.clickStates];
@@ -152,10 +151,18 @@ export default class ChildListingsView extends Component {
 		this.buildChildListingViews();
 	}
 
-	componentDidUpdate() {
-		console.log("componentDidUpdate is called");
+	getSnapshotBeforeUpdate(prevProps, prevState) {
+		return { oldValue: prevState.value};
+	}
+
+	componentDidUpdate(previousProps, previousState, snapshot) {
 
 		this.handleClickFromMap(this.context.currentChildIndex);
+		
+		if(this.context.currentListing.child_listings._3rd_party_listings.length!=this.state.childListingsViews.length)
+		{
+			this.buildChildListingViews();
+		}
 	}
 
 	render() {

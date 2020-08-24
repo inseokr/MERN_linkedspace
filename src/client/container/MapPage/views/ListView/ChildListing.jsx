@@ -26,8 +26,7 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 	let borderStyle = (clickState==1)? {
 	  borderLeftStyle: "solid",
 	  borderLeftColor: "#115399",
-	  borderLeftWidth: "5px",
-	  zIndex: 10
+	  borderLeftWidth: "5px"
 	} : {}
 
 	let _childListing = {listing: listing, listingType: "_3rdparty"};

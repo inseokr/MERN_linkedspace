@@ -3,13 +3,13 @@
     height: 60px !important;
     max-height: 70%;
     border-radius: 50% !important;
+    z-index: 1000000 !important;
 }
 
 #marker_default { 
     border: none;
-   
     height: 50px !important;
     max-height: 70%;
-
     border-radius: 50% !important;
+    z-index: -1 !important;
 }
