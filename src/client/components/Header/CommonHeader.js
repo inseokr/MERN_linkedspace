@@ -11,7 +11,7 @@ function CommonHeader (props){
   const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggined} = useContext(GlobalContext);
   const {loadChattingDatabase, switchChattingChannel, getDmChannelId} = useContext(MessageContext);
 
-  console.log("loading commonHeader");
+  //console.log("loading commonHeader");
 
   async function loadDataBases() {
     if(isUserLoggined()==true)

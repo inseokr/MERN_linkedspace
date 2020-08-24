@@ -10,6 +10,7 @@ import InitiateMap from '../../MapPage/views/MapView/InitiateMap';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
+import SimpleModal from '../../../components/Modal/SimpleModal';
 
 import { ListingsContext } from '../../../contexts/ListingsContext';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
@@ -17,16 +18,26 @@ import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 function TenantListingDashBoard(props) {
 
+  const [modalShow, setModalShow] = useState(false);
+
   const {mapLoaded, initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel} = useContext(ListingsContext);
   const googleMapRef = useRef(null);
   let googleMap = null;
 
-  const {currentListing, currentChildIndex, fetchCurrentListing} = useContext(CurrentListingContext);
+  const {currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing} = useContext(CurrentListingContext);
 
   const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
   const [zoom, setZoom] = useState(9);
   const [rightPaneMode, setRightPaneMode] = useState("Map");
   const [showMessage, setShowMessage] = useState(true);
+
+  let showModal = () => {
+    setModalShow(true);
+  }
+
+  let handleClose = () => {
+    setModalShow(false);
+  }
 
   useEffect(() => {
     if (rightPaneMode === "Map") {
@@ -57,7 +68,8 @@ function TenantListingDashBoard(props) {
                 const imgSource = currentListing.profile_pictures.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : currentListing.profile_pictures[0].path;
                 const marker = createMarker(googleMap, location, imgSource);
                 marker.addListener("click", () => {
-                  alert("Clicked!");
+                  // ISEO-TBD: let's open a modal
+                  //showModal();
                 });
                 bounds.extend(location);
                 googleMap.fitBounds(bounds);
@@ -88,8 +100,19 @@ function TenantListingDashBoard(props) {
                     const imgSource = thirdPartyListing.listing_id.requester.profile_picture.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.requester.profile_picture;
                     const marker = createMarker(googleMap, location, imgSource, (index==currentChildIndex));
 
-                    marker.addListener("click", () => {
-                      alert("Clicked!");
+                    //console.log("ISEO-TBD: addListener with index = " + index);
+
+                    marker.addListener("click", (clickedIndex=index) => {
+
+                      console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);
+
+                      //showModal();
+                      // update currentChildIndex if it's different
+                      if(clickedIndex!=currentChildIndex)
+                      {
+                        console.log("ISEO: Updating current child index = " + clickedIndex);
+                        setCurrentChildIndex(clickedIndex);
+                      }
                     });
                     bounds.extend(location);
                     googleMap.fitBounds(bounds);
@@ -158,7 +181,13 @@ function TenantListingDashBoard(props) {
               </Grid>
               <Grid className="map" item xs={6}>
                 {rightPaneMode === "Map" ? (
-                  <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
+                  <React.Fragment>
+                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                      <div style={{marginLeft: "5px"}}> Listing Summary goes here</div>
+                    </SimpleModal>
+
+                    <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
+                  </React.Fragment>
                 ) :
                 ( 
                   (showMessage==true)?

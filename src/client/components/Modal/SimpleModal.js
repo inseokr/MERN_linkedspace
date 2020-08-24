@@ -6,8 +6,8 @@ function SimpleModal(props)
 {
   const showHideClassName = props.show==true ? "simpleModal display-block" : "simpleModal display-none";
 
-  console.log("className = " + showHideClassName);
-  console.log("children = " + props.children);
+  //console.log("className = " + showHideClassName);
+  //console.log("children = " + props.children);
 
   let additionalStyle = (props._width!=undefined)? 
     { width: props._width} : {}; 

@@ -117,8 +117,6 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
 
 function ShowActiveListingPage(props)
 {
-  console.log("ShowActiveListingPage");
-
   const {listing_info} = useContext(CurrentListingContext);
 
   // 1. own: show the listings created by the current users

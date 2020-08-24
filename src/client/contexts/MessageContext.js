@@ -68,16 +68,16 @@ export function MessageContextProvider(props) {
   const [childType, setChildType] = useState(0);
   const [childIndex, setChildIndex] = useState(0);
 
-  console.log("chattingContextType="+chattingContextType);
-  console.log("childType="+childType);
-  console.log("childIndex="+childIndex);
-  console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
+  //console.log("chattingContextType="+chattingContextType);
+  //console.log("childType="+childType);
+  //console.log("childIndex="+childIndex);
+  //console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
 
 
   function reset(mode)
   {
-    console.log("MessageContext: being reset");
-    console.log("MessageContext: current channel name = " + currChannelInfo.channelName );
+    //console.log("MessageContext: being reset");
+    //console.log("MessageContext: current channel name = " + currChannelInfo.channelName );
     setChannelContexts([]);
     setChannelContextLength(0);
     setNumOfMsgHistory(0);
@@ -97,8 +97,8 @@ export function MessageContextProvider(props) {
   function getContactList()
   {
 
-      console.log("ISEO-TBD: getContactList: chattingContextType %d, childType = %s, childIndex = %d ", chattingContextType, childType, childIndex );
-      console.log("currentListing = " + JSON.stringify(currentListing));
+      //console.log("ISEO-TBD: getContactList: chattingContextType %d, childType = %s, childIndex = %d ", chattingContextType, childType, childIndex );
+      //console.log("currentListing = " + JSON.stringify(currentListing));
 
       if(chattingContextType==0)
       {
@@ -145,7 +145,7 @@ export function MessageContextProvider(props) {
 
   async function reloadChattingDbWithCurrentListing()
   {
-    console.log("reloadChattingDbWithCurrentListing");
+    //console.log("reloadChattingDbWithCurrentListing");
     const result = await fetchCurrentListing(currentListing._id, "tenant");
     loadChattingDatabase();
   }
@@ -167,7 +167,7 @@ export function MessageContextProvider(props) {
       {
         // ID of chatting channel will be returned.
         // update dmChannelContexts
-        console.log("addContactList: result = " + result);
+        //console.log("addContactList: result = " + result);
         reloadChattingDbWithCurrentListing();
       })
       .catch(err => {
@@ -197,7 +197,7 @@ export function MessageContextProvider(props) {
           }
           else
           {
-            console.log("No current user is set yet!!!");
+            //console.log("No current user is set yet!!!");
           }
       }
 
@@ -208,7 +208,7 @@ export function MessageContextProvider(props) {
       }
 
       chatSocket.onclose = () => {
-          console.log("Disconnected");
+          //console.log("Disconnected");
       }
   }
 
@@ -231,7 +231,7 @@ export function MessageContextProvider(props) {
       const regex = /CSD:(.*):(.*):(.*)/g;
       let parsedString = regex.exec(msg);
 
-      console.log("received mssg="+msg);
+      //console.log("received mssg="+msg);
       return parsedString;
   }
 
@@ -260,7 +260,7 @@ export function MessageContextProvider(props) {
       var data = { channel_id: channelInfo.channelName, 
                    lastReadIndex: dmChannelContexts[channelInfo.channelName].chattingHistory.length};
 
-      console.log("pushCurrentChannelToDB: lastReadIndex = " + data.lastReadIndex);
+      //console.log("pushCurrentChannelToDB: lastReadIndex = " + data.lastReadIndex);
       const result = await axios.post('/chatting/update', data)
         .then(result => 
         {
@@ -276,7 +276,7 @@ export function MessageContextProvider(props) {
 
   function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase)
   {
-    console.log("switchChattingChannel: channelInfo = " + JSON.stringify(channelInfo));
+    //console.log("switchChattingChannel: channelInfo = " + JSON.stringify(channelInfo));
     // save some of information back to database
     setCurrChannelInfo(channelInfo);
     pushCurrentChannelToDB(channelInfo);
@@ -287,7 +287,7 @@ export function MessageContextProvider(props) {
   //  + 1: receive from others
   function updateChatContext(msg, channelName, channeType, direction, username)
   {
-    console.log("updateChatContext, channelName = " + channelName);
+    //console.log("updateChatContext, channelName = " + channelName);
 
     let channelContexts = dmChannelContexts;
 
@@ -318,7 +318,7 @@ export function MessageContextProvider(props) {
     setChannelContexts(channelContexts);
     setNumOfMsgHistory(chatHistory.length);
 
-    console.log("current chat history = " + JSON.stringify(channelContexts[channelName].chattingHistory[chatHistory.length-1]));
+    //console.log("current chat history = " + JSON.stringify(channelContexts[channelName].chattingHistory[chatHistory.length-1]));
   }
 
   function checkNewlyLoaded() {
@@ -327,14 +327,14 @@ export function MessageContextProvider(props) {
 
     if(flagNewlyLoaded==true)
     {
-      console.log("Resetting newly loaded flag");
+      //console.log("Resetting newly loaded flag");
       setFlagNewlyLoaded(false); // We will reset always when it's read.
     }
     return flagNewlyLoaded;
   }
 
   function getChattingHistory() {
-      console.log("getChattingHistory of " + currChannelInfo.channelName);
+      //console.log("getChattingHistory of " + currChannelInfo.channelName);
 
       if(dmChannelContexts[currChannelInfo.channelName]===undefined)
       {
@@ -343,7 +343,7 @@ export function MessageContextProvider(props) {
       }
       else 
       {
-        console.log("Channel was found!!");
+        //console.log("Channel was found!!");
         return dmChannelContexts[currChannelInfo.channelName].chattingHistory;
       }
   }
@@ -353,8 +353,7 @@ export function MessageContextProvider(props) {
       if(local==true)
       {
           // sending to chat server
-          console.log("Sending message to server. msg = " + msg);
-
+          //
           // need to append header
           // @CSD:channel_id:sender_name:msg
           //chatSocket.send(''.concat("CSD:{currChannelInfo.channelName}:", msg));
@@ -445,12 +444,12 @@ export function MessageContextProvider(props) {
   {
     let channel_name = (channel_id!=""? channel_id:currChannelInfo.channelName);
 
-    console.log("channel_name = " + channel_name);
+    //console.log("channel_name = " + channel_name);
 
     // ISEO: let's consider introducing map instead?
     for(let i=0; i<currentUser.chatting_channels.dm_channels.length; i++)
     {
-      console.log("current channel = " + currentUser.chatting_channels.dm_channels[i].name);
+      //console.log("current channel = " + currentUser.chatting_channels.dm_channels[i].name);
       if(currentUser.chatting_channels.dm_channels[i].name==channel_name)
       {
         // note: This value may contain old data.
@@ -486,8 +485,8 @@ export function MessageContextProvider(props) {
   {
       // <note> lastReadIndex has the value of the next message to saved in the chat history
       // So it has read all the messages if it equals to the length.
-      console.log("checkIfAnyNewMsg: direction of last message" + chatHistory[chatHistory.length-1].direction);
-      console.log("checkIfAnyNewMsg: lastReadIndex = " + lastReadIndex + " history length = " + chatHistory.length);
+      //console.log("checkIfAnyNewMsg: direction of last message" + chatHistory[chatHistory.length-1].direction);
+      //console.log("checkIfAnyNewMsg: lastReadIndex = " + lastReadIndex + " history length = " + chatHistory.length);
 
       if(lastReadIndex == chatHistory.length)
       {
@@ -513,12 +512,12 @@ export function MessageContextProvider(props) {
 
   function loadChatHistory(channel_id, history)
   {
-    console.log("loadChatHistory: currChannelInfo.channelName = " + currChannelInfo.channelName);
+    //console.log("loadChatHistory: currChannelInfo.channelName = " + currChannelInfo.channelName);
 
      // It's a special flag to indicate that the channel history is loaded.
     if(currChannelInfo.channelName==channel_id)
     {
-      console.log("setFlagNewlyLoaded!!!!!");
+     // console.log("setFlagNewlyLoaded!!!!!");
       setFlagNewlyLoaded(true);
     }
 
@@ -539,18 +538,18 @@ export function MessageContextProvider(props) {
       }
     }
 
-    console.log("dmChannelContexts: length before = " + dmChannelContexts.length);
+    //console.log("dmChannelContexts: length before = " + dmChannelContexts.length);
 
     let dmChannelContextArray = dmChannelContexts;
-
-    if(dmChannelContextArray[channel_id]!=undefined)
+    
+    /*if(dmChannelContextArray[channel_id]!=undefined)
     {
         console.log("channel_id" + channel_id +" is already in the array ");
     }
     else
     {
         console.log("channel_id" + channel_id +" is being added ");
-    }
+    }*/
 
     dmChannelContextArray[channel_id] = dmChannel;
 
@@ -562,15 +561,15 @@ export function MessageContextProvider(props) {
   // loading chatting database from backend
   async function loadChattingDatabase()
   {
-    console.log("loadChattingDatabase");
+    //console.log("loadChattingDatabase");
 
     if(currentUser==undefined)
     {
-      console.log("currentUser is not set yet");
+      //console.log("currentUser is not set yet");
       return;
     }
 
-    console.log("currChannelInfo.channelName = " + currChannelInfo.channelName);
+    //console.log("currChannelInfo.channelName = " + currChannelInfo.channelName);
 
     // clear new message arrival;
     setNewMsgArrived(false);
@@ -578,10 +577,10 @@ export function MessageContextProvider(props) {
     // note: it will be good time to register the user again?
     chatSocket.send("CSC:Register:"+currentUser.username);
 
-    console.log("ISEO: getListOfDmChannels");
+   // console.log("ISEO: getListOfDmChannels");
     let dmChannels = getListOfDmChannels();
 
-    console.log("number of channels = " + dmChannels.length);
+   // console.log("number of channels = " + dmChannels.length);
 
     // go through each channel and load chatting history if any.
     // we need to create the channel if it doesn't exist yet.
@@ -591,18 +590,18 @@ export function MessageContextProvider(props) {
                    channel_type: 0, 
                    members: dmChannels[i].members};
 
-      console.log("creating channels = " + dmChannels[i].channel_id);
+      //console.log("creating channels = " + dmChannels[i].channel_id);
 
       // note: problem in handling the result!!
       const result = await axios.post('/chatting/new', data)
         .then(result => 
         {
-            console.log(result.data);
+           // console.log(result.data);
 
             if(result.data.bNewlyCreated==false)
             {
               // update channel DB using the history data
-              console.log("result = " + result);
+             // console.log("result = " + result);
 
               // ISEO-TBD: channelData is not being used at all.
               let channelData = { channel_id: result.data.channel.channel_id,
@@ -613,7 +612,7 @@ export function MessageContextProvider(props) {
             }
             else
             {
-              console.log(dmChannels[i].channel_id+"was newly created");
+              //console.log(dmChannels[i].channel_id+"was newly created");
               loadChatHistory(dmChannels[i].channel_id, []);
             }
         })
@@ -633,7 +632,7 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(()=>{
-    console.log("ISEO: Loading chatting database... ");
+    //console.log("ISEO: Loading chatting database... ");
     
     loadChattingDatabase();
   }, [currChannelInfo, channelContextLength]);

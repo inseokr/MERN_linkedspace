@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect} from 'react';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -9,7 +9,7 @@ import {MessageContext} from '../../../../contexts/MessageContext';
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 
 
-function ChildListing(props)
+const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, listing, index, messageClickHandler, removeHandler}, ref) => 
 {
 	//const [modalShow, setModalShow] = useState(false);
 	const {setChattingContextType,
@@ -17,21 +17,32 @@ function ChildListing(props)
 		   setChildIndex,           childIndex,
 		   loadChattingDatabase}    = useContext(MessageContext);
     const {setCurrentChildIndex} 	= useContext(CurrentListingContext);
+    const [clicked, setClicked] = useState(0);
+    const [reference, setReference] = useState(null);
 
-	console.log("ChildListing: clickState="+ props.clickState);
-	const listingTitle = props.listing.listingSource;
+	const listingTitle = listing.listingSource;
+	let childListing = listing.listing_id;
 
-	let childListing = props.listing.listing_id;
-
-	console.log("childListing="+JSON.stringify(childListing));
-
-	let borderStyle = (props.clickState==1)? {
+	let borderStyle = (clickState==1)? {
 	  borderLeftStyle: "solid",
 	  borderLeftColor: "#115399",
-	  borderLeftWidth: "5px"
+	  borderLeftWidth: "5px",
+	  zIndex: 10
 	} : {}
 
-	let _childListing = {listing: props.listing, listingType: "_3rdparty"};
+	let _childListing = {listing: listing, listingType: "_3rdparty"};
+
+	if(clicked!=clickState)
+	{
+		console.log("ChildListing: click state changed");
+		setClicked(clickState);
+	}
+
+	if(ref!=reference)
+	{
+		console.log("setReference is called");
+		setReference(ref);	
+	} 
 
 	function updateMessageContext()
 	{
@@ -43,22 +54,22 @@ function ChildListing(props)
 		if(_childListing.listingType=="_3rdparty")
 		{
 			setChildType(0);
-			setChildIndex(props.index);
-			props.messageClickHandler(true);
+			setChildIndex(index);
+			messageClickHandler(true);
 		}
 		else
 		{
 			setChildType(1);
-			props.messageClickHandler(true);
+			messageClickHandler(true);
 		}
 	}
 
 	function listingClickHandler(e)
 	{
 		//e.preventDefault();
-		props.clickHandler(props.index);
+		clickHandler(index);
 
-		setCurrentChildIndex(props.index);
+		setCurrentChildIndex(index);
 
 		//update the message context
 		updateMessageContext();
@@ -67,15 +78,29 @@ function ChildListing(props)
 	function removeListingHandler(e)
 	{
 		e.preventDefault();
-		props.removeHandler(childListing);
+		removeHandler(childListing);
 	}
+
+	useEffect (()=>
+		{ 
+			if(reference!=null)
+			{
+				console.log("ChildListing: useEffect: ref.current=" + reference.current);
+				if(clicked==1)
+				{
+					console.log("clicking from useEffect");
+					//reference.current.click();
+				}
+			} 
+			else console.log("ref is null");
+		},[clicked, reference]);
 
 
 	return (
 	  <ListItem>
-	    <Grid container className="childListing" onClick={listingClickHandler} style={borderStyle}>
+	    <Grid container className="childListing" ref = {reference} onClick={listingClickHandler} style={borderStyle}>
 	      <Grid item xs={4}>
-	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={props.handleSelect} className={"carousel"}>
+	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
 	          <Carousel.Item>
 	            <a href={childListing.listingUrl} target="_blank">
 	              <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
@@ -109,6 +134,6 @@ function ChildListing(props)
 	    </Grid>
 	  </ListItem>
 	)
-}
+});
 
-export default ChildListing
+export default ChildListing;
