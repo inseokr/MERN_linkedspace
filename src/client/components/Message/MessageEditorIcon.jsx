@@ -4,17 +4,16 @@ import './MessageStyle.css';
 import PickChattingParty from './PickChattingParty';
 import SimpleModal from '../Modal/SimpleModal';
 
-import { MessageContext } from '../../contexts/MessageContext';
+import { MessageContext, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../contexts/MessageContext';
 import { GlobalContext } from '../../contexts/GlobalContext';
-
+import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 function clickHandler()
 {
 	alert("Default clickHandler")
 }
 
-
-// ISEO-TBD: this page will be re-rendered.... 
+// ISEO-TBD: this page will be re-rendered....
 // ChildListingsView seems to be reloaded again when the message editor is clicked again.
 function MessageEditorIcon(props) {
 
@@ -24,109 +23,52 @@ function MessageEditorIcon(props) {
 		   setChildIndex,           childIndex,
 		   loadChattingDatabase}    = useContext(MessageContext);
     const {currentUser} 		    = useContext(GlobalContext);
+    const {currentListing, currentChildIndex} = useContext(CurrentListingContext);
 
     var modalFlag = false;
 
-	let onClickHandler = clickHandler;
+    // provide cllick handler if any customization is needed.
+	let onClickHandler = (props.clickHandler!=undefined)? props.clickHandler : clickHandler;
 
-	// "generaL": general messaging without any listing associated
-	// "parent": chatting associated a specific listing, either tenant or landlord
-	// "child": child listing
+	// "general": general messaging without any listing associated
+	// "listing_dashboard": message window in the listing dashboard
+	// <note> Currently it's only for tenant listing.
 	let messageEditorCallerType = props.callerType;
-	// listingType: "_3rdparty", "internal"
-	let _childListing = props.childListing;
+
+	// general type doesn't need _childListing.
+	let _childListing = (messageEditorCallerType=="listing_dashboard")?
+						 currentListing.child_listings._3rd_party_listings[currentChildIndex]:
+					     [];
+
+	if(messageEditorCallerType=="listing_dashboard")
+	{
+		console.log("currentChildIndex=" + currentChildIndex);
+		console.log("listing =" + JSON.stringify(currentListing.child_listings._3rd_party_listings[currentChildIndex].listing_id));
+	}
 
 	let showModal = () => {
-
 		setModalShow(true);
 	}
 
 	let handleClose = () => {
 		setModalShow(false);
+		// need to make it sure that the selected chatting party is shown in the contact list.
 		onClickHandler();
 	}
 
-	if(props.clickHandler!=undefined)
-	{
-		onClickHandler = props.clickHandler;
-	}
-
-
 	function messageEditorOnClick(evt)
 	{
-
 		evt.stopPropagation();
-
-		// check if there is any chatting party for this message context
-		// 1. need to know where this message editor located
-		// case 1> parent
-		// case 2> child
-		if(messageEditorCallerType=="parent")
-		{
-			// We may just call onClickHandler for now.
-			// <note> The only corner case will be when there is no friend at all?
-			onClickHandler();
-
-			setChattingContextType(1);
-
-			if(props.parent_listing.shared_user_group.length<1 || 
-			   ((props.parent_listing.shared_user_group.length==1)
-			   	&& (currentUser.username==props.parent_listing.shared_user_group[0].username)
-			   )
-			  )
-			{
-				showModal();
-			}
-			else
-			{
-				onClickHandler();
-			}
-		}
-		else if(messageEditorCallerType=="child")
-		{
-			setChattingContextType(2);
-
-			// ISEO-TBD: dang...the following call will trigger the reload of MessageEditor
-			// and all the state will be gone when it's reloaded??
-			// need to know the type of listing
-			if(_childListing.listingType=="_3rdparty")
-			{
-				setChildType(0);
-				setChildIndex(props.index);
-
-				// check the size of shared_user_group and launch modal to add chatting party
-				if(_childListing.listing.shared_user_group.length<1 ||
-					((_childListing.listing.shared_user_group.length==1) 
-						&& (currentUser.username==_childListing.listing.shared_user_group[0].username)))
-				{
-					showModal();
-				}
-				else
-				{
-					onClickHandler();
-				}
-			}
-			else
-			{
-				setChildType(1);
-				onClickHandler();
-			}
-		}
-		else
-		{
-			onClickHandler();
-		}
-
+		showModal();
 	}
-
 
 	let user_group = [];
 
 	if(_childListing!=undefined)
 	{
-		user_group = _childListing.listing.shared_user_group;
+		//user_group = _childListing.listing.shared_user_group;
+		user_group = _childListing.shared_user_group;
 	}
-
 
 	useEffect(()=>{
 		// DB will be loaded only after chattingContextType is updated properly
@@ -135,7 +77,6 @@ function MessageEditorIcon(props) {
 		//loadChattingDatabase();
 	//}, [chattingContextType, modalShow]);
 	}, [modalShow]);
-
 
 	return (
 	<div>

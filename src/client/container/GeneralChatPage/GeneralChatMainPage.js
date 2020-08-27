@@ -58,7 +58,7 @@ export default class GeneralChatMainPage extends Component {
         style={{'--leftPanelColumn': leftPanelColumn, '--rightPanelColumn': rightPanelColumn}}>
           <div className="MessageLeftPanel">
               <div className="MessageHeader_ls" >
-                  <GeneralChatHeader />
+                  <GeneralChatHeader compact={this.props.compact}/>
               </div>
               <div className="SearchMessageBox">
                   <SearchMessageBox />

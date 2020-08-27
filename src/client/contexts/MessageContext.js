@@ -6,11 +6,16 @@ import axios from 'axios';
 import { GlobalContext } from './GlobalContext';
 import { CurrentListingContext } from './CurrentListingContext';
 
+
+export const MSG_CHANNEL_TYPE_GENERAL = 0;
+export const MSG_CHANNEL_TYPE_LISTING_PARENT = 1;
+export const MSG_CHANNEL_TYPE_LISTING_CHILD = 2;
+
 export const MessageContext = createContext();
 
 export function MessageContextProvider(props) {
   // How to organize chatting channels?
-  // 1. information needed per channel
+  // 1. information needed per channelsetChattingContextType
   //    + channel name
   //    + channel type
   //    + chatting history: message & timestamp
@@ -40,6 +45,8 @@ export function MessageContextProvider(props) {
   // <note> Format of channelName
   // q1. why do we need to have user information inside channelName? Can't we just use mongoDB channelID instead?
   // ==> How to switch channel context through contact list?
+
+
   const initialCurrChannelInfo = {channelName: "irene-dm-yoobin", dm: {name: "justin", distance: 1}};
 
   const [currChannelInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
@@ -642,7 +649,7 @@ export function MessageContextProvider(props) {
                                       switchDmByFriendName, switchChattingChannel, getDmChannelId, 
                                       numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, 
                                       checkNewlyLoaded , checkIfAnyNewMsgArrived, addContactList, getContactList,
-                                      setChattingContextType, setChildType, setChildIndex, channelContextLength,
+                                      setChattingContextType, chattingContextType, setChildType, setChildIndex, channelContextLength,
                                       reset}}>
       {props.children}
     </MessageContext.Provider>

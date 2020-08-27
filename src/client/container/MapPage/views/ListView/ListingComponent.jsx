@@ -49,6 +49,10 @@ function ListingComponent(props) {
     setIndex(e);
   };
 
+  const handleParentOnClock = (e) => {
+    alert("handleParentOnClock clicked");
+  };
+
   let listingControl = {add: addChildListing, remove: removeChildListing}
 
 
@@ -76,8 +80,8 @@ function ListingComponent(props) {
     <div>
     <div>
     <ListItem>
-      <Grid container>
-        <Grid item xs={4}>
+      <Grid container >
+        <Grid item xs={4} >
           <Carousel interval={null} slide={true} activeIndex={index} onSelect={handleSelect} className={"carousel"}>
             {listing.pictures.map(function (picture) {
               return (
@@ -89,7 +93,7 @@ function ListingComponent(props) {
           </Carousel>
         </Grid>
         <Grid item xs={8}>
-          <Paper className={"description"}>
+          <Paper className={"description"} onClick={handleParentOnClock}>
             <Typography className={"description__title"} color={"textSecondary"} gutterBottom>
               {listingTitle}
             </Typography>

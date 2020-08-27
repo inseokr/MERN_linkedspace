@@ -9,6 +9,7 @@ import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper";
 import ChildListingsView from "./ChildListingsView";
 import {GlobalContext} from "../../../../contexts/GlobalContext";
+import {MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT} from "../../../../contexts/MessageContext";
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 import axios from 'axios';
 import $ from 'jquery';
@@ -19,6 +20,7 @@ function TenantListingComponent(props) {
   const [modalShow, setModalShow] = useState(false);
   const {currentUser} = useContext(GlobalContext);
   const {currentListing, setCurrentListing, fetchCurrentListing} = useContext(CurrentListingContext);
+  const {setChattingContextType, chattingContextType} = useContext(MessageContext);
   const {listing, toggle, mode} = props;
 
   const userName          = listing.requester.username;
@@ -26,6 +28,14 @@ function TenantListingComponent(props) {
   const rentDuration      = listing.rental_duration + "month(s)";
   const rentalBudget      = "$"+ listing.rental_budget;
   const preferredLocation = listing.location.city + "," + listing.location.state + "," + listing.location.country;
+
+
+  let borderStyle = (chattingContextType==MSG_CHANNEL_TYPE_LISTING_PARENT)? {
+    borderLeftStyle: "solid",
+    borderLeftColor: "#115399",
+    borderLeftWidth: "5px"
+  } : {}
+
 
   async function addChildListing(childListing) {
     console.log("addChildListing");
@@ -72,17 +82,21 @@ function TenantListingComponent(props) {
     setIndex(e);
   };
 
+  const handleParentOnClock = (e) => {
+    if(chattingContextType!=MSG_CHANNEL_TYPE_LISTING_PARENT)
+    {
+      setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
+    }
+    // need to reload the message window... 
+    toggle(true);
+  };
+
   let listingControl = {add: addChildListing, remove: removeChildListing};
 
 
   function addChildListingControl() {
     return (
-      <div className="flex-container" style={{justifyContent: "space-between"}}>
-        <MessageEditorIcon clickHandler={toggle} callerType="parent" parent_listing={currentListing}/>
-
-        <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
-          <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
-        </SimpleModal>
+      <div className="flex-container" style={{justifyContent: "flex-end"}}>
         <button className="btn btn-info" onClick={showModal}>
           Add Listing
         </button>
@@ -93,7 +107,7 @@ function TenantListingComponent(props) {
   return (
     <div>
     <ListItem key={listing.requester.id}>
-      <Grid container>
+      <Grid container style={borderStyle}>
         <Grid item xs={4}>
           <Carousel interval={null} slide={true} activeIndex={index} onSelect={handleSelect} className={"carousel"}>
             {listing.profile_pictures.map(function (picture) {
@@ -106,7 +120,7 @@ function TenantListingComponent(props) {
           </Carousel>
         </Grid>
         <Grid item xs={8}>
-          <Paper className={"description"}>
+          <Paper className={"description"} onClick={handleParentOnClock} >
             <Typography className={"description__address"} color={"textSecondary"} gutterBottom>
               Preferred location: {preferredLocation}
             </Typography>

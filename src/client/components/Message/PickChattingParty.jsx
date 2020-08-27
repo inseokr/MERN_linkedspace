@@ -57,6 +57,11 @@ function PickChattingParty(props) {
 
 	function checkGroup(name)
 	{
+		if(_group==undefined) 
+		{
+			console.warn("no group is available yet in checkGroup function");
+			return false;
+		}
 		_group.forEach(user =>
 		{
 			if(user.username==name) 
