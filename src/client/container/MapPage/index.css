@@ -107,6 +107,7 @@
     border-color: none;
     padding: 2px 20px;
     border-style: solid;
+    background-color: ghostwhite;
 }
 
 .filter-button:focus {
