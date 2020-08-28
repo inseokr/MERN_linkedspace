@@ -56,6 +56,7 @@ function TenantListingComponent(props) {
   }
 
   async function removeChildListing(childListing) {
+
     // post to DB as well
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing._id,
@@ -97,6 +98,9 @@ function TenantListingComponent(props) {
   function addChildListingControl() {
     return (
       <div className="flex-container" style={{justifyContent: "flex-end"}}>
+        <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
+          <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
+        </SimpleModal>
         <button className="btn btn-info" onClick={showModal}>
           Add Listing
         </button>
