@@ -164,9 +164,9 @@ export function ListingsProvider(props) {
   }
 
   function createMarker(googleMap, coordinates, imgSource, marker_selected) { // Construct a marker using createHTMLMapMarker
-    
+
     const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
-    const _html = (marker_selected==true)?
+    const _html = (marker_selected===true)?
     `<img id="marker_selected" src="${imgSource}">`:
     `<img id="marker_default" src="${imgSource}">`;
     return createHTMLMapMarker({

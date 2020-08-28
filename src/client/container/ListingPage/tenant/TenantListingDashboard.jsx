@@ -41,7 +41,7 @@ function TenantListingDashBoard(props) {
 
   useEffect(() => {
     if (rightPaneMode === "Map") {
-      
+
       if(window.google==undefined) return;
 
       let bounds = new window.google.maps.LatLngBounds();
@@ -97,8 +97,8 @@ function TenantListingDashBoard(props) {
                   if (response.status === "OK") {
                     const geometry = response.results[0].geometry;
                     const location = geometry.location;
-                    const imgSource = thirdPartyListing.listing_id.requester.profile_picture.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.requester.profile_picture;
-                    const marker = createMarker(googleMap, location, imgSource, (index==currentChildIndex));
+                    const imgSource = thirdPartyListing.listing_id.requester.profile_picture ? thirdPartyListing.listing_id.requester.profile_picture : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+                    const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
 
                     marker.addListener("click", (clickedIndex=index) => {
 
@@ -144,7 +144,7 @@ function TenantListingDashBoard(props) {
       {
         setRightPaneMode("Message");
       }
-    } 
+    }
     else {
 
       if(reload==true)
@@ -187,7 +187,7 @@ function TenantListingDashBoard(props) {
                     <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
                   </React.Fragment>
                 ) :
-                ( 
+                (
                   (showMessage==true)?
                     (
                       <GeneralChatMainPage compact="true"/>
