@@ -19,7 +19,7 @@ function TenantListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const {currentUser} = useContext(GlobalContext);
-  const {currentListing, setCurrentListing, fetchCurrentListing} = useContext(CurrentListingContext);
+  const {currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex} = useContext(CurrentListingContext);
   const {setChattingContextType, chattingContextType} = useContext(MessageContext);
   const {listing, toggle, mode} = props;
 
@@ -60,6 +60,7 @@ function TenantListingComponent(props) {
     // post to DB as well
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing._id,
+                channel_id_prefix: listing._id + "-child-" + currentChildIndex,
                 listing_type: "_3rdparty"};
 
     const result = await axios.post('/listing/tenant/removeChild', data)

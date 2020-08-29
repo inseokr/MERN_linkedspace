@@ -43,7 +43,10 @@ function MessageEditorIcon(props) {
 	if(messageEditorCallerType=="listing_dashboard")
 	{
 		console.log("currentChildIndex=" + currentChildIndex);
-		console.log("listing =" + JSON.stringify(currentListing.child_listings._3rd_party_listings[currentChildIndex].listing_id));
+		if(currentListing.child_listings._3rd_party_listings.length>0)
+		{
+			console.log("listing =" + JSON.stringify(currentListing.child_listings._3rd_party_listings[currentChildIndex].listing_id));
+		}
 	}
 
 	let showModal = () => {

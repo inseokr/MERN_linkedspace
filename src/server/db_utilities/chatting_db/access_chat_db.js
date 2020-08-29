@@ -41,6 +41,16 @@ async function getListOfChannelsByUserName(name)
   });
 }
 
+function removeChannelsByPartialChannelId(channel_id)
+{
+  ChatChannel.deleteMany({"channel_id": { "$regex": channel_id, "$options": "i"}}, (err) => {
+      // let's remove the found channel from database.
+      if(err) console.warn("removeChannelsByPartialChannelId: error");
+
+      console.log("removeChannelsByPartialChannelId: successfully deleted");
+  });
+}
+
 async function getChannelByChannelId(channelName)
 {
   return new Promise(resolve => {
@@ -93,4 +103,5 @@ function addChannelToUser(chat_channel)
 module.exports = { findChatPartyByName: getMemberInfoByUserName, 
                    findChatChannel:     getChannelByChannelId, 
                    addChannelToUser:    addChannelToUser,
-                   getChannels:         getListOfChannelsByUserName}
+                   getChannels:         getListOfChannelsByUserName,
+                   removeChannelsByPartialChannelId: removeChannelsByPartialChannelId}
