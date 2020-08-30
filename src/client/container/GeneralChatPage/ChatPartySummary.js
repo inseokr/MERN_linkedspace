@@ -29,12 +29,12 @@ function ChatPartySummary() {
   return (
     <React.Fragment>
         <div className="ChatPartyName">
-          {(currChannelInfo!=undefined)? currChannelInfo.dm.name: "Chinh, Le"}
+          {(currChannelInfo!=undefined&&currChannelInfo.dm!=undefined)? currChannelInfo.dm.name: ""}
         </div>
         <div className="SocialDistance">
-          {(currChannelInfo!=undefined)? getSocialDistanceString(currChannelInfo.dm.distance): "1st"}
+          {(currChannelInfo!=undefined&&currChannelInfo.dm!=undefined)? getSocialDistanceString(currChannelInfo.dm.distance): ""}
         </div>
-        <OnlineStatus />
+        {(currChannelInfo!=undefined&&currChannelInfo.dm!=undefined)? <OnlineStatus />: ""}
     </React.Fragment>
   );
 }

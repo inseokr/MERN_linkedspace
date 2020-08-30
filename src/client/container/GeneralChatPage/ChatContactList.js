@@ -48,6 +48,11 @@ function ChatContactList() {
 	// ISEO-TBD:
 	console.log("friendsList.length = " + friendsList.length);
 
+	if(friendsList.length==0)
+	{
+		if(currChannelInfo.channelName!=null) switchChattingChannel({channelName: null});
+	}
+
 	for(var i=0; i< friendsList.length; i++)
 	{
 		if(friendsList[i].username==currentUser.username)

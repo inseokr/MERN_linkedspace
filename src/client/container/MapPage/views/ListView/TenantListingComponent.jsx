@@ -9,7 +9,7 @@ import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper";
 import ChildListingsView from "./ChildListingsView";
 import {GlobalContext} from "../../../../contexts/GlobalContext";
-import {MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT} from "../../../../contexts/MessageContext";
+import {MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_GENERAL} from "../../../../contexts/MessageContext";
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 import axios from 'axios';
 import $ from 'jquery';
@@ -29,6 +29,13 @@ function TenantListingComponent(props) {
   const rentalBudget      = "$"+ listing.rental_budget;
   const preferredLocation = listing.location.city + "," + listing.location.state + "," + listing.location.country;
 
+
+  if(chattingContextType==MSG_CHANNEL_TYPE_GENERAL)
+  {
+    // This will be called only if chatting conext is changed from general to dashboard
+    setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
+    toggle(true);
+  }
 
   let borderStyle = (chattingContextType==MSG_CHANNEL_TYPE_LISTING_PARENT)? {
     borderLeftStyle: "solid",
