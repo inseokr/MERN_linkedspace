@@ -8,6 +8,7 @@ var path          = require("path");
 var fs            = require("fs");
 
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
+const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
 
 node.loop = node.runLoopOnce;
 
@@ -576,6 +577,7 @@ router.post("/removeChild", function(req, res){
 				return;
 			}
 
+
 			// use filter to create a new array
 			let tempArray = [];
 			foundListing.child_listings._3rd_party_listings.forEach(listing => 
@@ -584,7 +586,12 @@ router.post("/removeChild", function(req, res){
 					console.log("ID to compare against = " + listing.listing_id);
 					if(listing.listing_id.equals(req.body.child_listing_id))
 					{
-						console.log(" remove it ");
+						// let's remove chatting channels as well
+						// remove chatting channels
+						// 1. go through check shared_group and remove dm channels from there
+						listing.shared_user_group.map((user) => {
+							userDbHandler.removeDmChannel(user.username, req.body.channel_id_prefix);
+						});
 					}
 					else
 					{
@@ -597,6 +604,9 @@ router.post("/removeChild", function(req, res){
 			foundListing.child_listings._3rd_party_listings = [...tempArray];
 
 			foundListing.save();
+
+			// remove chatting channels from chatting channel DB as well
+			chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
 		}
 
 		res.send('Child listing removed successfully');

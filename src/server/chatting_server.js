@@ -204,6 +204,11 @@ function routeMessage(data, incomingSocket)
             channel.chat_history.push(chat);
             channel.save();
 
+            if(targets!=undefined) {
+                console.warn("No socket available for channel ID = " + id);
+                return;
+            }
+
             targets.forEach(function each(target) {
                 if (target!=incomingSocket && target.readyState === WebSocket.OPEN) {
                     //console.log("forwarding the packet");

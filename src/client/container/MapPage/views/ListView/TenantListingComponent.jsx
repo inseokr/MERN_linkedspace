@@ -9,7 +9,7 @@ import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper";
 import ChildListingsView from "./ChildListingsView";
 import {GlobalContext} from "../../../../contexts/GlobalContext";
-import {MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT} from "../../../../contexts/MessageContext";
+import {MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_GENERAL} from "../../../../contexts/MessageContext";
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 import axios from 'axios';
 import $ from 'jquery';
@@ -19,7 +19,7 @@ function TenantListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const {currentUser} = useContext(GlobalContext);
-  const {currentListing, setCurrentListing, fetchCurrentListing} = useContext(CurrentListingContext);
+  const {currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex} = useContext(CurrentListingContext);
   const {setChattingContextType, chattingContextType} = useContext(MessageContext);
   const {listing, toggle, mode} = props;
 
@@ -29,6 +29,13 @@ function TenantListingComponent(props) {
   const rentalBudget      = "$"+ listing.rental_budget;
   const preferredLocation = listing.location.city + "," + listing.location.state + "," + listing.location.country;
 
+
+  if(chattingContextType==MSG_CHANNEL_TYPE_GENERAL)
+  {
+    // This will be called only if chatting conext is changed from general to dashboard
+    setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
+    toggle(true);
+  }
 
   let borderStyle = (chattingContextType==MSG_CHANNEL_TYPE_LISTING_PARENT)? {
     borderLeftStyle: "solid",
@@ -56,9 +63,11 @@ function TenantListingComponent(props) {
   }
 
   async function removeChildListing(childListing) {
+
     // post to DB as well
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing._id,
+                channel_id_prefix: listing._id + "-child-" + currentChildIndex,
                 listing_type: "_3rdparty"};
 
     const result = await axios.post('/listing/tenant/removeChild', data)
@@ -97,6 +106,9 @@ function TenantListingComponent(props) {
   function addChildListingControl() {
     return (
       <div className="flex-container" style={{justifyContent: "flex-end"}}>
+        <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
+          <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
+        </SimpleModal>
         <button className="btn btn-info" onClick={showModal}>
           Add Listing
         </button>

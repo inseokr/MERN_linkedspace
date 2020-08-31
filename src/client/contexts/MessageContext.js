@@ -343,7 +343,7 @@ export function MessageContextProvider(props) {
   function getChattingHistory() {
       //console.log("getChattingHistory of " + currChannelInfo.channelName);
 
-      if(dmChannelContexts[currChannelInfo.channelName]===undefined)
+      if(currChannelInfo.channelName==null || dmChannelContexts[currChannelInfo.channelName]===undefined)
       {
         // no history
         return [];
