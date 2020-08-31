@@ -42,7 +42,7 @@ function TenantListingDashBoard(props) {
   useEffect(() => {
     if (rightPaneMode === "Map") {
 
-      if(window.google==undefined) return;
+      if(window.google===undefined) return;
 
       let bounds = new window.google.maps.LatLngBounds();
       googleMap = initGoogleMap(googleMapRef, zoom, center);
@@ -101,13 +101,10 @@ function TenantListingDashBoard(props) {
                     const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
 
                     marker.addListener("click", (clickedIndex=index) => {
-
                       console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);
-
                       //showModal();
                       // update currentChildIndex if it's different
-                      if(clickedIndex!=currentChildIndex)
-                      {
+                      if(clickedIndex!==currentChildIndex) {
                         console.log("ISEO: Updating current child index = " + clickedIndex);
                         setCurrentChildIndex(clickedIndex);
                       }

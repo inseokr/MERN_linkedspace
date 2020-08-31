@@ -1,15 +1,37 @@
 #marker_selected {
-    border: 2px solid rgb(17, 83, 153) !important;
-    height: 60px !important;
-    max-height: 70%;
+    border: 5px solid rgb(0, 0, 0) !important;
+    height: 40px !important;
+    width: 40px !important;
     border-radius: 50% !important;
     z-index: 1000000 !important;
+    background-repeat: no-repeat;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
 }
 
-#marker_default { 
+#marker_default {
     border: none;
-    height: 50px !important;
-    max-height: 70%;
+    height: 40px !important;
+    width: 40px !important;
     border-radius: 50% !important;
     z-index: -1 !important;
+}
+
+@-webkit-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);}
+    40% {-webkit-transform: translateY(-30px);}
+    60% {-webkit-transform: translateY(-15px);}
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-30px);}
+    60% {transform: translateY(-15px);}
+}
+
+.bounce {
+    -webkit-animation-name: bounce;
+    animation-name: bounce;
 }
