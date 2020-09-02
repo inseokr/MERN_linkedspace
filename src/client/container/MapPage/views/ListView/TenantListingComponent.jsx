@@ -64,10 +64,16 @@ function TenantListingComponent(props) {
 
   async function removeChildListing(childListing) {
 
+    if(currentListing.child_listings._3rd_party_listings[currentChildIndex]==undefined)
+    {
+      console.warn("currentChildIndex " + currentChildIndex + " is undefined");
+      return;
+    }
+
     // post to DB as well
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing._id,
-                channel_id_prefix: listing._id + "-child-" + currentChildIndex,
+                channel_id_prefix: listing._id + "-child-" + currentListing.child_listings._3rd_party_listings[currentChildIndex].listing_id._id,
                 listing_type: "_3rdparty"};
 
     const result = await axios.post('/listing/tenant/removeChild', data)
