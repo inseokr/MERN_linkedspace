@@ -9,7 +9,7 @@ import {MessageContext} from '../../../../contexts/MessageContext';
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 
 
-const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, listing, index, messageClickHandler, removeHandler}, ref) => 
+const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, listing, index, messageClickHandler, removeHandler}, ref) =>
 {
 	//const [modalShow, setModalShow] = useState(false);
 	const {setChattingContextType,
@@ -22,6 +22,7 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 
 	const listingTitle = listing.listingSource;
 	let childListing = listing.listing_id;
+	console.log("childListing childListing childListing", childListing);
 
 	let borderStyle = (clickState==1)? {
 	  borderLeftStyle: "solid",
@@ -40,8 +41,8 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 	if(ref!=reference)
 	{
 		console.log("setReference is called");
-		setReference(ref);	
-	} 
+		setReference(ref);
+	}
 
 	function updateMessageContext()
 	{
@@ -81,7 +82,7 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 	}
 
 	useEffect (()=>
-		{ 
+		{
 			if(reference!=null)
 			{
 				console.log("ChildListing: useEffect: ref.current=" + reference.current);
@@ -90,48 +91,52 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 					console.log("clicking from useEffect");
 					//reference.current.click();
 				}
-			} 
+			}
 			else console.log("ref is null");
 		},[clicked, reference]);
 
 
 	return (
-	  <ListItem>
-	    <Grid container className="childListing" ref = {reference} onClick={listingClickHandler} style={borderStyle}>
-	      <Grid item xs={4}>
-	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
-	          <Carousel.Item>
-	            <a href={childListing.listingUrl} target="_blank">
-	              <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
-	            </a>
-	          </Carousel.Item>
-	        </Carousel>
-	      </Grid>
+	  <div>
+      {childListing !== null ? (
+        <ListItem>
+          <Grid container className="childListing" ref = {reference} onClick={listingClickHandler} style={borderStyle}>
+            <Grid item xs={4}>
+              <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
+                <Carousel.Item>
+                  <a href={childListing.listingUrl} target="_blank">
+                    <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
+                  </a>
+                </Carousel.Item>
+              </Carousel>
+            </Grid>
 
-	      <Grid item xs={8}>
-	        <Paper className={"description flex-container"} style={{flexDirection: "column", justifyContent: "space-between"}}>
-	          <Typography className={"description__title"} color={"textSecondary"} gutterBottom>
-	            {listingTitle}
-	          </Typography>
-	          <Typography className={"description__summary"}>
-	            {childListing.listingSummary}
-	          </Typography>
-	          <Typography> Price: ${childListing.rentalPrice} </Typography>
-	          <Typography> City: {childListing.location.city} </Typography>
-	          <div className="flex-container" style={{justifyContent: "space-between", marginTop: "40px"}}>
-	          	<div className="flex-container" style={{justifyContent: "flex-start"}}>
-		          	<img className="img-responsive center rounded-circle" src={childListing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
-			        <Typography style={{marginTop: "10px", marginLeft: "5px"}}> Hosted by {childListing.requester.username} </Typography>
+            <Grid item xs={8}>
+              <Paper className={"description flex-container"} style={{flexDirection: "column", justifyContent: "space-between"}}>
+                <Typography className={"description__title"} color={"textSecondary"} gutterBottom>
+                  {listingTitle}
+                </Typography>
+                <Typography className={"description__summary"}>
+                  {childListing.listingSummary}
+                </Typography>
+                <Typography> Price: ${childListing.rentalPrice} </Typography>
+                <Typography> City: {childListing.location.city} </Typography>
+                <div className="flex-container" style={{justifyContent: "space-between", marginTop: "40px"}}>
+                  <div className="flex-container" style={{justifyContent: "flex-start"}}>
+                    <img className="img-responsive center rounded-circle" src={childListing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
+                    <Typography style={{marginTop: "10px", marginLeft: "5px"}}> Hosted by {childListing.requester.username} </Typography>
+                  </div>
+                  <button className="btn btn-danger" onClick={removeListingHandler}>
+                    Remove
+                  </button>
                 </div>
-                <button className="btn btn-danger" onClick={removeListingHandler}>
-                  Remove
-                </button>
-              </div>
 
-	        </Paper>
-	      </Grid>
-	    </Grid>
-	  </ListItem>
+              </Paper>
+            </Grid>
+          </Grid>
+        </ListItem>
+      ) : (<div/>)}
+    </div>
 	)
 });
 

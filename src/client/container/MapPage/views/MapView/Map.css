@@ -1,9 +1,10 @@
 #marker_selected {
-    border: 5px solid rgb(0, 0, 0) !important;
-    height: 40px !important;
-    width: 40px !important;
-    border-radius: 50% !important;
-    z-index: 1000000 !important;
+    border: 2px solid rgb(17, 83, 153);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 10;
     background-repeat: no-repeat;
     -webkit-animation-duration: 1s;
     animation-duration: 1s;
@@ -12,11 +13,10 @@
 }
 
 #marker_default {
-    border: none;
-    height: 40px !important;
-    width: 40px !important;
-    border-radius: 50% !important;
-    z-index: -1 !important;
+    border: 2px solid rgb(220, 53, 69);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
 }
 
 @-webkit-keyframes bounce {

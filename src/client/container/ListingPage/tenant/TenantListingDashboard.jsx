@@ -6,7 +6,6 @@ import Box from '@material-ui/core/Box';
 import "../../MapPage/index.css";
 
 import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboardListView';
-import InitiateMap from '../../MapPage/views/MapView/InitiateMap';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
@@ -33,11 +32,11 @@ function TenantListingDashBoard(props) {
 
   let showModal = () => {
     setModalShow(true);
-  }
+  };
 
   let handleClose = () => {
     setModalShow(false);
-  }
+  };
 
   useEffect(() => {
     if (rightPaneMode === "Map") {
@@ -86,34 +85,37 @@ function TenantListingDashBoard(props) {
 
           if (thirdPartyListings.length > 0) {
             thirdPartyListings.map((thirdPartyListing, index) => {
-              const address = thirdPartyListing.listing_id.location.street + " " +
-                thirdPartyListing.listing_id.location.city + " " +
-                thirdPartyListing.listing_id.location.state + " " +
-                thirdPartyListing.listing_id.location.zipcode + " " +
-                thirdPartyListing.listing_id.location.country;
+              if (thirdPartyListing.listing_id !== null) {
+                const address = thirdPartyListing.listing_id.location.street + " " +
+                  thirdPartyListing.listing_id.location.city + " " +
+                  thirdPartyListing.listing_id.location.state + " " +
+                  thirdPartyListing.listing_id.location.zipcode + " " +
+                  thirdPartyListing.listing_id.location.country;
 
-              getGeometryFromSearchString(address).then(
-                response => {
-                  if (response.status === "OK") {
-                    const geometry = response.results[0].geometry;
-                    const location = geometry.location;
-                    const imgSource = thirdPartyListing.listing_id.requester.profile_picture ? thirdPartyListing.listing_id.requester.profile_picture : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
-                    const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
+                getGeometryFromSearchString(address).then(
+                  response => {
+                    if (response.status === "OK") {
+                      const geometry = response.results[0].geometry;
+                      const location = geometry.location;
+                      console.log("THIRD PARTY", thirdPartyListing);
+                      const imgSource = thirdPartyListing.listing_id.coverPhoto ? thirdPartyListing.listing_id.coverPhoto.path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+                      const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
 
-                    marker.addListener("click", (clickedIndex=index) => {
-                      console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);
-                      //showModal();
-                      // update currentChildIndex if it's different
-                      if(clickedIndex!==currentChildIndex) {
-                        console.log("ISEO: Updating current child index = " + clickedIndex);
-                        setCurrentChildIndex(clickedIndex);
-                      }
-                    });
-                    bounds.extend(location);
-                    googleMap.fitBounds(bounds);
+                      marker.addListener("click", (clickedIndex=index) => {
+                        console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);
+                        //showModal();
+                        // update currentChildIndex if it's different
+                        if(clickedIndex!==currentChildIndex) {
+                          console.log("ISEO: Updating current child index = " + clickedIndex);
+                          setCurrentChildIndex(clickedIndex);
+                        }
+                      });
+                      bounds.extend(location);
+                      googleMap.fitBounds(bounds);
+                    }
                   }
-                }
-              );
+                );
+              }
             });
           }
 
