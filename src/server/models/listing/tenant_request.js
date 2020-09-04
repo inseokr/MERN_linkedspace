@@ -84,65 +84,33 @@ var TenantRequestSchema = new mongoose.Schema({
       }
     ],
 
-    child_listings: 
+    child_listings: [
       {
-        _3rd_party_listings: [
+        listing_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "LandlordRequest" // _3rdPartyListing or LandlordRequest
+        },
+
+        created_by: {
+          id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+          },
+          username: String
+        },
+
+        shared_user_group: [
           {
-            listing_id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "_3rdPartyListing"
-            },
-
-            created_by: {
-              id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-              },
-              username: String
-            },
-
-            shared_user_group: [
-              {
-                id: {
-                  type: mongoose.Schema.Types.ObjectId,
-                  ref: "User"
-                },
-                username: String,
-                profile_picture: String
-              }
-            ]
-          }
-        ],
-
-        internal_listings: [
-          {
-            listing_id: {
+            id: {
               type: mongoose.Schema.Types.ObjectId,
-              ref: "LandlordRequest"
+              ref: "User"
             },
-
-            created_by: {
-              id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-              },
-              username: String
-            },
-            
-            shared_user_group: [
-              {
-                id: {
-                  type: mongoose.Schema.Types.ObjectId,
-                  ref: "User"
-                },
-                username: String,
-                profile_picture: String
-              }
-            ]
+            username: String,
+            profile_picture: String
           }
-        ],
+        ]
       }
-    ,
+    ],
 
   	// rental location
   	location: {

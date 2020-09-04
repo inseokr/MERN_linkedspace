@@ -121,29 +121,14 @@ export function MessageContextProvider(props) {
         }
         else
         {
-          if(childType==0)
+          if(currentListing.child_listings[childIndex]==undefined)
           {
-            if(currentListing.child_listings._3rd_party_listings[childIndex]==undefined)
-            {
-              setChattingContextType(0);
-              return null;
-            }
-            else
-            {
-              return currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group;
-            }
+            setChattingContextType(0);
+            return null;
           }
           else
           {
-            if(currentListing.child_listings.internal_listings[childIndex]==undefined)
-            {
-              setChattingContextType(0);
-              return null;
-            }
-            else
-            {
-              return currentListing.child_listings.internal_listings[childIndex].shared_user_group;
-            }
+            return currentListing.child_listings[childIndex].shared_user_group;
           }
         }
 
@@ -418,7 +403,7 @@ export function MessageContextProvider(props) {
     if(chattingContextType!=0)
     {
       dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": 
-        "-child-"+ currentListing.child_listings._3rd_party_listings[childIndex].listing_id._id+"-");
+        "-child-"+ currentListing.child_listings[childIndex].listing_id._id+"-");
     }
 
     console.log("getDmChannelId: current child index = " + childIndex);
@@ -444,8 +429,8 @@ export function MessageContextProvider(props) {
     const _listArray = [friendsList, 
                         (currentListing!=undefined)? 
                           currentListing.shared_user_group:null, 
-                        (currentListing!=undefined && currentListing.child_listings._3rd_party_listings[childIndex]!=undefined)?
-                          currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group:null
+                        (currentListing!=undefined && currentListing.child_listings[childIndex]!=undefined)?
+                          currentListing.child_listings[childIndex].shared_user_group:null
                       ];
 
     let dmChannels = [];

@@ -6,6 +6,7 @@ var TenantRequest = require("../../../models/listing/tenant_request");
 var node          = require("deasync");
 var path          = require("path");
 var fs            = require("fs");
+var mongoose      = require("mongoose");
 
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
@@ -282,21 +283,54 @@ router.get("/show", function(req, res){
 });
 
 
-router.get("/:list_id/fetch", function(req, res){
+router.get("/:list_id/fetch",  function(req, res){
 
-	//console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
+	console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
-	TenantRequest.findById(req.params.list_id).populate('child_listings._3rd_party_listings.listing_id').exec(function(err, foundListing){
+	//TenantRequest.findById(req.params.list_id).populate({path: 'child_listings.listing_id', model: '_3rdPartyListing'}).exec(function(err, foundListing){
+	TenantRequest.findById(req.params.list_id, async function(err, foundListing){
+
 		if(err)
 		{
 			console.warn("Listing not found");
+			console.warn("err="+err);
+			res.redirect("/");
 			return;
 		}
 
-		//console.log("foundListing = " + JSON.stringify(foundListing));
+		var populateChildren = new Promise((resolve, reject) => {
 
-		// send child listings as well
-		res.json(foundListing);
+			if(foundListing.child_listings.length>0)
+			{
+				var numberOfPopulatedChildListing = 0;
+
+				foundListing.child_listings.forEach(async (child, index, array) => {
+					let pathToPopulate = 'child_listings.'+index+".listing_id";
+
+
+					await foundListing.populate({path: pathToPopulate, model: '_3rdPartyListing'}).execPopulate();
+					foundListing.populated(pathToPopulate);
+					console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
+					console.log("listing: index =  " + index);
+					//console.log("foundListing = " + JSON.stringify(foundListing.child_listings[index].listing_id));
+					if(++numberOfPopulatedChildListing==array.length) resolve();
+				});
+			}
+			else
+			{
+				// resolve it right away.
+				resolve();
+			}
+
+		});
+
+		
+		populateChildren.then(function(){
+			// It should have waited till previous forEach loop is completed.
+			console.log("sending response to REACT now");
+			res.json(foundListing);
+		})
+
 	});
 
 });
@@ -371,32 +405,16 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    				                             	 profile_picture: _friend.profile_picture});
 	    			break;
 	    		case 2:
-	    			if(childInfo.type==0)
+	    			if(checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend.username)==true)
 	    			{
-		    			if(checkDuplicate(foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group, _friend.username)==true)
-		    			{
-		    				console.log("Duplicate found");
-		    				res.json({result: "Duplicate found"});
-		    				return;
-		    			}
-
-	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
-	    					                                                                                     username: _friend.username,
-	    					                                                                                     profile_picture: _friend.profile_picture});
+	    				console.log("Duplicate found");
+	    				res.json({result: "Duplicate found"});
+	    				return;
 	    			}
-	    			else
-	    			{
-		    			if(checkDuplicate(foundListing.child_listings.internal_listings[childInfo.index].shared_user_group, _friend.username)==true)
-		    			{
-		    				console.log("Duplicate found");
-		    				res.json({result: "Duplicate found"});
-		    				return;
-		    			}
 
-	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
-	    					                                                                                   username: _friend.username,
-	    					                                                                                   profile_picture: _friend.profile_picture});
-	    			}
+    				foundListing.child_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
+    					                                                                                     username: _friend.username,
+    					                                                                                   profile_picture: _friend.profile_picture});
 	    			break;
 	    		default:
 	    			console.log("Unknown chattingType");
@@ -481,7 +499,7 @@ router.post("/addChild", function(req, res){
 		{
 			console.log("listing  found");
 
-			let _3rdparty_listing = { listing_id: null, 
+			let _3rdparty_listing = { listing_id: {type: mongoose.Schema.Types.ObjectId, ref: "_3rdPartyListing" }, 
 									  created_by: {id: null, username: ""}, shared_user_group: []};
 
 			//console.log("child_listing_id = " + req.body.child_listing_id);
@@ -497,7 +515,8 @@ router.post("/addChild", function(req, res){
 			{
 				foundListing.child_listings.forEach(
 					listing => {
-						if(listing.id.equals(req.body.child_listing_id)) 
+						console.log("Child listing = " + JSON.stringify(listing));
+						if(listing.listing_id.equals(req.body.child_listing_id)) 
 						{
 							foundDuplicate = true;
 						}
@@ -525,7 +544,7 @@ router.post("/addChild", function(req, res){
 				_3rdparty_listing.created_by.id = req.user._id;
 				_3rdparty_listing.created_by.username = foundListing.requester.username;
 
-				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
+				foundListing.child_listings.push(_3rdparty_listing);
 			}
 			// tenant & creator of child listing
 			else
@@ -542,7 +561,7 @@ router.post("/addChild", function(req, res){
 
 				_3rdparty_listing.shared_user_group.push(_creatorOfParent);
 				_3rdparty_listing.shared_user_group.push(_creatorOfChild);
-				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
+				foundListing.child_listings.push(_3rdparty_listing);
 			}
 
 			foundListing.save();
@@ -582,7 +601,7 @@ router.post("/removeChild", function(req, res){
 
 			// use filter to create a new array
 			let tempArray = [];
-			foundListing.child_listings._3rd_party_listings.forEach(listing => 
+			foundListing.child_listings.forEach(listing => 
 				{
 					//console.log("req.body.child_listing_id = " + req.body.child_listing_id);
 					//console.log("ID to compare against = " + listing.listing_id);
@@ -603,7 +622,7 @@ router.post("/removeChild", function(req, res){
 				})
 
 			//console.log("size of tempArray = " + tempArray.length);
-			foundListing.child_listings._3rd_party_listings = [...tempArray];
+			foundListing.child_listings = [...tempArray];
 
 			foundListing.save();
 

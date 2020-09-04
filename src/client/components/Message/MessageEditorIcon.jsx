@@ -37,15 +37,15 @@ function MessageEditorIcon(props) {
 
 	// general type doesn't need _childListing.
 	let _childListing = (messageEditorCallerType=="listing_dashboard")?
-						 currentListing.child_listings._3rd_party_listings[currentChildIndex]:
+						 currentListing.child_listings[currentChildIndex]:
 					     [];
 
 	if(messageEditorCallerType=="listing_dashboard")
 	{
 		console.log("currentChildIndex=" + currentChildIndex);
-		if(currentListing.child_listings._3rd_party_listings.length>0 && currentListing.child_listings._3rd_party_listings[currentChildIndex]!=undefined)
+		if(currentListing.child_listings.length>0 && currentListing.child_listings[currentChildIndex]!=undefined)
 		{
-			console.log("listing =" + JSON.stringify(currentListing.child_listings._3rd_party_listings[currentChildIndex].listing_id));
+			console.log("listing =" + JSON.stringify(currentListing.child_listings[currentChildIndex].listing_id));
 		}
 	}
 

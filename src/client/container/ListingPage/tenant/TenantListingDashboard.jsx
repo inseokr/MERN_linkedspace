@@ -81,34 +81,27 @@ function TenantListingDashBoard(props) {
         // Get location of any child listings if they exist.
         if (currentListing.child_listings) { // Proceed if child listings exist.
           const childListings = currentListing.child_listings;
-          const thirdPartyListings = childListings._3rd_party_listings;
-          const internalListings = childListings.internal_listings;
 
-          if (thirdPartyListings.length > 0) {
-            thirdPartyListings.map((thirdPartyListing, index) => {
-              const address = thirdPartyListing.listing_id.location.street + " " +
-                thirdPartyListing.listing_id.location.city + " " +
-                thirdPartyListing.listing_id.location.state + " " +
-                thirdPartyListing.listing_id.location.zipcode + " " +
-                thirdPartyListing.listing_id.location.country;
+          if (childListings.length > 0) {
+            childListings.map((listing, index) => {
+              const address = listing.listing_id.location.street + " " +
+                listing.listing_id.location.city + " " +
+                listing.listing_id.location.state + " " +
+                listing.listing_id.location.zipcode + " " +
+                listing.listing_id.location.country;
 
               getGeometryFromSearchString(address).then(
                 response => {
                   if (response.status === "OK") {
                     const geometry = response.results[0].geometry;
                     const location = geometry.location;
-                    const imgSource = thirdPartyListing.listing_id.requester.profile_picture.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : thirdPartyListing.listing_id.requester.profile_picture;
+                    const imgSource = listing.listing_id.requester.profile_picture.length === 0 ? "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg" : listing.listing_id.requester.profile_picture;
                     const marker = createMarker(googleMap, location, imgSource, (index==currentChildIndex));
 
                     marker.addListener("click", (clickedIndex=index) => {
-
-                      console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);
-
-                      //showModal();
                       // update currentChildIndex if it's different
                       if(clickedIndex!=currentChildIndex)
                       {
-                        console.log("ISEO: Updating current child index = " + clickedIndex);
                         setCurrentChildIndex(clickedIndex);
                       }
                     });
@@ -118,10 +111,6 @@ function TenantListingDashBoard(props) {
                 }
               );
             });
-          }
-
-          if (internalListings.length > 0) {
-
           }
         }
         // googleMap.fitBounds(bounds);
