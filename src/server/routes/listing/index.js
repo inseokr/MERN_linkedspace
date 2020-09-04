@@ -39,7 +39,7 @@ router.get("/show_active_listing", function(req,res){
             
             foundUser.tenant_listing.forEach(function(listing){
                 var tlist = {id: listing._id , picture: listing.profile_pictures[0].path}
-                console.log("tenant profile picture => " + tlist.picture);
+                //console.log("tenant profile picture => " + tlist.picture);
                 tenant_listing.push(tlist);
             });
 
@@ -68,25 +68,21 @@ router.get("/get_active_listing/own", function(req,res) {
 
             //<note> yes, landlord_listing array got screwed up after populate... darn...
             foundUser.tenant_listing.forEach(function(listing){
-                console.log("tenant listing found");
 
                 var tlist = {id: listing._id , picture: listing.profile_pictures[0].path}
-                console.log("tenant profile picture => " + tlist.picture);
                 tenant_listing.push(tlist);
             });
 
             foundUser.landlord_listing.forEach(function(listing){
-                console.log("landlord listing found");
                 var llist = {id: listing._id , picture: listing.pictures[0].path}
-                console.log("landlord cover picture => " + llist.picture);
                 landlord_listing.push(llist);
             });
 
 
             foundUser._3rdparty_listing.forEach(function(listing){
-                console.log("3rd party listing found");
                 var llist = {id: listing._id , 
-                                 picture: listing.coverPhoto.path, 
+                                 picture: listing.coverPhoto.path,
+                                 requester: {name: listing.requester.username, profile_picture: listing.requester.profile_picture}, 
                                  url: listing.listingUrl, 
                                  source: listing.listingSource, 
                                  summary: listing.listingSummary,

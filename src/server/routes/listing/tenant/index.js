@@ -9,9 +9,10 @@ var fs            = require("fs");
 
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
+const chatServer    = require('../../../chatting_server');
+
 
 node.loop = node.runLoopOnce;
-
 
 
 module.exports = function(app) {
@@ -283,12 +284,12 @@ router.get("/show", function(req, res){
 
 router.get("/:list_id/fetch", function(req, res){
 
-	console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
+	//console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
 	TenantRequest.findById(req.params.list_id).populate('child_listings._3rd_party_listings.listing_id').exec(function(err, foundListing){
 		if(err)
 		{
-			console.log("Listing not found");
+			console.warn("Listing not found");
 			return;
 		}
 
@@ -345,6 +346,7 @@ router.post("/:list_id/addUserGroup", function(req, res){
     	let friend       = req.body.friend;
 
     	console.log("friend = " + JSON.stringify(friend));
+    	console.log("userDbHandler = " + JSON.stringify(userDbHandler));
 
     	userDbHandler.getUserByName(friend.username).then((_friend)=> {
     		if(_friend==null)
@@ -482,14 +484,14 @@ router.post("/addChild", function(req, res){
 			let _3rdparty_listing = { listing_id: null, 
 									  created_by: {id: null, username: ""}, shared_user_group: []};
 
-			console.log("child_listing_id = " + req.body.child_listing_id);
+			//console.log("child_listing_id = " + req.body.child_listing_id);
 
 			_3rdparty_listing.listing_id = req.body.child_listing_id;
 
 			// let's check if it's a duplicate request.
 			let foundDuplicate = false;
 
-			console.log("foundListing = " + JSON.stringify(foundListing));
+			//console.log("foundListing = " + JSON.stringify(foundListing));
 
 			if(foundListing.child_listings.length>=1)
 			{
@@ -511,12 +513,12 @@ router.post("/addChild", function(req, res){
 
 			// default user group
 			// 1. check if the parent listing is created by me
-			console.log("req.user._id="+req.user._id);
-			console.log("foundListing.requester.id="+foundListing.requester.id);
+			//console.log("req.user._id="+req.user._id);
+			//console.log("foundListing.requester.id="+foundListing.requester.id);
 
 			if(foundListing.requester.id.equals(req.user._id))
 			{
-				console.log("Updating user group, created by the current user");
+				//console.log("Updating user group, created by the current user");
 				let _user = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
 				_3rdparty_listing.shared_user_group.push(_user);
 				
@@ -528,7 +530,7 @@ router.post("/addChild", function(req, res){
 			// tenant & creator of child listing
 			else
 			{
-				console.log("Updating user group, created by friend");
+				//console.log("Updating user group, created by friend");
 
 				// <note> the 3rd party listing could be added by either tenant or friends.
 				// It's a friend case.
@@ -568,7 +570,7 @@ router.post("/removeChild", function(req, res){
 
 		if(req.body.listing_type=="_3rdparty")
 		{
-			console.log("remove 3rd party listing");
+			//console.log("remove 3rd party listing");
 
 			if(foundListing.child_listings.length==0)
 			{
@@ -582,25 +584,25 @@ router.post("/removeChild", function(req, res){
 			let tempArray = [];
 			foundListing.child_listings._3rd_party_listings.forEach(listing => 
 				{
-					console.log("req.body.child_listing_id = " + req.body.child_listing_id);
-					console.log("ID to compare against = " + listing.listing_id);
+					//console.log("req.body.child_listing_id = " + req.body.child_listing_id);
+					//console.log("ID to compare against = " + listing.listing_id);
 					if(listing.listing_id.equals(req.body.child_listing_id))
 					{
 						// let's remove chatting channels as well
 						// remove chatting channels
 						// 1. go through check shared_group and remove dm channels from there
 						listing.shared_user_group.map((user) => {
-							userDbHandler.removeDmChannel(user.username, req.body.channel_id_prefix);
+							chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
 						});
 					}
 					else
 					{
-						console.log(" preserve this item");
+						//console.log(" preserve this item");
 						tempArray.push(listing);
 					}
 				})
 
-			console.log("size of tempArray = " + tempArray.length);
+			//console.log("size of tempArray = " + tempArray.length);
 			foundListing.child_listings._3rd_party_listings = [...tempArray];
 
 			foundListing.save();
