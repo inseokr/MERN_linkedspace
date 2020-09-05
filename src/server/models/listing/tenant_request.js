@@ -91,6 +91,8 @@ var TenantRequestSchema = new mongoose.Schema({
             ref: "LandlordRequest" // _3rdPartyListing or LandlordRequest
         },
 
+        listing_type: String, // _3rdPartyListing or LandlordRequest, DB model name and used for populate.
+
         created_by: {
           id: {
             type: mongoose.Schema.Types.ObjectId,
