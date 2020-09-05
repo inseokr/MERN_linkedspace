@@ -30,6 +30,8 @@ export default class ListingTenantMainPage extends Component {
     // <note> this parameter will contain the value of ":id" in the followinng route path
     // /listing/landlord/:id
     //this.context.fetchCurrentListing(this.props.match.params.id);
+    //if(this.props.match!==undefined)
+    //  this.context.fetchCurrentListing(this.props.match.params.id, "tenant");
   }
 
 
@@ -190,7 +192,7 @@ export default class ListingTenantMainPage extends Component {
 
   render() {
 
-    if(this.context.currentListing===undefined) {
+    if(this.context.currentListing===undefined || this.context.currentListing.listingType!="tenant") {
       return (<div> </div>)
     }
 

@@ -33,14 +33,35 @@ export default class ListingLandlordMainPage extends Component {
         // <note> this parameter will contain the value of ":id" in the followinng route path
         // /listing/landlord/:id
         //this.context.fetchCurrentListing(this.props.match.params.id);
+      //if(this.props.match!==undefined)
+      //  this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
+
     }
 
     render() {
         let footer = "";
+
+        if(this.context.currentListing!=undefined)
+        {
+          console.log("currentListing = " + JSON.stringify(this.context.currentListing));
+          if(this.context.currentListing.listing==undefined)
+          {
+            // need to load it again.
+            this.context.fetchCurrentListing(this.props.match.params.id); 
+            return (
+              <div></div>
+              )
+          }
+        }
+        else
+        {
+          console.log("currentListing is not defined");
+        }
+
         return (
           <div>
             {
-              this.context.currentListing ? (
+              (this.context.currentListing && this.context.currentListing.listing.listingType=="landlord") ? (
                 <div>
                   <ListingCoverPage />
                   <div className="container no_border" style={{marginTop:"20px"}}>
