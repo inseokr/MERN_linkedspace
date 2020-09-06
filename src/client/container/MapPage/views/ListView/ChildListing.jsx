@@ -8,6 +8,27 @@ import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
 import {MessageContext} from '../../../../contexts/MessageContext';
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 
+function getChildListingSummary(childListing)
+{
+	if(childListing.listingType=="_3rdparty")
+	{
+		return {
+		    	location: 		childListing.location.city,
+				listingUrl: 	childListing.listingUrl,
+		        coverPhoto: 	childListing.coverPhoto.path,
+		    	rentalPrice: 	childListing.rentalPrice,
+		    	listingSummary: childListing.listingSummary};
+	}
+	else
+	{
+		return {
+		    	location: 		childListing.rental_property_information.location.city,
+				listingUrl: 	"TBD",
+		        coverPhoto: 	childListing.pictures[0].path,
+		    	rentalPrice: 	childListing.rental_terms.asking_price,
+		    	listingSummary: childListing.summary_of_listing.slice(0,20)+"..."};
+	}
+}
 
 const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, listing, index, messageClickHandler, removeHandler}, ref) => 
 {
@@ -20,16 +41,16 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
     const [clicked, setClicked] = useState(0);
     const [reference, setReference] = useState(null);
 
-	const listingTitle = listing.listingSource;
+	const listingTitle = (listing.listing_type=="_3rdPartyListing")? listing.listing_id.listingSource: "LinkedSpaces";
+
 	let childListing = listing.listing_id;
+	let childListingSummary = getChildListingSummary(childListing);
 
 	let borderStyle = (clickState==1)? {
 	  borderLeftStyle: "solid",
 	  borderLeftColor: "#115399",
 	  borderLeftWidth: "5px"
 	} : {}
-
-	let _childListing = {listing: listing, listingType: "_3rdparty"};
 
 	if(clicked!=clickState)
 	{
@@ -50,17 +71,12 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 		// ISEO-TBD: dang...the following call will trigger the reload of MessageEditor
 		// and all the state will be gone when it's reloaded??
 		// need to know the type of listing
-		if(_childListing.listingType=="_3rdparty")
-		{
-			setChildType(0);
-			setChildIndex(index);
-			messageClickHandler(true);
-		}
-		else
-		{
-			setChildType(1);
-			messageClickHandler(true);
-		}
+		// ISEO-TBD: It's another bad example... let's use constanct instead.
+		// what if the DB model name got changed??
+		setChildType((listing.listing_type=="_3rdPartyListing")? 0: 1);
+
+		setChildIndex(index);
+		messageClickHandler(true);
 	}
 
 	function listingClickHandler(e)
@@ -101,8 +117,8 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 	      <Grid item xs={4}>
 	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
 	          <Carousel.Item>
-	            <a href={childListing.listingUrl} target="_blank">
-	              <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
+	            <a href={childListingSummary.listingUrl} target="_blank">
+	              <img src={childListingSummary.coverPhoto} alt={"Listing Picture"} className={"carouselImage"}/>
 	            </a>
 	          </Carousel.Item>
 	        </Carousel>
@@ -114,10 +130,10 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 	            {listingTitle}
 	          </Typography>
 	          <Typography className={"description__summary"}>
-	            {childListing.listingSummary}
+	            {childListingSummary.listingSummary}
 	          </Typography>
-	          <Typography> Price: ${childListing.rentalPrice} </Typography>
-	          <Typography> City: {childListing.location.city} </Typography>
+	          <Typography> Price: ${childListingSummary.rentalPrice} </Typography>
+	          <Typography> City: {childListingSummary.location} </Typography>
 	          <div className="flex-container" style={{justifyContent: "space-between", marginTop: "40px"}}>
 	          	<div className="flex-container" style={{justifyContent: "flex-start"}}>
 		          	<img className="img-responsive center rounded-circle" src={childListing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>

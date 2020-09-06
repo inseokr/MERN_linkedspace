@@ -84,11 +84,15 @@ function TenantListingDashBoard(props) {
 
           if (childListings.length > 0) {
             childListings.map((listing, index) => {
-              const address = listing.listing_id.location.street + " " +
-                listing.listing_id.location.city + " " +
-                listing.listing_id.location.state + " " +
-                listing.listing_id.location.zipcode + " " +
-                listing.listing_id.location.country;
+
+              //console.log("listing="+JSON.stringify(listing));
+              let location = (listing.listing_type=="LandlordRequest")? listing.listing_id.rental_property_information.location: listing.listing_id.location;
+
+              const address = location.street + " " +
+                location.city + " " +
+                location.state + " " +
+                location.zipcode + " " +
+                location.country;
 
               getGeometryFromSearchString(address).then(
                 response => {
