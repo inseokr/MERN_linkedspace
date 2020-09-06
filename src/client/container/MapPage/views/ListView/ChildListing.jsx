@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -10,9 +11,13 @@ import {CurrentListingContext} from '../../../../contexts/CurrentListingContext'
 
 function getChildListingSummary(childListing)
 {
+	console.log("getChildListingSummary, listingType = " + childListing.listingType);
+
 	if(childListing.listingType=="_3rdparty")
 	{
 		return {
+				id: 			childListing._id,
+				listingType:    childListing.listingType,
 		    	location: 		childListing.location.city,
 				listingUrl: 	childListing.listingUrl,
 		        coverPhoto: 	childListing.coverPhoto.path,
@@ -22,6 +27,8 @@ function getChildListingSummary(childListing)
 	else
 	{
 		return {
+				id: 			childListing._id,
+				listingType:    childListing.listingType,
 		    	location: 		childListing.rental_property_information.location.city,
 				listingUrl: 	"TBD",
 		        coverPhoto: 	childListing.pictures[0].path,
@@ -110,16 +117,21 @@ const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, 
 			else console.log("ref is null");
 		},[clicked, reference]);
 
-
+	let linkToListing = (childListingSummary.listingType=="_3rdparty") ?
+		            <a href={childListingSummary.listingUrl} target="_blank">
+		              <img src={childListingSummary.coverPhoto} alt={"Listing Picture"} className={"carouselImage"}/>
+		            </a>
+		            : 
+					<Link to={"/listing/landlord/"+childListingSummary.id+"/get"} target="_blank">
+		              <img src={childListingSummary.coverPhoto} alt={"Listing Picture"} className={"carouselImage"}/>
+		            </Link>
 	return (
 	  <ListItem>
 	    <Grid container className="childListing" ref = {reference} onClick={listingClickHandler} style={borderStyle}>
 	      <Grid item xs={4}>
 	        <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
 	          <Carousel.Item>
-	            <a href={childListingSummary.listingUrl} target="_blank">
-	              <img src={childListingSummary.coverPhoto} alt={"Listing Picture"} className={"carouselImage"}/>
-	            </a>
+	          	{linkToListing}
 	          </Carousel.Item>
 	        </Carousel>
 	      </Grid>

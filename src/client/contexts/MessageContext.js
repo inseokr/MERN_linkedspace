@@ -426,10 +426,12 @@ export function MessageContextProvider(props) {
 
   function getListOfDmChannels()
   {
+
+    // ISEO-TBD: child_listings available only for tenant listing now.
     const _listArray = [friendsList, 
                         (currentListing!=undefined)? 
-                          currentListing.shared_user_group:null, 
-                        (currentListing!=undefined && currentListing.child_listings[childIndex]!=undefined)?
+                          currentListing.shared_user_group:null,
+                        (currentListing!=undefined && currentListing.listingType=="tenant" && currentListing.child_listings[childIndex]!=undefined)?
                           currentListing.child_listings[childIndex].shared_user_group:null
                       ];
 

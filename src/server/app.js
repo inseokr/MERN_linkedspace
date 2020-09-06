@@ -404,6 +404,7 @@ app.get('/auth/facebook/callback',
 //  res.sendFile(path.join(__dirname, '../../public', 'index.html'));
 //});
 
-app.get('/*', function(req, res, next) {
+// ISEO-TBD 
+/*app.get('/*', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
-});
+});*/

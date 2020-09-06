@@ -68,9 +68,7 @@ export default class App extends Component {
                   <Route exact path="/MyNetworks">
                     <MyNetworkPage />
                   </Route>
-                  <Route exact path="/">
-                    <LandingPage />
-                  </Route>
+
                   <Route exact path="/PostListing">
                     <PostListingPage />
                   </Route>
@@ -84,6 +82,14 @@ export default class App extends Component {
                     <EditProfileMain />
                   </Route>
                   
+                  <Route exact path="/">
+                    <LandingPage />
+                  </Route>
+
+                  <Route exact path="/homepage">
+                    <LandingPage />
+                  </Route>
+
                   <Route exact path="/3rdParty" component={Post3rdPartyListing} />
 
                   <Route exact path="/ActiveListing">
@@ -92,7 +98,7 @@ export default class App extends Component {
                   <Route exact path="/ShowListingFromFriends">
                     <ShowActiveListingPageWrapper type="friend" listingControl=""/>
                   </Route>
-                  <Route path={"/listing/landlord/:id"} component={ListingLandlordMainPage} />
+                  <Route path={"/listing/landlord/:id/get"} component={ListingLandlordMainPage} />
                   <Route path={"/listing/tenant/:id/get"} component={ListingTenantMainPage} />
                   <Route
                     path={"/listing/tenant/:id/dashboard"}

@@ -49,15 +49,15 @@ export default class ModalLoginForm extends Component {
   componentDidMount() {
   }
 
-
   render() {
-	console.log("rendering ModalLoginForm. display = " + this.props.display);
+	//console.log("rendering ModalLoginForm. display = " + this.props.display);
 	const displayStyle = (this.props.display==true) ? {display: "block", opacity: "1"} : {display: "none"};
 
+	// ISEO-TBD: This will re-direct the page to root always when URL is specificied explicitly in the browser like http://10.0.0.10/ActiveListing
+	// Let's redirect it only if it's the first login....
 	if(this.props.display==false) {
 		return (
 			<div>
-				<Redirect to='/' />
 			</div>
 			);
 	}
@@ -109,7 +109,7 @@ export default class ModalLoginForm extends Component {
 			    </div>
 
 			    <div className="modal-footer d-flex justify-content-center form-group">
-			       <button className="btn btn-danger p-2 flex-grow-1">Login</button>
+			       	<button className="btn btn-danger p-2 flex-grow-1">Login</button>
 			    </div>
 
 		        <div className="modal-footer d-flex justify-content-center">

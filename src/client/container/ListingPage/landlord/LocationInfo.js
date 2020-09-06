@@ -15,6 +15,12 @@ function LocationInfo() {
   const [zoom, setZoom] = useState(9);
 
   useEffect(() => {
+
+    if(window.google==null || window.google==undefined)
+    {
+      return;
+    }
+    
     googleMap = initGoogleMap(googleMapRef, zoom, center);
 
     if (currentListing) {
