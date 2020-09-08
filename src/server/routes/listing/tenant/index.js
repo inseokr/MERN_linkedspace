@@ -6,12 +6,14 @@ var TenantRequest = require("../../../models/listing/tenant_request");
 var node          = require("deasync");
 var path          = require("path");
 var fs            = require("fs");
+var mongoose      = require("mongoose");
 
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
+const chatServer    = require('../../../chatting_server');
+
 
 node.loop = node.runLoopOnce;
-
 
 
 module.exports = function(app) {
@@ -281,21 +283,55 @@ router.get("/show", function(req, res){
 });
 
 
-router.get("/:list_id/fetch", function(req, res){
+router.get("/:list_id/fetch",  function(req, res){
 
 	console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
-	TenantRequest.findById(req.params.list_id).populate('child_listings._3rd_party_listings.listing_id').exec(function(err, foundListing){
+	//TenantRequest.findById(req.params.list_id).populate({path: 'child_listings.listing_id', model: '_3rdPartyListing'}).exec(function(err, foundListing){
+	TenantRequest.findById(req.params.list_id, async function(err, foundListing){
+
 		if(err)
 		{
-			console.log("Listing not found");
+			console.warn("Listing not found");
+			console.warn("err="+err);
+			res.redirect("/");
 			return;
 		}
 
-		//console.log("foundListing = " + JSON.stringify(foundListing));
+		var populateChildren = new Promise((resolve, reject) => {
 
-		// send child listings as well
-		res.json(foundListing);
+			if(foundListing.child_listings.length>0)
+			{
+				var numberOfPopulatedChildListing = 0;
+
+				foundListing.child_listings.forEach(async (child, index, array) => {
+					let pathToPopulate = 'child_listings.'+index+".listing_id";
+
+					console.log("child listing reference = " + child.listing_type);
+
+					await foundListing.populate({path: pathToPopulate, model: child.listing_type}).execPopulate();
+					foundListing.populated(pathToPopulate);
+					console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
+					console.log("listing: index =  " + index);
+					//console.log("foundListing = " + JSON.stringify(foundListing.child_listings[index].listing_id));
+					if(++numberOfPopulatedChildListing==array.length) resolve();
+				});
+			}
+			else
+			{
+				// resolve it right away.
+				resolve();
+			}
+
+		});
+
+		
+		populateChildren.then(function(){
+			// It should have waited till previous forEach loop is completed.
+			console.log("sending response to REACT now");
+			res.json(foundListing);
+		})
+
 	});
 
 });
@@ -345,6 +381,7 @@ router.post("/:list_id/addUserGroup", function(req, res){
     	let friend       = req.body.friend;
 
     	console.log("friend = " + JSON.stringify(friend));
+    	console.log("userDbHandler = " + JSON.stringify(userDbHandler));
 
     	userDbHandler.getUserByName(friend.username).then((_friend)=> {
     		if(_friend==null)
@@ -369,32 +406,16 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    				                             	 profile_picture: _friend.profile_picture});
 	    			break;
 	    		case 2:
-	    			if(childInfo.type==0)
+	    			if(checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend.username)==true)
 	    			{
-		    			if(checkDuplicate(foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group, _friend.username)==true)
-		    			{
-		    				console.log("Duplicate found");
-		    				res.json({result: "Duplicate found"});
-		    				return;
-		    			}
-
-	    				foundListing.child_listings._3rd_party_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
-	    					                                                                                     username: _friend.username,
-	    					                                                                                     profile_picture: _friend.profile_picture});
+	    				console.log("Duplicate found");
+	    				res.json({result: "Duplicate found"});
+	    				return;
 	    			}
-	    			else
-	    			{
-		    			if(checkDuplicate(foundListing.child_listings.internal_listings[childInfo.index].shared_user_group, _friend.username)==true)
-		    			{
-		    				console.log("Duplicate found");
-		    				res.json({result: "Duplicate found"});
-		    				return;
-		    			}
 
-	    				foundListing.child_listings.internal_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
-	    					                                                                                   username: _friend.username,
-	    					                                                                                   profile_picture: _friend.profile_picture});
-	    			}
+    				foundListing.child_listings[childInfo.index].shared_user_group.push({id: _friend._id, 
+    					                                                                                     username: _friend.username,
+    					                                                                                   profile_picture: _friend.profile_picture});
 	    			break;
 	    		default:
 	    			console.log("Unknown chattingType");
@@ -468,6 +489,7 @@ router.post("/addChild", function(req, res){
 	console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
 	TenantRequest.findById(req.body.parent_listing_id).populate('requester.id').exec(function(err, foundListing){
+		
 		if(err)
 		{
 			console.log("listing not found");
@@ -475,80 +497,79 @@ router.post("/addChild", function(req, res){
 			return;
 		}
 
-		if(req.body.listing_type=="_3rdparty")
+		console.log("listing  found");
+
+		let listing_type = (req.body.listing_type=="_3rdparty") ? "_3rdPartyListing":  "LandlordRequest";
+
+		let child_listing = { listing_id: {type: mongoose.Schema.Types.ObjectId, 
+											   ref: listing_type},
+								  listing_type: listing_type,			   
+								  created_by: {id: null, username: ""}, 
+								  shared_user_group: []};
+
+		//console.log("child_listing_id = " + req.body.child_listing_id);
+
+		child_listing.listing_id = req.body.child_listing_id;
+
+		// let's check if it's a duplicate request.
+		let foundDuplicate = false;
+
+		//console.log("foundListing = " + JSON.stringify(foundListing));
+
+		if(foundListing.child_listings.length>=1)
 		{
-			console.log("listing  found");
+			foundListing.child_listings.forEach(
+				listing => {
+					console.log("Child listing = " + JSON.stringify(listing));
+					if(listing.listing_id.equals(req.body.child_listing_id)) 
+					{
+						foundDuplicate = true;
+					}
+				}); 
 
-			let _3rdparty_listing = { listing_id: null, 
-									  created_by: {id: null, username: ""}, shared_user_group: []};
-
-			console.log("child_listing_id = " + req.body.child_listing_id);
-
-			_3rdparty_listing.listing_id = req.body.child_listing_id;
-
-			// let's check if it's a duplicate request.
-			let foundDuplicate = false;
-
-			console.log("foundListing = " + JSON.stringify(foundListing));
-
-			if(foundListing.child_listings.length>=1)
+			if(foundDuplicate==true)
 			{
-				foundListing.child_listings.forEach(
-					listing => {
-						if(listing.id.equals(req.body.child_listing_id)) 
-						{
-							foundDuplicate = true;
-						}
-					}); 
-
-				if(foundDuplicate==true)
-				{
-					console.log("Duplicate request");
-					res.send("Duplicate request");
-					return;
-				}
+				console.log("Duplicate request");
+				res.send("Duplicate request");
+				return;
 			}
-
-			// default user group
-			// 1. check if the parent listing is created by me
-			console.log("req.user._id="+req.user._id);
-			console.log("foundListing.requester.id="+foundListing.requester.id);
-
-			if(foundListing.requester.id.equals(req.user._id))
-			{
-				console.log("Updating user group, created by the current user");
-				let _user = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
-				_3rdparty_listing.shared_user_group.push(_user);
-				
-				_3rdparty_listing.created_by.id = req.user._id;
-				_3rdparty_listing.created_by.username = foundListing.requester.username;
-
-				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
-			}
-			// tenant & creator of child listing
-			else
-			{
-				console.log("Updating user group, created by friend");
-
-				// <note> the 3rd party listing could be added by either tenant or friends.
-				// It's a friend case.
-				let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
-				let _creatorOfChild  = {id: req.user._id, username: req.body.username, profile_picture: req.user.profile_picture};
-
-				_3rdparty_listing.created_by.id = foundListing.requester.id;
-				_3rdparty_listing.created_by.username = foundListing.requester.username;
-
-				_3rdparty_listing.shared_user_group.push(_creatorOfParent);
-				_3rdparty_listing.shared_user_group.push(_creatorOfChild);
-				foundListing.child_listings._3rd_party_listings.push(_3rdparty_listing);
-			}
-
-			foundListing.save();
 		}
+
+		// default user group
+		// 1. check if the parent listing is created by me
+		//console.log("req.user._id="+req.user._id);
+		//console.log("foundListing.requester.id="+foundListing.requester.id);
+
+		if(foundListing.requester.id.equals(req.user._id))
+		{
+			//console.log("Updating user group, created by the current user");
+			let _user = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
+			child_listing.shared_user_group.push(_user);
+			
+			child_listing.created_by.id = req.user._id;
+			child_listing.created_by.username = foundListing.requester.username;
+
+			foundListing.child_listings.push(child_listing);
+		}
+		// tenant & creator of child listing
 		else
 		{
-			// landlord listing
+			//console.log("Updating user group, created by friend");
+
+			// <note> the 3rd party listing could be added by either tenant or friends.
+			// It's a friend case.
+			let _creatorOfParent = {id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture};
+			let _creatorOfChild  = {id: req.user._id, username: req.body.username, profile_picture: req.user.profile_picture};
+
+			child_listing.created_by.id = foundListing.requester.id;
+			child_listing.created_by.username = foundListing.requester.username;
+
+			child_listing.shared_user_group.push(_creatorOfParent);
+			child_listing.shared_user_group.push(_creatorOfChild);
+			foundListing.child_listings.push(child_listing);
 		}
+
+		foundListing.save();
 
 		res.send("Successfully added");
 
@@ -568,7 +589,7 @@ router.post("/removeChild", function(req, res){
 
 		if(req.body.listing_type=="_3rdparty")
 		{
-			console.log("remove 3rd party listing");
+			//console.log("remove 3rd party listing");
 
 			if(foundListing.child_listings.length==0)
 			{
@@ -580,28 +601,28 @@ router.post("/removeChild", function(req, res){
 
 			// use filter to create a new array
 			let tempArray = [];
-			foundListing.child_listings._3rd_party_listings.forEach(listing => 
+			foundListing.child_listings.forEach(listing => 
 				{
-					console.log("req.body.child_listing_id = " + req.body.child_listing_id);
-					console.log("ID to compare against = " + listing.listing_id);
+					//console.log("req.body.child_listing_id = " + req.body.child_listing_id);
+					//console.log("ID to compare against = " + listing.listing_id);
 					if(listing.listing_id.equals(req.body.child_listing_id))
 					{
 						// let's remove chatting channels as well
 						// remove chatting channels
 						// 1. go through check shared_group and remove dm channels from there
 						listing.shared_user_group.map((user) => {
-							userDbHandler.removeDmChannel(user.username, req.body.channel_id_prefix);
+							chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
 						});
 					}
 					else
 					{
-						console.log(" preserve this item");
+						//console.log(" preserve this item");
 						tempArray.push(listing);
 					}
 				})
 
-			console.log("size of tempArray = " + tempArray.length);
-			foundListing.child_listings._3rd_party_listings = [...tempArray];
+			//console.log("size of tempArray = " + tempArray.length);
+			foundListing.child_listings = [...tempArray];
 
 			foundListing.save();
 

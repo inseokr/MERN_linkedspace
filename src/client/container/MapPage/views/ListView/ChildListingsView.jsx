@@ -39,7 +39,7 @@ export default class ChildListingsView extends Component {
 	{
 		let _childListingViews = [];
 	  
-		this.context.currentListing.child_listings._3rd_party_listings.map(function(childListing, index){
+		this.context.currentListing.child_listings.map(function(childListing, index){
 		//console.log("childListingsViews: index="+index);
 		//console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
 		//console.log("childListingsViews: refs="+this.state.refs[index]);
@@ -106,7 +106,7 @@ export default class ChildListingsView extends Component {
 		let listClickStates = [...this.state.clickStates];
 		let initialLength = listClickStates.length;
 	  
-		this.context.currentListing.child_listings._3rd_party_listings.map(function(childListing, index) {
+		this.context.currentListing.child_listings.map(function(childListing, index) {
 		console.log("childListingsViews: index="+index);
 
 		if(this.state.clickStates.length==0 && index==0) 
@@ -166,7 +166,7 @@ export default class ChildListingsView extends Component {
 
 		this.handleClickFromMap(this.context.currentChildIndex);
 		
-		if(this.context.currentListing.child_listings._3rd_party_listings.length!=this.state.childListingsViews.length)
+		if(this.context.currentListing.child_listings.length!=this.state.childListingsViews.length)
 		{
 			this.buildChildListingViews();
 		}

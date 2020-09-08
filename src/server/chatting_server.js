@@ -32,6 +32,7 @@
 const uuidv4 = require('uuid/v4')
 const WebSocket = require('ws');
 const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
+const userDbHandler = require('./db_utilities/user_db/access_user_db');
 
 const wss = new WebSocket.Server({ port: 3030});
 
@@ -44,10 +45,7 @@ var socketToChannelIdMap = [];
 
 async function registerSocketToChannels(currentSocket, user_name)
 {
-    console.log("getChannels");
     let channels = await chatDbHandler.getChannels(user_name);
-
-    console.log("go through channels");
 
     // ISEO-TBD: we should register listing related channels as well
     channels.dm_channels.forEach(function each(channel) {
@@ -204,7 +202,7 @@ function routeMessage(data, incomingSocket)
             channel.chat_history.push(chat);
             channel.save();
 
-            if(targets!=undefined) {
+            if(targets==undefined) {
                 console.warn("No socket available for channel ID = " + id);
                 return;
             }
@@ -222,7 +220,7 @@ function routeMessage(data, incomingSocket)
     }   
     else
     {
-        console.log("No chatting channel found with given channel ID");
+        console.warn("No chatting channel found with given channel ID");
         return;
     } 
 
@@ -252,11 +250,58 @@ function removeSocket(socket_)
     }
     else
     {
-        console.log("removeSocket: socket is not registered yet");
+        console.warn("removeSocket: socket is not registered yet");
     }
 }
 
-module.exports = function() {
+function removeChannel(channel_id)
+{
+    let socketList = channelIdToSocketList[channel_id];
+
+    if(socketList==undefined) return;
+    
+    socketList.forEach(socket => delete socketToChannelIdMap[socket.id][channel_id]);
+
+    delete channelIdToSocketList[channel_id];
+
+    console.warn("removeChannel with channel_id = " + channel_id);
+}
+
+function removeChannelFromUserDb(name, channel_id)
+{
+    userDbHandler.getUserByName(name).then((foundUser) => {
+
+    //console.log("user name: "+name);
+    console.log("channel name to be deleted"+channel_id);
+
+    console.log("Previous dm_channels length = " + foundUser.chatting_channels.dm_channels.length);
+
+    let new_dm_channels = [];
+
+    foundUser.chatting_channels.dm_channels.forEach((channel) =>
+    {
+      console.log("current channel name = " + channel.name);
+      // found the partial matching
+      if(channel.name.search(channel_id) != -1)
+      {
+        // remove the chatting channel from chatting server.
+        removeChannel(channel.name);
+      }
+      else
+      {
+        new_dm_channels.push(channel);
+      }
+    });
+
+    foundUser.chatting_channels.dm_channels = new_dm_channels;
+
+    console.log("After dm_channels length = " + foundUser.chatting_channels.dm_channels.length);
+    foundUser.save();
+  });
+
+}
+
+function chatServerMain(){
 
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();
@@ -295,3 +340,6 @@ module.exports = function() {
         });
     });
 }
+
+
+module.exports = {chatServerMain: chatServerMain, removeChannel: removeChannel, removeChannelFromUserDb: removeChannelFromUserDb};

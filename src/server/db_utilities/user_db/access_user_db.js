@@ -1,6 +1,12 @@
 var User          = require("../../models/user");
 var async         = require("async");
 
+// ISEO-TBD: WOW it's really interesting problem.
+// <note> functions defined in this module may not work well, not a function error, if chatting_server is included.
+// This is crazy problem... 
+// OMG... cross referencing situations.... 
+//const chatServer = require('../../chatting_server');
+
 // create DM channel
 async function getUserByName_(name)
 {
@@ -15,15 +21,17 @@ async function getUserByName_(name)
       }
       else 
       {
-        console.log("User Found");
+        //console.log("User Found");
         resolve(foundUser);
       }
     });
   });
 }
 
-async function getUserById(id)
+async function findUserById_(id)
 {
+  console.log("findUserById_ called");
+
   return new Promise(resolve => { 
     User.findById(id, function(err, foundUser){
       if(err || foundUser==null)
@@ -33,28 +41,13 @@ async function getUserById(id)
       }
       else 
       {
-        console.log("User Found");
+        //console.log("User Found");
         resolve(foundUser);
       }
     });
   });
 }
 
-function removeDmChannel(name, channel_id)
-{
-  getUserByName_(name).then((foundUser) => {
 
-    console.log("user name: "+name);
-    console.log("channel name: "+channel_id);
-
-    console.log("Previous dm_channels length = " + foundUser.chatting_channels.dm_channels.length);
-
-    foundUser.chatting_channels.dm_channels = 
-      foundUser.chatting_channels.dm_channels.filter((channel) => channel.name.search(channel_id) == -1);
-    
-    console.log("After dm_channels length = " + foundUser.chatting_channels.dm_channels.length);
-    foundUser.save();
-  });
-}
-
-module.exports = {getUserByName: getUserByName_, getUserById: getUserById, removeDmChannel: removeDmChannel}
+module.exports = {getUserByName: getUserByName_, 
+                  findUserById: findUserById_}

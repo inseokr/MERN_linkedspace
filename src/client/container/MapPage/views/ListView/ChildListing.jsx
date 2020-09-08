@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -8,136 +9,158 @@ import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
 import {MessageContext} from '../../../../contexts/MessageContext';
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
 
+function getChildListingSummary(childListing)
+{
+  console.log("getChildListingSummary, listingType = " + childListing.listingType);
+
+  if(childListing.listingType=="_3rdparty")
+  {
+    return {
+      id: 			childListing._id,
+      listingType:    childListing.listingType,
+      location: 		childListing.location.city,
+      listingUrl: 	childListing.listingUrl,
+      coverPhoto: 	childListing.coverPhoto.path,
+      rentalPrice: 	childListing.rentalPrice,
+      listingSummary: childListing.listingSummary};
+  }
+  else
+  {
+    return {
+      id: 			childListing._id,
+      listingType:    childListing.listingType,
+      location: 		childListing.rental_property_information.location.city,
+      listingUrl: 	"TBD",
+      coverPhoto: 	childListing.pictures[0].path,
+      rentalPrice: 	childListing.rental_terms.asking_price,
+      listingSummary: childListing.summary_of_listing.slice(0,20)+"..."};
+  }
+}
 
 const ChildListing = React.forwardRef(({clickState, clickHandler, handleSelect, listing, index, messageClickHandler, removeHandler}, ref) =>
 {
-	//const [modalShow, setModalShow] = useState(false);
-	const {setChattingContextType,
-		   setChildType, 		    childType,
-		   setChildIndex,           childIndex,
-		   loadChattingDatabase}    = useContext(MessageContext);
-    const {setCurrentChildIndex} 	= useContext(CurrentListingContext);
-    const [clicked, setClicked] = useState(0);
-    const [reference, setReference] = useState(null);
+  //const [modalShow, setModalShow] = useState(false);
+  const {setChattingContextType,
+    setChildType, 		    childType,
+    setChildIndex,           childIndex,
+    loadChattingDatabase}    = useContext(MessageContext);
+  const {setCurrentChildIndex} 	= useContext(CurrentListingContext);
+  const [clicked, setClicked] = useState(0);
+  const [reference, setReference] = useState(null);
 
-	const listingTitle = listing.listingSource;
-	let childListing = listing.listing_id;
-	console.log("childListing childListing childListing", childListing);
+  const listingTitle = (listing.listing_type=="_3rdPartyListing")? listing.listing_id.listingSource: "LinkedSpaces";
 
-	let borderStyle = (clickState==1)? {
-	  borderLeftStyle: "solid",
-	  borderLeftColor: "#115399",
-	  borderLeftWidth: "5px"
-	} : {}
+  let childListing = listing.listing_id;
+  let childListingSummary = getChildListingSummary(childListing);
 
-	let _childListing = {listing: listing, listingType: "_3rdparty"};
+  let borderStyle = (clickState==1)? {
+    borderLeftStyle: "solid",
+    borderLeftColor: "#115399",
+    borderLeftWidth: "5px"
+  } : {}
 
-	if(clicked!=clickState)
-	{
-		console.log("ChildListing: click state changed");
-		setClicked(clickState);
-	}
+  if(clicked!=clickState)
+  {
+    console.log("ChildListing: click state changed");
+    setClicked(clickState);
+  }
 
-	if(ref!=reference)
-	{
-		console.log("setReference is called");
-		setReference(ref);
-	}
+  if(ref!=reference)
+  {
+    console.log("setReference is called");
+    setReference(ref);
+  }
 
-	function updateMessageContext()
-	{
-		setChattingContextType(2);
+  function updateMessageContext()
+  {
+    setChattingContextType(2);
 
-		// ISEO-TBD: dang...the following call will trigger the reload of MessageEditor
-		// and all the state will be gone when it's reloaded??
-		// need to know the type of listing
-		if(_childListing.listingType=="_3rdparty")
-		{
-			setChildType(0);
-			setChildIndex(index);
-			messageClickHandler(true);
-		}
-		else
-		{
-			setChildType(1);
-			messageClickHandler(true);
-		}
-	}
+    // ISEO-TBD: dang...the following call will trigger the reload of MessageEditor
+    // and all the state will be gone when it's reloaded??
+    // need to know the type of listing
+    // ISEO-TBD: It's another bad example... let's use constanct instead.
+    // what if the DB model name got changed??
+    setChildType((listing.listing_type=="_3rdPartyListing")? 0: 1);
 
-	function listingClickHandler(e)
-	{
-		//e.preventDefault();
-		clickHandler(index);
+    setChildIndex(index);
+    messageClickHandler(true);
+  }
 
-		setCurrentChildIndex(index);
+  function listingClickHandler(e)
+  {
+    //e.preventDefault();
+    clickHandler(index);
 
-		//update the message context
-		updateMessageContext();
-	}
+    setCurrentChildIndex(index);
 
-	function removeListingHandler(e)
-	{
-		e.preventDefault();
-		removeHandler(childListing);
-	}
+    //update the message context
+    updateMessageContext();
+  }
 
-	useEffect (()=>
-		{
-			if(reference!=null)
-			{
-				console.log("ChildListing: useEffect: ref.current=" + reference.current);
-				if(clicked==1)
-				{
-					console.log("clicking from useEffect");
-					//reference.current.click();
-				}
-			}
-			else console.log("ref is null");
-		},[clicked, reference]);
+  function removeListingHandler(e)
+  {
+    e.preventDefault();
+    removeHandler(childListing);
+  }
 
+  useEffect (()=>
+  {
+    if(reference!=null)
+    {
+      console.log("ChildListing: useEffect: ref.current=" + reference.current);
+      if(clicked==1)
+      {
+        console.log("clicking from useEffect");
+        //reference.current.click();
+      }
+    }
+    else console.log("ref is null");
+  },[clicked, reference]);
 
-	return (
-	  <div>
-      {childListing !== null ? (
-        <ListItem>
-          <Grid container className="childListing" ref = {reference} onClick={listingClickHandler} style={borderStyle}>
-            <Grid item xs={4}>
-              <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
-                <Carousel.Item>
-                  <a href={childListing.listingUrl} target="_blank">
-                    <img src={childListing.coverPhoto.path} alt={"Listing Picture"} className={"carouselImage"}/>
-                  </a>
-                </Carousel.Item>
-              </Carousel>
-            </Grid>
+  let linkToListing = (childListingSummary.listingType=="_3rdparty") ?
+    <a href={childListingSummary.listingUrl} target="_blank">
+      <img src={childListingSummary.coverPhoto} alt={"Listing Picture"} className={"carouselImage"}/>
+    </a>
+    :
+    <Link to={"/listing/landlord/"+childListingSummary.id+"/get"} target="_blank">
+      <img src={childListingSummary.coverPhoto} alt={"Listing Picture"} className={"carouselImage"}/>
+    </Link>
+  return (
+    <ListItem>
+      <Grid container className="childListing" ref = {reference} onClick={listingClickHandler} style={borderStyle}>
+        <Grid item xs={4}>
+          <Carousel interval={null} slide={true} activeIndex={0} onSelect={handleSelect} className={"carousel"}>
+            <Carousel.Item>
+              {linkToListing}
+            </Carousel.Item>
+          </Carousel>
+        </Grid>
 
-            <Grid item xs={8}>
-              <Paper className={"description flex-container"} style={{flexDirection: "column", justifyContent: "space-between"}}>
-                <Typography className={"description__title"} color={"textSecondary"} gutterBottom>
-                  {listingTitle}
-                </Typography>
-                <Typography className={"description__summary"}>
-                  {childListing.listingSummary}
-                </Typography>
-                <Typography> Price: ${childListing.rentalPrice} </Typography>
-                <Typography> City: {childListing.location.city} </Typography>
-                <div className="flex-container" style={{justifyContent: "space-between", marginTop: "40px"}}>
-                  <div className="flex-container" style={{justifyContent: "flex-start"}}>
-                    <img className="img-responsive center rounded-circle" src={childListing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
-                    <Typography style={{marginTop: "10px", marginLeft: "5px"}}> Hosted by {childListing.requester.username} </Typography>
-                  </div>
-                  <button className="btn btn-danger" onClick={removeListingHandler}>
-                    Remove
-                  </button>
-                </div>
+        <Grid item xs={8}>
+          <Paper className={"description flex-container"} style={{flexDirection: "column", justifyContent: "space-between"}}>
+            <Typography className={"description__title"} color={"textSecondary"} gutterBottom>
+              {listingTitle}
+            </Typography>
+            <Typography className={"description__summary"}>
+              {childListingSummary.listingSummary}
+            </Typography>
+            <Typography> Price: ${childListingSummary.rentalPrice} </Typography>
+            <Typography> City: {childListingSummary.location} </Typography>
+            <div className="flex-container" style={{justifyContent: "space-between", marginTop: "40px"}}>
+              <div className="flex-container" style={{justifyContent: "flex-start"}}>
+                <img className="img-responsive center rounded-circle" src={childListing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
+                <Typography style={{marginTop: "10px", marginLeft: "5px"}}> Hosted by {childListing.requester.username} </Typography>
+              </div>
+              <button className="btn btn-danger" onClick={removeListingHandler}>
+                Remove
+              </button>
+            </div>
 
-              </Paper>
-            </Grid>
-          </Grid>
-        </ListItem>
-      ) : (<div/>)}
-    </div>
-	)
+          </Paper>
+        </Grid>
+      </Grid>
+    </ListItem>
+  )
 });
 
 export default ChildListing;

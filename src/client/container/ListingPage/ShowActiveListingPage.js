@@ -5,7 +5,22 @@ import '../../app.css';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 import GetRatingDeco from '../../components/decos/GetRatingDeco';
 
-function getListingContents(listingDB, listing_prefix, type, listingControl) {
+
+function checkChildListing(child_listings, id_)
+{
+  if(child_listings.length==0) return false;
+
+
+  for(let index=0; index< child_listings.length; index++)
+  {
+    if(child_listings[index].listing_id._id===id_) return true;
+  }
+
+  return false;
+}
+
+
+function getListingContents(listingDB, listing_prefix, type, child_listings, listingControl) {
   let listings = [];
 
   function getCoverImg(listing_prefix, listing) {
@@ -97,19 +112,24 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
   }
 
   for (let index=0; index<listingDB.length; index++) {
-    let listing =
-      <div className="network_board" key={listingDB[index].id}>
-        <div className="profile_picture">
-          {getCoverImg(listing_prefix, listingDB[index], type)}
-          {getListingSourceInformation(listing_prefix, listingDB[index])}
-        </div>
 
-        <div className="d-flex justify-content-between">
-          {getListingControls(listingDB[index], type)}
-        </div>
-      </div>;
+    if(checkChildListing(child_listings, listingDB[index].id)==false)
+    { 
+      let listing =
+        <div className="network_board" key={listingDB[index].id}>
+          <div className="profile_picture">
+            {getCoverImg(listing_prefix, listingDB[index], type)}
+            {getListingSourceInformation(listing_prefix, listingDB[index])}
+          </div>
 
-    listings.push(listing)
+          <div className="d-flex justify-content-between">
+            {getListingControls(listingDB[index], type)}
+          </div>
+        </div>;
+
+      console.log("adding to listing");
+      listings.push(listing)
+    }
   }
 
   return listings;
@@ -117,7 +137,9 @@ function getListingContents(listingDB, listing_prefix, type, listingControl) {
 
 function ShowActiveListingPage(props)
 {
-  const {listing_info} = useContext(CurrentListingContext);
+  const {listing_info, currentListing} = useContext(CurrentListingContext);
+
+  let child_listings = (props.type==="child"? currentListing.child_listings: []);
 
   // 1. own: show the listings created by the current users
   // 2. friend: show the listings forwarded from friends
@@ -136,7 +158,7 @@ function ShowActiveListingPage(props)
         <span style={{textAlign:"center"}}><h3> Room/House wanted  </h3></span>
         <hr/>
         <div className="d-flex justify-content-between flex-wrap">
-          {getListingContents(listing_info.tenant_listing, "tenant", props.type)}
+          {getListingContents(listing_info.tenant_listing, "tenant", props.type, child_listings)}
         </div>
       </div>
       : null;
@@ -153,7 +175,7 @@ function ShowActiveListingPage(props)
             <hr/>
             <div className="d-flex justify-content-between flex-wrap">
               {getListingContents(listing_info.landlord_listing,
-                "landlord", props.type,
+                "landlord", props.type, child_listings,
                 props.listingControl)}
             </div>
           </div>
@@ -165,7 +187,7 @@ function ShowActiveListingPage(props)
             <hr/>
             <div className="d-flex justify-content-between flex-wrap">
               {getListingContents(listing_info._3rdparty_listing,
-                "_3rdparty", props.type,
+                "_3rdparty", props.type, child_listings,
                 props.listingControl)}
             </div>
           </div>

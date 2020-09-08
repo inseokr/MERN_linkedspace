@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import "../../MapPage/index.css";
 
 import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboardListView';
+import InitiateMap from '../../MapPage/views/MapView/InitiateMap';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
@@ -32,16 +33,16 @@ function TenantListingDashBoard(props) {
 
   let showModal = () => {
     setModalShow(true);
-  };
+  }
 
   let handleClose = () => {
     setModalShow(false);
-  };
+  }
 
   useEffect(() => {
     if (rightPaneMode === "Map") {
 
-      if(window.google===undefined) return;
+      if(window.google==undefined) return;
 
       let bounds = new window.google.maps.LatLngBounds();
       googleMap = initGoogleMap(googleMapRef, zoom, center);
@@ -80,47 +81,40 @@ function TenantListingDashBoard(props) {
         // Get location of any child listings if they exist.
         if (currentListing.child_listings) { // Proceed if child listings exist.
           const childListings = currentListing.child_listings;
-          const thirdPartyListings = childListings._3rd_party_listings;
-          const internalListings = childListings.internal_listings;
 
-          if (thirdPartyListings.length > 0) {
-            thirdPartyListings.map((thirdPartyListing, index) => {
-              if (thirdPartyListing.listing_id !== null) {
-                const address = thirdPartyListing.listing_id.location.street + " " +
-                  thirdPartyListing.listing_id.location.city + " " +
-                  thirdPartyListing.listing_id.location.state + " " +
-                  thirdPartyListing.listing_id.location.zipcode + " " +
-                  thirdPartyListing.listing_id.location.country;
+          if (childListings.length > 0) {
+            childListings.map((listing, index) => {
 
-                getGeometryFromSearchString(address).then(
-                  response => {
-                    if (response.status === "OK") {
-                      const geometry = response.results[0].geometry;
-                      const location = geometry.location;
-                      console.log("THIRD PARTY", thirdPartyListing);
-                      const imgSource = thirdPartyListing.listing_id.coverPhoto ? thirdPartyListing.listing_id.coverPhoto.path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
-                      const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
+              //console.log("listing="+JSON.stringify(listing));
+              let location = (listing.listing_type=="LandlordRequest")? listing.listing_id.rental_property_information.location: listing.listing_id.location;
 
-                      marker.addListener("click", (clickedIndex=index) => {
-                        console.log("ISEO-TBD: marker clicked with index = " + clickedIndex);
-                        //showModal();
-                        // update currentChildIndex if it's different
-                        if(clickedIndex!==currentChildIndex) {
-                          console.log("ISEO: Updating current child index = " + clickedIndex);
-                          setCurrentChildIndex(clickedIndex);
-                        }
-                      });
-                      bounds.extend(location);
-                      googleMap.fitBounds(bounds);
-                    }
+              const address = location.street + " " +
+                location.city + " " +
+                location.state + " " +
+                location.zipcode + " " +
+                location.country;
+
+              getGeometryFromSearchString(address).then(
+                response => {
+                  if (response.status === "OK") {
+                    const geometry = response.results[0].geometry;
+                    const location = geometry.location;
+                    const imgSource = listing.listing_id.coverPhoto ? listing.listing_id.coverPhoto.path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+                    const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
+
+                    marker.addListener("click", (clickedIndex=index) => {
+                      // update currentChildIndex if it's different
+                      if(clickedIndex!=currentChildIndex)
+                      {
+                        setCurrentChildIndex(clickedIndex);
+                      }
+                    });
+                    bounds.extend(location);
+                    googleMap.fitBounds(bounds);
                   }
-                );
-              }
+                }
+              );
             });
-          }
-
-          if (internalListings.length > 0) {
-
           }
         }
         // googleMap.fitBounds(bounds);
@@ -178,20 +172,20 @@ function TenantListingDashBoard(props) {
               </Grid>
               <Grid className="map" item xs={6}>
                 {rightPaneMode === "Map" ? (
-                  <React.Fragment>
-                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
-                      <div style={{marginLeft: "5px"}}> Listing Summary goes here</div>
-                    </SimpleModal>
+                    <React.Fragment>
+                      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                        <div style={{marginLeft: "5px"}}> Listing Summary goes here</div>
+                      </SimpleModal>
 
-                    <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
-                  </React.Fragment>
-                ) :
-                (
-                  (showMessage==true)?
-                    (
-                      <GeneralChatMainPage compact="true"/>
-                    ) : (<div> </div>)
-                )
+                      <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
+                    </React.Fragment>
+                  ) :
+                  (
+                    (showMessage==true)?
+                      (
+                        <GeneralChatMainPage compact="true"/>
+                      ) : (<div> </div>)
+                  )
                 }
               </Grid>
             </Grid>

@@ -121,29 +121,14 @@ export function MessageContextProvider(props) {
         }
         else
         {
-          if(childType==0)
+          if(currentListing.child_listings[childIndex]==undefined)
           {
-            if(currentListing.child_listings._3rd_party_listings[childIndex]==undefined)
-            {
-              setChattingContextType(0);
-              return null;
-            }
-            else
-            {
-              return currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group;
-            }
+            setChattingContextType(0);
+            return null;
           }
           else
           {
-            if(currentListing.child_listings.internal_listings[childIndex]==undefined)
-            {
-              setChattingContextType(0);
-              return null;
-            }
-            else
-            {
-              return currentListing.child_listings.internal_listings[childIndex].shared_user_group;
-            }
+            return currentListing.child_listings[childIndex].shared_user_group;
           }
         }
 
@@ -283,7 +268,7 @@ export function MessageContextProvider(props) {
 
   function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase)
   {
-    //console.log("switchChattingChannel: channelInfo = " + JSON.stringify(channelInfo));
+    console.log("switchChattingChannel: channelInfo = " + JSON.stringify(channelInfo));
     // save some of information back to database
     setCurrChannelInfo(channelInfo);
     pushCurrentChannelToDB(channelInfo);
@@ -294,7 +279,19 @@ export function MessageContextProvider(props) {
   //  + 1: receive from others
   function updateChatContext(msg, channelName, channeType, direction, username)
   {
-    //console.log("updateChatContext, channelName = " + channelName);
+    console.log("updateChatContext, channelName = " + channelName);
+
+    if(channelName==null)
+    {
+      console.warn("channelName is Null");
+      return;
+    }
+
+    if(dmChannelContexts[channelName]==undefined)
+    {
+      console.warn("current channel doesn't have any context created yet");
+      return;
+    }
 
     let channelContexts = dmChannelContexts;
 
@@ -405,8 +402,12 @@ export function MessageContextProvider(props) {
 
     if(chattingContextType!=0)
     {
-      dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": "-child-"+childIndex+"-");  
+      dmChannelNamePrefix = currentListing._id + ((chattingContextType==1) ? "-parent-": 
+        "-child-"+ currentListing.child_listings[childIndex].listing_id._id+"-");
     }
+
+    console.log("getDmChannelId: current child index = " + childIndex);
+    console.log("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
 
     return (dmChannelNamePrefix+dmChannelNameSuffix);
   }
@@ -425,11 +426,13 @@ export function MessageContextProvider(props) {
 
   function getListOfDmChannels()
   {
+
+    // ISEO-TBD: child_listings available only for tenant listing now.
     const _listArray = [friendsList, 
                         (currentListing!=undefined)? 
-                          currentListing.shared_user_group:null, 
-                        (currentListing!=undefined && currentListing.child_listings._3rd_party_listings[childIndex]!=undefined)?
-                          currentListing.child_listings._3rd_party_listings[childIndex].shared_user_group:null
+                          currentListing.shared_user_group:null,
+                        (currentListing!=undefined && currentListing.listingType=="tenant" && currentListing.child_listings[childIndex]!=undefined)?
+                          currentListing.child_listings[childIndex].shared_user_group:null
                       ];
 
     let dmChannels = [];

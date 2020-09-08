@@ -406,7 +406,7 @@ router.get("/:list_id/show", function(req, res){
 router.get("/:list_id/fetch", function(req, res){
 	// Clean all resources such as pictures.
 
-	console.log("REACT: fetch landlord listing request with listing id = " + req.params.list_id);
+	//console.log("REACT: fetch landlord listing request with listing id = " + req.params.list_id);
 	// Get landlord listing.
     LandlordRequest.findById(req.params.list_id).populate('requester.id').exec(function(err, foundListing){
     	if(err)

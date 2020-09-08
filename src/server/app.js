@@ -139,7 +139,7 @@ global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 console.log("basedir="+__dirname);
 
 // starting chatting server
-chatServer();
+chatServer.chatServerMain();
 
 
 //==============================================================================================
@@ -334,7 +334,7 @@ app.post('/profile/:user_id/file_delete', function(req, res) {
 
 app.get("/public/user_resources/pictures/3rdparty/:filename", function(req, res){
   var fileName = req.params.filename;
-  console.log("picture: received file name=" + fileName)
+  //console.log("picture: received file name=" + fileName)
   res.sendFile(path.join(__dirname, `/public/user_resources/pictures/3rdparty/${fileName}`));
 });
 
@@ -404,6 +404,7 @@ app.get('/auth/facebook/callback',
 //  res.sendFile(path.join(__dirname, '../../public', 'index.html'));
 //});
 
-app.get('/*', function(req, res, next) {
+// ISEO-TBD 
+/*app.get('/*', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
-});
+});*/

@@ -45,13 +45,14 @@ function TenantListingComponent(props) {
 
 
   async function addChildListing(childListing) {
-    console.log("addChildListing");
+    
+    //console.log("addChildListing with childListing =" + JSON.stringify(childListing));
 
     // 1. Need ID of current active listing
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing.id,
                 username: currentUser.username,
-                listing_type: "_3rdparty"
+                listing_type: childListing.listingType
                 };
 
     const result = await axios.post('/listing/tenant/addChild', data)
@@ -64,11 +65,17 @@ function TenantListingComponent(props) {
 
   async function removeChildListing(childListing) {
 
+    if(currentListing.child_listings[currentChildIndex]==undefined)
+    {
+      console.warn("currentChildIndex " + currentChildIndex + " is undefined");
+      return;
+    }
+
     // post to DB as well
     var data = {parent_listing_id: listing._id,
                 child_listing_id:  childListing._id,
-                channel_id_prefix: listing._id + "-child-" + currentChildIndex,
-                listing_type: "_3rdparty"};
+                channel_id_prefix: listing._id + "-child-" + currentListing.child_listings[currentChildIndex].listing_id._id,
+                listing_type: childListing.listingType};
 
     const result = await axios.post('/listing/tenant/removeChild', data)
     .then(result => {

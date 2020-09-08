@@ -2,7 +2,7 @@ var User            = require("../../models/user");
 var ChatChannel     = require("../../models/chatting/chatting_channel");
 var async           = require("async");
 
-const userDbHandler = require('../../db_utilities/user_db/access_user_db');
+const userDbHandler = require('../user_db/access_user_db');
 
 // create DM channel
 async function getMemberInfoByUserName(name)
@@ -73,8 +73,11 @@ async function getChannelByChannelId(channelName)
 
 function addChannelToUser(chat_channel)
 {
+  console.log("userDbHandler="+JSON.stringify(userDbHandler));
+
 	chat_channel.members.forEach(member => {
-	    userDbHandler.getUserById(member.id).then((foundUser) => {
+
+	    userDbHandler.findUserById(member.id).then((foundUser) => {
 
         console.log("addChannelToUser: foundUser = " + foundUser);
         

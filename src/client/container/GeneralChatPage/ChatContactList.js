@@ -64,16 +64,25 @@ function ChatContactList() {
 			console.log("ChatContactList: currChannelInfo.channelName = " + currChannelInfo.channelName);
 			console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
 
-			if(getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)
+			if(currChannelInfo.channelName==null && bFoundDefaultContact==false)
 			{
-				console.log("found default contact!!!");
-
+				switchChattingChannel({channelName: getDmChannelId(friendsList[i].username)});	
 				bFoundDefaultContact = true;
 				initClickStates.push(1);
 			}
 			else
 			{
-				initClickStates.push(0);
+				if(getDmChannelId(friendsList[i].username)==currChannelInfo.channelName)
+				{
+					console.log("found default contact!!!");
+
+					bFoundDefaultContact = true;
+					initClickStates.push(1);
+				}
+				else
+				{
+					initClickStates.push(0);
+				}
 			}
 		}
 	}
