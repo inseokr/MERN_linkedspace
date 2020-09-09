@@ -587,50 +587,52 @@ router.post("/removeChild", function(req, res){
 			return;
 		}
 
-		if(req.body.listing_type=="_3rdparty")
+		//console.log("remove 3rd party listing");
+
+		if(foundListing.child_listings.length==0)
 		{
-			//console.log("remove 3rd party listing");
-
-			if(foundListing.child_listings.length==0)
-			{
-				console.log("no child listing found");
-				res.send('no child lising found')
-				return;
-			}
-
-
-			// use filter to create a new array
-			let tempArray = [];
-			foundListing.child_listings.forEach(listing => 
-				{
-					//console.log("req.body.child_listing_id = " + req.body.child_listing_id);
-					//console.log("ID to compare against = " + listing.listing_id);
-					if(listing.listing_id.equals(req.body.child_listing_id))
-					{
-						// let's remove chatting channels as well
-						// remove chatting channels
-						// 1. go through check shared_group and remove dm channels from there
-						listing.shared_user_group.map((user) => {
-							chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
-						});
-					}
-					else
-					{
-						//console.log(" preserve this item");
-						tempArray.push(listing);
-					}
-				})
-
-			//console.log("size of tempArray = " + tempArray.length);
-			foundListing.child_listings = [...tempArray];
-
-			foundListing.save();
-
-			// remove chatting channels from chatting channel DB as well
-			chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
+			console.log("no child listing found");
+			res.send('no child lising found')
+			return;
 		}
 
-		res.send('Child listing removed successfully');
+
+		// use filter to create a new array
+		let tempArray = [];
+		foundListing.child_listings.forEach(listing => 
+			{
+				//console.log("req.body.child_listing_id = " + req.body.child_listing_id);
+				//console.log("ID to compare against = " + listing.listing_id);
+				if(listing.listing_id.equals(req.body.child_listing_id))
+				{
+					// let's remove chatting channels as well
+					// remove chatting channels
+					// 1. go through check shared_group and remove dm channels from there
+					listing.shared_user_group.map((user) => {
+						chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
+					});
+				}
+				else
+				{
+					//console.log(" preserve this item");
+					tempArray.push(listing);
+				}
+			})
+
+		//console.log("size of tempArray = " + tempArray.length);
+		foundListing.child_listings = [...tempArray];
+
+		foundListing.save((err) => {
+
+			if(err) {
+				console.warn("foundListing saving error = " + err);
+				res.send('child listing removal failed');
+			}
+			// remove chatting channels from chatting channel DB as well
+			chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
+			res.send('Child listing removed successfully');
+		});
+
 	});
 
 });
