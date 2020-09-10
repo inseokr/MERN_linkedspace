@@ -153,6 +153,12 @@ function removeSocketToChannel(channelId, socket_)
     // remove the socket from the list.
     let newList = [];
 
+    if(channelIdToSocketList[channelId]=="undefined") 
+    {
+        console.warn("channelId="+channelId+" is not defined yet")
+        return;
+    }
+
     channelIdToSocketList[channelId].forEach(socket =>
     {
         if(socket.id!=socket_.id) newList = [...newList, socket];

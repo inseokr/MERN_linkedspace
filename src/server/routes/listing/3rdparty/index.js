@@ -58,7 +58,8 @@ router.post("/new", function(req, res){
 	newListing.listingSource      = req.body.listingSource;
 	newListing.listingUrl         = req.body.sourceUrl;
 	newListing.listingSummary     = req.body.rentalSummary;
-	newListing.rentalPrice        = req.body.rentalPrice;
+	newListing.rentalPrice        = req.body.rentalPrice.replace(/\$|,/g,"");
+
 
 	// set location information
 	newListing.location           = req.body.location;
@@ -103,11 +104,11 @@ router.post("/:listing_id/new", function(req, res){
 
 		var filename = path.parse(req.body.file_name).base;
 	    
-	    foundListing.listingSource = req.body.listingSource;
-	    foundListing.listingUrl = req.body.sourceUrl;
+	    foundListing.listingSource  = req.body.listingSource;
+	    foundListing.listingUrl	    = req.body.sourceUrl;
 	    foundListing.listingSummary = req.body.rentalSummary;
-	    foundListing.rentalPrice = req.body.rentalPrice;
-	    foundListing.location = req.body.location;
+	    foundListing.rentalPrice    = req.body.rentalPrice.replace(/\$|,/g,"");
+	    foundListing.location       = req.body.location;
 
 
 	    let original_path = serverPath + picturePath + filename;
@@ -147,7 +148,7 @@ router.delete("/:list_id", function(req, res){
 
     	try {
     		if(foundListing.coverPhoto.path!=""){
-    			fs.unlinkSync(foundListing.coverPhoto.path);
+    			fs.unlinkSync(serverPath+foundListing.coverPhoto.path);
     		}
 	    } catch(err){
 	    	console.error(err);	
@@ -156,7 +157,8 @@ router.delete("/:list_id", function(req, res){
 		foundListing.remove();	    
 
     	req.flash("success", "Listing Deleted Successfully");
-		res.redirect("/");
+		//res.send("listing deleted successfully");
+		res.redirect("/ActiveListing");
 	});
 });
 

@@ -68,7 +68,9 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
             </div>
           </Link>
 
-          <form role="form" action={"/listing/"+listing_url_type+"/"+listing.id+"?_method=DELETE"} method="post">
+          <iframe name="hiddenFrame" class="hide"></iframe>
+
+          <form role="form" action={"/listing/"+listing_url_type+"/"+listing.id+"?_method=DELETE"} method="post" target="_blank">
             <div className="action">
               <button className="btn btn-danger">Delete</button>
             </div>
