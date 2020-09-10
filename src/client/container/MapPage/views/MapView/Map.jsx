@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
-import createHTMLMapMarker from './createHTMLMapMarker';
 import './Map.css';
 
 function Map() {

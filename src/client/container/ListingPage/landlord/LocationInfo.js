@@ -12,47 +12,45 @@ function LocationInfo() {
   const {currentListing} = useContext(CurrentListingContext);
 
   const [center, setCenter] = useState({lat:37.338207, lng:-121.886330});
-  const [zoom, setZoom] = useState(9);
+  const [zoom, setZoom] = useState(15);
 
   useEffect(() => {
+    if (mapLoaded) {
+      googleMap = initGoogleMap(googleMapRef, zoom, center);
 
-    if(window.google==null || window.google==undefined)
-    {
-      return;
-    }
-    
-    googleMap = initGoogleMap(googleMapRef, zoom, center);
+      if (currentListing) {
+        console.log("currentListing currentListing", currentListing);
+        const address = currentListing.listing.rental_property_information.location.street + " " +
+          currentListing.listing.rental_property_information.location.city + " " +
+          currentListing.listing.rental_property_information.location.state + " " +
+          currentListing.listing.rental_property_information.location.zipcode + " " +
+          currentListing.listing.rental_property_information.location.country;
 
-    if (currentListing) {
-      const address = currentListing.listing.rental_property_information.location.street + " " +
-        currentListing.listing.rental_property_information.location.city + " " +
-        currentListing.listing.rental_property_information.location.state + " " +
-        currentListing.listing.rental_property_information.location.zipcode + " " +
-        currentListing.listing.rental_property_information.location.country;
-
-      getGeometryFromSearchString(address).then(
-        response => {
-          if (response.status === "OK") {
-            let geometry = response.results[0].geometry;
-            if (document.getElementById('locationInfoMapView')) { // Continue if element exists.
-              const mapViewProperties = document.getElementById('locationInfoMapView').getBoundingClientRect();
-              setCenter(geometry.location);
-              setZoom(getBoundsZoomLevel(geometry.viewport, {height: mapViewProperties.height, width: mapViewProperties.width}));
+        getGeometryFromSearchString(address).then(
+          response => {
+            if (response.status === "OK") {
+              let geometry = response.results[0].geometry;
+              if (document.getElementById('locationInfoMapView')) { // Continue if element exists.
+                const mapViewProperties = document.getElementById('locationInfoMapView').getBoundingClientRect();
+                setCenter(geometry.location);
+                setZoom(getBoundsZoomLevel(geometry.viewport, {height: mapViewProperties.height, width: mapViewProperties.width}));
+              }
             }
           }
-        }
-      );
+        );
 
-      const bounds = new window.google.maps.LatLngBounds();
-      const marker = createMarker(googleMap, center, "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg");
-      marker.addListener("click", () => {
-        alert("Clicked!");
-      });
-      bounds.extend(center);
+        const bounds = new window.google.maps.LatLngBounds();
+        const imgSource = currentListing.listing ? currentListing.listing.pictures[0].path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+        const marker = createMarker(googleMap, center, imgSource);
+        marker.addListener("click", () => {
+          alert("Clicked!");
+        });
+        bounds.extend(center);
+      }
     }
-  }, [zoom]);
+  }, [currentListing, mapLoaded]);
 
-	return (
+  return (
     <div className="App">
       {mapLoaded ? (
         <div className="row no_border">
@@ -90,7 +88,7 @@ function LocationInfo() {
         </div>
       ) : (<div>Loading...</div>)}
     </div>
-	);
+  );
 
 }
 

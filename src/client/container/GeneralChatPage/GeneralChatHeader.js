@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import MessageEditorIcon from '../../components/Message/MessageEditorIcon'
 import '../../app.css';
@@ -6,7 +6,7 @@ import './GeneralChatMainPage.css'
 
 function GeneralChatHeader(props) {
 
-  let caller_type = (props.compact=="true")? "listing_dashboard": "general";
+  let caller_type = (props.compact==="true")? "listing_dashboard": "general";
 
   return (
     <React.Fragment>

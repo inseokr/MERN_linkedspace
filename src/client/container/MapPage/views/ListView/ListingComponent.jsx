@@ -12,7 +12,7 @@ import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListing
 function ListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
-  const {listing, toggle, mode} = props;
+  const {listing, toggle} = props;
   const listingTitle = listing.rental_property_information.room_type + " " + listing.rental_property_information.unit_type;
   const listingAmenities = constructListingInformationBullets(listing.amenities);
   const listingAccessibleSpaces = constructListingInformationBullets(listing.accessible_spaces);
@@ -72,7 +72,7 @@ function ListingComponent(props) {
         </div>
       )
     } else {
-      return <div></div>;
+      return <div/>;
     }
   }
 
