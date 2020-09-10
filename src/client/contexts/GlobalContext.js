@@ -12,10 +12,8 @@ export function GlobalProvider(props) {
 
   console.log("GlobalProvider: currentUser = " + currentUser);
 
-  function isUserLoggined()
-  {
-  	if(currentUser!=null) return true;
-  	else return false;
+  function isUserLoggedIn() {
+    return currentUser != null;
   }
 
   function getProfilePicture(user_name)
@@ -65,7 +63,7 @@ export function GlobalProvider(props) {
   }
 
   return (
-    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggined, friendsList, loadFriendList, loadSocialNetworkDb, network_info, getProfilePicture }}>
+    <GlobalContext.Provider value={{ currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, loadSocialNetworkDb, network_info, getProfilePicture }}>
       {props.children}
     </GlobalContext.Provider>
   );

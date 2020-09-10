@@ -1,4 +1,4 @@
-import React, { Component, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { MessageContext } from '../../contexts/MessageContext';
 import '../../app.css';
 import './GeneralChatMainPage.css';
@@ -8,11 +8,11 @@ function WriteChat() {
   const [chatMessage, setChatMessage] = useState("Write message...");
 
   const handleKeyPress = (e) => {
-    if(e.which == 13 && !e.shiftKey) {
+    if(e.which === 13 && !e.shiftKey) {
       handleSubmit(e);
       e.preventDefault();
     }
-  }
+  };
 
   const handleChangeChatMessage = (e) => {
     setChatMessage(e.target.value);
@@ -21,7 +21,7 @@ function WriteChat() {
   const cleanMessage = (event) => {
     event.preventDefault();
     setChatMessage("");
-  }
+  };
 
 
   const handleSubmit = (event) => {

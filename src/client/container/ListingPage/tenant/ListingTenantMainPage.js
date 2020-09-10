@@ -1,4 +1,4 @@
-import React, { Component, useEffect, createContext, useContext } from 'react';
+import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
 import '../../../app.css';
 import "../common/listing_style.css";
@@ -6,7 +6,6 @@ import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 import GetRatingDeco from '../../../components/decos/GetRatingDeco';
 import FormatListItems from '../../../components/decos/FormatListItems';
 import axios from 'axios';
-import { Alert } from 'react-alert';
 
 export default class ListingTenantMainPage extends Component {
   static contextType = CurrentListingContext;
@@ -27,7 +26,7 @@ export default class ListingTenantMainPage extends Component {
   componentWillMount() {
     console.log("ListingTenantMainPage: componentWillMount");
     /* load listing information by listing ID */
-    // <note> this parameter will contain the value of ":id" in the followinng route path
+    // <note> this parameter will contain the value of ":id" in the following route path
     // /listing/landlord/:id
     //this.context.fetchCurrentListing(this.props.match.params.id);
     //if(this.props.match!==undefined)
@@ -132,7 +131,7 @@ export default class ListingTenantMainPage extends Component {
         {friends.map((friend, index) => (
           <div className="col-3" key={friend.username}>
             <div className=" thumbnail">
-              <img className="img-responsive center rounded-circle" src={friend.profile_picture}/>
+              <img className="img-responsive center rounded-circle" src={friend.profile_picture} alt="friendProfilePicture"/>
               <span className="_so3dpm2" style={{marginLeft:"40px"}}>{friend.username}</span>
               <div style={{marginLeft:"60px"}}>
                 {GetRatingDeco(index)}
@@ -160,19 +159,17 @@ export default class ListingTenantMainPage extends Component {
 
 
   getListingControls() {
-    
-    async function forward2friend(_this)
-    {
+
+    async function forward2friend(_this) {
       const post_url = "/listing/tenant/"+_this.props.match.params.id+"/forward";
-      const result = await axios.post(post_url).then(result =>
+      await axios.post(post_url).then(result =>
       {
         console.log("result = " + result.data.result);
         alert("Result = " + result.data.result);
       })
-      .catch(err => {
-        console.log(err);
-      });
-
+        .catch(err => {
+          console.log(err);
+        });
     }
 
     return (
@@ -180,7 +177,7 @@ export default class ListingTenantMainPage extends Component {
         <input type="text" defaultValue="Hello World" id="post_link" style={{color:"white", borderStyle:"none"}}/>
         <div className="d-flex justify-content-start">
           <button className="btn btn-primary">Copy link of this posting</button>
-         
+
           <button className="btn btn-info" style={{marginLeft:"70px "} } onClick={() => forward2friend(this)}>Send listing to friends</button>
           <Link to={"/listing/tenant/"+this.props.match.params.id+"/dashboard"}>
             <button className="btn btn-danger" style={{marginLeft:"70px "}}>Dashboard</button>
@@ -192,7 +189,7 @@ export default class ListingTenantMainPage extends Component {
 
   render() {
 
-    if(this.context.currentListing===undefined || this.context.currentListing.listingType!="tenant") {
+    if (this.context.currentListing===undefined || this.context.currentListing.listingType!=="tenant") {
       return (<div> </div>)
     }
 
@@ -205,7 +202,7 @@ export default class ListingTenantMainPage extends Component {
         <div className="row">
 
           <div className="col-3" style={{height:"600px", marginLeft:"30px", border:"none"}}>
-            <img src={this.context.currentListing.profile_pictures[0].path} align="right" style={{width:"100%", maxHeight:"100%", objectFit:"cover", objectPosition:"100% 0%"}}/>
+            <img src={this.context.currentListing.profile_pictures[0].path} align="right" style={{width:"100%", maxHeight:"100%", objectFit:"cover", objectPosition:"100% 0%"}} alt="profilePicture"/>
             <div className="border border-top-0" style={{textAlign:"center", backgroundColor:"#FFFFFF"}}> {this.context.currentListing.profile_pictures[0].caption} </div>
           </div>
 

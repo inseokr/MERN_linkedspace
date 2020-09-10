@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ListingsContext } from '../../../../contexts/ListingsContext';
+import React, { useState } from 'react';
+// import { ListingsContext } from '../../../../contexts/ListingsContext';
 import Modal from '../../../../components/Modal';
 
 function DateFilter() {
   const [showModal, setShowModal] = useState(false);
-  const {filterListings, places, price, date} = useContext(ListingsContext);
+  // const {filterListings, places, price, date} = useContext(ListingsContext);
 
   const toggleModal = () => {
     setShowModal(!showModal);

@@ -18,11 +18,10 @@ import EditProfileMain         from "./container/EditProfilePage/EditProfileMain
 
 import {
   BrowserRouter as Router,
-  Switch,
-  Link
+  Switch
 } from "react-router-dom";
 
-import { Redirect, Route }        from 'react-router';
+import { Route }        from 'react-router';
 
 import { MessageContextProvider } from './contexts/MessageContext';
 import { GlobalProvider }         from './contexts/GlobalContext';
@@ -81,7 +80,7 @@ export default class App extends Component {
                   <Route exact path="/EditProfile">
                     <EditProfileMain />
                   </Route>
-                  
+
                   <Route exact path="/">
                     <LandingPage />
                   </Route>
