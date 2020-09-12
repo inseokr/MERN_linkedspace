@@ -1,46 +1,40 @@
-import React, { Component, createContext, useContext, useState, useEffect, Fragment} from 'react';
-import Checkbox from '@material-ui/core/Checkbox'
+import React, { useContext } from 'react';
 import {Link} from 'react-router-dom';
 import '../../app.css';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 import GetRatingDeco from '../../components/decos/GetRatingDeco';
 
+function checkChildListing(child_listings, id_) {
+  if (child_listings.length===0) return false;
 
-function checkChildListing(child_listings, id_)
-{
-  if(child_listings.length==0) return false;
-
-
-  for(let index=0; index< child_listings.length; index++)
-  {
+  for (let index=0; index< child_listings.length; index++) {
     if(child_listings[index].listing_id._id===id_) return true;
   }
 
   return false;
 }
 
-
 function getListingContents(listingDB, listing_prefix, type, child_listings, listingControl) {
   let listings = [];
 
   function getCoverImg(listing_prefix, listing) {
-    if(listing_prefix==="_3rdparty") {
+    if (listing_prefix==="_3rdparty") {
       return (
         <a href={listing.url} target="_blank">
-          <img className="img-responsive center" style={{maxHeight:"80%", maxWidth:"100%", marginTop:"10px"}} src={listing.picture}/>
+          <img className="img-responsive center" style={{maxHeight:"80%", maxWidth:"100%", marginTop:"10px"}} src={listing.picture} alt="listingPicture"/>
         </a>
       )
     } else {
       return (
         <Link to={"/listing/"+listing_prefix+"/"+listing.id+"/get"}>
-          <img className="img-responsive center" style={{maxHeight:"80%", maxWidth:"100%", marginTop:"10px"}} src={listing.picture}/>
+          <img className="img-responsive center" style={{maxHeight:"80%", maxWidth:"100%", marginTop:"10px"}} src={listing.picture} alt="listingPicture"/>
         </Link>
       )
     }
   }
 
   function getListingSourceInformation(listing_prefix, listing) {
-    if(listing_prefix==="_3rdparty") {
+    if (listing_prefix==="_3rdparty") {
       return (
         <span style={{textAlign: "center", color: "#332f2f"}}> <h6> {listing.source} </h6> </span>
       )
@@ -51,14 +45,14 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
 
   function getListingControls(listing, type) {
     function handleOnClick(evt) {
-      if(evt.target.checked===true) {
+      if (evt.target.checked===true) {
         listingControl.add(listing)
       } else {
         listingControl.remove(listing)
       }
     }
 
-    if(type==="own") {
+    if (type==="own") {
       let listing_url_type = (listing_prefix==="_3rdparty") ? "3rdparty": listing_prefix;
       return (
         <React.Fragment>
@@ -68,7 +62,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
             </div>
           </Link>
 
-          <iframe name="hiddenFrame" class="hide"></iframe>
+          <iframe name="hiddenFrame" class="hide"/>
 
           <form role="form" action={"/listing/"+listing_url_type+"/"+listing.id+"?_method=DELETE"} method="post" target="_blank">
             <div className="action">
@@ -77,7 +71,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
           </form>
         </React.Fragment>
       )
-    } else if(type==="child") {
+    } else if (type==="child") {
       return (
         <React.Fragment>
           <input type="checkbox" onClick={handleOnClick} value=""/>
@@ -89,15 +83,13 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
       // 2. date received
       let date = new Date(listing.timestamp);
 
-      if(listing.friend==undefined)
-      {
+      if (listing.friend===undefined) {
         // update is in progress
         return (
           <div>
           </div>
-          )
-      } 
-      else {
+        )
+      } else {
         return (
           <div className='tenantListingSummary'>
             <div className='friendSummary'>
@@ -115,8 +107,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
 
   for (let index=0; index<listingDB.length; index++) {
 
-    if(checkChildListing(child_listings, listingDB[index].id)==false)
-    { 
+    if (!checkChildListing(child_listings, listingDB[index].id)) {
       let listing =
         <div className="network_board" key={listingDB[index].id}>
           <div className="profile_picture">
@@ -137,8 +128,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
   return listings;
 }
 
-function ShowActiveListingPage(props)
-{
+function ShowActiveListingPage(props) {
   const {listing_info, currentListing} = useContext(CurrentListingContext);
 
   let child_listings = (props.type==="child"? currentListing.child_listings: []);

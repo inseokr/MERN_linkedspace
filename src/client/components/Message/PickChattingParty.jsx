@@ -1,14 +1,12 @@
-import React, { Component, useContext } from 'react';
+import React, { useContext } from 'react';
 import shortid from 'shortid';
 import '../../app.css';
 import './MessageStyle.css';
 import OnlineStatus from './OnlineStatus';
-import {GlobalContext} from '../../contexts/GlobalContext';
-import {MessageContext} from '../../contexts/MessageContext';
+import { GlobalContext } from '../../contexts/GlobalContext';
+import { MessageContext } from '../../contexts/MessageContext';
 
 function PickChattingParty(props) {
-
-	console.log("group = " + JSON.stringify(props.group));
 
 	let _group = props.group;
 	let _listingId = props.listing_id;
@@ -21,8 +19,7 @@ function PickChattingParty(props) {
 	  <hr/>
 	</div>;
 
-	async function handleClickFriend(_friend)
-	{
+	async function handleClickFriend(_friend) {
 		// note:
 		// update chatting context with selected friends
 		// selected friend will be added to shared_user_group
@@ -37,24 +34,23 @@ function PickChattingParty(props) {
 		//loadChattingDatabase();
 	}
 
-	function getFriend(_friend)
-	{
+	function getFriend(_friend) {
 		return (
-			<div key={shortid.generate()}>
-				<div className="friendWrapper" key={_friend.id} onClick={() => handleClickFriend(_friend)}>
-					<div>
-			    		<img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
-			    	</div>
-			    	<div className="friendName">
-			    		<h5> {_friend.username} </h5>
-			    	</div>
-			    	<div>
-			    		<OnlineStatus marginLeft="auto"/>	
-			    	</div>
-				</div>
-				<hr/>
-			</div>
-			)
+		  <div key={shortid.generate()}>
+		    <div className="friendWrapper" key={_friend.id} onClick={() => handleClickFriend(_friend)}>
+		      <div>
+		        <img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
+		      </div>
+		      <div className="friendName">
+		        <h5> {_friend.username} </h5>
+		      </div>
+		      <div>
+		        <OnlineStatus marginLeft="auto"/>
+		      </div>
+		    </div>
+		    <hr/>
+		  </div>
+		)
 	}
 
 	function checkGroup(name)
@@ -72,27 +68,25 @@ function PickChattingParty(props) {
 				return true;
 			}
 		}
-
 		return false;
 	}
-	
+
 	function getListOfFriends() {
 	// go through the list of direct friends
-	let friends = friendsList.map((friend=> {
+	return friendsList.map((friend => {
 	  // <note> need to skip friend in the shared_group
-	  if((friend.username !== currentUser.username) && !checkGroup(friend.username)) {
+	  if ((friend.username !== currentUser.username) && !checkGroup(friend.username)) {
 	    return getFriend(friend);
 	  }
 	}));
-
-	return friends;
 	}
 
 	return (
-		<div className="container">
-		  {Header}
-		  {getListOfFriends()}
-		</div>
+	<div className="container">
+	  {Header}
+	  {getListOfFriends()}
+	</div>
 	);
 }
+
 export default PickChattingParty;

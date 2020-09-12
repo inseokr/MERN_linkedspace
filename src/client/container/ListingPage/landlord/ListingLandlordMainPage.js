@@ -1,4 +1,4 @@
-import React, { Component, useEffect, createContext, useContext } from 'react';
+import React, { Component } from 'react';
 import '../../../app.css';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 import ListingCoverPage from './ListingCoverPage'
@@ -12,72 +12,68 @@ import ListingControlButtons from './ListingControlButtons'
 // list of components
 
 export default class ListingLandlordMainPage extends Component {
-    static contextType = CurrentListingContext;
+  static contextType = CurrentListingContext;
 
-    constructor(props) {
-        super(props);
-        console.log("props = " + JSON.stringify(props));
-    }
+  constructor(props) {
+    super(props);
+    console.log("props = " + JSON.stringify(props));
+  }
 
-    componentDidMount() {
-      console.log("ListingLandlordMainPage: componentDidMount");
+  componentDidMount() {
+    console.log("ListingLandlordMainPage: componentDidMount");
 
-      if(this.props.match!==undefined)
-        this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
-    }
+    if(this.props.match!==undefined)
+      this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
+  }
 
-    componentWillMount() {
+  componentWillMount() {
 
-        console.log("ListingLandlordMainPage: componentWillMount");
-        /* load listing information by listing ID */
-        // <note> this parameter will contain the value of ":id" in the followinng route path
-        // /listing/landlord/:id
-        //this.context.fetchCurrentListing(this.props.match.params.id);
-      //if(this.props.match!==undefined)
-      //  this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
+    console.log("ListingLandlordMainPage: componentWillMount");
+    /* load listing information by listing ID */
+    // <note> this parameter will contain the value of ":id" in the following route path
+    // /listing/landlord/:id
+    //this.context.fetchCurrentListing(this.props.match.params.id);
+    //if(this.props.match!==undefined)
+    //  this.context.fetchCurrentListing(this.props.match.params.id, "landlord");
 
-    }
+  }
 
-    render() {
-        let footer = "";
+  render() {
+    let footer = "";
 
-        if(this.context.currentListing!=undefined)
-        {
-          console.log("currentListing = " + JSON.stringify(this.context.currentListing));
-          if(this.context.currentListing.listing==undefined)
-          {
-            // need to load it again.
-            this.context.fetchCurrentListing(this.props.match.params.id); 
-            return (
-              <div></div>
-              )
-          }
-        }
-        else
-        {
-          console.log("currentListing is not defined");
-        }
-
+    if (this.context.currentListing!==undefined) {
+      console.log("currentListing = " + JSON.stringify(this.context.currentListing));
+      if (this.context.currentListing.listing===undefined) {
+        // need to load it again.
+        this.context.fetchCurrentListing(this.props.match.params.id);
         return (
-          <div>
-            {
-              (this.context.currentListing && this.context.currentListing.listing.listingType=="landlord") ? (
-                <div>
-                  <ListingCoverPage />
-                  <div className="container no_border" style={{marginTop:"20px"}}>
-                    <ListingIntro />
-                    <LocationInfo />
-                    <ExploreHome />
-                    <HomeDetails />
-                    <RentalTerm />
-                    <HostDetails />
-                    <ListingControlButtons />
-                  </div>
-                  {footer}
-                </div>
-              ) : (<div></div>)
-            }
-          </div>
-        );
+          <div/>
+        )
+      }
+    } else {
+      console.log("currentListing is not defined");
     }
+
+    return (
+      <div>
+        {
+          (this.context.currentListing && this.context.currentListing.listing.listingType==="landlord") ? (
+            <div>
+              <ListingCoverPage />
+              <div className="container no_border" style={{marginTop:"20px"}}>
+                <ListingIntro />
+                <LocationInfo />
+                <ExploreHome />
+                <HomeDetails />
+                <RentalTerm />
+                <HostDetails />
+                <ListingControlButtons />
+              </div>
+              {footer}
+            </div>
+          ) : (<div/>)
+        }
+      </div>
+    );
+  }
 }

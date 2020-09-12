@@ -6,7 +6,6 @@ import Box from '@material-ui/core/Box';
 import "../../MapPage/index.css";
 
 import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboardListView';
-import InitiateMap from '../../MapPage/views/MapView/InitiateMap';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
@@ -33,17 +32,14 @@ function TenantListingDashBoard(props) {
 
   let showModal = () => {
     setModalShow(true);
-  }
+  };
 
   let handleClose = () => {
     setModalShow(false);
-  }
+  };
 
   useEffect(() => {
-    if (rightPaneMode === "Map") {
-
-      if(window.google==undefined) return;
-
+    if (rightPaneMode === "Map" && mapLoaded) {
       let bounds = new window.google.maps.LatLngBounds();
       googleMap = initGoogleMap(googleMapRef, zoom, center);
 
@@ -86,7 +82,7 @@ function TenantListingDashBoard(props) {
             childListings.map((listing, index) => {
 
               //console.log("listing="+JSON.stringify(listing));
-              let location = (listing.listing_type=="LandlordRequest")? listing.listing_id.rental_property_information.location: listing.listing_id.location;
+              let location = (listing.listing_type === "LandlordRequest")? listing.listing_id.rental_property_information.location: listing.listing_id.location;
 
               const address = location.street + " " +
                 location.city + " " +
@@ -104,7 +100,7 @@ function TenantListingDashBoard(props) {
 
                     marker.addListener("click", (clickedIndex=index) => {
                       // update currentChildIndex if it's different
-                      if(clickedIndex!=currentChildIndex)
+                      if(clickedIndex!==currentChildIndex)
                       {
                         setCurrentChildIndex(clickedIndex);
                       }
@@ -131,28 +127,19 @@ function TenantListingDashBoard(props) {
   };
 
   const updateRightPane = (reload) => {
-
     if (rightPaneMode === "Map") {
-      if(reload==false)
-      {
+      if(!reload) {
         setRightPaneMode("Message");
       }
-    }
-    else {
-
-      if(reload==true)
-      {
+    } else {
+      if(reload) {
         setShowMessage(false);
-
         setTimeout(()=> {
           setShowMessage(true);
         }, 100);
-      }
-      else
-      {
+      } else {
         setRightPaneMode("Map");
       }
-
     }
   };
 
@@ -172,20 +159,17 @@ function TenantListingDashBoard(props) {
               </Grid>
               <Grid className="map" item xs={6}>
                 {rightPaneMode === "Map" ? (
-                    <React.Fragment>
-                      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
-                        <div style={{marginLeft: "5px"}}> Listing Summary goes here</div>
-                      </SimpleModal>
+                  <React.Fragment>
+                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                      <div style={{marginLeft: "5px"}}> Listing Summary goes here</div>
+                    </SimpleModal>
 
-                      <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
-                    </React.Fragment>
-                  ) :
-                  (
-                    (showMessage==true)?
-                      (
-                        <GeneralChatMainPage compact="true"/>
-                      ) : (<div> </div>)
-                  )
+                    <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{height: '100vh', width: '100vh'}}/>
+                  </React.Fragment>
+                ) : (
+                  (showMessage)?
+                    (<GeneralChatMainPage compact="true"/>) : (<div> </div>)
+                )
                 }
               </Grid>
             </Grid>

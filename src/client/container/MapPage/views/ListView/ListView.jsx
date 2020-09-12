@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
 import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import useToggleState from '../hooks/useToggleState';
 import createHTMLMapMarker from '../container/MapPage/views/MapView/createHTMLMapMarker';
 
@@ -157,9 +157,13 @@ export function ListingsProvider(props) {
 
   function initGoogleMap(googleMapRef, zoom, center) { // Initialize the google map
     console.log("initGoogleMap", googleMapRef, zoom, center);
-
-    if(window.google===undefined) return null;
-
+    if (!mapLoaded) {
+      loadGoogleMapScript(() => {
+        if (!mapLoaded) {
+          setMapLoaded();
+        }
+      });
+    }
     return new window.google.maps.Map(googleMapRef.current, {zoom: zoom, center: center, mapTypeControl: false, streetViewControl: false});
   }
 

@@ -1,8 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
 import Map from './Map'
 
-function InitiateMap(props) {
+function InitiateMap() {
   const {mapLoaded} = useContext(ListingsContext);
 
   return (

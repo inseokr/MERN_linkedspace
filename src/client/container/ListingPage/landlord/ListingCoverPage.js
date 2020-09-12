@@ -4,17 +4,16 @@ import "../common/listing_style.css";
 
 import { CurrentListingContext } from "../../../contexts/CurrentListingContext";
 
-function ListingCoverPage()
-{
+function ListingCoverPage() {
 
 	const {currentListing} = useContext(CurrentListingContext);
 
 	let listingCaption = (currentListing.listing.num_of_pictures_uploaded>0) ?
-							currentListing.listing.pictures[0].caption: ""
+							currentListing.listing.pictures[0].caption: "";
 	let listingImage = 	 (currentListing.listing.num_of_pictures_uploaded>0) ?
-		    				<img src={currentListing.listing.pictures[0].path} 
-		    				     align="right" style={{width:'100%', maxHeight:'100%', objectFit:' cover', objectPosition: '100% 70%'}}/> : ""
-	
+		    				<img src={currentListing.listing.pictures[0].path}
+		    				     align="right" style={{width:'100%', maxHeight:'100%', objectFit:' cover', objectPosition: '100% 70%'}} alt="listingImage"/> : "";
+
 	return (
 		<div class="row no_border">
 		  <div class="col-3 wooden_background no_border" style={{height:' 500px', marginLeft:' 30px', backgroundColor:'#f2f2f2'}}>
@@ -80,7 +79,6 @@ function ListingCoverPage()
 		  </div>
 		</div>
 	);
-
 }
 
 export default ListingCoverPage

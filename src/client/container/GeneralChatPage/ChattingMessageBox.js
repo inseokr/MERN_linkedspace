@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css';
 
@@ -6,13 +6,11 @@ function ChattingMessageBox(props) {
 
     let newMsgMarker = "";
 
-    if(props.new_msg==true)
-    {
+    if (props.new_msg) {
         newMsgMarker = <hr className="newMessage" />;
     }
 
-    if(props.msg_direction=="0")
-    {
+    if (props.msg_direction==="0") {
       return (
         <div className="ChattingMessageBoxWrapper AlignToLeft">
             <div className="ProfilePicture">
@@ -30,9 +28,7 @@ function ChattingMessageBox(props) {
 
         </div>
       );
-    } 
-    else 
-    {
+    } else {
       return (
         <React.Fragment>
         {newMsgMarker}
