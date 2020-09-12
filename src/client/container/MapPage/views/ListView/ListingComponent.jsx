@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -8,10 +8,13 @@ import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon'
 import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListingPageWrapper"
 
+import {GlobalContext} from '../../../../contexts/GlobalContext';
+
 
 function ListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
+  const {friendsList,  currentUser} = useContext(GlobalContext);
   const {listing, toggle} = props;
   const listingTitle = listing.rental_property_information.room_type + " " + listing.rental_property_information.unit_type;
   const listingAmenities = constructListingInformationBullets(listing.amenities);
@@ -50,7 +53,7 @@ function ListingComponent(props) {
   };
 
   const handleParentOnClock = (e) => {
-    alert("handleParentOnClock clicked");
+    //alert("handleParentOnClock clicked");
   };
 
   let listingControl = {add: addChildListing, remove: removeChildListing}
@@ -76,6 +79,24 @@ function ListingComponent(props) {
     }
   }
 
+  function getConnectedFriends()
+  {
+    console.log("Length of direct friends = " + currentUser.direct_friends.length);
+    if(currentUser.direct_friends.length>=0)
+    {
+      return (
+      <div className="flex-container" style={{justifyContent: "flex-start"}}>
+        <img className="img-responsive center rounded-circle" src={currentUser.direct_friends[0].profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
+        <Typography style={{marginTop: "10px", marginLeft: "5px"}}> connected friends </Typography>
+      </div>
+      )
+    }
+    else
+    {
+      return <React.Fragment> </React.Fragment>;
+    }
+  }
+
   return (
     <div>
     <div>
@@ -94,23 +115,33 @@ function ListingComponent(props) {
         </Grid>
         <Grid item xs={8}>
           <Paper className={"description"} onClick={handleParentOnClock}>
-            <Typography className={"description__title"} color={"textSecondary"} gutterBottom>
+            <Typography className={"description__summary"} color={"textSecondary"}>
+              LinkedSpaces
+            </Typography>
+
+            <Typography className={"description__title"}  style={{marginTop: "5px"}}gutterBottom>
               {listingTitle}
             </Typography>
             <Typography className={"description__address"}>
               {listing.rental_property_information.address}
             </Typography>
             {listingAmenities.length > 0 ? (
-              <Typography className={"description__bullets"} color={"textSecondary"} gutterBottom>
+              <Typography className={"description__bullets"}  gutterBottom>
                 {listingAmenities}
               </Typography>
             ) : (<div></div>)}
             {listingAccessibleSpaces.length > 0 ? (
-              <Typography className={"description__bullets"} color={"textSecondary"} gutterBottom>
+              <Typography className={"description__bullets"} gutterBottom>
                 {listingAccessibleSpaces}
               </Typography>
             ) : (<div></div>)}
-            {addChildListingControl(props.childSupported)}
+            <div className="flex-container" style={{justifyContent: "space-between", marginTop: "10px"}}>
+              <div className="flex-container" style={{justifyContent: "flex-start"}}>
+                <img className="img-responsive center rounded-circle" src={listing.requester.profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
+                <Typography style={{marginTop: "10px", marginLeft: "5px"}}> Hosted by {listing.requester.username} </Typography>
+              </div>
+              {getConnectedFriends()}
+            </div>
           </Paper>
         </Grid>
       </Grid>

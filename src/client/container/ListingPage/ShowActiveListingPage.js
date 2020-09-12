@@ -131,6 +131,12 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
 function ShowActiveListingPage(props) {
   const {listing_info, currentListing} = useContext(CurrentListingContext);
 
+  if(props.type==="child" && currentListing==undefined)
+  {
+    console.warn("No listing available");
+    return <div> No listing available </div>;
+  }
+
   let child_listings = (props.type==="child"? currentListing.child_listings: []);
 
   // 1. own: show the listings created by the current users
