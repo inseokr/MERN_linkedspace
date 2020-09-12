@@ -10,7 +10,7 @@ import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 function clickHandler()
 {
-	alert("Default clickHandler")
+	//alert("Default clickHandler")
 }
 
 // ISEO-TBD: this page will be re-rendered....

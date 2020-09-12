@@ -113,7 +113,7 @@ function TenantListingComponent(props) {
   function addChildListingControl() {
     return (
       <div className="flex-container" style={{justifyContent: "flex-end"}}>
-        <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Add selected listings">
+        <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="CLOSE">
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl}/>
         </SimpleModal>
         <button className="btn btn-info" onClick={showModal}>

@@ -8,6 +8,8 @@ import {MessageContext} from '../../contexts/MessageContext';
 
 function PickChattingParty(props) {
 
+	console.log("group = " + JSON.stringify(props.group));
+
 	let _group = props.group;
 	let _listingId = props.listing_id;
 
@@ -15,7 +17,7 @@ function PickChattingParty(props) {
 	const {loadChattingDatabase, addContactList} = useContext(MessageContext);
 	let Header =
 	<div className="boldHeader">
-	  <h4> New message </h4>
+	  <h4> Pick Chatting Party </h4>
 	  <hr/>
 	</div>;
 
@@ -57,18 +59,19 @@ function PickChattingParty(props) {
 
 	function checkGroup(name)
 	{
-		if(_group==undefined) 
+		if(_group==undefined || _group.length==0) 
 		{
 			console.warn("no group is available yet in checkGroup function");
 			return false;
 		}
-		_group.forEach(user =>
+
+		for(let index=0; index<_group.length; index++)
 		{
-			if(user.username==name) 
+			if(_group[index].username==name)
 			{
 				return true;
 			}
-		})
+		}
 
 		return false;
 	}

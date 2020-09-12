@@ -6,6 +6,8 @@ var node               = require("deasync");
 var path               = require("path");
 var fs                 = require("fs");
 var _3rdPartyListing   = require("../../../models/listing/_3rdparty_listing");
+const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
+
 
 var serverPath         = "./src/server";
 var picturePath        = "/public/user_resources/pictures/3rdparty/"
@@ -154,7 +156,13 @@ router.delete("/:list_id", function(req, res){
 	    	console.error(err);	
 	    }
 
-		foundListing.remove();	    
+		
+		// Need to remove this listing from dashboard and delete all other resources such as chatting channels.
+		// 1. need to check the listing contains it as a child listing
+		listingDbHandler.deleteChildListingFromAllParents(foundListing._id);
+
+		foundListing.remove();
+
 
     	req.flash("success", "Listing Deleted Successfully");
 		//res.send("listing deleted successfully");
