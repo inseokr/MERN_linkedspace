@@ -48,6 +48,71 @@ async function findUserById_(id)
   });
 }
 
+function deleteOwnListing(user, listing)
+{
+  let tempListings = [];
+
+  switch(listing.listingType)
+  {
+    case "landlord": 
+      tempListings = user.landlord_listing.filter(listing_ => listing_.equals(listing._id)==false);
+      user.landlord_listing = tempListings;
+      break;
+    case "tenant":
+      tempListings = user.tenant_listing.filter(listing_ => listing_.equals(listing._id)==false);
+      user.tenant_listing = tempListings;
+      break;
+    case "_3rdparty":
+      tempListings = user._3rdparty_listing.filter(listing_ => listing_.equals(listing._id)==false);
+      user._3rdparty_listing = tempListings;
+      break;
+    default: console.warn("Unknown listing type  = " + listing.listingType); return;
+  }
+}
+
+function deleteListingFromFriends(user, listing)
+{
+  let tempListings = [];
+
+  switch(listing.listingType)
+  {
+    case "landlord": 
+      tempListings = user.incoming_landlord_listing.filter(listing_ => listing_.id.equals(listing._id)==false);
+      user.incoming_landlord_listing = tempListings;
+      break;
+    case "tenant":
+      tempListings = user.incoming_tenant_listing.filter(listing_ => listing_.id.equals(listing._id)==false);
+      user.incoming_tenant_listing = tempListings;
+      break;
+    default: console.warn("Unknown listing type  = " + listing.listingType); return;
+  }
+}
+
+async function deleteListingFromUserDB(listing)
+{
+  let creator = await findUserById_(listing.requester.id);
+
+  // 1. remove it from creator
+  deleteOwnListing(creator, listing);
+
+  // 2. remove it from all users received this listing
+  // : currently the listing will be shared among friends only
+  //   let's go through friends list for now. 
+  //   Later we need to keep track of it.
+  for(let index=0; index< creator.direct_friends.length; index++)
+  {
+    let friend = await findUserById_(creator.direct_friends[index].id);
+    if(friend!=null)
+    {
+      deleteListingFromFriends(friend, listing);
+      friend.save();
+    }
+  }
+
+  creator.save();
+}
+
 
 module.exports = {getUserByName: getUserByName_, 
-                  findUserById: findUserById_}
+                  findUserById: findUserById_,
+                  deleteListingFromUserDB: deleteListingFromUserDB}

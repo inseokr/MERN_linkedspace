@@ -8,10 +8,13 @@ var path          = require("path");
 var fs            = require("fs");
 var mongoose      = require("mongoose");
 
-const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
-const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
-const chatServer    = require('../../../chatting_server');
+const userDbHandler    = require('../../../db_utilities/user_db/access_user_db');
+const chatDbHandler    = require('../../../db_utilities/chatting_db/access_chat_db');
+const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
+const chatServer       = require('../../../chatting_server');
 
+
+var serverPath         = "./src/server";
 
 node.loop = node.runLoopOnce;
 
@@ -449,10 +452,17 @@ router.delete("/:list_id", function(req, res){
     	}
 
     	try {
-    		fs.unlinkSync(foundListing.profile_pictures[0].path);
+    		fs.unlinkSync(serverPath+foundListing.profile_pictures[0].path);
 	    } catch(err){
 	    	console.error(err);
 	    }
+
+	    // clean up chatting related resources
+	    // 1. go through all the child listing and remove chatting channels.
+	    listingDbHandler.cleanAllChildListingsFromParent(foundListing);
+
+	    // 2. remove the tenant listing from other users including creator
+	    userDbHandler.deleteListingFromUserDB(foundListing);
 
 		foundListing.remove();
 
