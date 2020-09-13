@@ -69,12 +69,16 @@ router.get("/get_active_listing/own", function(req,res) {
             //<note> yes, landlord_listing array got screwed up after populate... darn...
             foundUser.tenant_listing.forEach(function(listing){
 
-                var tlist = {id: listing._id , picture: listing.profile_pictures[0].path, listingType: "tenant"}
+                let profile_picture = (listing.profile_pictures[0]==undefined)? "": listing.profile_pictures[0].path;
+
+                var tlist = {id: listing._id , picture: profile_picture, listingType: "tenant"}
                 tenant_listing.push(tlist);
             });
 
             foundUser.landlord_listing.forEach(function(listing){
-                var llist = {id: listing._id , picture: listing.pictures[0].path, listingType: "landlord"}
+                let listing_picture = (listing.pictures[0]==undefined)? "": listing.pictures[0].path;
+
+                var llist = {id: listing._id , picture: listing_picture, listingType: "landlord"}
                 landlord_listing.push(llist);
             });
 

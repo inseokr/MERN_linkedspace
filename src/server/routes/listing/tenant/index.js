@@ -468,7 +468,7 @@ router.delete("/:list_id", function(req, res){
 		foundListing.remove();
 
     	req.flash("success", "Listing Deleted Successfully");
-		res.redirect("/");
+		res.redirect("/ActiveListing");
 	});
 });
 
