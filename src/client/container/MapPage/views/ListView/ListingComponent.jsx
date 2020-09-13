@@ -82,11 +82,13 @@ function ListingComponent(props) {
   function getConnectedFriends()
   {
     console.log("Length of direct friends = " + currentUser.direct_friends.length);
-    if(currentUser.direct_friends.length>=0)
+    if(currentUser.direct_friends.length>0)
     {
+      let profile_picture = (currentUser.direct_friends[0]==undefined)? "": currentUser.direct_friends[0];
+
       return (
       <div className="flex-container" style={{justifyContent: "flex-start"}}>
-        <img className="img-responsive center rounded-circle" src={currentUser.direct_friends[0].profile_picture} alt={"Hosted By"} style={{maxHeight: "70%",  height: "60px"}}/>
+        <img className="img-responsive center rounded-circle" src={profile_picture} alt={currentUser.direct_friends[0].username} style={{maxHeight: "70%",  height: "60px"}}/>
         <Typography style={{marginTop: "10px", marginLeft: "5px"}}> connected friends </Typography>
       </div>
       )
