@@ -26,7 +26,8 @@ export default class ListingTenantMainPage extends Component {
   componentWillMount() {
     console.log("ListingTenantMainPage: componentWillMount");
     /* load listing information by listing ID */
-    // <note> this parameter will contain the value of ":id" in the following route path
+    // <note> this parameter will contain the value of ":id" in the following route path205
+
     // /listing/landlord/:id
     //this.context.fetchCurrentListing(this.props.match.params.id);
     //if(this.props.match!==undefined)
@@ -197,13 +198,16 @@ export default class ListingTenantMainPage extends Component {
     let rentalUnitType = (this.context.currentListing.rental_preferences.rent_whole_unit === "off") ?
       this.context.currentListing.rental_preferences.num_of_rooms+"bedroom(s)" :
       "Whole unit";
+    let profile_picture = (this.context.currentListing.profile_pictures[0]==undefined) ? "": this.context.currentListing.profile_pictures[0].path;
+    let profile_caption = (this.context.currentListing.profile_pictures[0]==undefined) ? "": this.context.currentListing.profile_pictures[0].caption;
+    
     return (
       <div>
         <div className="row">
 
           <div className="col-3" style={{height:"600px", marginLeft:"30px", border:"none"}}>
-            <img src={this.context.currentListing.profile_pictures[0].path} align="right" style={{width:"100%", maxHeight:"100%", objectFit:"cover", objectPosition:"100% 0%"}} alt="profilePicture"/>
-            <div className="border border-top-0" style={{textAlign:"center", backgroundColor:"#FFFFFF"}}> {this.context.currentListing.profile_pictures[0].caption} </div>
+            <img src={profile_picture} align="right" style={{width:"100%", maxHeight:"100%", objectFit:"cover", objectPosition:"100% 0%"}} alt="profilePicture"/>
+            <div className="border border-top-0" style={{textAlign:"center", backgroundColor:"#FFFFFF"}}> {profile_caption} </div>
           </div>
 
           <div className="col-5" style={{borderStyle:"none ", height:"500px", marginLeft:"30px"}}>
