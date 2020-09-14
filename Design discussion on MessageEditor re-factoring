@@ -1,0 +1,44 @@
+MessageEditor re-factoring
+
+1. let's read the business logic again
++ props
+	* callerType
+		+ parent
+			* contact list: 
+				case 1> my own listing
+					* direct friends
+				case 2> listing from friend
+					* direct friends
+					<note> working through direct friends... so case 1 and 2 should be the same. 
+				q1. how to activate the messaging? 
+				: map/messaging should work for both child listing and parent. Currently the parent listing is not highlighed.
+				  Probably we should implement onclick of parent listing as well.
+				  task1> Will update the current active child listing to negative in this case. 
+
+		+ child
+		: obsolete
+		+ msg_window
+		+ general
+		: currently not used. By default, all the direct friends will be in the contact list. 
+			* let's keep it this way. search should be in the next release. not MVP item. 
+	* childListing
+	* clickHandler
+	* parent_listing
+	* index: in the case of child
+
+	task2> MessageEditor will be used only in the message window now
+
+	q2. let's check what's done when child listing is clicked.
+
+		clickHandler(index); // highlight the listing
+		setCurrentChildIndex(index); // 
+		updateMessageContext(); // TenanaLisingDashboard::updateRightPane is called
+
+
+So MessageEditor will be used only to select contact for now
+1. messageEditorCallerType
+: we only need to know if it's general or listing_dashboard
+
+Hmm... MessageEditor will be used to add new chatting party. So it will launch the modal always.... we don't need to do anything different in this case.
+
+==> Yay... I just cleaned everything... 

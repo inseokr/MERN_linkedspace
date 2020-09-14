@@ -67,7 +67,8 @@ export default class ListingLandlordMainPage extends Component {
                 <HomeDetails />
                 <RentalTerm />
                 <HostDetails />
-                <ListingControlButtons />
+                (this.props.isLoggedIn==true) ?
+                <ListingControlButtons />: ""
               </div>
               {footer}
             </div>

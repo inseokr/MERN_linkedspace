@@ -23,11 +23,15 @@ import {
 
 import { Route }        from 'react-router';
 
-import { MessageContextProvider } from './contexts/MessageContext';
-import { GlobalProvider }         from './contexts/GlobalContext';
-import { ListingsProvider }       from './contexts/ListingsContext';
-import { CurrentListingProvider } from './contexts/CurrentListingContext';
+import { MessageContextProvider }        from './contexts/MessageContext';
+import { GlobalProvider, GlobalContext } from './contexts/GlobalContext';
+import { ListingsProvider }              from './contexts/ListingsContext';
+import { CurrentListingProvider }        from './contexts/CurrentListingContext';
 
+/*
+                  <Route path={"/listing/landlord/:id/get"} component={() => <ListingLandlordMainPage bLoggedIn={!this.state.showLoginModal}/>} />
+                  <Route path={"/listing/tenant/:id/get"} component={() => <ListingTenantMainPage bLoggedIn={!this.state.showLoginModal}/>} />
+*/
 
 export default class App extends Component {
 

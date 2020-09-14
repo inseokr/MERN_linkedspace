@@ -13,6 +13,8 @@ export default class ListingTenantMainPage extends Component {
   constructor(props) {
     super(props);
 
+    this.copyCurrentUrl = this.copyCurrentUrl.bind(this);
+
     console.log("props = " + JSON.stringify(props));
   }
 
@@ -159,7 +161,30 @@ export default class ListingTenantMainPage extends Component {
   }
 
 
+  copyCurrentUrl()
+  {
+    console.log("copyCurrentUrl Called");
+    var copyText = document.getElementById("post_link");
+    copyText.value = window.location.href;
+
+    copyText.select();
+    copyText.setSelectionRange(0,99999); /* for mobile devices */
+
+    document.execCommand("copy");
+
+    alert("Copied the URL: " + window.location.href);
+  }
+
+
   getListingControls() {
+
+/*
+    if(this.props.bLoggedIn==false)
+    {
+      return (
+      <React.Fragment> </React.Fragment>
+      );
+    }*/
 
     async function forward2friend(_this) {
       const post_url = "/listing/tenant/"+_this.props.match.params.id+"/forward";
@@ -177,7 +202,7 @@ export default class ListingTenantMainPage extends Component {
       <div style={{marginTop:"30px"}}>
         <input type="text" defaultValue="Hello World" id="post_link" style={{color:"white", borderStyle:"none"}}/>
         <div className="d-flex justify-content-start">
-          <button className="btn btn-primary">Copy link of this posting</button>
+          <button className="btn btn-primary" onClick={this.copyCurrentUrl}>Copy link of this posting</button>
 
           <button className="btn btn-info" style={{marginLeft:"70px "} } onClick={() => forward2friend(this)}>Send listing to friends</button>
           <Link to={"/listing/tenant/"+this.props.match.params.id+"/dashboard"}>
@@ -200,7 +225,7 @@ export default class ListingTenantMainPage extends Component {
       "Whole unit";
     let profile_picture = (this.context.currentListing.profile_pictures[0]==undefined) ? "": this.context.currentListing.profile_pictures[0].path;
     let profile_caption = (this.context.currentListing.profile_pictures[0]==undefined) ? "": this.context.currentListing.profile_pictures[0].caption;
-    
+
     return (
       <div>
         <div className="row">
