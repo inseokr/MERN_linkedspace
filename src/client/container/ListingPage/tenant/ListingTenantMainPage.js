@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import {Link} from 'react-router-dom';
 import '../../../app.css';
 import "../common/listing_style.css";
@@ -16,6 +16,7 @@ export default class ListingTenantMainPage extends Component {
     this.copyCurrentUrl = this.copyCurrentUrl.bind(this);
 
     console.log("props = " + JSON.stringify(props));
+    console.log("isLoggedIn = " + JSON.stringify(props.isLoggedIn));
   }
 
   componentDidMount() {
@@ -178,13 +179,14 @@ export default class ListingTenantMainPage extends Component {
 
   getListingControls() {
 
-/*
-    if(this.props.bLoggedIn==false)
+    console.log("isLoggedIn = " + this.props.isLoggedIn);
+
+    if(this.props.isLoggedIn==false)
     {
       return (
       <React.Fragment> </React.Fragment>
       );
-    }*/
+    }
 
     async function forward2friend(_this) {
       const post_url = "/listing/tenant/"+_this.props.match.params.id+"/forward";
@@ -214,6 +216,9 @@ export default class ListingTenantMainPage extends Component {
   }
 
   render() {
+
+
+    console.log("props="+JSON.stringify(this.props));
 
     if (this.context.currentListing===undefined || this.context.currentListing.listingType!=="tenant") {
       return (<div> </div>)

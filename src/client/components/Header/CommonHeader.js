@@ -40,6 +40,7 @@ function CommonHeader (props){
         .then(user => {
           console.log(" received user = " + user);
           setCurrentUser(user);
+          props.updateLoginStatus(user!=null);
         })
     }
   }

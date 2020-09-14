@@ -28,21 +28,24 @@ import { GlobalProvider, GlobalContext } from './contexts/GlobalContext';
 import { ListingsProvider }              from './contexts/ListingsContext';
 import { CurrentListingProvider }        from './contexts/CurrentListingContext';
 
-/*
-                  <Route path={"/listing/landlord/:id/get"} component={() => <ListingLandlordMainPage bLoggedIn={!this.state.showLoginModal}/>} />
-                  <Route path={"/listing/tenant/:id/get"} component={() => <ListingTenantMainPage bLoggedIn={!this.state.showLoginModal}/>} />
-*/
-
 export default class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {showLoginModal: false };
+    this.state = {showLoginModal: false,
+                  loggedInStatus: false };
   }
 
   clickHandler() {
       console.log("loginClickHander called");
       this.setState({showLoginModal: true});
+  }
+
+  updateLoginStatus(status) {
+
+    console.log("updateLoginStatus: status = " + status);
+
+    this.setState({loggedInStatus: status});
   }
 
   componentDidMount() {
@@ -59,7 +62,7 @@ export default class App extends Component {
           <CurrentListingProvider>
             <MessageContextProvider>
               <Router>
-                <CommonHeader loginClickHandler={this.clickHandler.bind(this)}/>
+                <CommonHeader loginClickHandler={this.clickHandler.bind(this)} updateLoginStatus={this.updateLoginStatus.bind(this)}/>
                 <ModalLoginForm display={this.state.showLoginModal}/>
                 <Switch>
                   <Route exact path="/Map">
@@ -101,8 +104,8 @@ export default class App extends Component {
                   <Route exact path="/ShowListingFromFriends">
                     <ShowActiveListingPageWrapper type="friend" listingControl=""/>
                   </Route>
-                  <Route path={"/listing/landlord/:id/get"} component={ListingLandlordMainPage} />
-                  <Route path={"/listing/tenant/:id/get"} component={ListingTenantMainPage} />
+                  <Route path={"/listing/landlord/:id/get"} render={(props)=> <ListingLandlordMainPage {...props} isLoggedIn={this.state.loggedInStatus}/>} />
+                  <Route path={"/listing/tenant/:id/get"} render={(props)=> <ListingTenantMainPage {...props} isLoggedIn={this.state.loggedInStatus}/>} />
                   <Route
                     path={"/listing/tenant/:id/dashboard"}
                     render={({
