@@ -121,19 +121,23 @@ router.get("/get_active_listing/friend", function(req,res) {
             foundUser.incoming_tenant_listing.forEach(function(listing){
                 console.log("tenant listing found");
 
-                var tlist = {id: listing.id._id , picture: listing.id.profile_pictures[0].path, 
-                             friend: listing.friend_id,
-                             timestamp: listing.received_date 
-                             }
-                tenant_listing.push(tlist);
+                if(listing.id!=null){
+                    var tlist = {id: listing.id._id , picture: listing.id.profile_pictures[0].path, 
+                                 friend: listing.friend_id,
+                                 timestamp: listing.received_date 
+                                 }
+                    tenant_listing.push(tlist);
+                }
             });
 
             foundUser.incoming_landlord_listing.forEach(function(listing){
                 console.log("landlord listing found");
-                var llist = {id: listing.id._id , picture: listing.id.pictures[0].path,
-                             friend: listing.friend_id,
-                             timestamp: listing.received_date}
-                landlord_listing.push(llist);
+                if(listing.id!=null){
+                    var llist = {id: listing.id._id , picture: listing.id.pictures[0].path,
+                                 friend: listing.friend_id,
+                                 timestamp: listing.received_date}
+                    landlord_listing.push(llist);
+                }
             });
 
             // passing whole data structure may not be a good idea?

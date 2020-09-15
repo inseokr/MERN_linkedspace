@@ -716,7 +716,7 @@ router.post("/:list_id/forward", function(req, res){
 	}
 
 	console.log("forward: post");
-	User.findById(req.user._id, function(err, foundUser){
+	User.findById(req.user._id, async function(err, foundUser){
 
 		if(err)
 		{
@@ -729,30 +729,36 @@ router.post("/:list_id/forward", function(req, res){
 			                 received_date: Date.now()};
 		let forwardCount = 0;
 
-		foundUser.direct_friends.forEach(function(friend){
+		listingDbHandler.getRequesterId(req.params.list_id, "tenant").then(requester_id => 
+		{
+			console.log("Creator ID="+requester_id);
 
-			// Need to find the friend object and then update it.
-			const result = User.findById(friend.id, function(err, foundFriend){
-				if(err)
-				{
-					console.log("No friend found with given ID");
-					return 0;
-				}
+			foundUser.direct_friends.forEach(function(friend){
 
-				// let's check duplicate records
-				if(checkDuplicate(foundFriend.incoming_tenant_listing, listing_info.id)==true)
-				{
-					return 1;
-				}
-				foundFriend.incoming_tenant_listing.push(listing_info);
-				foundFriend.save();
-				return 2;
+				// Need to find the friend object and then update it.
+				const result = User.findById(friend.id, function(err, foundFriend){
+					if(err)
+					{
+						console.log("No friend found with given ID");
+						return 0;
+					}
+
+					// let's check duplicate records
+					if(checkDuplicate(foundFriend.incoming_tenant_listing, listing_info.id)==true ||
+					   foundFriend._id.equals(requester_id))
+					{
+						return 1;
+					}
+					foundFriend.incoming_tenant_listing.push(listing_info);
+					foundFriend.save();
+					return 2;
+				});
+
+				if(result==2) forwardCount++; 
 			});
-
-			if(result==2) forwardCount++; 
+			console.log("forwardCount="+forwardCount);
+			res.json({result : 'Listing forwarded successfully'});
 		});
-		console.log("forwardCount="+forwardCount);
-		res.json({result : 'Listing forwarded successfully'});
 	});
 
 });

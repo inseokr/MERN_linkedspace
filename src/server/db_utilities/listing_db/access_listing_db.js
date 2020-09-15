@@ -1,5 +1,6 @@
 var User            = require("../../models/user");
-var tenantListing   = require("../../models/listing/tenant_request");
+var TenantRequest   = require("../../models/listing/tenant_request");
+var LandlordRequest = require("../../models/listing/landlord_request");
 var async           = require("async");
 const chatDbHandler = require('../chatting_db/access_chat_db');
 var chatServer      = require('../../chatting_server');
@@ -90,6 +91,46 @@ async function deleteChildListingFromAllParents(listing_id)
   }
 }
 
+async function getRequesterId(listing_id, type)
+{
+  return new Promise((resolve) => {
+
+    switch(type)
+    {
+      case "landlord":
+        LandlordRequest.findById(listing_id, (err, listing) => {
+          if(err)
+          {
+            console.warn("listing not found with err = " + err);
+            resolve(null);
+          }
+          
+          resolve(listing.requester.id);
+
+        } );
+        break;
+
+      case "tenant":
+        TenantRequest.findById(listing_id, (err, listing) => {
+          if(err)
+          {
+            console.warn("listing not found with err = " + err);
+            resolve(null);
+          }
+
+          resolve(listing.requester.id);
+        } );
+        break;
+
+      default:
+        console.log("Why default"); 
+        resolve(null);
+        break;
+    }
+  });
+}
+
 module.exports = { cleanChildListingFromParent:      cleanChildListingFromParent,
-                   cleanAllChildListingsFromParent:   cleanAllChildListingsFromParent,
-                   deleteChildListingFromAllParents: deleteChildListingFromAllParents }
+                   cleanAllChildListingsFromParent:  cleanAllChildListingsFromParent,
+                   deleteChildListingFromAllParents: deleteChildListingFromAllParents,
+                   getRequesterId:                   getRequesterId }

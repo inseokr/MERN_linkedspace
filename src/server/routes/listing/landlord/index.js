@@ -3,6 +3,8 @@ var router  = express.Router();
 var passport = require("passport");
 var User = require("../../../models/user");
 var LandlordRequest = require("../../../models/listing/landlord_request");
+const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
+
 var node = require("deasync");
 var path = require("path");
 
@@ -479,29 +481,65 @@ async function buildListingInfo2forward(req) {
 }
 
 // forward listing to direct friends
-router.put("/:list_id/forward", function(req, res){
+// Let's move it to common utility
+router.put("/:list_id/forward", async function(req, res){
 
-	app.locals.curr_user.direct_friends.forEach(function(friend){
+	function checkDuplicate(list, id)
+	{
+		let bDuplicate = false;
 
-		// Need to find the friend object and then update it.
-		User.findById(friend.id, function(err, foundUser){
-			if(err)
-			{
-				console.log("User not found with given id");
-				return;
-			}
+		if(list.length>=1)
+		{
+			bDuplicate = list.some(
+				_list => _list.id.equals(id) 
+				);
+		}
 
-			buildListingInfo2forward(req).then((listingInfo) => {
-				foundUser.incoming_landlord_listing.push(listingInfo);				
-				foundUser.save();
-				req.flash("success", "Listing Forwarded Successfully");
-				res.redirect("/");
-				
+		return bDuplicate;
+	}
+
+	User.findById(req.user._id, async function(err, foundUser){
+
+		if(err)
+		{
+			console.log("User not found");
+			return;
+		}
+
+		var listing_info = { id: req.params.list_id, 
+			                 friend_id: req.user._id, 
+			                 received_date: Date.now()};
+		let forwardCount = 0;
+
+		let requester_id = await listingDbHandler.getRequesterId(req.params.list_id, "landlord");
+
+		foundUser.direct_friends.forEach(function(friend){
+
+			// Need to find the friend object and then update it.
+			const result = User.findById(friend.id, function(err, foundFriend){
+				if(err)
+				{
+					console.log("No friend found with given ID");
+					return 0;
+				}
+
+				// let's check duplicate records
+				if(checkDuplicate(foundFriend.incoming_landlord_listing, listing_info.id)==true ||
+				   foundFriend._id.equals(requester_id))
+				{
+					return 1;
+				}
+
+				foundFriend.incoming_tenant_listing.push(listing_info);
+				foundFriend.save();
+				return 2;
 			});
-		});
-	});
 
-    
+			if(result==2) forwardCount++; 
+		});
+		console.log("forwardCount="+forwardCount);
+		res.json({result : 'Listing forwarded successfully'});
+	});
 });
 
 return router;
