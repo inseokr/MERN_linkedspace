@@ -25,6 +25,14 @@ function LoginMenu() {
     )
   }
 
+  let myNetworkBaloon = 
+    (currentUser.incoming_friends_requests.length>=1) ? 
+      <React.Fragment>
+        <span className="fa fa-comment"/>
+        <span className="newMsgSignature">{currentUser.incoming_friends_requests.length}</span>
+      </React.Fragment>
+      : <React.Fragment> </React.Fragment>
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -39,8 +47,8 @@ function LoginMenu() {
               <li className="nav-item">
                 <Link className="nav-link" to="/MyNetworks">
                   My Network
-                  <span className="fa fa-comment"/>
-                  <span className="newMsgSignature">2</span>
+                  {myNetworkBaloon}
+
                 </Link>
               </li>
               <Link className="nav-link" to="/Messages">

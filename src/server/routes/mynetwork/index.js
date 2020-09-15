@@ -55,19 +55,28 @@ module.exports = function(app) {
 
 	function requestedAlready(curr_user, friend_id)
 	{
-		let bFound = false;
-
-		curr_user.outgoing_friends_requests.forEach(function(friend){
-			if(friend.id.equals(friend_id)==true)
+		for(let index=0; index<curr_user.outgoing_friends_requests.length;index++)
+		{
+			if(curr_user.outgoing_friends_requests[index].id.equals(friend_id)==true)
 			{
-				bFound = true;
-				// ISEO: seriously??? function return twice??
-				// I returned true from here, 
-				// but it didn't break out from the function and it moved on to return outside of this for loop.
-			} 
-		});
+				return true;
+			}
+		}
 
-		return bFound;
+		return false;
+	}
+
+	function checkIncomingRequests(curr_user, friend_id)
+	{
+		for(let index=0; index<curr_user.incoming_friends_requests.length;index++)
+		{
+			if(curr_user.incoming_friends_requests[index].id.equals(friend_id)==true)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	function isDirectFriend(curr_user, friend_id)
@@ -98,6 +107,7 @@ module.exports = function(app) {
 				users.forEach(function(user){
 					if((curr_user._id.equals(user._id)!=true) && 
 					   (requestedAlready(curr_user, user._id)==false) &&
+					   (checkIncomingRequests(curr_user, user._id)==false) &&
 					   (isDirectFriend(curr_user, user._id)==false))
 					{
 						var friend = {profile_picture: user.profile_picture, 
