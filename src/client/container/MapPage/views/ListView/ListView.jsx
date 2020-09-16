@@ -15,7 +15,7 @@ function ListView(props) {
         <List>
           {filteredListings.map(function (listing) {
             return (
-              <div>
+              <div key={listing._id}>
                 <Divider variant={"middle"}/>
                 <ListingComponent listing={listing} toggle={toggle} mode={mode} childSupported="false"/>
               </div>

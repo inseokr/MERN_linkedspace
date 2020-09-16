@@ -106,7 +106,7 @@ function ListingComponent(props) {
           <Carousel interval={null} slide={true} activeIndex={index} onSelect={handleSelect} className={"carousel"}>
             {listing.pictures.map(function (picture) {
               return (
-                <Carousel.Item>
+                <Carousel.Item key={picture.path}>
                   <img src={picture.path} alt={picture.caption} className={"carouselImage"}/>
                 </Carousel.Item>
               )
