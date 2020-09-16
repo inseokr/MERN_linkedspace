@@ -107,7 +107,7 @@ router.get("/get_active_listing/own", function(req,res) {
 
 router.get("/get_active_listing/friend", function(req,res) {
 
-    User.findById(req.user._id).populate('incoming_tenant_listing.id').populate('incoming_landlord_listing.id').populate('incoming_tenant_listing.friend_id').exec(function(err, foundUser){
+    User.findById(req.user._id).populate('incoming_tenant_listing.id').populate('incoming_landlord_listing.id').exec(function(err, foundUser){
         if(err){
             console.log(err);
         } else {
@@ -123,7 +123,7 @@ router.get("/get_active_listing/friend", function(req,res) {
 
                 if(listing.id!=null){
                     var tlist = {id: listing.id._id , picture: listing.id.profile_pictures[0].path, 
-                                 friend: listing.friend_id,
+                                 friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length-2],
                                  timestamp: listing.received_date 
                                  }
                     tenant_listing.push(tlist);
@@ -134,7 +134,7 @@ router.get("/get_active_listing/friend", function(req,res) {
                 console.log("landlord listing found");
                 if(listing.id!=null){
                     var llist = {id: listing.id._id , picture: listing.id.pictures[0].path,
-                                 friend: listing.friend_id,
+                                 friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length-2],
                                  timestamp: listing.received_date}
                     landlord_listing.push(llist);
                 }

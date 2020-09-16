@@ -93,7 +93,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
         return (
           <div className='tenantListingSummary'>
             <div className='friendSummary'>
-              <span className="panel-subtitle"> {listing.friend.firstname} {listing.friend.lastname}</span>
+              <span className="panel-subtitle"> {listing.friend.friend_name} </span>
               <span className="socialDistance">
                 {GetRatingDeco(1)}
               </span>

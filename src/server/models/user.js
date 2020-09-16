@@ -192,15 +192,21 @@ var UserSchema = new mongoose.Schema({
 				ref: "TenantRequest"
 			},
 
-			profile_picture: String,
+			list_of_referring_friends: [
+			{
+				profile_picture: String,
 
-			friend_id: {
-					type: mongoose.Schema.Types.ObjectId,
-		     		ref: "User"
-		    },
+				friend_id: {
+						type: mongoose.Schema.Types.ObjectId,
+			     		ref: "User"
+			    },
 
-		    friend_name: String,
+			    friend_name: String,
+			}],
+
   			received_date: Date,
+
+  			status: { type: String, default: "New" } // New, Read, Forwarded
 		}
 	],
 
@@ -214,18 +220,21 @@ var UserSchema = new mongoose.Schema({
 
 			cover_picture: String,
 
-			friend_id: {
-					type: mongoose.Schema.Types.ObjectId,
-		     		ref: "User"
-		    },
+			list_of_referring_friends: [
+			{
+				profile_picture: String,
 
-		    friend_name: String,
+				friend_id: {
+						type: mongoose.Schema.Types.ObjectId,
+			     		ref: "User"
+			    },
 
-  			received_date: {
-  				month: String,
-  				date: Number,
-  				year: String
-  			},
+			    friend_name: String,
+			}],
+
+  			received_date: Date,
+
+  			status: {type: String, default: "New"}// New, Read, Forwarded
 		}
 	],
 });

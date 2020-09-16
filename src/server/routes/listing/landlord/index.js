@@ -4,6 +4,8 @@ var passport = require("passport");
 var User = require("../../../models/user");
 var LandlordRequest = require("../../../models/listing/landlord_request");
 const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
+const userDbHandler    = require('../../../db_utilities/user_db/access_user_db');
+
 
 var node = require("deasync");
 var path = require("path");
@@ -456,90 +458,11 @@ router.delete("/:list_id", function(req, res){
 	});
 });
 
-async function getCoverPicture(list_id)
-{
-	return new Promise(resolve => {
-		LandlordRequest.findById(list_id, function(err, foundList){
-			resolve(foundList.pictures[0].path);
-		});
-
-	});
-}
-
-
-async function buildListingInfo2forward(req) {
-
-	return new Promise(async resolve => {
-
-		var listingInfo = {id: req.params.list_id, friend_id: app.locals.curr_user._id, received_date: {month: "Mar", date: 20, year: "2019"}};
-
-		listingInfo.cover_picture = await getCoverPicture(req.params.list_id);
-
-		resolve(listingInfo);
-	});
-
-}
 
 // forward listing to direct friends
 // Let's move it to common utility
 router.put("/:list_id/forward", async function(req, res){
-
-	function checkDuplicate(list, id)
-	{
-		let bDuplicate = false;
-
-		if(list.length>=1)
-		{
-			bDuplicate = list.some(
-				_list => _list.id.equals(id) 
-				);
-		}
-
-		return bDuplicate;
-	}
-
-	User.findById(req.user._id, async function(err, foundUser){
-
-		if(err)
-		{
-			console.log("User not found");
-			return;
-		}
-
-		var listing_info = { id: req.params.list_id, 
-			                 friend_id: req.user._id, 
-			                 received_date: Date.now()};
-		let forwardCount = 0;
-
-		let requester_id = await listingDbHandler.getRequesterId(req.params.list_id, "landlord");
-
-		foundUser.direct_friends.forEach(function(friend){
-
-			// Need to find the friend object and then update it.
-			const result = User.findById(friend.id, function(err, foundFriend){
-				if(err)
-				{
-					console.log("No friend found with given ID");
-					return 0;
-				}
-
-				// let's check duplicate records
-				if(checkDuplicate(foundFriend.incoming_landlord_listing, listing_info.id)==true ||
-				   foundFriend._id.equals(requester_id))
-				{
-					return 1;
-				}
-
-				foundFriend.incoming_tenant_listing.push(listing_info);
-				foundFriend.save();
-				return 2;
-			});
-
-			if(result==2) forwardCount++; 
-		});
-		console.log("forwardCount="+forwardCount);
-		res.json({result : 'Listing forwarded successfully'});
-	});
+	userDbHandler.handleListingForward(req, res, "landlord");
 });
 
 return router;

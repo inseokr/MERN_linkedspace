@@ -130,7 +130,19 @@ async function getRequesterId(listing_id, type)
   });
 }
 
+
+async function getCoverPicture(list_id)
+{
+  return new Promise(resolve => {
+    LandlordRequest.findById(list_id, function(err, foundList){
+      resolve(foundList.pictures[0].path);
+    });
+
+  });
+}
+
 module.exports = { cleanChildListingFromParent:      cleanChildListingFromParent,
                    cleanAllChildListingsFromParent:  cleanAllChildListingsFromParent,
                    deleteChildListingFromAllParents: deleteChildListingFromAllParents,
-                   getRequesterId:                   getRequesterId }
+                   getRequesterId:                   getRequesterId,
+                   getCoverPicture:                  getCoverPicture }
