@@ -181,9 +181,9 @@ export function ListingsProvider(props) {
   }
 
   function constructBounds(bounds) { // Construct the correct bounds object to use.
-    const td = bounds["Ya"];
-    const pd = bounds["Ua"];
-    return {"northeast": {"lat": td["j"], "lng": pd["j"]}, "southwest": {"lat": td["i"], "lng": pd["i"]}}
+    const rf = bounds["ab"];
+    const nf = bounds["Va"];
+    return {"northeast": {"lat": rf["j"], "lng": nf["j"]}, "southwest": {"lat": rf["i"], "lng": nf["i"]}}
   }
 
   function centerCoordinates(center) { // Construct center object.
