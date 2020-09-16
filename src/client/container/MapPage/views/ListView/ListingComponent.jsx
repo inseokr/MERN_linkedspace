@@ -10,7 +10,6 @@ import ShowActiveListingPageWrapper from "../../../ListingPage/ShowActiveListing
 
 import {GlobalContext} from '../../../../contexts/GlobalContext';
 
-
 function ListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
@@ -84,7 +83,7 @@ function ListingComponent(props) {
     console.log("Length of direct friends = " + currentUser.direct_friends.length);
     if(currentUser.direct_friends.length>0)
     {
-      let profile_picture = (currentUser.direct_friends[0]==undefined)? "": currentUser.direct_friends[0];
+      let profile_picture = (currentUser.direct_friends[0]===undefined)? "": currentUser.direct_friends[0];
 
       return (
       <div className="flex-container" style={{justifyContent: "flex-start"}}>
@@ -108,7 +107,7 @@ function ListingComponent(props) {
           <Carousel interval={null} slide={true} activeIndex={index} onSelect={handleSelect} className={"carousel"}>
             {listing.pictures.map(function (picture) {
               return (
-                <Carousel.Item>
+                <Carousel.Item key={picture.path}>
                   <img src={picture.path} alt={picture.caption} className={"carouselImage"}/>
                 </Carousel.Item>
               )

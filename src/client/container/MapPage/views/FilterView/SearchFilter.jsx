@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
-import Modal from '../../../../components/Modal';
-import Slider from '@material-ui/core/Slider';
-import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
 function SearchFilter() {
@@ -39,8 +36,8 @@ function SearchFilter() {
     }
   };
 
-  const handleClick = (e) => {
-    if (node.current.contains(e.target)) {
+  const handleClick = (event) => {
+    if (node.current.contains(event.target)) {
       // inside click
       return;
     }
@@ -53,7 +50,7 @@ function SearchFilter() {
   return (
     <div className={`${showForm ? "blur" : undefined} modal-app`} ref={node}>
       {showForm ? (
-        <form onSubmit={() => {toggleForm(); onSubmit();}}>
+        <form onSubmit={(event) => {toggleForm(); onSubmit(event);}}>
           <TextField id="search-text-field" label="Search" type="search" variant="outlined" size="small" placeholder={interimSearch} onChange={handleChange}/>
         </form>
       ) : (
