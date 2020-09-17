@@ -330,11 +330,17 @@ router.get("/:list_id/fetch",  function(req, res){
 		});
 
 		
-		populateChildren.then(function(){
-			// It should have waited till previous forEach loop is completed.
-			console.log("sending response to REACT now");
-			// ISEO-TBD: let's add referring friends
-			res.json(foundListing);
+		populateChildren.then(async function(){
+			userDbHandler.findUserById(req.user._id).then(async function(foundUser)
+			{
+				let referringFriends = userDbHandler.getReferringFriendsByListingId(foundUser, req.params.list_id, "tenant");
+
+				foundListing.list_of_referring_friends = referringFriends.filter((friend, index) => index <= (referringFriends.length-2));
+				console.log("foundListing = " + JSON.stringify(foundListing));
+
+				res.json(foundListing);
+			})
+
 		})
 
 	});

@@ -150,7 +150,19 @@ var LandlordRequestSchema = new mongoose.Schema({
   contact: {
     phone: String,
     email: String
-  }
+  },
+
+  list_of_referring_friends: [
+      {
+        profile_picture: String,
+
+        friend_id: {
+            type: mongoose.Schema.Types.ObjectId,
+              ref: "User"
+          },
+
+          friend_name: String,
+      }]
 
 });
 

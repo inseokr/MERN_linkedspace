@@ -115,28 +115,13 @@ export default class ListingTenantMainPage extends Component {
   }
 
   getReferringFriends() {
-    let friends = [
-      {
-        profile_picture: "/public/user_resources/pictures/friends/Chinh - Vy.jpg",
-        username: "Chinh Le"
-      },
-      {
-        profile_picture: "/public/user_resources/pictures/friends/Jason.jpg",
-        username: "Jason Kim"
-      },
-      {
-        profile_picture: "/public/user_resources/pictures/friends/Peter.jpg",
-        username: "Peter Bae"
-      }
-    ];
-
     return (
       <div className="row">
-        {friends.map((friend, index) => (
-          <div className="col-3" key={friend.username}>
+        {this.context.currentListing.list_of_referring_friends.map((friend, index) => (
+          <div className="col-3" key={friend.friend_name}>
             <div className=" thumbnail">
               <img className="img-responsive center rounded-circle" src={friend.profile_picture} alt="friendProfilePicture"/>
-              <span className="_so3dpm2" style={{marginLeft:"40px"}}>{friend.username}</span>
+              <span className="_so3dpm2" style={{marginLeft:"40px"}}>{friend.friend_name}</span>
               <div style={{marginLeft:"60px"}}>
                 {GetRatingDeco(index)}
               </div>

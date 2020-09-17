@@ -91,6 +91,7 @@ var TenantRequestSchema = new mongoose.Schema({
             ref: "LandlordRequest" // _3rdPartyListing or LandlordRequest
         },
 
+        // do we need it at all?
         listing_type: String, // _3rdPartyListing or LandlordRequest, DB model name and used for populate.
 
         created_by: {
@@ -170,7 +171,19 @@ var TenantRequestSchema = new mongoose.Schema({
     num_of_roommates: { type: Number, default: 0},
 
     phone: String,
-    email: String
+    email: String,
+
+    list_of_referring_friends: [
+      {
+        profile_picture: String,
+
+        friend_id: {
+            type: mongoose.Schema.Types.ObjectId,
+              ref: "User"
+          },
+
+          friend_name: String,
+      }]
 
 });
 

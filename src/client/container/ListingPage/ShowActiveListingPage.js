@@ -98,7 +98,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
                 {GetRatingDeco(1)}
               </span>
             </div>
-            <span className="panel-subtitle"> {date.toDateString() + " " + date.toLocaleTimeString()} </span>
+            <span className="panel-subtitle"> {date.toDateString()} </span>
           </div>
         )
       }
@@ -115,7 +115,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
             {getListingSourceInformation(listing_prefix, listingDB[index])}
           </div>
 
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-center">
             {getListingControls(listingDB[index], type)}
           </div>
         </div>;
