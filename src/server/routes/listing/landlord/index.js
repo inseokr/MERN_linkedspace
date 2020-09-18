@@ -422,7 +422,6 @@ router.get("/:list_id/fetch", function(req, res){
 		var amenities = [];
 
 		preprocessListing(foundListing, facilities, amenities);
-		console.log("ISEO: list_id = " + req.params.list_id );
 
 		listing_info = 
 			{ listing: foundListing, accessibleSpaces: facilities, availableAmenities: amenities, list_id: req.params.list_id}
@@ -442,7 +441,7 @@ router.delete("/:list_id", function(req, res){
     	}
 
     	try {
-    		for(var picIndex=0; processedPictures<foundListing.num_of_pictures_uploaded;picIndex++){
+    		for(var picIndex=0; picIndex<foundListing.num_of_pictures_uploaded;picIndex++){
 				if(foundListing.pictures[picIndex].path!=""){
 		    		fs.unlinkSync(foundListing.pictures[picIndex].path);
 				}	
@@ -450,6 +449,8 @@ router.delete("/:list_id", function(req, res){
 	    } catch(err){
 	    	console.error(err);	
 	    }
+
+	    userDbHandler.deleteListingFromUserDB(foundListing);
 
 		foundListing.remove();	    
 
@@ -461,7 +462,7 @@ router.delete("/:list_id", function(req, res){
 
 // forward listing to direct friends
 // Let's move it to common utility
-router.put("/:list_id/forward", async function(req, res){
+router.post("/:list_id/forward", async function(req, res){
 	userDbHandler.handleListingForward(req, res, "landlord");
 });
 
