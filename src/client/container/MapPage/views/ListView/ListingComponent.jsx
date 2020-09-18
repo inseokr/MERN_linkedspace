@@ -83,7 +83,7 @@ function ListingComponent(props) {
     console.log("Length of direct friends = " + currentUser.direct_friends.length);
     if(currentUser.direct_friends.length>0)
     {
-      let profile_picture = (currentUser.direct_friends[0]===undefined)? "": currentUser.direct_friends[0];
+      let profile_picture = (currentUser.direct_friends[0]===undefined)? "": currentUser.direct_friends[0].profile_picture;
 
       return (
       <div className="flex-container" style={{justifyContent: "flex-start"}}>

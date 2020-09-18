@@ -172,6 +172,48 @@ async function getRequesterId(listing_id, type)
   });
 }
 
+async function getListingById(listing_id, type)
+{
+  console.log("listing_id = " + JSON.stringify(listing_id));
+  
+  return new Promise((resolve) => {
+
+    switch(type)
+    {
+      case "landlord":
+        LandlordRequest.findById(listing_id, (err, listing) => {
+          if(err)
+          {
+            console.warn("listing not found with err = " + err);
+            resolve(null);
+          }
+          
+          resolve(listing);
+
+        } );
+        break;
+
+      case "tenant":
+        TenantRequest.findById(listing_id, (err, listing) => {
+          if(err)
+          {
+            console.warn("listing not found with err = " + err);
+            resolve(null);
+          }
+
+          resolve(listing);
+        } );
+        break;
+
+      default:
+        console.log("Why default"); 
+        resolve(null);
+        break;
+    }
+  });
+}
+
+
 function handleListingForward(req, res, type)
 {
 
@@ -202,15 +244,15 @@ function handleListingForward(req, res, type)
                          list_of_referring_friends: [],
                          received_date: Date.now()};
 
-    if(type=="landlord")
-    {
-      listing_info.cover_picture = await listingDbHandler.getCoverPicture(req.params.list_id);
-    }
-
     let forwardCount = 0;
 
-    getRequesterId(req.params.list_id, type).then(requester_id => 
+    getListingById(req.params.list_id, type).then(listing => 
     {
+      if(type=="landlord")
+      {
+        listing_info.cover_picture = listing.pictures[0].path;
+      }
+
       foundUser.direct_friends.forEach(function(friend){
 
         // Need to find the friend object and then update it.
@@ -224,14 +266,14 @@ function handleListingForward(req, res, type)
           // let's check duplicate records
           if(checkDuplicate((type=="tenant")? 
              foundFriend.incoming_tenant_listing:foundFriend.incoming_landlord_listing , listing_info.id)==true ||
-             foundFriend._id.equals(requester_id))
+             foundFriend._id.equals(listing.requester.id))
           {
             return 1;
           }
 
           // build list_of_referring_friends
           // 1. check if the user owns the listing or just forwarding it from others
-          if(requester_id.equals(req.user._id)==true)
+          if(listing.requester.id.equals(req.user._id)==true)
           {
             let referringFriends = [];
 

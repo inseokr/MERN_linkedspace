@@ -107,7 +107,7 @@ router.get("/get_active_listing/own", function(req,res) {
 
 router.get("/get_active_listing/friend", function(req,res) {
 
-    User.findById(req.user._id).populate('incoming_tenant_listing.id').populate('incoming_landlord_listing.id').exec(function(err, foundUser){
+    User.findById(req.user._id).exec(async function(err, foundUser){
         if(err){
             console.log(err);
         } else {
@@ -115,11 +115,30 @@ router.get("/get_active_listing/friend", function(req,res) {
             var landlord_listing = [];
             var _3rdparty_listing = [];
 
-            //<note> yes, landlord_listing array got screwed up after populate... darn...
-            console.log("Length of incoming_tenant_listing = " + foundUser.incoming_tenant_listing.length);
-            
-            foundUser.incoming_tenant_listing.forEach(function(listing){
-                console.log("tenant listing found");
+            for(let index=0; index<foundUser.incoming_landlord_listing.length; index++)
+            {
+                let listing = foundUser.incoming_landlord_listing[index];
+                let pathToPopulate = 'incoming_landlord_listing.'+index+".id";
+
+                await foundUser.populate({path: pathToPopulate, model: "LandlordRequest"}).execPopulate();
+                foundUser.populated(pathToPopulate);
+
+                if(listing.id!=null){
+                    var llist = {id: listing.id._id , picture: listing.id.pictures[0].path,
+                                 friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length-2],
+                                 timestamp: listing.received_date}
+                    landlord_listing.push(llist);
+                }
+            }
+
+
+            for(let index=0; index<foundUser.incoming_tenant_listing.length; index++)
+            {
+                let listing = foundUser.incoming_tenant_listing[index];
+                let pathToPopulate = 'incoming_tenant_listing.'+index+".id";
+
+                await foundUser.populate({path: pathToPopulate, model: "TenantRequest"}).execPopulate();
+                foundUser.populated(pathToPopulate);
 
                 if(listing.id!=null){
                     var tlist = {id: listing.id._id , picture: listing.id.profile_pictures[0].path, 
@@ -128,17 +147,7 @@ router.get("/get_active_listing/friend", function(req,res) {
                                  }
                     tenant_listing.push(tlist);
                 }
-            });
-
-            foundUser.incoming_landlord_listing.forEach(function(listing){
-                console.log("landlord listing found");
-                if(listing.id!=null){
-                    var llist = {id: listing.id._id , picture: listing.id.pictures[0].path,
-                                 friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length-2],
-                                 timestamp: listing.received_date}
-                    landlord_listing.push(llist);
-                }
-            });
+            }
 
             // passing whole data structure may not be a good idea?
             res.json({tenant_listing: tenant_listing, landlord_listing: landlord_listing, _3rdparty_listing: _3rdparty_listing});
