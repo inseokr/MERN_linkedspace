@@ -23,13 +23,13 @@ function ContactSummary(props) {
       <div className="ProfilePicture">
         <img className="center rounded-circle imgFitToGrid" src={props.user.profile_picture} alt="myFriend" />
       </div>
-      <div className="ProfileName">
+      <div className="ContactName">
         {props.user.username}
       </div>
-      <div className="TimeStamp">
+      <div className="ChatTimeStamp">
         {props.summary.timestamp}
       </div>
-      <div className="MessageSummary">
+      <div className="ChatSummary">
         {props.summary.msg_summary}
       </div>
     </div>

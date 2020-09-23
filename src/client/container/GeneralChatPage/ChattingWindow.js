@@ -24,7 +24,7 @@ function ChattingWindow() {
 
     console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
 
-    if (messagesEndRef.current!==undefined) {
+    if (messagesEndRef.current!==undefined && messagesEndRef.current!=null) {
       messagesEndRef.current.scrollIntoView({block: "end", inline: "nearest"});
 
       // smooth option won't be used to load the first history.

@@ -23,6 +23,12 @@ function TenantListingComponent(props) {
   const {setChattingContextType, chattingContextType} = useContext(MessageContext);
   const {listing, toggle, mode} = props;
 
+  if(listing==undefined)
+  {
+    console.warn("No listing available");
+    return <div> no listing available </div>;
+  }
+
   const userName          = listing.requester.username;
   const moveInDate        = listing.move_in_date.month + "/" + listing.move_in_date.date + "/" + listing.move_in_date.year;
   const rentDuration      = listing.rental_duration + "month(s)";
