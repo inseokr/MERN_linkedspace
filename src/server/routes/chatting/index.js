@@ -32,7 +32,7 @@ module.exports = function(app) {
 	router.post("/update", function(req,res){
 		let result = {op_result: "sucess"};
 
-		//console.log("chatting update called, channel = " + req.body.channel_id + "index= " + req.body.lastReadIndex);
+		console.log("chatting update called, channel = " + req.body.channel_id + "index= " + req.body.lastReadIndex);
 
 		// update channel DB in User DB
 		User.findOne({username: req.user.username}, function(err, user){
@@ -45,6 +45,7 @@ module.exports = function(app) {
 			}
 
 			// find the channel and update the index.
+			try {
 			user.chatting_channels.dm_channels.forEach((channel) => {
 				if(channel.name==req.body.channel_id)
 				{
@@ -55,6 +56,11 @@ module.exports = function(app) {
 					return;
 				}
 			});
+			} catch (err)
+			{
+				console.log("err="+err);
+				return;			
+			}
 		});
 	});
 
@@ -89,9 +95,10 @@ module.exports = function(app) {
 		    for (index = 0; index < req.body.members.length; index++)
 		    {
 		      //console.log("index = " + index);
-
 		      chatDbHandler.findChatPartyByName(req.body.members[index]).then((memberInfo) => {
 		            numberOfPushedMembers++;
+
+		            console.log(`adding ${JSON.stringify(memberInfo)} to the chatting channel`);
 
 		            newChannel.members.push(memberInfo);
 

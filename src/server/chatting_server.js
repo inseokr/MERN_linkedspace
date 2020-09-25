@@ -159,13 +159,19 @@ function removeSocketToChannel(channelId, socket_)
         return;
     }
 
+    try {
     channelIdToSocketList[channelId].forEach(socket =>
     {
         if(socket.id!=socket_.id) newList = [...newList, socket];
     })
 
     channelIdToSocketList[channelId] = newList;
+    } catch (err)
+    {
+        console.log(`removeSocketToChannel: error = {err}`);
+    }
 }
+
 
 function getListOfSocketsByChannelId(channelId)
 {

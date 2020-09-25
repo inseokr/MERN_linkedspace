@@ -1,20 +1,29 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css'
+import { MessageContext }  from '../../contexts/MessageContext';
+
 // import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
 
 function ContactSummary(props) {
 
+  const {setCurrentChatPartyPicture} = useContext(MessageContext);
+
   function handleClick(e) {
     e.preventDefault();
     props.clickHandler(props.contactIndex);
+    setCurrentChatPartyPicture(props.user.profile_picture);
   }
 
   function getContactSummaryClassName() {
     let listOfClass = (props.clickState===0? "ContactSummary": "ContactSummaryClicked");
 
-    listOfClass = (props.summary.flag_new_msg)? listOfClass + " NewMessageIndicator": listOfClass;
+    if(props.contactIndex==0)
+    {
+      setCurrentChatPartyPicture(props.user.profile_picture);
+    }     
 
+    listOfClass = (props.summary.flag_new_msg)? listOfClass + " NewMessageIndicator": listOfClass;
     return listOfClass;
   }
 

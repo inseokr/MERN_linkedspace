@@ -13,23 +13,23 @@ function ChattingWindow() {
 
   const messagesEndRef = useRef(null);
 
-  const {numOfMsgHistory, getChattingHistory, getLastReadIndex} = useContext(MessageContext);
+  const {numOfMsgHistory, getChattingHistory, getLastReadIndex , currentChatPartyPicture} = useContext(MessageContext);
   const {getProfilePicture} = useContext(GlobalContext);
 
   //const [numOfHistory, setNumOfHistory] = useState(0);
 
-  console.log("loading Chatting Window");
+  ////console.log("loading Chatting Window");
 
   const scrollToBottom = () => {
 
-    console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
+    //console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
 
     if (messagesEndRef.current!==undefined && messagesEndRef.current!=null) {
       messagesEndRef.current.scrollIntoView({block: "end", inline: "nearest"});
 
       // smooth option won't be used to load the first history.
       if (numOfMsgHistory>0) {
-        console.log("changing behavior to smooth");
+        //console.log("changing behavior to smooth");
         //messagesEndRef.current.scrollIntoView({behavior: "smooth"});
       }
     }
@@ -40,13 +40,15 @@ function ChattingWindow() {
   // }
 
   function getCurMessageBox(chat, new_msg_marker) {
-    console.log("getCurMessageBox: chat.msg = " + chat.message);
+    //console.log("getCurMessageBox: chat.msg = " + chat.message);
+
+    let profilePicture = (chat.direction==0)? getProfilePicture(chat.username): currentChatPartyPicture;
 
     return (
       <div key={shortid.generate()}>
         <ChattingMessageBox
           msg_direction={chat.direction}
-          profile_picture={getProfilePicture(chat.username)}
+          profile_picture={profilePicture}
           message={chat.message}
           timestamp={chat.timestamp}
           new_msg={new_msg_marker}
@@ -59,7 +61,7 @@ function ChattingWindow() {
     let chatHistory   = getChattingHistory();
     let lastReadIndex = getLastReadIndex("");
     let output        = [];
-    console.log("getChatHistory: chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
+    ////console.log("getChatHistory: chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
 
     let newMsgMarked = false;
 
@@ -79,9 +81,9 @@ function ChattingWindow() {
   }
 
   function loadChattingHistory() {
-    console.log("ISEO: loadChattingHistory!!!!!!!!!!!!!!!!!!!!!!");
+    ////console.log("ISEO: loadChattingHistory!!!!!!!!!!!!!!!!!!!!!!");
     const history = getChatHistory();
-    console.log("ISEO: length of history = " + history.length);
+    ////console.log("ISEO: length of history = " + history.length);
     return (history);
   }
 

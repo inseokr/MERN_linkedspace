@@ -73,13 +73,11 @@ async function getChannelByChannelId(channelName)
 
 function addChannelToUser(chat_channel)
 {
-  console.log("userDbHandler="+JSON.stringify(userDbHandler));
-
 	chat_channel.members.forEach(member => {
 
 	    userDbHandler.findUserById(member.id).then((foundUser) => {
 
-        console.log("addChannelToUser: foundUser = " + foundUser);
+        console.log("addChannelToUser: foundUser = " + foundUser.username);
         
 	    	if(foundUser)
 	    	{
