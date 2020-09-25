@@ -125,6 +125,13 @@ function ChatContactList() {
 
       if (dmChannelContexts[channel_name]===undefined) {
         console.log("channel_name= "+channel_name+" not defined yet");
+        let channelSummary = {flag_new_msg: false,
+          timestamp:    null,
+          msg_summary:  ""};
+        contacts.push(<div key={shortid.generate()}>
+          <ContactSummary contactIndex={i} clickState={clickStates[i]} clickHandler={handleClickState} user={friendsList[i]} summary={channelSummary} />
+        </div>);
+
       } else {
         let channelSummary = {flag_new_msg: dmChannelContexts[channel_name].flag_new_msg,
           timestamp:    dmChannelContexts[channel_name].datestamp,
