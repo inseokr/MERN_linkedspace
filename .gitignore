@@ -5,3 +5,5 @@ dist
 yarn.lock
 .env
 *.jpg
+!**/src/assets/images
+!**/src/client/assets/images

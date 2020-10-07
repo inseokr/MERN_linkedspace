@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import shortid from 'shortid';
 import '../../app.css';
 import './MessageStyle.css';
@@ -13,6 +13,9 @@ function PickChattingParty(props) {
 
 	const {friendsList, currentUser} = useContext(GlobalContext);
 	const {loadChattingDatabase, addContactList} = useContext(MessageContext);
+
+	const [] = useState();
+	
 	let Header =
 	<div className="boldHeader">
 	  <h4> Pick Chatting Party </h4>
@@ -75,7 +78,7 @@ function PickChattingParty(props) {
 	// go through the list of direct friends
 	return friendsList.map((friend => {
 	  // <note> need to skip friend in the shared_group
-	  if ((friend.username !== currentUser.username) && !checkGroup(friend.username)) {
+	  if (friend.username !== currentUser.username) {
 	    return getFriend(friend);
 	  }
 	}));
