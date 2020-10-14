@@ -257,6 +257,39 @@
 	" . ts ts ts";
 }
 
+.GroupContactSummary {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	height:minmax(100px, 200px);
+	padding-top: 2px;
+	grid-template-areas:
+	" cn cn cn cn"
+	" cn cn cn cn "
+	" cs cs cs cs"
+	" cs cs cs cs"
+	" . ts ts ts";
+}
+
+.GroupContactSummaryClicked {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	height:minmax(100px, 200px);
+
+	background-color: #b0becc;
+	border-left-style: solid;
+	border-left-color: #115399;
+	border-left-width: 5px;
+
+	padding-top: 2px;
+
+	grid-template-areas:
+	" cn cn cn cn"
+	" cn cn cn cn "
+	" cs cs cs cs"
+	" cs cs cs cs"
+	" . ts ts ts";
+}
+
 .NewMessageIndicator {
     border-left-style: solid !important;
     border-left-color: #dc3545 !important;

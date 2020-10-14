@@ -8,6 +8,7 @@ import {MessageContext} from "../../contexts/MessageContext";
 // ISEO-TBD:
 // currChanneInfo only includes DM channel information
 // We may consider adding more information
+// Group Chat should be considered
 function ChatPartySummary() {
 
   let {currChannelInfo} = useContext(MessageContext);

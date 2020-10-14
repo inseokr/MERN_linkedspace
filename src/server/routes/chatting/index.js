@@ -84,6 +84,8 @@ module.exports = function(app) {
 		    // <note> The app defined here is different from the app in "App.js"
 		    // <note> we should re-factor index.js in the root routes directory, need to inherit app. 
 		    newChannel.channel_creator.name = req.user.username;
+		    // ISEO-DEPLOY-ISSUE
+			// : Is it safe to use appl.locals here?? will it work when multiple users got loggined?
 		    newChannel.channel_creator.id   = app.locals.currentUser[req.user.username].id_;
 		    // <note> req.body doesn't include those information.
 

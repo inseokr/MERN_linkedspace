@@ -204,6 +204,18 @@
     align-items: center;
 }
 
+.friendWrapperClicked {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-auto-rows: 80px;
+    justify-items: start;
+    align-items: center;
+    background-color: #b0becc;
+    border-left-style: solid;
+    border-left-color: #115399;
+    border-left-width: 5px;
+}
+
 .boldHeader {
     font-weight: bold;
     margin-top:10px;

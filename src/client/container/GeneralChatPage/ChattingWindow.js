@@ -41,8 +41,13 @@ function ChattingWindow() {
 
   function getCurMessageBox(chat, new_msg_marker) {
     //console.log("getCurMessageBox: chat.msg = " + chat.message);
-
-    let profilePicture = (chat.direction==0)? getProfilePicture(chat.username): currentChatPartyPicture;
+    // direction: 0(my own message), 1(from others)
+    // <note> not sure if we should rely on currentChatPartyPicture
+    // getProfilePicture may return profile picture of friends?
+    console.log("getCurMessageBox: direction = " + chat.direction);
+    console.log("getCurMessageBox: username = " + chat.username);
+    //let profilePicture = (chat.direction==0)? getProfilePicture(chat.username): currentChatPartyPicture;
+    let profilePicture = getProfilePicture(chat.username);
 
     return (
       <div key={shortid.generate()}>

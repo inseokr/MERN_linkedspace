@@ -336,7 +336,7 @@ router.get("/:list_id/fetch",  function(req, res){
 				let referringFriends = userDbHandler.getReferringFriendsByListingId(foundUser, req.params.list_id, "tenant");
 
 				foundListing.list_of_referring_friends = referringFriends.filter((friend, index) => index <= (referringFriends.length-2));
-				console.log("foundListing = " + JSON.stringify(foundListing));
+				//console.log("foundListing = " + JSON.stringify(foundListing));
 
 				res.json(foundListing);
 			})
@@ -361,6 +361,89 @@ router.post("/:list_id/edit", function(req, res){
 });
 
 
+router.post("/:list_id/addGroupChat", function(req, res){
+
+	TenantRequest.findById(req.params.list_id, async function(err, foundListing){
+
+    	if(err)
+    	{
+    		console.log("Listing not found");
+    		res.json({result: "Listing not found"});
+    		return;
+    	}
+
+    	// list of parameters needed
+    	// 1. chatting ID
+    	// + parent list: (parent_listing_id)-parent-(list of friend_name)
+    	// + child list:  (parent_listing_id)-child-(child_listing_id)-(list of friend name)
+    	// 2. list of friends
+
+    	// 1. check if there is a chatting channel created already. Skip it it it exists
+    	const channelId = await chatDbHandler.findChatChannel(req.body.channel_id);
+
+    	if(channelId!=null)
+    	{
+    		console.log(`Channel=$channelId exists already`);
+    		res.json({result: "Channel exists already"});
+    		return;
+    	}
+
+    	// 2. construct the group_chat using list of friends
+    	// <note> list_of_group_chats 
+    	// <problem#1> User could create group chat first before creating any DM. 
+    	// We may need to add the current user to the shared_user_group as well if it's not in the list. 
+    	let chattingType = req.body.chattingType;
+    	let childInfo    = req.body.childInfo;
+    	let friends      = req.body.friends;
+
+    	// go through friend list and add it to shared_user_group
+    	// <note> This process could be done in parallel.
+    	// Nope... in my second thought. We'd better update list_of_group_chats.
+    	// It's the same object anyhow. So we should complete all the operarions before save()
+    	let group_chat = {channel_id: req.body.channel_id, friend_list: []};
+
+    	let numOfFriendsProcessed = 0;
+
+    	friends.forEach(async (_friend) => {
+    		let result = await listingDbHandler.addToSharedUserGroup(foundListing, _friend.username, chattingType, childInfo.index, false);
+    		// let's update list_of_group_chats now
+    		let userInfo = {username: _friend.username};
+
+    		console.log("numOfFriendsProcessed="+numOfFriendsProcessed);
+    		console.log("friends.length="+friends.length);
+
+    		group_chat.friend_list.push(userInfo);
+    		++numOfFriendsProcessed;
+
+    		if(numOfFriendsProcessed==friends.length)
+    		{
+		    	if(chattingType==1)
+		    	{
+			    	foundListing.list_of_group_chats.push(group_chat);
+		    	}
+		    	else
+		    	{
+			    	foundListing.child_listings[childInfo.index].list_of_group_chats.push(group_chat);
+			    	console.log("group_chat = " + JSON.stringify(group_chat));
+			    	console.log("index = " + childInfo.index);
+		    	}
+
+		    	console.log("group_chat = " + JSON.stringify(foundListing.child_listings[childInfo.index].list_of_group_chats));
+
+		    	foundListing.save((err) => {
+			    		if(err)
+			    		{
+			    			res.json({result: "DB save failure"});
+			    			return;
+			    		}
+			    		console.log("addGroupChat: user added successfully");
+				    	res.json({result: "Added successfully"});		
+		    	});
+    		} 
+    	})
+
+	});
+});
 
 
 router.post("/:list_id/addUserGroup", function(req, res){

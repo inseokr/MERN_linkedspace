@@ -77,6 +77,9 @@ export function MessageContextProvider(props) {
 
 
   const [currentChatPartyPicture, setCurrentChatPartyPicture] = useState("../assets/images/Chinh - Vy.jpg");
+
+
+  const [selectedChatList, setSelectedChatList] = useState([]);
   //console.log("chattingContextType="+chattingContextType);
   //console.log("childType="+childType);
   //console.log("childIndex="+childIndex);
@@ -168,6 +171,82 @@ export function MessageContextProvider(props) {
         console.log(err);
       });
   }
+
+  async function postSelectedContactList()
+  {
+
+    // DM case    
+    if(selectedChatList.length==1)
+    {
+      const post_url = '/listing/'+currentListing.listingType+'/'+currentListing._id+'/addUserGroup';
+      const data = {
+        friend: {id: selectedChatList[0].id, username: selectedChatList[0].username},
+        chattingType: chattingContextType,
+        childInfo: {type: childType, index: childIndex}
+      };
+
+      const result = await axios.post(post_url, data)
+        .then(result =>
+        {
+          // ID of chatting channel will be returned.
+          // update dmChannelContexts
+          //console.log("addContactList: result = " + result);
+          reloadChattingDbWithCurrentListing();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+    else
+    {
+      if(chattingContextType==0)
+      {
+        console.warn("Group chatting is not support for general chatting");
+        return;
+      }
+
+      let concatenatedFriendsString = "";
+      let friends = [];
+      let childInfo = {type: childType, index: childIndex};
+      let chattingType = chattingContextType;
+
+      // 1. go through friends list 
+      for(let index=0; index< selectedChatList.length; index++)
+      {
+        let friend = {id: selectedChatList[index].id, username: selectedChatList[index].username};
+        friends.push(friend);
+        let hypen = (index>=1)? "-": "";
+
+        concatenatedFriendsString = 
+          concatenatedFriendsString + hypen + selectedChatList[index].username;
+      }
+
+      const post_url = '/listing/'+currentListing.listingType+'/'+currentListing._id+'/addGroupChat';
+      let channel_id = (chattingContextType==1)? 
+                          currentListing._id + "-parent-"+ concatenatedFriendsString: 
+                          currentListing._id + "-child-" + childIndex + "-" + concatenatedFriendsString;
+      console.log(`addGroupChat: channel_id = ${channel_id}`);
+
+      const data = {
+        friends: friends,
+        chattingType: chattingType,
+        childInfo: childInfo,
+        channel_id: channel_id
+      }
+
+      const result = await axios.post(post_url, data)
+        .then(result =>
+        {
+          reloadChattingDbWithCurrentListing();
+        })
+        .catch(err => {
+          console.warn(err);
+        });
+    }
+
+  }
+
+
 
   // create or connect messaging socket
 //    if(sessionStorage.getItem('socketCreated')===null)
@@ -436,9 +515,9 @@ export function MessageContextProvider(props) {
     return dmChannel;
   }
 
-  function getListOfDmChannels()
+  function getListOfChatChannels()
   {
-
+    //console.log("getListOfChatChannels");
     // ISEO-TBD: child_listings available only for tenant listing now.
     const _listArray = [friendsList, 
                         (currentListing!=undefined)? 
@@ -447,7 +526,7 @@ export function MessageContextProvider(props) {
                           currentListing.child_listings[childIndex].shared_user_group:null
                       ];
 
-    let dmChannels = [];
+    let chatChannels = [];
 
     for(let i=0; i < _listArray[chattingContextType].length; i++)
     {
@@ -455,11 +534,64 @@ export function MessageContextProvider(props) {
 
       if(_currUser.username!=currentUser.username)
       {
-        dmChannels.push(getDmChannel(_currUser.username));
+        chatChannels.push(getDmChannel(_currUser.username));
       }
     }
 
-    return dmChannels;
+    // group channels
+    // 1. parent level
+    if(chattingContextType==1)
+    {
+      for(let lindex=0; 
+              lindex<currentListing.list_of_group_chats.length; 
+              lindex++)
+      {
+        let chatInfo = {channel_id: currentListing.list_of_group_chats[lindex].channel_id,
+                        members: []};
+
+        for(let findex=0; 
+                findex<currentListing.list_of_group_chats[findex].friend_list.length; 
+                findex++)
+        {
+          chatInfo.members.push(currentListing.list_of_group_chats[findex].friend_list[findex].username);
+        }
+
+        chatChannels.push(chatInfo);
+      }
+    }
+    else if(chattingContextType==2)
+    {
+
+      //console.log("childIndex = " + childIndex);
+
+      //console.log("currentListing=" + JSON.stringify(currentListing));
+
+      //console.log("list_of_group_chats.length = " + currentListing.child_listings[childIndex].list_of_group_chats.length);
+
+      for(let lindex=0; 
+              lindex<currentListing.child_listings[childIndex].list_of_group_chats.length; 
+              lindex++)
+      {
+        let chatInfo = {channel_id: currentListing.child_listings[childIndex].list_of_group_chats[lindex].channel_id,
+                        members: []};
+
+        //console.log("friend_list.length = " + currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length);
+
+        for(let findex=0; 
+                findex<currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length; 
+                findex++)
+        {
+          chatInfo.members.push(currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+        }
+
+        chatChannels.push(chatInfo);
+      }
+
+    }
+
+    console.log("chatChannels = " + JSON.stringify(chatChannels));
+
+    return chatChannels;
   }
 
   function getLastReadIndex(channel_id)
@@ -496,6 +628,8 @@ export function MessageContextProvider(props) {
                       timestamp: date.toDateString() + " " + date.toLocaleTimeString(),
                       datestamp: date.toDateString(),
                       direction: ((history[i].writer==currentUser.username) ? 0 : 1)};
+
+      //console.log("buildHistoryFromDb: writer = " + history[i].writer);
 
       reactChatHistory = [...reactChatHistory, curChat];
     }
@@ -599,20 +733,20 @@ export function MessageContextProvider(props) {
     // note: it will be good time to register the user again?
     chatSocket.send("CSC:Register:"+currentUser.username);
 
-   // console.log("ISEO: getListOfDmChannels");
-    let dmChannels = getListOfDmChannels();
+   // ISEO-TBD: need to load group chatting as well.
+    let chatChannel = getListOfChatChannels();
 
-   // console.log("number of channels = " + dmChannels.length);
+   // console.log("number of channels = " + chatChannel.length);
 
     // go through each channel and load chatting history if any.
     // we need to create the channel if it doesn't exist yet.
-    for(let i = 0; i<dmChannels.length; i++)
+    for(let i = 0; i<chatChannel.length; i++)
     {      
-      var data = { channel_id: dmChannels[i].channel_id, 
+      var data = { channel_id: chatChannel[i].channel_id, 
                    channel_type: 0, 
-                   members: dmChannels[i].members};
+                   members: chatChannel[i].members};
 
-      //console.log("creating channels = " + dmChannels[i].channel_id);
+      //console.log("creating channels = " + chatChannel[i].channel_id);
 
       // note: problem in handling the result!!
       const result = await axios.post('/chatting/new', data)
@@ -631,12 +765,11 @@ export function MessageContextProvider(props) {
                                   channel_type: result.data.channel.channel_type,
                                   last_read_index: getLastReadIndex(result.data.channel.channel_id)}
 
-              loadChatHistory(dmChannels[i].channel_id, result.data.channel.chat_history);
+              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
             }
             else
             {
-              //console.log(dmChannels[i].channel_id+"was newly created");
-              loadChatHistory(dmChannels[i].channel_id, []);
+              loadChatHistory(chatChannel[i].channel_id, []);
             }
         })
         .catch(err => console.warn(err));
@@ -654,6 +787,28 @@ export function MessageContextProvider(props) {
     switchChattingChannel(channelInfo, false);
   }
 
+
+
+  //const [selectedChatList, setSelectedChatList] = useState([]);
+
+  function addToChatList(_friend)
+  {
+    let tempList = [...selectedChatList];
+    tempList.push(_friend);
+    setSelectedChatList(tempList);
+  }
+
+  function removeFromChatList(_friend)
+  {
+    let tempList = selectedChatList.filter(chatParty => chatParty.username != _friend.username);
+    setSelectedChatList(tempList);
+  }
+
+  function resetChatList()
+  {
+    setSelectedChatList([]);
+  }
+
   useEffect(()=>{
     //console.log("ISEO: Loading chatting database... ");
     
@@ -665,8 +820,10 @@ export function MessageContextProvider(props) {
                                       switchDmByFriendName, switchChattingChannel, getDmChannelId, 
                                       numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, 
                                       checkNewlyLoaded , checkIfAnyNewMsgArrived, addContactList, getContactList,
-                                      setChattingContextType, chattingContextType, setChildType, setChildIndex, channelContextLength,
+                                      setChattingContextType, chattingContextType, setChildType, setChildIndex, childIndex, channelContextLength,
                                       currentChatPartyPicture, setCurrentChatPartyPicture,
+                                      addToChatList, removeFromChatList, resetChatList,
+                                      postSelectedContactList,
                                       reset}}>
       {props.children}
     </MessageContext.Provider>

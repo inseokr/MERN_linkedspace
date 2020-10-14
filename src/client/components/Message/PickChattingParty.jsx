@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import shortid from 'shortid';
 import '../../app.css';
 import './MessageStyle.css';
@@ -11,18 +11,22 @@ function PickChattingParty(props) {
 	let _group = props.group;
 	let _listingId = props.listing_id;
 
+	// <note> friendsList doesn't include current user.
 	const {friendsList, currentUser} = useContext(GlobalContext);
-	const {loadChattingDatabase, addContactList} = useContext(MessageContext);
+	const {loadChattingDatabase, removeFromChatList, addToChatList} = useContext(MessageContext);
 
-	const [] = useState();
-	
+	// this should be done just once
+	let initClickStates = new Array(friendsList.length).fill(0);
+
+	const [clickStates, setClickStates] = useState(initClickStates);
+
 	let Header =
 	<div className="boldHeader">
 	  <h4> Pick Chatting Party </h4>
 	  <hr/>
 	</div>;
 
-	async function handleClickFriend(_friend) {
+	async function handleClickFriend(_friend, index) {
 		// note:
 		// update chatting context with selected friends
 		// selected friend will be added to shared_user_group
@@ -33,14 +37,29 @@ function PickChattingParty(props) {
 		// ==> parent componet should update the current active listing information
 		// ==> and current friend will be added through a callback or handler defined in
 		// ==> MessageContext.
-		addContactList(_friend);
-		//loadChattingDatabase();
+		//addContactList(_friend);
+		let tempClickStates = [...clickStates];
+
+		if(clickStates[index]==1)
+		{
+			removeFromChatList(_friend);
+			tempClickStates[index] = 0;
+		} 
+		else
+		{
+			addToChatList(_friend);
+			tempClickStates[index] = 1;
+		}
+
+		setClickStates(tempClickStates);
 	}
 
-	function getFriend(_friend) {
+	function getFriend(_friend, index) {
+		let _style = (clickStates[index]==1) ? "friendWrapperClicked": "friendWrapper";
+
 		return (
 		  <div key={shortid.generate()}>
-		    <div className="friendWrapper" key={_friend.id} onClick={() => handleClickFriend(_friend)}>
+		    <div className={_style} key={_friend.id} onClick={() => handleClickFriend(_friend, index)}>
 		      <div>
 		        <img className="center rounded-circle imgCover" src={_friend.profile_picture} alt="myFriend" />
 		      </div>
@@ -56,33 +75,17 @@ function PickChattingParty(props) {
 		)
 	}
 
-	function checkGroup(name)
-	{
-		if(_group==undefined || _group.length==0) 
-		{
-			console.warn("no group is available yet in checkGroup function");
-			return false;
-		}
-
-		for(let index=0; index<_group.length; index++)
-		{
-			if(_group[index].username==name)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	function getListOfFriends() {
-	// go through the list of direct friends
-	return friendsList.map((friend => {
-	  // <note> need to skip friend in the shared_group
-	  if (friend.username !== currentUser.username) {
-	    return getFriend(friend);
-	  }
-	}));
+		// go through the list of direct friends
+		return friendsList.map(((friend, index) => {
+		    return getFriend(friend, index);
+		}));
 	}
+
+
+	useEffect(()=>{
+		console.log("PickChatParty: useEffect is called");
+	});
 
 	return (
 	<div className="container">

@@ -10,7 +10,7 @@ function ChattingMessageBox(props) {
         newMsgMarker = <hr className="newMessage" />;
     }
 
-    if (props.msg_direction==="0") {
+    if (props.msg_direction=="0") {
       return (
         <div className="ChattingMessageBoxWrapper AlignToLeft">
             <div className="ProfilePicture">

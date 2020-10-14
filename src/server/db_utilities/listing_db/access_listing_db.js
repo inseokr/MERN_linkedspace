@@ -3,9 +3,99 @@ var TenantRequest   = require("../../models/listing/tenant_request");
 var LandlordRequest = require("../../models/listing/landlord_request");
 var async           = require("async");
 const chatDbHandler = require('../chatting_db/access_chat_db');
+const userDbHandler = require('../user_db/access_user_db');
 var chatServer      = require('../../chatting_server');
 
- 
+
+function checkDuplicate(user_list, name)
+{
+  let bDuplicate = false;
+
+  if(user_list.length>=1)
+  {
+    bDuplicate = user_list.some(
+      _user => _user.username===name 
+      );
+  }
+
+  return bDuplicate;
+}
+
+// <note> only for tenant listing for now
+async function addToSharedUserGroup(listing, friend_name, type, child_index, bSave)
+{
+
+  return new Promise(resolve => {
+    userDbHandler.getUserByName(friend_name).then(async (_friend)=> {
+      if(_friend==null)
+      {
+        console.warn("Friend not found");
+        resolve(0);
+      }
+
+      // 1. check duplicate.
+      switch(type)
+      {
+        // parent
+        case 1: 
+          // find the ID of the friend
+          if(checkDuplicate(listing.shared_user_group, _friend.username)==true)
+          {
+            console.log("Friend already in the group");
+            resolve(0);
+          }
+          else
+          {
+            foundListing.shared_user_group.push(
+              {id: _friend._id, username: _friend.username,
+               profile_picture: _friend.profile_picture});
+          }
+          break;
+
+        // child
+        case 2:
+          if(checkDuplicate(listing.child_listings[child_index].shared_user_group, _friend.username)==true)
+          {
+            console.log("Duplicate found");
+            resolve(0);
+          }
+          else
+          {
+            listing.child_listings[child_index].shared_user_group.push(
+              {id: _friend._id, username: _friend.username,
+               profile_picture: _friend.profile_picture});
+          }
+          break;
+
+        default:
+          console.warn("Unknown chattingType");
+          resolve(0);
+      }
+
+      if(bSave==true)
+      {
+
+        listing.save((err) => {
+          if(err)
+          {
+            console.warn("DB save failure");
+            resolve(0);
+          }
+
+          console.log("ISEO: user added successfully");
+          resolve(1);
+        });
+      }
+      else
+      {
+        resolve(1);
+      }
+    });
+  });
+
+
+}
+
 function cleanChildListingFromParent(foundListing, child_listing_id, channel_id_prefix) 
 {
   // use filter to create a new array
@@ -145,4 +235,5 @@ module.exports = { cleanChildListingFromParent:      cleanChildListingFromParent
                    cleanAllChildListingsFromParent:  cleanAllChildListingsFromParent,
                    deleteChildListingFromAllParents: deleteChildListingFromAllParents,
                    getRequesterId:                   getRequesterId,
-                   getCoverPicture:                  getCoverPicture }
+                   getCoverPicture:                  getCoverPicture,
+                   addToSharedUserGroup:             addToSharedUserGroup}

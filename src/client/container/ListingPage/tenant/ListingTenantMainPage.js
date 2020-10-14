@@ -151,8 +151,8 @@ function ListingTenantMainPage(props) {
             );
         }
 
-        async function forward2friend(_this) {
-            const post_url = "/listing/tenant/"+_this.props.match.params.id+"/forward";
+        async function forward2friend() {
+            const post_url = "/listing/tenant/"+match.params.id+"/forward";
             await axios.post(post_url).then(result => {
                     console.log("result = " + result.data.result);
                     alert("Result = " + result.data.result);
@@ -168,7 +168,7 @@ function ListingTenantMainPage(props) {
                 <div className="d-flex justify-content-start">
                     <button className="btn btn-primary" onClick={() => copyCurrentUrl}>Copy link of this posting</button>
 
-                    <button className="btn btn-info" style={{marginLeft:"70px "} } onClick={() => forward2friend(this)}>Send listing to friends</button>
+                    <button className="btn btn-info" style={{marginLeft:"70px "} } onClick={() => forward2friend()}>Send listing to friends</button>
                     <Link to={"/listing/tenant/"+match.params.id+"/dashboard"}>
                         <button className="btn btn-danger" style={{marginLeft:"70px "}}>Dashboard</button>
                     </Link>

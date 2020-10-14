@@ -4,7 +4,7 @@ import './MessageStyle.css';
 import PickChattingParty from './PickChattingParty';
 import SimpleModal from '../Modal/SimpleModal';
 
-// import { MessageContext } from '../../contexts/MessageContext';
+import { MessageContext } from '../../contexts/MessageContext';
 // import { GlobalContext } from '../../contexts/GlobalContext';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
@@ -18,7 +18,8 @@ function clickHandler()
 function MessageEditorIcon(props) {
 
   const [modalShow, setModalShow] = useState(false);
-  // const {setChattingContextType, setChildType, childType, setChildIndex, childIndex, loadChattingDatabase} = useContext(MessageContext);
+  const {postSelectedContactList, resetChatList, resetloadChattingDatabase} = useContext(MessageContext);
+
   // const {currentUser} = useContext(GlobalContext);
   const {currentListing, currentChildIndex} = useContext(CurrentListingContext);
 
@@ -48,8 +49,9 @@ function MessageEditorIcon(props) {
     setModalShow(true);
   };
 
-  let handleClose = () => {
+  let handleClose = async () => {
     setModalShow(false);
+    postSelectedContactList().then(()=>{resetChatList();});
     // need to make it sure that the selected chatting party is shown in the contact list.
     onClickHandler();
   };
