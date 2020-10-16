@@ -186,7 +186,20 @@ function ChatContactList() {
 
     setClickStates([...contactClickStates]);
 
-    let channelInfo = {channelName: getChannelIdByIndex(index)};
+    let _members = [];
+    if(index<groupChatIndex)
+    {
+      _members.push(friendsList[index].username);
+    } 
+    else
+    {
+      for(let i=0; i<groupChats[index-groupChatIndex].friend_list.length; i++)
+      {
+        _members.push(groupChats[index-groupChatIndex].friend_list[i].username);
+      }
+    }
+
+    let channelInfo = {channelName: getChannelIdByIndex(index), members: _members};
 
     // We need to make it sure that loadChattingDatabase should be called in sequence.
     switchChattingChannel(channelInfo, true); // second parameter tells if loadChattingDatabase is needed
@@ -253,7 +266,7 @@ function ChatContactList() {
   useEffect(()=> {
     // ISEO: dmChannelContexts are being updated by loadChatHistory but somehow ChatContactList is not being reloaded even if dmChannelContexts are being updated....WHY!!
     console.log("ChatContactList:dmChannelContexts being updated with channel name = " + currChannelInfo.channelName);
-    clickDefaultContact();
+    //clickDefaultContact();
   },[dmChannelContexts]);
 
 

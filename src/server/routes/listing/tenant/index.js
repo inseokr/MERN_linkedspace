@@ -663,7 +663,7 @@ router.post("/addChild", function(req, res){
 			let _creatorOfChild  = {id: req.user._id, username: req.body.username, profile_picture: req.user.profile_picture};
 
 			child_listing.created_by.id = foundListing.requester.id;
-			child_listing.created_by.username = foundListing.requester.username;
+			child_listing.created_by.username = req.user.username;
 
 			child_listing.shared_user_group.push(_creatorOfParent);
 			child_listing.shared_user_group.push(_creatorOfChild);

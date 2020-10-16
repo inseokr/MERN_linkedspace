@@ -263,8 +263,8 @@
 	height:minmax(100px, 200px);
 	padding-top: 2px;
 	grid-template-areas:
-	" cn cn cn cn"
-	" cn cn cn cn "
+	" pp pp pp pp"
+	" pp pp pp pp "
 	" cs cs cs cs"
 	" cs cs cs cs"
 	" . ts ts ts";
@@ -283,8 +283,8 @@
 	padding-top: 2px;
 
 	grid-template-areas:
-	" cn cn cn cn"
-	" cn cn cn cn "
+	" pp pp pp pp"
+	" pp pp pp pp "
 	" cs cs cs cs"
 	" cs cs cs cs"
 	" . ts ts ts";

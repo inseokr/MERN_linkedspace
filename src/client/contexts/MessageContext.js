@@ -47,7 +47,7 @@ export function MessageContextProvider(props) {
   // ==> How to switch channel context through contact list?
 
 
-  const initialCurrChannelInfo = {channelName: "irene-dm-yoobin", dm: {name: "justin", distance: 1}};
+  const initialCurrChannelInfo = {channelName: "irene-dm-yoobin", members: ["justin"]};
 
   const [currChannelInfo, setCurrChannelInfo] = useState(initialCurrChannelInfo);
 
@@ -221,11 +221,17 @@ export function MessageContextProvider(props) {
           concatenatedFriendsString + hypen + selectedChatList[index].username;
       }
 
+      // need to myself as well
+      friends.push({id: currentUser._id, username: currentUser.username});
+      concatenatedFriendsString = 
+          concatenatedFriendsString + "-" + currentUser.username;
+
       const post_url = '/listing/'+currentListing.listingType+'/'+currentListing._id+'/addGroupChat';
       let channel_id = (chattingContextType==1)? 
                           currentListing._id + "-parent-"+ concatenatedFriendsString: 
-                          currentListing._id + "-child-" + childIndex + "-" + concatenatedFriendsString;
-      console.log(`addGroupChat: channel_id = ${channel_id}`);
+                          currentListing._id + "-child-" + currentListing.child_listings[childIndex].listing_id._id+ "-" + concatenatedFriendsString;
+
+      console.log("postSelectedContactList: currentListing.child_listings[childIndex].listing_id = " + JSON.stringify(currentListing.child_listings[childIndex].listing_id));
 
       const data = {
         friends: friends,
@@ -335,8 +341,6 @@ export function MessageContextProvider(props) {
         var data = { channel_id: channelInfo.channelName, 
                      lastReadIndex: dmChannelContexts[channelInfo.channelName].chattingHistory.length};
 
-        //console.log("pushCurrentChannelToDB: lastReadIndex = " + data.lastReadIndex);
-        
         const result = await axios.post('/chatting/update', data)
           .then(result => 
           {
@@ -355,9 +359,11 @@ export function MessageContextProvider(props) {
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase)
   {
-    //console.log("switchChattingChannel: channelInfo = " + JSON.stringify(channelInfo));
     // save some of information back to database
-    pushCurrentChannelToDB(channelInfo).then((result) => {setCurrChannelInfo(channelInfo);});
+    pushCurrentChannelToDB(channelInfo).then((result) => {
+
+      setCurrChannelInfo(channelInfo);
+    });
   }
 
   // direction: 
@@ -810,7 +816,7 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(()=>{
-    //console.log("ISEO: Loading chatting database... ");
+    console.log("ISEO: Loading chatting database... ");
     
     loadChattingDatabase();
   }, [currChannelInfo, channelContextLength]);

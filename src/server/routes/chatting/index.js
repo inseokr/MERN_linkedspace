@@ -32,7 +32,7 @@ module.exports = function(app) {
 	router.post("/update", function(req,res){
 		let result = {op_result: "sucess"};
 
-		console.log("chatting update called, channel = " + req.body.channel_id + "index= " + req.body.lastReadIndex);
+		console.log("chatting update called, channel = " + req.body.channel_id + " index= " + req.body.lastReadIndex);
 
 		// update channel DB in User DB
 		User.findOne({username: req.user.username}, function(err, user){

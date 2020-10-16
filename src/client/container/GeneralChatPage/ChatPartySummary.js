@@ -24,15 +24,38 @@ function ChatPartySummary() {
   }
 
 
+  function getChatPartySummary()
+  {
+    let _chatPartySummary = [];
+
+    if(currChannelInfo.members==undefined)
+    {
+      return ""
+    }
+
+    for(let i=0; i<currChannelInfo.members.length;i++)
+    {
+      _chatPartySummary.push(
+        <React.Fragment>
+          <div className="ChatPartyName">
+            {(currChannelInfo!==undefined&&currChannelInfo.members[i]!==undefined)? 
+              currChannelInfo.members[i]: ""}
+          </div>
+          <div className="SocialDistance">
+            {getSocialDistanceString(1)}
+          </div>
+          {(currChannelInfo!==undefined&&currChannelInfo.members[i]!==undefined)? <OnlineStatus />: ""}
+        </React.Fragment>
+        )
+    }
+
+    return _chatPartySummary;
+  }
+
+
   return (
     <React.Fragment>
-      <div className="ChatPartyName">
-        {(currChannelInfo!==undefined&&currChannelInfo.dm!==undefined)? currChannelInfo.dm.name: ""}
-      </div>
-      <div className="SocialDistance">
-        {(currChannelInfo!==undefined&&currChannelInfo.dm!==undefined)? getSocialDistanceString(currChannelInfo.dm.distance): ""}
-      </div>
-      {(currChannelInfo!==undefined&&currChannelInfo.dm!==undefined)? <OnlineStatus />: ""}
+      { getChatPartySummary() }
     </React.Fragment>
   );
 }

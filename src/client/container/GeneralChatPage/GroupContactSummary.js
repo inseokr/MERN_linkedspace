@@ -2,12 +2,16 @@ import React, {useContext} from 'react';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 import { MessageContext }  from '../../contexts/MessageContext';
+import { GlobalContext }  from '../../contexts/GlobalContext';
 
 // import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
+
+const maxPicturesToShow = 3;
 
 function GroupContactSummary(props) {
 
   const {setCurrentChatPartyPicture} = useContext(MessageContext);
+  const {getProfilePicture , currentUser} = useContext(GlobalContext);
 
   function handleClick(e) {
     e.preventDefault();
@@ -27,20 +31,49 @@ function GroupContactSummary(props) {
     return listOfClass;
   }
 
-  let stringOfFriendList = "";
-
-  for(let i=0; i<props.user.length; i++)
+  function getListOfFriendPicture(maxPictures)
   {
-    let friendSeparator = (i==0)? "": " ";
+    let listOfPictures = [];
+    let numOfPictures = 0;
+    let foundMyself = false;
+    for(let i=0; i<props.user.length && numOfPictures<maxPictures ;  i++)
+    {
+      // let's skip myself.
+      if(props.user[i].username==currentUser.username)
+      {
+        continue;
+      } 
 
-    stringOfFriendList = stringOfFriendList + friendSeparator + props.user[i].username;
-  } 
+      const additional_style = {
+        position: "relative",
+        width: "25%", // 25% percentage of what? Probably 25% percentage of parent width?
+      };
+
+      listOfPictures.push(
+          <img className="center rounded-circle" style = {additional_style} src={getProfilePicture(props.user[i].username)} alt="myFriend" />
+      );
+
+      numOfPictures++;
+    }
+
+    return listOfPictures;
+  }
+
+  // let's show 3 pictures for now.
+  let listOfPictures = getListOfFriendPicture(maxPicturesToShow);
+
+  // the number of friends not shown in the picture
+  // <note> we should exclude myself.
+  let numOfExtraFriends = ((props.user.length-1) > maxPicturesToShow)? "+" (props.user.length-maxPicturesToShow-1): "";
+
 
   return (
     <div className={getContactSummaryClassName()} onClick={handleClick}>
-      <div className="ContactName">
-        {stringOfFriendList}
+      <div className = "ProfilePicture">
+      {listOfPictures}
+      {numOfExtraFriends}
       </div>
+
       <div className="ChatTimeStamp">
         {props.summary.timestamp}
       </div>
