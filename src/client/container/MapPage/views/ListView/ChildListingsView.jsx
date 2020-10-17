@@ -17,12 +17,12 @@ import ChildListing from './ChildListing'
 	So we have to make it sure that reconstruction happens only if needed.
 	case1> new listing added
 	case2> upon click event
-	
+
 	<note> hook can't be called inside hook function.
 
-	Don’t call Hooks inside loops, conditions, or nested functions. 
-	Instead, always use Hooks at the top level of your React function. 
-	By following this rule, you ensure that Hooks are called in the same order each time a component renders. 
+	Don’t call Hooks inside loops, conditions, or nested functions.
+	Instead, always use Hooks at the top level of your React function.
+	By following this rule, you ensure that Hooks are called in the same order each time a component renders.
 	That’s what allows React to correctly preserve the state of Hooks between multiple useState and useEffect calls.
 	==> Better convert it into component.
 
@@ -35,19 +35,18 @@ export default class ChildListingsView extends Component {
 
 
 	// ISEO-TBD: this function can't be called inside useEffect as it's calling another hook.
-	buildChildListingViewsByHandleClick()
-	{
+	buildChildListingViewsByHandleClick() {
 		let _childListingViews = [];
-	  
+
 		this.context.currentListing.child_listings.map(function(childListing, index){
 		//console.log("childListingsViews: index="+index);
 		//console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
 		//console.log("childListingsViews: refs="+this.state.refs[index]);
 
 		_childListingViews.push(<div key={shortid.generate()}>
-									<ChildListing clickState={this.state.clickStates[index]} 
-								              clickHandler={this.handleClickState} 
-								              handleSelect={this.props.handleSelect} 
+									<ChildListing clickState={this.state.clickStates[index]}
+								              clickHandler={this.handleClickState}
+								              handleSelect={this.props.handleSelect}
 								              listing={childListing}
 								              index={index}
 								              messageClickHandler={this.props.messageClickHandler}
@@ -105,11 +104,11 @@ export default class ChildListingsView extends Component {
 		let _childListingViews = [];
 		let listClickStates = [...this.state.clickStates];
 		let initialLength = listClickStates.length;
-	  
+
 		this.context.currentListing.child_listings.map(function(childListing, index) {
 		console.log("childListingsViews: index="+index);
 
-		if(this.state.clickStates.length==0 && index==0) 
+		if(this.state.clickStates.length==0 && index==0)
 		{
 			listClickStates[index] = 1;
 		}
@@ -123,9 +122,9 @@ export default class ChildListingsView extends Component {
 
 		console.log("curRef=" + curRef);
 		_childListingViews.push(<div key={shortid.generate()}>
-									<ChildListing clickState={listClickStates[index]} 
-								              clickHandler={this.handleClickState} 
-								              handleSelect={this.props.handleSelect} 
+									<ChildListing clickState={listClickStates[index]}
+								              clickHandler={this.handleClickState}
+								              handleSelect={this.props.handleSelect}
 								              listing={childListing}
 								              index={index}
 								              messageClickHandler={this.props.messageClickHandler}
@@ -165,7 +164,7 @@ export default class ChildListingsView extends Component {
 	componentDidUpdate(previousProps, previousState, snapshot) {
 
 		this.handleClickFromMap(this.context.currentChildIndex);
-		
+
 		if(this.context.currentListing.child_listings.length!=this.state.childListingsViews.length)
 		{
 			this.buildChildListingViews();
