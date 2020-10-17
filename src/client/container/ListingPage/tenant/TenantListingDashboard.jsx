@@ -16,7 +16,6 @@ import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 
 function TenantListingDashBoard(props) {
-
   const [modalShow, setModalShow] = useState(false);
 
   const {mapLoaded, initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel} = useContext(ListingsContext);
@@ -80,10 +79,7 @@ function TenantListingDashBoard(props) {
 
           if (childListings.length > 0) {
             childListings.map((listing, index) => {
-
-              //console.log("listing="+JSON.stringify(listing));
-              let location = (listing.listing_type === "LandlordRequest")? listing.listing_id.rental_property_information.location: listing.listing_id.location;
-
+              const location = (listing.listing_type === "LandlordRequest")? listing.listing_id.rental_property_information.location: listing.listing_id.location;
               const address = location.street + " " +
                 location.city + " " +
                 location.state + " " +
@@ -95,13 +91,11 @@ function TenantListingDashBoard(props) {
                   if (response.status === "OK") {
                     const geometry = response.results[0].geometry;
                     const location = geometry.location;
-                    const imgSource = listing.listing_id.coverPhoto ? listing.listing_id.coverPhoto.path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+                    const imgSource = listing.listing_id.pictures.length > 0 ? listing.listing_id.pictures[0].path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
                     const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
 
                     marker.addListener("click", (clickedIndex=index) => {
-                      // update currentChildIndex if it's different
-                      if(clickedIndex!==currentChildIndex)
-                      {
+                      if(clickedIndex!==currentChildIndex) { // update currentChildIndex if it's different
                         setCurrentChildIndex(clickedIndex);
                       }
                     });
