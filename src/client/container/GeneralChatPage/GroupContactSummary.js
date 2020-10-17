@@ -1,4 +1,5 @@
 import React, {useContext} from 'react';
+import shortid from 'shortid';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 import { MessageContext }  from '../../contexts/MessageContext';
@@ -50,7 +51,7 @@ function GroupContactSummary(props) {
       };
 
       listOfPictures.push(
-          <img className="center rounded-circle" style = {additional_style} src={getProfilePicture(props.user[i].username)} alt="myFriend" />
+          <img key={shortid.generate()} className="center rounded-circle" style = {additional_style} src={getProfilePicture(props.user[i].username)} alt="myFriend" />
       );
 
       numOfPictures++;
