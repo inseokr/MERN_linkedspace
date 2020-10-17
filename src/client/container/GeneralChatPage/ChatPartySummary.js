@@ -3,6 +3,7 @@ import '../../app.css';
 import './GeneralChatMainPage.css'
 import OnlineStatus from "../../components/Message/OnlineStatus";
 import {MessageContext} from "../../contexts/MessageContext";
+import {GlobalContext} from "../../contexts/GlobalContext";
 
 
 // ISEO-TBD:
@@ -12,6 +13,7 @@ import {MessageContext} from "../../contexts/MessageContext";
 function ChatPartySummary() {
 
   let {currChannelInfo} = useContext(MessageContext);
+  let {currentUser} = useContext(GlobalContext);
 
   function getSocialDistanceString(distance) {
     switch(distance) {
@@ -35,6 +37,8 @@ function ChatPartySummary() {
 
     for(let i=0; i<currChannelInfo.members.length;i++)
     {
+      if(currentUser.username==currChannelInfo.members[i]) continue;
+      
       _chatPartySummary.push(
         <React.Fragment>
           <div className="ChatPartyName">

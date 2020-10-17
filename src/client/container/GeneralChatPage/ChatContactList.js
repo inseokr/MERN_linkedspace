@@ -24,42 +24,16 @@ function ChatContactList() {
     resetChatList,
     getDmChannelId} = useContext(MessageContext);
 
-  // starting index of group chat
-  const [groupChatIndex, setGroupChatIndex] = useState(-1);
-  const [clickStates, setClickStates] = useState([]);
-
-  let _groupChatIndex = -1;
-
+  let bFoundDefaultContact = false;
   // create initial state based on friendsList
   let list_of_group_chats = [];
+  let _groupChatIndex = -1;
 
-  const [groupChats, setGroupChats] = useState([]);
-
-  console.log("ChatContactList: currentListing = " + JSON.stringify(currentListing));
-
-  function  removeCurrentUserFromList(_list) {
-    if (_list==null) return null;
-
-    return _list.filter(function (_item) {
-      return _item.username !== currentUser.username;
-    });
-  }
-
-  let friendsList = removeCurrentUserFromList(getContactList());
-
-  if (friendsList==null) {
-    console.log("friendsList is not available yet.");
-    return (
-      <div/>
-    );
-  }
-
-  let bFoundDefaultContact = false;
 
   function getInitClickValue()
   {
-
     let initClickStates = [];
+    _groupChatIndex = -1;
 
     // ISEO-TBD:
     console.log("friendsList.length = " + friendsList.length);
@@ -68,6 +42,7 @@ function ChatContactList() {
       if (currChannelInfo.channelName!=null) switchChattingChannel({channelName: null});
     }
 
+    // <note> this should be done when there is a change in currChannelInfo.
     for (let i=0; i< friendsList.length; i++) {
       if (friendsList[i].username===currentUser.username) {
         console.log("Skipping it");
@@ -82,7 +57,6 @@ function ChatContactList() {
         } else {
           if (getDmChannelId(friendsList[i].username)===currChannelInfo.channelName) {
             console.log("found default contact!!!");
-
             bFoundDefaultContact = true;
             initClickStates.push(1);
           } else {
@@ -95,29 +69,8 @@ function ChatContactList() {
     // group chatting's supported only in the posting. not in general chatting.
     if(chattingContextType>=1)
     {
-      // It will store the starting index of group chat.
-      if(groupChatIndex==-1 || initClickStates.length!=groupChatIndex) 
-      {
-        setGroupChatIndex(initClickStates.length);
-      }
+      _groupChatIndex = initClickStates.length;
 
-      if(chattingContextType==1)
-      {
-        list_of_group_chats = currentListing.list_of_group_chats;
-      }
-      else
-      {
-        if(currentListing.child_listings[childIndex]!=undefined)
-        {
-          list_of_group_chats = currentListing.child_listings[childIndex].list_of_group_chats
-        }
-        else
-        {
-          list_of_group_chats = [];
-        }
-
-      }
-    
       if(list_of_group_chats.length>0)
       {
         for(let index=0; index<list_of_group_chats.length; index++)
@@ -142,27 +95,52 @@ function ChatContactList() {
     return initClickStates;
   }
 
-  // Now I know why!!!
-  // 1. this function component is loaded in the parent level
-  // 2. the same component is loaded in the child level
-  // <note> the previous states still there. 
-  // So we should make it sure that the states will be properly re-initialized.
-  console.log("clickStates=" + JSON.stringify(clickStates));
-  let initValue = getInitClickValue();
-  console.log("initValue.length = " + initValue.length);
-  console.log("groupChats.length=" + groupChats.length);
 
-  if(clickStates.length!=initValue.length)
-  {
-    setClickStates([...initValue]);
-    setGroupChats([...list_of_group_chats]);
+  function  removeCurrentUserFromList(_list) {
+    if (_list==null) return null;
+
+    return _list.filter(function (_item) {
+      return _item.username !== currentUser.username;
+    });
   }
+
+  let friendsList = removeCurrentUserFromList(getContactList());
+
+  if (friendsList==null) {
+    console.log("friendsList is not available yet.");
+    return (
+      <div/>
+    );
+  }
+
+  // 1. get the list_of_group_chats
+  if(chattingContextType>=1)
+  {
+    if(chattingContextType==1)
+    {
+      list_of_group_chats = currentListing.list_of_group_chats;
+    }
+    else
+    {
+      if(currentListing.child_listings[childIndex]!=undefined)
+      {
+        list_of_group_chats = currentListing.child_listings[childIndex].list_of_group_chats
+      }
+      else
+      {
+        list_of_group_chats = [];
+      }
+    }
+  }
+
+  const [clickStates, setClickStates] = useState(getInitClickValue());
+
 
   function getChannelIdByIndex(index)
   {
-    if(groupChatIndex!=-1 && index>=groupChatIndex)
+    if(_groupChatIndex!=-1 && index>=_groupChatIndex)
     {
-      return list_of_group_chats[index-groupChatIndex].channel_id;
+      return list_of_group_chats[index-_groupChatIndex].channel_id;
     }
     else
     {
@@ -173,6 +151,7 @@ function ChatContactList() {
   async function handleClickState(index) {
 
     console.log("handleClickState, index="+index);
+    console.log("handleClickState, _groupChatIndex="+_groupChatIndex);
 
     // update clickStates where the index is referring to
     let contactClickStates  = [...clickStates];
@@ -187,15 +166,19 @@ function ChatContactList() {
     setClickStates([...contactClickStates]);
 
     let _members = [];
-    if(index<groupChatIndex)
+
+    if(_groupChatIndex==-1 || index<_groupChatIndex)
     {
       _members.push(friendsList[index].username);
     } 
     else
     {
-      for(let i=0; i<groupChats[index-groupChatIndex].friend_list.length; i++)
+      if(_groupChatIndex!=-1)
       {
-        _members.push(groupChats[index-groupChatIndex].friend_list[i].username);
+        for(let i=0; i<list_of_group_chats[index-_groupChatIndex].friend_list.length; i++)
+        {
+          _members.push(list_of_group_chats[index-_groupChatIndex].friend_list[i].username);
+        }
       }
     }
 
@@ -218,7 +201,7 @@ function ChatContactList() {
 
     for (let i = 0; i<clickStates.length; i++) {
 
-      if((groupChatIndex!=-1 && i<groupChatIndex) && currentUser.username===friendsList[i].username)
+      if((_groupChatIndex!=-1 && i<_groupChatIndex) && currentUser.username===friendsList[i].username)
         continue;
 
       // construct channel specific information
@@ -236,7 +219,7 @@ function ChatContactList() {
                             timestamp:    isChatDefined(channel_name)? dmChannelContexts[channel_name].datestamp: null,
                             msg_summary:  isChatDefined(channel_name)? dmChannelContexts[channel_name].msg_summary:  ""};
       
-      if(groupChatIndex!=-1 && i<groupChatIndex || groupChatIndex==-1)
+      if(_groupChatIndex!=-1 && i<_groupChatIndex || _groupChatIndex==-1)
       {
         contacts.push(<div key={shortid.generate()}>
           <ContactSummary contactIndex={i} clickState={clickStates[i]} 
@@ -248,7 +231,7 @@ function ChatContactList() {
       {
         contacts.push(<div key={shortid.generate()}>
           <GroupContactSummary contactIndex={i} clickState={clickStates[i]} 
-                          clickHandler={handleClickState} user={groupChats[i-groupChatIndex].friend_list} summary={channelSummary} />
+                          clickHandler={handleClickState} user={list_of_group_chats[i-_groupChatIndex].friend_list} summary={channelSummary} />
         </div>);
       }
     }
@@ -265,13 +248,18 @@ function ChatContactList() {
 
   useEffect(()=> {
     // ISEO: dmChannelContexts are being updated by loadChatHistory but somehow ChatContactList is not being reloaded even if dmChannelContexts are being updated....WHY!!
-    console.log("ChatContactList:dmChannelContexts being updated with channel name = " + currChannelInfo.channelName);
-    //clickDefaultContact();
+    clickDefaultContact();
   },[dmChannelContexts]);
 
 
-  //ISEO-TBD: this may lead to infinite rendering
-  //clickDefaultContact();
+  useEffect(()=> {
+
+    // need to recreate the clickStates
+    setClickStates(getInitClickValue());    
+
+  }, [currentListing]);
+
+
   return (
     <div>
       {buildContacts()}

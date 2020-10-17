@@ -64,8 +64,7 @@ function GroupContactSummary(props) {
 
   // the number of friends not shown in the picture
   // <note> we should exclude myself.
-  let numOfExtraFriends = ((props.user.length-1) > maxPicturesToShow)? "+" (props.user.length-maxPicturesToShow-1): "";
-
+  let numOfExtraFriends = ((props.user.length-1) > maxPicturesToShow)? "+" + (props.user.length-maxPicturesToShow-1): "";
 
   return (
     <div className={getContactSummaryClassName()} onClick={handleClick}>
