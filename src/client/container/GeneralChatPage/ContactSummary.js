@@ -16,6 +16,7 @@ function ContactSummary(props) {
   }
 
   function getContactSummaryClassName() {
+    console.log("getContactSummaryClassName: props = " + JSON.stringify(props));
     let listOfClass = (props.clickState===0? "ContactSummary": "ContactSummaryClicked");
 
     if(props.contactIndex==0)

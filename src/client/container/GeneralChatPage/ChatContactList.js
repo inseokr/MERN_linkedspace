@@ -11,7 +11,7 @@ import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 function ChatContactList() {
 
-    console.log("!!!!!!! Creating ChatContactList !!!!!");
+    //console.log("!!!!!!! Creating ChatContactList !!!!!");
 
     const {currentUser} = useContext(GlobalContext);
     const {currentListing} = useContext(CurrentListingContext);
@@ -34,9 +34,9 @@ function ChatContactList() {
     {
         let initClickStates = [];
         _groupChatIndex = -1;
+        bFoundDefaultContact=false;
 
-        // ISEO-TBD:
-        console.log("friendsList.length = " + friendsList.length);
+        //console.log("getInitClickValue: called");
 
         if (friendsList.length===0) {
             if (currChannelInfo.channelName!=null) switchChattingChannel({channelName: null});
@@ -45,18 +45,21 @@ function ChatContactList() {
         // <note> this should be done when there is a change in currChannelInfo.
         for (let i=0; i< friendsList.length; i++) {
             if (friendsList[i].username===currentUser.username) {
-                console.log("Skipping it");
+                //console.log("Skipping it");
             } else {
-                console.log("ChatContactList: currChannelInfo.channelName = " + currChannelInfo.channelName);
-                console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
+                //console.log("ChatContactList: currChannelInfo.channelName = " + currChannelInfo.channelName);
+                //console.log("getDmChannelId = " + getDmChannelId(friendsList[i].username));
 
-                if (currChannelInfo.channelName==null && !bFoundDefaultContact) {
+                if (currChannelInfo.channelName==null && bFoundDefaultContact==false) {
                     switchChattingChannel({channelName: getDmChannelId(friendsList[i].username)});
                     bFoundDefaultContact = true;
                     initClickStates.push(1);
                 } else {
+
+                    //console.log("current channel name = "+ currChannelInfo.channelName);
+
                     if (getDmChannelId(friendsList[i].username)===currChannelInfo.channelName) {
-                        console.log("found default contact!!!");
+                        //console.log("found default contact!!!");
                         bFoundDefaultContact = true;
                         initClickStates.push(1);
                     } else {
@@ -71,7 +74,7 @@ function ChatContactList() {
         {
             _groupChatIndex = initClickStates.length;
 
-            if(list_of_group_chats && list_of_group_chats.length>0)
+            if(list_of_group_chats.length>0)
             {
                 for(let index=0; index<list_of_group_chats.length; index++)
                 {
@@ -81,7 +84,7 @@ function ChatContactList() {
                         initClickStates.push(1);
                     } else {
                         if (list_of_group_chats[index].channel_id===currChannelInfo.channelName) {
-                            console.log("found default contact!!!");
+                            //console.log("found default contact!!!");
                             bFoundDefaultContact = true;
                             initClickStates.push(1);
                         } else {
@@ -107,7 +110,7 @@ function ChatContactList() {
     let friendsList = removeCurrentUserFromList(getContactList());
 
     if (friendsList==null) {
-        console.log("friendsList is not available yet.");
+        //console.log("friendsList is not available yet.");
         return (
             <div/>
         );
@@ -150,8 +153,8 @@ function ChatContactList() {
 
     async function handleClickState(index) {
 
-        console.log("handleClickState, index="+index);
-        console.log("handleClickState, _groupChatIndex="+_groupChatIndex);
+        //console.log("handleClickState, index="+index);
+        //console.log("handleClickState, _groupChatIndex="+_groupChatIndex);
 
         // update clickStates where the index is referring to
         let contactClickStates  = [...clickStates];
@@ -197,7 +200,7 @@ function ChatContactList() {
     function buildContacts() {
         let contacts = [];
 
-        console.log("buildContacts: clickStates.length= " + clickStates.length);
+        //console.log("buildContacts: clickStates.length= " + clickStates.length);
 
         for (let i = 0; i<clickStates.length; i++) {
 
@@ -248,17 +251,29 @@ function ChatContactList() {
 
     useEffect(()=> {
         // ISEO: dmChannelContexts are being updated by loadChatHistory but somehow ChatContactList is not being reloaded even if dmChannelContexts are being updated....WHY!!
+        //console.log("ChatContactList: useEffect by dmChannelContexts");
         clickDefaultContact();
     },[dmChannelContexts]);
 
 
     useEffect(()=> {
-
+        //console.log("ChatContactList: useEffect by chattingContextType get init value again");
         // need to recreate the clickStates
-        setClickStates(getInitClickValue());
+        setClickStates(getInitClickValue(), ()=> {clickDefaultContact()});
+        //clickDefaultContact();
 
-    }, [currentListing]);
+    }, [chattingContextType, currChannelInfo]);
 
+    useEffect(()=> {
+
+        //console.log("ChatContactList: useEffect by clickStates");
+        //console.log("ChatContactList: useEffect by clickStates=" + JSON.stringify(clickStates));
+        clickDefaultContact();
+
+    }, [clickStates]);
+
+
+    //console.log("render: clickStates=" + JSON.stringify(clickStates));
 
     return (
         <div>
