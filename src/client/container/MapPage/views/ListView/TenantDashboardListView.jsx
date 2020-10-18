@@ -7,21 +7,22 @@ import {CurrentListingContext} from '../../../../contexts/CurrentListingContext'
 
 function TenantDashboardListView(props) {
 
-  const {currentListing} = useContext(CurrentListingContext);
-  const {toggle, mode} = props;
+    const {currentListing} = useContext(CurrentListingContext);
+    const {toggle, mode} = props;
 
-  return (
-    <div>
-      <Paper style={{maxHeight: "100vh", overflow: "auto"}}>
-        <List>
-              <div>
-                <Divider variant={"middle"}/>
-                <TenantListingComponent listing={currentListing} toggle={toggle} mode={mode} childSupported="true"/>
-              </div>
-        </List>
-      </Paper>
-    </div>
-  );
+    return (
+        <div>
+            {/*<Paper style={{maxHeight: "100vh", overflow: "auto"}}>*/}
+            <Paper>
+                <List>
+                    <div>
+                        <Divider variant={"middle"}/>
+                        <TenantListingComponent listing={currentListing} toggle={toggle} mode={mode} childSupported="true"/>
+                    </div>
+                </List>
+            </Paper>
+        </div>
+    );
 }
 
 export default TenantDashboardListView;
