@@ -87,16 +87,13 @@ var TenantRequestSchema = new mongoose.Schema({
     list_of_group_chats: [
       // the user in the first entry will be the creator for this group chat
       {
-        group_chat: 
-        {
-          channel_id: String,
-          friend_list: [
-            {
-              username: String,
-              profile_pictgure: String
-            }
-          ] 
-        }
+        channel_id: String,
+        friend_list: [
+          {
+            username: String,
+            profile_pictgure: String
+          }
+        ] 
       }
     ],
 

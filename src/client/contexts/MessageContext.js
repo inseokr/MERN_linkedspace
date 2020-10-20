@@ -108,7 +108,6 @@ export function MessageContextProvider(props) {
 
   function getContactList()
   {
-
       //console.log("ISEO-TBD: getContactList: chattingContextType %d, childType = %s, childIndex = %d ", chattingContextType, childType, childIndex );
       //console.log("currentListing = " + JSON.stringify(currentListing));
 
@@ -231,7 +230,7 @@ export function MessageContextProvider(props) {
                           currentListing._id + "-parent-"+ concatenatedFriendsString: 
                           currentListing._id + "-child-" + currentListing.child_listings[childIndex].listing_id._id+ "-" + concatenatedFriendsString;
 
-      console.log("postSelectedContactList: currentListing.child_listings[childIndex].listing_id = " + JSON.stringify(currentListing.child_listings[childIndex].listing_id));
+      //console.log("postSelectedContactList: currentListing.child_listings[childIndex].listing_id = " + JSON.stringify(currentListing.child_listings[childIndex].listing_id));
 
       const data = {
         friends: friends,
@@ -556,10 +555,10 @@ export function MessageContextProvider(props) {
                         members: []};
 
         for(let findex=0; 
-                findex<currentListing.list_of_group_chats[findex].friend_list.length; 
+                findex<currentListing.list_of_group_chats[lindex].friend_list.length; 
                 findex++)
         {
-          chatInfo.members.push(currentListing.list_of_group_chats[findex].friend_list[findex].username);
+          chatInfo.members.push(currentListing.list_of_group_chats[lindex].friend_list[findex].username);
         }
 
         chatChannels.push(chatInfo);
