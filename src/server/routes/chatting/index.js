@@ -22,7 +22,7 @@ module.exports = function(app) {
 		chatDbHandler.findChatChannel("iseo-dm-justin").then((channel) => {
 			if(channel!=null)
 			{
-				//console.log("channel found");
+				////console.log("channel found");
 				res.json(channel);
 				return;
 			}
@@ -32,14 +32,14 @@ module.exports = function(app) {
 	router.post("/update", function(req,res){
 		let result = {op_result: "sucess"};
 
-		console.log("chatting update called, channel = " + req.body.channel_id + " index= " + req.body.lastReadIndex);
+		//console.log("chatting update called, channel = " + req.body.channel_id + " index= " + req.body.lastReadIndex);
 
 		// update channel DB in User DB
 		User.findOne({username: req.user.username}, function(err, user){
 			if(err)
 			{
 				result = {op_result: "failed"};
-				console.log("User not found");
+				//console.log("User not found");
 				res.json(result);
 				return;
 			}
@@ -49,7 +49,7 @@ module.exports = function(app) {
 			user.chatting_channels.dm_channels.forEach((channel) => {
 				if(channel.name==req.body.channel_id)
 				{
-					console.log("Found channel and now the index is being udpated");
+					//console.log("Found channel and now the index is being udpated");
 					channel.lastReadIndex = req.body.lastReadIndex;
 					user.save();
 					res.json(result);
@@ -58,14 +58,19 @@ module.exports = function(app) {
 			});
 			} catch (err)
 			{
-				console.log("err="+err);
+				//console.log("err="+err);
 				return;			
 			}
 		});
 	});
 
 	router.post("/new", function(req, res){
+
+		// What if we're getting the new channel request even before it's saved in the database?
 	  	chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
+
+	  		//console.log("New channel: channel ID = " + req.body.channel_id);
+
 		    if(channel!=null)
 		    {
 		      let result = {bNewlyCreated: false, channel: channel};
@@ -96,33 +101,34 @@ module.exports = function(app) {
 		    let numberOfPushedMembers = 0;
 		    for (index = 0; index < req.body.members.length; index++)
 		    {
-		      //console.log("index = " + index);
-		      chatDbHandler.findChatPartyByName(req.body.members[index]).then((memberInfo) => {
+		      ////console.log("index = " + index);
+		      chatDbHandler.findChatPartyByName(req.body.members[index]).then(async (memberInfo) => {
 		            numberOfPushedMembers++;
 
-		            console.log(`adding ${JSON.stringify(memberInfo)} to the chatting channel`);
+		            //console.log(`adding ${JSON.stringify(memberInfo)} to the chatting channel`);
 
 		            newChannel.members.push(memberInfo);
 
 		            if(req.body.members.length==numberOfPushedMembers)
 		            {
-		              console.log("Saving it to the database"); 
-		              newChannel.save(function (err, product, numAffected) {
-		              	if(err)
-		              	{
-		              		console.log("newChannel.save failed with err = " + err);
-		              	}
-		              	chatDbHandler.addChannelToUser(newChannel);
-		              });
+
+						//console.log("Saving it to the database");
+						newChannel.save(function (err, product, numAffected) {
+							if(err)
+							{
+								//console.log("newChannel.save failed with err = " + err);
+							}
+							chatDbHandler.addChannelToUser(newChannel);
+							let result = {bNewlyCreated: true};
+
+							res.json(result);
+
+							//console.log("Channel just created");
+						});
 		            }
 		      });
 		    }
 
-		    let result = {bNewlyCreated: true};
-
-		    res.json(result);
-
-		    console.log("Channel just created");
 	  	});
 
 	});

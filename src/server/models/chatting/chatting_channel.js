@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 
 var ChattingChannelSchema = new mongoose.Schema({
 	
-	channel_id: String,
+	channel_id: { type: String, unique: true, required: true},
 
 	// 0: general channels, 1: Posting related channel
 	// <note> 3rd party posting could used as well, 
