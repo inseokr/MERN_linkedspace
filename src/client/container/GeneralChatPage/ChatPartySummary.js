@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import shortid from 'shortid';
 import '../../app.css';
 import './GeneralChatMainPage.css'
 import OnlineStatus from "../../components/Message/OnlineStatus";
@@ -40,7 +41,7 @@ function ChatPartySummary() {
       if(currentUser.username==currChannelInfo.members[i]) continue;
       
       _chatPartySummary.push(
-        <React.Fragment>
+        <React.Fragment key={shortid.generate()}>
           <div className="ChatPartyName">
             {(currChannelInfo!==undefined&&currChannelInfo.members[i]!==undefined)? 
               currChannelInfo.members[i]: ""}

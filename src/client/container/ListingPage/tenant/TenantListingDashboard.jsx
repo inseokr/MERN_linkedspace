@@ -95,16 +95,38 @@ function TenantListingDashBoard(props) {
                                     if (response.status === "OK") {
                                         const geometry = response.results[0].geometry;
                                         const location = geometry.location;
-                                        const imgSource = listing.listing_id.pictures.length > 0 ? listing.listing_id.pictures[0].path : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
-                                        const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
+                                        try
+                                        {
+                                            console.log("listing = " + JSON.stringify(listing));
 
-                                        marker.addListener("click", (clickedIndex=index) => {
-                                            if(clickedIndex!==currentChildIndex) { // update currentChildIndex if it's different
-                                                setCurrentChildIndex(clickedIndex);
+                                            let imgSource = "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+
+                                            if(listing.listing_type === "LandlordRequest")
+                                            {
+                                                if(listing.listing_id.pictures.length>0)
+                                                {
+                                                    imgSource = listing.listing_id.pictures[0].path;
+                                                }
                                             }
-                                        });
-                                        bounds.extend(location);
-                                        googleMap.fitBounds(bounds);
+                                            else
+                                            {
+                                                imgSource = listing.listing_id.coverPhoto.path;
+                                            }
+
+                                            const marker = createMarker(googleMap, location, imgSource, (index===currentChildIndex));
+
+                                            marker.addListener("click", (clickedIndex=index) => {
+                                                if(clickedIndex!==currentChildIndex) { // update currentChildIndex if it's different
+                                                    setCurrentChildIndex(clickedIndex);
+                                                }
+                                            });
+                                            bounds.extend(location);
+                                            googleMap.fitBounds(bounds);
+                                        }
+                                        catch (err)
+                                        {
+                                            console.warn("adding marker failed. error = " + err);
+                                        }
                                     }
                                 }
                             );
@@ -144,14 +166,16 @@ function TenantListingDashBoard(props) {
     return (
         <div>
             {mapLoaded ? (
-                <div>
+                <Grid component="main">
                     <CssBaseline />
                     <Box className="App" component="div" display="flex" flexDirection="column">
                         <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane}/>
-                        <Grid container>
+                        <Grid container alignContent="stretch">
                             <Grid item xs={6}>
                                 <FilterView/>
-                                <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode}/>
+                                <Grid item xs={12}>
+                                    <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode}/>
+                                </Grid>
                             </Grid>
                             <Grid className="map" item xs={6}>
                                 {rightPaneMode === "Map" ? (
@@ -170,7 +194,7 @@ function TenantListingDashBoard(props) {
                             </Grid>
                         </Grid>
                     </Box>
-                </div>
+                </Grid>
             ) : (<div>Loading...</div>)}
         </div>
     );

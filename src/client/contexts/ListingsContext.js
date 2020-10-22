@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import useToggleState from '../hooks/useToggleState';
 import createHTMLMapMarker from '../container/MapPage/views/MapView/createHTMLMapMarker';
+import {getGeometryFromSearchString} from './helper/helper';
 
 export const ListingsContext = createContext();
 
@@ -22,7 +23,7 @@ export function ListingsProvider(props) {
     const [date, setDate] = useState("");
 
     async function changeSearch(search) {
-        return getGeometryFromSearchString(search).then(
+        return getGeometryFromSearchString(search, GOOGLE_MAP_API_KEY).then(
             response => {
                 if (response.status === "OK") {
                     setSearch(search);
@@ -34,14 +35,6 @@ export function ListingsProvider(props) {
                 }
             }
         );
-    }
-
-    async function getGeometryFromSearchString(search) {
-        return await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + search + '&key=' + GOOGLE_MAP_API_KEY)
-            .then((response) => response.json())
-            .then((responseJson) => {
-                return responseJson;
-            });
     }
 
     function getBoundsZoomLevel(bounds, mapDim) {
@@ -133,7 +126,7 @@ export function ListingsProvider(props) {
         for (let i=0; i<listings.length; i++) {
             let location = listings[i].rental_property_information.location;
             let address = listings[i].rental_property_information.location.street + ", " + location.city + ", " + location.state + ", " + location.zipcode + ", " + location.country;
-            getGeometryFromSearchString(address).then(
+            getGeometryFromSearchString(address, GOOGLE_MAP_API_KEY).then(
                 response => {
                     let coordinates = response.results[0].geometry.location;
                     listings[i].rental_property_information.address = address;
@@ -212,7 +205,7 @@ export function ListingsProvider(props) {
 
     return (
         <ListingsContext.Provider value={{mapLoaded, initGoogleMap, createMarker, constructBounds, centerCoordinates, getGeometryFromSearchString, getBoundsZoomLevel,
-            setSearch, filteredListings, filterListingsBySearch, filterListingsByBounds, filterListings, center, zoom, search, places, price, date}}>
+            setSearch, filteredListings, filterListingsBySearch, filterListingsByBounds, filterListings, center, zoom, search, places, price, date, GOOGLE_MAP_API_KEY}}>
             {props.children}
         </ListingsContext.Provider>
     );

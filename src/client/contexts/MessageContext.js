@@ -35,7 +35,12 @@ export function MessageContextProvider(props) {
   // I introduced a context length instead.
   const [dmChannelContexts, setChannelContexts] = useState([]);
   const [channelContextLength, setChannelContextLength] = useState(0);
-  const [numOfMsgHistory, setNumOfMsgHistory] = useState(0);
+  
+  // ISEO-TBD:
+  // Very annoying issue with React. ChattingWindow doesn't re-render even if dmChannelContexts are changes.
+  // Not sure why it behaves this way. I decided to introduce a simple state variable to keep track of total number of message.
+  // ChattingWindow does render whenever the message counter increases even though the counter is not actually used in the page itself.
+  const [msgCounter, setMsgCounter] = useState(0);
   const [newMsgArrived, setNewMsgArrived] = useState(false);
 
   // channelType
@@ -92,7 +97,6 @@ export function MessageContextProvider(props) {
     //console.log("MessageContext: current channel name = " + currChannelInfo.channelName );
     setChannelContexts([]);
     setChannelContextLength(0);
-    setNumOfMsgHistory(0);
     setNewMsgArrived(false);
 
     //setCurrChannelInfo(initialCurrChannelInfo);
@@ -108,7 +112,6 @@ export function MessageContextProvider(props) {
 
   function getContactList()
   {
-
       //console.log("ISEO-TBD: getContactList: chattingContextType %d, childType = %s, childIndex = %d ", chattingContextType, childType, childIndex );
       //console.log("currentListing = " + JSON.stringify(currentListing));
 
@@ -231,7 +234,7 @@ export function MessageContextProvider(props) {
                           currentListing._id + "-parent-"+ concatenatedFriendsString: 
                           currentListing._id + "-child-" + currentListing.child_listings[childIndex].listing_id._id+ "-" + concatenatedFriendsString;
 
-      console.log("postSelectedContactList: currentListing.child_listings[childIndex].listing_id = " + JSON.stringify(currentListing.child_listings[childIndex].listing_id));
+      //console.log("postSelectedContactList: currentListing.child_listings[childIndex].listing_id = " + JSON.stringify(currentListing.child_listings[childIndex].listing_id));
 
       const data = {
         friends: friends,
@@ -319,7 +322,7 @@ export function MessageContextProvider(props) {
     return new Promise(async (resolve) => {
 
       // we don't update initial value;
-      if(numOfMsgHistory==0) resolve("no history");
+      //if(numOfMsgHistory==0) resolve("no history");
 
       // update last read index
       // note: What't the proper index value?
@@ -338,6 +341,11 @@ export function MessageContextProvider(props) {
 
       if(dmChannelContexts[channelInfo.channelName]!=undefined)
       {
+        if(dmChannelContexts[channelInfo.channelName].chattingHistory.length==0)
+        {
+          resolve("no history");
+        }
+
         var data = { channel_id: channelInfo.channelName, 
                      lastReadIndex: dmChannelContexts[channelInfo.channelName].chattingHistory.length};
 
@@ -361,7 +369,6 @@ export function MessageContextProvider(props) {
   {
     // save some of information back to database
     pushCurrentChannelToDB(channelInfo).then((result) => {
-
       setCurrChannelInfo(channelInfo);
     });
   }
@@ -406,7 +413,8 @@ export function MessageContextProvider(props) {
     channelContexts[channelName].datestamp = now.toDateString();
 
 
-    //console.log("current channel name= " + channelName);
+    //console.log("Send Chat Message: current channel name= " + channelName);
+    //console.log("Send Chat Message: msg= " + msg);
     //console.log("history length = " + channelContexts[channelName].chattingHistory.length);
 
     // set the global indicator as well.
@@ -416,8 +424,7 @@ export function MessageContextProvider(props) {
     }
 
     setChannelContexts(channelContexts);
-    setNumOfMsgHistory(chatHistory.length);
-
+    setMsgCounter(msgCounter+1);
     //console.log("current chat history = " + JSON.stringify(channelContexts[channelName].chattingHistory[chatHistory.length-1]));
   }
 
@@ -534,6 +541,8 @@ export function MessageContextProvider(props) {
 
     let chatChannels = [];
 
+    try 
+    {
     for(let i=0; i < _listArray[chattingContextType].length; i++)
     {
       let _currUser = _listArray[chattingContextType][i];
@@ -556,10 +565,10 @@ export function MessageContextProvider(props) {
                         members: []};
 
         for(let findex=0; 
-                findex<currentListing.list_of_group_chats[findex].friend_list.length; 
+                findex<currentListing.list_of_group_chats[lindex].friend_list.length; 
                 findex++)
         {
-          chatInfo.members.push(currentListing.list_of_group_chats[findex].friend_list[findex].username);
+          chatInfo.members.push(currentListing.list_of_group_chats[lindex].friend_list[findex].username);
         }
 
         chatChannels.push(chatInfo);
@@ -594,6 +603,11 @@ export function MessageContextProvider(props) {
       }
 
     }
+  }
+  catch(err)
+  {
+    console.warn(err);
+  }
 
     console.log("chatChannels = " + JSON.stringify(chatChannels));
 
@@ -716,7 +730,6 @@ export function MessageContextProvider(props) {
     dmChannelContextArray[channel_id] = dmChannel;
 
     setChannelContexts(dmChannelContextArray);
-    setNumOfMsgHistory(dmChannelContexts[channel_id].chattingHistory.length);
     setChannelContextLength(Object.keys(dmChannelContextArray).length);
   }
 
@@ -824,13 +837,13 @@ export function MessageContextProvider(props) {
   return (
     <MessageContext.Provider value={{ currChannelInfo, dmChannelContexts, getLastReadIndex, 
                                       switchDmByFriendName, switchChattingChannel, getDmChannelId, 
-                                      numOfMsgHistory, getChattingHistory, updateChatHistory, loadChattingDatabase, 
+                                      getChattingHistory, updateChatHistory, loadChattingDatabase, 
                                       checkNewlyLoaded , checkIfAnyNewMsgArrived, addContactList, getContactList,
                                       setChattingContextType, chattingContextType, setChildType, setChildIndex, childIndex, channelContextLength,
                                       currentChatPartyPicture, setCurrentChatPartyPicture,
                                       addToChatList, removeFromChatList, resetChatList,
                                       postSelectedContactList,
-                                      reset}}>
+                                      reset, msgCounter}}>
       {props.children}
     </MessageContext.Provider>
   );

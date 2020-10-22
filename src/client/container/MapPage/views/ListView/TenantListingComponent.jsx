@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -73,6 +73,8 @@ function TenantListingComponent(props) {
             return;
         }
 
+        console.log("removeChildListing");
+
         // post to DB as well
         const data = {parent_listing_id: listing._id,
             child_listing_id:  childListing._id,
@@ -80,9 +82,10 @@ function TenantListingComponent(props) {
             listing_type: childListing.listingType};
 
         const result = await axios.post('/listing/tenant/removeChild', data)
-            .then(result => {
+            .then(async (result) => {
                 console.log("removeChildListing result = " + result);
                 fetchCurrentListing(currentListing._id, "tenant");
+                handleParentOnClick();
             })
             .catch(err => console.log(err));
 
@@ -100,12 +103,16 @@ function TenantListingComponent(props) {
         setIndex(e);
     };
 
-    const handleParentOnClock = (e) => {
+    // ISEO-TBD: dang... this may cause a problem during reloading of the page.
+    const handleParentOnClick = (e) => {
+
+        console.log("handleParentOnClick:chattingContextType= "+chattingContextType);
         if (chattingContextType!==MSG_CHANNEL_TYPE_LISTING_PARENT) {
+            console.log("setting chatting context type and toggle");
             setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
+            toggle(true);
         }
         // need to reload the message window...
-        toggle(true);
     };
 
     let listingControl = {add: addChildListing, remove: removeChildListing};
@@ -124,7 +131,18 @@ function TenantListingComponent(props) {
         )
     }
 
-    console.log("l i s t i n g", listing);
+
+    useEffect(() => {
+        // It's needed to initiate the context switching of messaging window.
+        /*if(listing.child_listings.length==0)
+        {
+           console.log("Clicking parent,  chattingContextType = " + chattingContextType);
+           if (chattingContextType!==MSG_CHANNEL_TYPE_LISTING_PARENT) {
+               handleParentOnClick();
+           }
+        }*/ 
+
+    },[listing]);
 
     return (
         <div>
@@ -142,7 +160,7 @@ function TenantListingComponent(props) {
                         </Carousel>
                     </Grid>
                     <Grid item xs={8}>
-                        <Paper className={"description"} onClick={handleParentOnClock} >
+                        <Paper className={"description"} onClick={handleParentOnClick} >
                             <Typography className={"description__address"} color={"textSecondary"} gutterBottom>
                                 Preferred location: {preferredLocation}
                             </Typography>

@@ -48,7 +48,7 @@ router.post("/new", function(req, res){
         newListing.save(function(err){
 
         if(err) {
-        	console.log("New Listing Save Failure");
+        	console.warn("New Listing Save Failure");
         	res.render("/");
         }
 
@@ -160,7 +160,7 @@ router.put("/:list_id", function(req, res){
 										// ISEO: it will be successfull even if there is no record found with given condition!!
 										listOfRoomMate[roommate_idx] = {id:tempUser[0]._id, username: roommate_id};
 										//console.log("roomMate=" + roomMate);
-										console.log("listOfRoomMate[roommate_idx]" + listOfRoomMate[roommate_idx]);
+										//console.log("listOfRoomMate[roommate_idx]" + listOfRoomMate[roommate_idx]);
 										userFound = true;
 
 
@@ -289,7 +289,7 @@ router.get("/show", function(req, res){
 
 router.get("/:list_id/fetch",  function(req, res){
 
-	console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
+	//console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
 	//TenantRequest.findById(req.params.list_id).populate({path: 'child_listings.listing_id', model: '_3rdPartyListing'}).exec(function(err, foundListing){
 	TenantRequest.findById(req.params.list_id, async function(err, foundListing){
@@ -311,12 +311,12 @@ router.get("/:list_id/fetch",  function(req, res){
 				foundListing.child_listings.forEach(async (child, index, array) => {
 					let pathToPopulate = 'child_listings.'+index+".listing_id";
 
-					console.log("child listing reference = " + child.listing_type);
+					//console.log("child listing reference = " + child.listing_type);
 
 					await foundListing.populate({path: pathToPopulate, model: child.listing_type}).execPopulate();
 					foundListing.populated(pathToPopulate);
-					console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
-					console.log("listing: index =  " + index);
+					//console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
+					//console.log("listing: index =  " + index);
 					//console.log("foundListing = " + JSON.stringify(foundListing.child_listings[index].listing_id));
 					if(++numberOfPopulatedChildListing==array.length) resolve();
 				});
@@ -409,8 +409,8 @@ router.post("/:list_id/addGroupChat", function(req, res){
     		// let's update list_of_group_chats now
     		let userInfo = {username: _friend.username};
 
-    		console.log("numOfFriendsProcessed="+numOfFriendsProcessed);
-    		console.log("friends.length="+friends.length);
+    		//console.log("numOfFriendsProcessed="+numOfFriendsProcessed);
+    		//console.log("friends.length="+friends.length);
 
     		group_chat.friend_list.push(userInfo);
     		++numOfFriendsProcessed;
@@ -419,16 +419,17 @@ router.post("/:list_id/addGroupChat", function(req, res){
     		{
 		    	if(chattingType==1)
 		    	{
-			    	foundListing.list_of_group_chats.push(group_chat);
+		    		foundListing.list_of_group_chats.push(group_chat);
+			    	//console.log("group_chat = " + JSON.stringify(group_chat));
 		    	}
 		    	else
 		    	{
 			    	foundListing.child_listings[childInfo.index].list_of_group_chats.push(group_chat);
-			    	console.log("group_chat = " + JSON.stringify(group_chat));
-			    	console.log("index = " + childInfo.index);
+			    	//console.log("group_chat = " + JSON.stringify(group_chat));
+			    	//console.log("index = " + childInfo.index);
 		    	}
 
-		    	console.log("group_chat = " + JSON.stringify(foundListing.child_listings[childInfo.index].list_of_group_chats));
+		    	//console.log("group_chat = " + JSON.stringify(foundListing.child_listings[childInfo.index].list_of_group_chats));
 
 		    	foundListing.save((err) => {
 			    		if(err)
@@ -436,7 +437,8 @@ router.post("/:list_id/addGroupChat", function(req, res){
 			    			res.json({result: "DB save failure"});
 			    			return;
 			    		}
-			    		console.log("addGroupChat: user added successfully");
+			    		//console.log("addGroupChat: user added successfully");
+			    		//console.log("addGroupChat: list_of_group_chats = " + JSON.stringify(foundListing.list_of_group_chats));
 				    	res.json({result: "Added successfully"});		
 		    	});
     		} 
@@ -474,8 +476,8 @@ router.post("/:list_id/addUserGroup", function(req, res){
     	let childInfo    = req.body.childInfo;
     	let friend       = req.body.friend;
 
-    	console.log("friend = " + JSON.stringify(friend));
-    	console.log("userDbHandler = " + JSON.stringify(userDbHandler));
+    	//console.log("friend = " + JSON.stringify(friend));
+    	//console.log("userDbHandler = " + JSON.stringify(userDbHandler));
 
     	userDbHandler.getUserByName(friend.username).then((_friend)=> {
     		if(_friend==null)
@@ -523,7 +525,7 @@ router.post("/:list_id/addUserGroup", function(req, res){
 	    			res.json({result: "DB save failure"});
 	    			return;
 	    		}
-	    		console.log("ISEO: user added successfully");
+	    		//console.log("ISEO: user added successfully");
 		    	res.json({result: "Added successfully"});
 	    	});
 	    });
@@ -565,7 +567,7 @@ router.delete("/:list_id", function(req, res){
 
 router.get("/:list_id/show/:filename", function(req, res){
 	var fileName = req.params.filename;
- 	console.log("received file name=" + fileName)
+ 	//console.log("received file name=" + fileName)
   	res.sendFile(path.join(__dirname, `../../../public/user_resources/pictures/tenant/${fileName}`));
 });
 
@@ -574,20 +576,20 @@ router.get("/:list_id/show/:filename", function(req, res){
 // <img src="Peter.jpg">
 router.get("/:list_id/:filename", function(req, res){
 	var fileName = req.params.filename;
- 	console.log("received file name=" + fileName)
+ 	//console.log("received file name=" + fileName)
   	res.sendFile(path.join(__dirname, `../../../public/user_resources/pictures/${fileName}`));
 });
 
 
 router.get("/:filename", function(req, res){
 	var fileName = req.params.filename;
- 	console.log("received file name=" + fileName)
+ 	//console.log("received file name=" + fileName)
   	res.sendFile(path.join(__dirname, `../../../public/user_resources/pictures/${fileName}`));
 });
 
 router.post("/addChild", function(req, res){
 
-	console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
+	//console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
 	TenantRequest.findById(req.body.parent_listing_id).populate('requester.id').exec(function(err, foundListing){
 		
@@ -598,7 +600,7 @@ router.post("/addChild", function(req, res){
 			return;
 		}
 
-		console.log("listing  found");
+		//console.log("listing  found");
 
 		let listing_type = (req.body.listing_type=="_3rdparty") ? "_3rdPartyListing":  "LandlordRequest";
 
