@@ -33,7 +33,7 @@ var UserSchema = new mongoose.Schema({
 	    			type: mongoose.Schema.Types.ObjectId,
 	    			ref: "ChattingChannel"
 	    		},
-	    		name: String,
+	    		name: { type: String, unique: true},
 	    		lastReadIndex: { type: Number, default: 0 } 
 	    	}
     	],

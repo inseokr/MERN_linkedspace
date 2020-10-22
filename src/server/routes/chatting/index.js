@@ -116,8 +116,12 @@ module.exports = function(app) {
 						newChannel.save(function (err, product, numAffected) {
 							if(err)
 							{
-								//console.log("newChannel.save failed with err = " + err);
+								console.warn("newChannel.save failed with err = " + err);
+								let result = {bNewlyCreated: false, channel: channel};
+								res.json(result);
+								return;
 							}
+							
 							chatDbHandler.addChannelToUser(newChannel);
 							let result = {bNewlyCreated: true};
 

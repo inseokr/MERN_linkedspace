@@ -13,12 +13,12 @@ function ChattingWindow() {
 
   const messagesEndRef = useRef(null);
 
-  const {numOfMsgHistory, getChattingHistory, getLastReadIndex , currentChatPartyPicture} = useContext(MessageContext);
+  const {currChannelInfo, msgCounter, dmChannelContexts, getChattingHistory, getLastReadIndex , currentChatPartyPicture} = useContext(MessageContext);
   const {getProfilePicture} = useContext(GlobalContext);
 
   //const [numOfHistory, setNumOfHistory] = useState(0);
 
-  ////console.log("loading Chatting Window");
+  //console.log("loading Chatting Window");
 
   const scrollToBottom = () => {
 
@@ -26,12 +26,6 @@ function ChattingWindow() {
 
     if (messagesEndRef.current!==undefined && messagesEndRef.current!=null) {
       messagesEndRef.current.scrollIntoView({block: "end", inline: "nearest"});
-
-      // smooth option won't be used to load the first history.
-      if (numOfMsgHistory>0) {
-        //console.log("changing behavior to smooth");
-        //messagesEndRef.current.scrollIntoView({behavior: "smooth"});
-      }
     }
   };
 
@@ -44,8 +38,8 @@ function ChattingWindow() {
     // direction: 0(my own message), 1(from others)
     // <note> not sure if we should rely on currentChatPartyPicture
     // getProfilePicture may return profile picture of friends?
-    console.log("getCurMessageBox: direction = " + chat.direction);
-    console.log("getCurMessageBox: username = " + chat.username);
+    //console.log("getCurMessageBox: direction = " + chat.direction);
+    //console.log("getCurMessageBox: username = " + chat.username);
     //let profilePicture = (chat.direction==0)? getProfilePicture(chat.username): currentChatPartyPicture;
     let profilePicture = getProfilePicture(chat.username);
 
@@ -66,20 +60,27 @@ function ChattingWindow() {
     let chatHistory   = getChattingHistory();
     let lastReadIndex = getLastReadIndex("");
     let output        = [];
-    ////console.log("getChatHistory: chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
+    //console.log("getChatHistory: chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
 
     let newMsgMarked = false;
 
-    for (let index=0; index<chatHistory.length; index++) {
-      let newMsgFlag = false;
+    try
+    {
+      for (let index=0; index<chatHistory.length; index++) {
+        let newMsgFlag = false;
 
-      if(!newMsgMarked) {
-        if (index>=lastReadIndex && (chatHistory[index].direction === 1)) {
-          newMsgFlag = true;
-          newMsgMarked = true;
+        if(!newMsgMarked) {
+          if (index>=lastReadIndex && (chatHistory[index].direction === 1)) {
+            newMsgFlag = true;
+            newMsgMarked = true;
+          }
         }
+        output = [...output, getCurMessageBox(chatHistory[index], newMsgFlag)];
       }
-      output = [...output, getCurMessageBox(chatHistory[index], newMsgFlag)];
+    } 
+    catch(err)
+    {
+      console.warn("err=" + err);
     }
 
     return output;
@@ -94,7 +95,7 @@ function ChattingWindow() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [numOfMsgHistory]);
+  }, [dmChannelContexts]);
 
   function triggerScroll() {
     // ISEO-TBD: It's very interesting bug, but I should re-schedule the scrollToBottom with some delay.
@@ -106,6 +107,7 @@ function ChattingWindow() {
 
     return "";
   }
+
   return (
     <div>
       {loadChattingHistory()}
