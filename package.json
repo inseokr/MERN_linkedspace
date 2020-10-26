@@ -1,6 +1,9 @@
 {
   "name": "linkedspaces",
-  "version": "12.18.4",
+  "version": "1.0.0",
+  "engines": {
+    "node": "12.18.4"
+  },
   "description": "Boilerplate to build a full stack web application using React, Node.js, Express and Webpack.",
   "main": "src/server/index.js",
   "scripts": {
