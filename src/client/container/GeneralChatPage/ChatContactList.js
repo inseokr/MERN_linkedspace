@@ -117,21 +117,30 @@ function ChatContactList () {
         };
 
         let _members = [];
+        let bPartOfGroupChat = false;
 
         for(let j=0; j<list_of_group_chats[i].friend_list.length;j++)
         {
+          if(list_of_group_chats[i].friend_list[j].username==currentUser.username)
+          {
+            bPartOfGroupChat = true;
+          }
           _members.push(list_of_group_chats[i].friend_list[j].username);
         }
-        _contactState.channelInfo.members = [..._members];
 
-        if(currChannelInfo.channelName==_contactState.channelInfo.channelName)
+        if(bPartOfGroupChat==true)
         {
-          _contactState.active = 1;
-          bFoundDefaultContact = true;
-          _currentActiveIndex = i + _numOfDmChannels;
-        }
+          _contactState.channelInfo.members = [..._members];
 
-        _contactStates.push(_contactState);
+          if(currChannelInfo.channelName==_contactState.channelInfo.channelName)
+          {
+            _contactState.active = 1;
+            bFoundDefaultContact = true;
+            _currentActiveIndex = i + _numOfDmChannels;
+          }
+
+          _contactStates.push(_contactState);
+        }
       } 
     }
 
