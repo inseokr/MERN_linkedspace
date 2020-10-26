@@ -63,99 +63,104 @@ function ChatContactList () {
 
     //console.log.log("adjustedFriendsList: length = " + adjustedFriendsList.length);
 
-    // 1. process DM
-    for (let i=0; i<adjustedFriendsList.length; i++)
-    {
-      let _contactState = {
-        active: 0, 
-        type: "dm", 
-        userList: adjustedFriendsList[i],
-        channelInfo: 
-        {
-          channelName: getDmChannelId(adjustedFriendsList[i].username),
-          members: []
-        }
-      };
-
-      _contactState.channelInfo.members.push(adjustedFriendsList[i].username);
-
-      if(currChannelInfo.channelName==_contactState.channelInfo.channelName)
-      {
-        _contactState.active = 1;
-        bFoundDefaultContact = true;
-        _currentActiveIndex = i;
-        //switchChattingChannel(_contactState.channelInfo, true); 
-      }
-
-      _contactStates.push(_contactState);
-    }
-
-    _numOfDmChannels = _contactStates.length;
-
-    // 2. processs group chatting channel
-    // <note> group chatting's supported only in the posting. not in general chatting.
-    if(chattingContextType>=1)
-    {
-      let list_of_group_chats = 
-        (chattingContextType==1) ? 
-          currentListing.list_of_group_chats:
-          (currentListing.child_listings[childIndex]!=undefined) ?
-            currentListing.child_listings[childIndex].list_of_group_chats:
-            [];
-
-      //console.log.log("list_of_group_chats.length =  " + list_of_group_chats.length);
-      for(let i=0; i<list_of_group_chats.length; i++)
+    try {
+      // 1. process DM
+      for (let i=0; i<adjustedFriendsList.length; i++)
       {
         let _contactState = {
           active: 0, 
-          type: "group", 
-          userList: list_of_group_chats[i].friend_list,
+          type: "dm", 
+          userList: adjustedFriendsList[i],
           channelInfo: 
           {
-            channelName: list_of_group_chats[i].channel_id
+            channelName: getDmChannelId(adjustedFriendsList[i].username),
+            members: []
           }
         };
 
-        let _members = [];
-        let bPartOfGroupChat = false;
+        _contactState.channelInfo.members.push(adjustedFriendsList[i].username);
 
-        for(let j=0; j<list_of_group_chats[i].friend_list.length;j++)
+        if(currChannelInfo.channelName==_contactState.channelInfo.channelName)
         {
-          if(list_of_group_chats[i].friend_list[j].username==currentUser.username)
-          {
-            bPartOfGroupChat = true;
-          }
-          _members.push(list_of_group_chats[i].friend_list[j].username);
+          _contactState.active = 1;
+          bFoundDefaultContact = true;
+          _currentActiveIndex = i;
+          //switchChattingChannel(_contactState.channelInfo, true); 
         }
 
-        if(bPartOfGroupChat==true)
-        {
-          _contactState.channelInfo.members = [..._members];
+        _contactStates.push(_contactState);
+      }
 
-          if(currChannelInfo.channelName==_contactState.channelInfo.channelName)
+      _numOfDmChannels = _contactStates.length;
+
+      // 2. processs group chatting channel
+      // <note> group chatting's supported only in the posting. not in general chatting.
+      if(chattingContextType>=1)
+      {
+        let list_of_group_chats = 
+          (chattingContextType==1) ? 
+            currentListing.list_of_group_chats:
+            (currentListing.child_listings[childIndex]!=undefined) ?
+              currentListing.child_listings[childIndex].list_of_group_chats:
+              [];
+
+        //console.log.log("list_of_group_chats.length =  " + list_of_group_chats.length);
+        for(let i=0; i<list_of_group_chats.length; i++)
+        {
+          let _contactState = {
+            active: 0, 
+            type: "group", 
+            userList: list_of_group_chats[i].friend_list,
+            channelInfo: 
+            {
+              channelName: list_of_group_chats[i].channel_id
+            }
+          };
+
+          let _members = [];
+          let bPartOfGroupChat = false;
+
+          for(let j=0; j<list_of_group_chats[i].friend_list.length;j++)
           {
-            _contactState.active = 1;
-            bFoundDefaultContact = true;
-            _currentActiveIndex = i + _numOfDmChannels;
+            if(list_of_group_chats[i].friend_list[j].username==currentUser.username)
+            {
+              bPartOfGroupChat = true;
+            }
+            _members.push(list_of_group_chats[i].friend_list[j].username);
           }
 
-          _contactStates.push(_contactState);
-        }
-      } 
-    }
+          if(bPartOfGroupChat==true)
+          {
+            _contactState.channelInfo.members = [..._members];
 
-    if(bFoundDefaultContact==false)
-    {
-      // let's make the last item active if there is no previous active channel
-      loadChattingDatabase();
-    }
+            if(currChannelInfo.channelName==_contactState.channelInfo.channelName)
+            {
+              _contactState.active = 1;
+              bFoundDefaultContact = true;
+              _currentActiveIndex = i + _numOfDmChannels;
+            }
 
-    // check if any new chattig channel added
-    // we will active the newly added chatting channel if so.
-    if(contactStates!=undefined && _contactStates.length!=contactStates.length)
+            _contactStates.push(_contactState);
+          }
+        } 
+      }
+
+      if(bFoundDefaultContact==false)
+      {
+        // let's make the last item active if there is no previous active channel
+        loadChattingDatabase();
+      }
+
+      // check if any new chattig channel added
+      // we will active the newly added chatting channel if so.
+      if(contactStates!=undefined && _contactStates.length!=contactStates.length)
+      {
+        //console.log.log(" New Member added!!!");
+        _contactStates[_currentActiveIndex].active = 0;
+      }
+    } catch(err)
     {
-      //console.log.log(" New Member added!!!");
-      _contactStates[_currentActiveIndex].active = 0;
+      console.warn("buildContactStates: error = " + err);
     }
 
     //console.log.log("total entries = " + _contactStates.length);
@@ -168,21 +173,28 @@ function ChatContactList () {
   const [contactStates, setContactStates] = useState(buildContactStates());
 
   async function handleClickState(index) {
-    // update contactStates where the index is referring to
-    let _newContactStates  = [...contactStates];
 
-    // update click state(active)
-    for (let i=0; i< contactStates.length; i++) {
-      _newContactStates[i].active = 0;
+    try
+    {
+      // update contactStates where the index is referring to
+      let _newContactStates  = [...contactStates];
+
+      // update click state(active)
+      for (let i=0; i< contactStates.length; i++) {
+        _newContactStates[i].active = 0;
+      }
+      _newContactStates[index].active = 1;
+
+      setContactStates(_newContactStates);
+
+      // We need to make it sure that loadChattingDatabase should be called in sequence.
+      // second parameter tells if loadChattingDatabase is needed
+      switchChattingChannel(_newContactStates[index].channelInfo, true); 
+      //loadChattingDatabase();
+    } catch(err)
+    {
+      console.warn("handleClickState: error = " + err);
     }
-    _newContactStates[index].active = 1;
-
-    setContactStates(_newContactStates);
-
-    // We need to make it sure that loadChattingDatabase should be called in sequence.
-    // second parameter tells if loadChattingDatabase is needed
-    switchChattingChannel(_newContactStates[index].channelInfo, true); 
-    //loadChattingDatabase();
   }
 
   useEffect(() => {
