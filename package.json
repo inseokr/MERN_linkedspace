@@ -16,7 +16,7 @@
   },
   "author": "In Seo",
   "license": "ISC",
-  "proxy": "http://localhost:3000",
+  "proxy": "http://linkedspaces.herokuapp.com:3000",
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.1.8",
     "babel-polyfill": "^6.26.0",
