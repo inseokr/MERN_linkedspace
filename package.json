@@ -22,11 +22,10 @@
     "babel-polyfill": "^6.26.0",
     "bootstrap4-toggle": "^3.6.1",
     "cors": "^2.8.5",
-    "express": "^4.16.3",
     "express-validator": "^6.4.0",
     "image-webpack-loader": "^6.0.0",
     "jquery": "^3.5.1",
-    "react": "^16.5.2",
+    "react": "^16.11.0",
     "react-alert": "^7.0.1",
     "react-bootstrap": "^1.0.0-beta.17",
     "react-dom": "^16.5.2",
@@ -39,9 +38,7 @@
     "react-switch": "^5.0.1",
     "shortid": "^2.2.15",
     "uuid": "^7.0.3",
-    "websocket": "^1.0.31"
-  },
-  "devDependencies": {
+    "websocket": "^1.0.31",
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.0.0",
@@ -58,7 +55,6 @@
     "bootstrap": "4.1.1",
     "clean-webpack-plugin": "^1.0.0",
     "clsx": "^1.0.4",
-    "concurrently": "^4.1.2",
     "connect-flash": "^0.1.1",
     "crypto": "^1.0.1",
     "css-loader": "^2.1.1",
@@ -91,14 +87,11 @@
     "passport-local-mongoose": "^5.0.1",
     "path": "^0.12.7",
     "prop-types": "^15.6.0",
-    "react": "^16.5.0",
     "react-art": "^16.10.2",
-    "react-dom": "^16.5.0",
     "react-draggable": "^3.3.0",
     "react-native": "^0.61.2",
     "react-native-web": "^0.11.7",
     "react-redux": "^5.0.6",
-    "react-router-dom": "^5.1.2",
     "react-router-native": "^5.1.2",
     "react-scripts": "^1.1.5",
     "react-virtualized": "^9.21.1",
@@ -108,5 +101,8 @@
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.2"
   }
 }
