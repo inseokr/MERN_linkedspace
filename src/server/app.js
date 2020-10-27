@@ -376,7 +376,7 @@ app.get("/scripts/:filename", function(req, res){
 });
 
 //app.listen(process.env.PORT, process.env.IP, function(){
-app.listen(3000, "linkedspaces.herokuapp.com", function(){
+app.listen(3000, "localhost", function(){
    console.log("Linkedspaces Has Started!" + "PORT = " + process.env.PORT + " IP = " + process.env.IP);
 });
 
