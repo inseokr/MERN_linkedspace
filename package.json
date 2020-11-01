@@ -8,15 +8,11 @@
   "main": "src/server/index.js",
   "scripts": {
     "build": "webpack --mode production",
-    "client_start": "npm run build && react-scripts start",
-    "start": "concurrently \"node ./src/server/app.js\" \"npm run client_start\"",
-    "client": "webpack-dev-server --mosrc/server/index.jsde production --devtool inline-source-map --hot",
-    "server": "nodemon src/server/index.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
+    "start": "concurrently \"npm run build && node src/server/app.js\" \"npm run client\""
   },
   "author": "In Seo",
   "license": "ISC",
-  "proxy": "http://localhost:3000",
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.1.8",
     "babel-polyfill": "^6.26.0",
