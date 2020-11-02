@@ -261,7 +261,7 @@ export function MessageContextProvider(props) {
 //    if(sessionStorage.getItem('socketCreated')===null)
   if(socketCreated==false)
   {
-      let ws = new WebSocket("wss://"+window.location.hostname+":3030");
+      let ws = new WebSocket("ws://"+window.location.hostname+":3030");
       setSocketCreated(true);
       setWebSocket(ws);
 
