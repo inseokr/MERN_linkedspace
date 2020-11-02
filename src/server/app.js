@@ -376,10 +376,7 @@ app.get("/scripts/:filename", function(req, res){
 });
 
 //app.listen(process.env.PORT, process.env.IP, function(){
-app.listen(3000, "localhost", function(){
-   console.log("Linkedspaces Has Started!" + "PORT = " + process.env.PORT + " IP = " + process.env.IP);
-});
-
+app.listen(process.env.PORT || 8080, () => console.log(`LinkedSpacess API server listening on port ${process.env.PORT || 8080}!`));
 //Facebook login
 // Redirect the user to Facebook for authentication.  When complete,
 // Facebook will redirect the user back to the application at
