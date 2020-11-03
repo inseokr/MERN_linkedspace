@@ -318,11 +318,11 @@ function chatServerMain(){
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();
         
-        //console.log("New connection: UUID = " + ws.id);
+        console.log("New connection: UUID = " + ws.id);
 
         ws.on('message', function incoming(data) {
 
-            //console.log("Chat Server: received data = " + data + "id = " + ws.id);
+            console.log("Chat Server: received data = " + data + "id = " + ws.id);
             // It goes through all sockets registered to this server
             const result = handleCtrlMsg(data);
 
@@ -334,7 +334,7 @@ function chatServerMain(){
                         // <note> we may need to keep 2 separate mapping then?
                         // <note> how to handle the case when there are multiple sockets for the same users?
                         updateUserSocketMap(ws, result[2]);
-                        //console.log("Yay, now I could register the socket");
+                        console.log("Yay, now I could register the socket");
                         break;
                     default: break;
                 }
@@ -348,7 +348,7 @@ function chatServerMain(){
             // ISEO-TBD: Need to remove this socket from all the map.
             // List all the maps to be updated.
             removeSocket(ws);
-            //console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
+            console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
         });
     });
 }
