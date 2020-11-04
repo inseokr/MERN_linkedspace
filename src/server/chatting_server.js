@@ -34,7 +34,8 @@ const WebSocket = require('ws');
 const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
 const userDbHandler = require('./db_utilities/user_db/access_user_db');
 
-const wss = new WebSocket.Server({ port: 3030});
+//const wss = new WebSocket.Server({ port: 3030});
+var wss = null;
 
 // MAP: user/channelID/socket
 // ISEO-TBD: is there any map to manage per user?
@@ -313,7 +314,14 @@ function removeChannelFromUserDb(name, channel_id)
 
 }
 
-function chatServerMain(){
+function chatServerMain(server){
+
+    console.log("chatServerMain: httpServer = " + JSON.stringify(server));
+
+    // ISEO-TBD: What the heck!!!! Java Script's so fucking strange...
+    // I have so wrong assumption around it... dang... it's too flexible, and I've got to be extremely careful about it.
+    wss = new WebSocket.Server({server});
+    //wss = new WebSocket.Server({port: 3030});
 
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();

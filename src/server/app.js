@@ -44,8 +44,6 @@ var serverPath         = "./src/server";
 
 const parseurl         = require('parseurl');
 const expressValidator = require('express-validator');
-
-
 // relocated the default view directory
 var viewPath = path.join(__dirname, 'views');
 
@@ -138,8 +136,7 @@ global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
 console.log("basedir="+__dirname);
 
-// starting chatting server
-chatServer.chatServerMain();
+
 
 
 //==============================================================================================
@@ -375,8 +372,16 @@ app.get("/scripts/:filename", function(req, res){
   res.sendFile(path.join(__dirname, `/scripts/${fileName}`));
 });
 
-//app.listen(process.env.PORT, process.env.IP, function(){
-app.listen(process.env.PORT || 8080, () => console.log(`LinkedSpacess API server listening on port ${process.env.PORT || 8080}!`));
+var httpServer = app.listen(process.env.PORT || 8080, () => {
+  console.log(`LinkedSpacess API server listening on port ${process.env.PORT || 8080}!`);
+});
+
+
+console.log("ISEO: httpServer =  " + JSON.stringify(httpServer));
+
+// starting chatting server
+chatServer.chatServerMain(httpServer);
+
 //Facebook login
 // Redirect the user to Facebook for authentication.  When complete,
 // Facebook will redirect the user back to the application at

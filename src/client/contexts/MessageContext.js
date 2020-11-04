@@ -255,13 +255,15 @@ export function MessageContextProvider(props) {
 
   }
 
-
-
   // create or connect messaging socket
-//    if(sessionStorage.getItem('socketCreated')===null)
+  //    if(sessionStorage.getItem('socketCreated')===null)
   if(socketCreated==false)
   {
-      let ws = new WebSocket("ws://"+window.location.hostname+":3030");
+      let HOST = window.location.origin.replace(/^http/,'ws');
+      let ws = new WebSocket(HOST);
+
+      //let ws = new WebSocket("ws://"+window.location.hostname+":3030");
+
       setSocketCreated(true);
       setWebSocket(ws);
 
