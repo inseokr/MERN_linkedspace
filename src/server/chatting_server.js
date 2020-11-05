@@ -320,8 +320,14 @@ function chatServerMain(server){
 
     // ISEO-TBD: What the heck!!!! Java Script's so fucking strange...
     // I have so wrong assumption around it... dang... it's too flexible, and I've got to be extremely careful about it.
-    wss = new WebSocket.Server({server});
-    //wss = new WebSocket.Server({port: 3030});
+    if(process.env.NODE_ENV==="development")
+    {
+        wss = new WebSocket.Server({port: 3030});
+    }
+    else
+    {
+        wss = new WebSocket.Server({server});
+    }
 
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();

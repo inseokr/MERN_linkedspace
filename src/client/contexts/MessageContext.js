@@ -259,11 +259,18 @@ export function MessageContextProvider(props) {
   //    if(sessionStorage.getItem('socketCreated')===null)
   if(socketCreated==false)
   {
-      let HOST = window.location.origin.replace(/^http/,'ws');
-      let ws = new WebSocket(HOST);
+      let ws = null;
 
-      //let ws = new WebSocket("ws://"+window.location.hostname+":3030");
-
+      if(process.env.NODE_ENV==="development")
+      {
+        ws = new WebSocket("ws://"+window.location.hostname+":3030");
+      }
+      else
+      {
+        let HOST = window.location.origin.replace(/^http/,'ws');
+        ws = new WebSocket(HOST);
+      }
+      
       setSocketCreated(true);
       setWebSocket(ws);
 
