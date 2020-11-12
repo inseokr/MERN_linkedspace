@@ -1,70 +1,70 @@
-import React, {useState, useEffect} from 'react';
-import {Redirect, useHistory} from 'react-router-dom'
+/* eslint-disable */
+import React, { useState, useEffect } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
 import '../../app.css';
 
 
-function PostListingPage(props)
-{
+function PostListingPage(props) {
   const history = useHistory();
 
-  const [posting_type, setPostingType] = useState("landlord");
+  const [posting_type, setPostingType] = useState('landlord');
   const [redirectState, setRedirectState] = useState(false);
 
-  function updatePortingType(evt)
-  {
+  function updatePortingType(evt) {
     setPostingType(evt.target.value);
   }
 
-  function submitListingType(evt)
-  {
-    if(posting_type=="3rdParty")
-    {
+  function submitListingType(evt) {
+    if (posting_type == '3rdParty') {
       evt.preventDefault();
       setRedirectState(true);
       history.push('/3rdParty');
     }
   }
 
-  function postingItem(type, index, caption)
-  {
+  function postingItem(type, index, caption) {
+    const margin = {
+      marginTop: (index === 1) ? '40px' : '20px',
+      marginBottom: '20px'
+    };
 
-    let margin = {
-      marginTop: (index===1) ? "40px": "20px",
-      marginBottom: "20px"
-    }
+    const idString = `radio${index}`;
 
-    let idString = "radio" + index;
-
-    return ( 
-     <div className="form-check" style={margin}>
-                <label class="form-check-label" for={idString}>
-                  <input type="radio" class="form-check-input" 
-                    id={idString} name="post_type" value={type} 
-                    onChange={updatePortingType} checked={posting_type == type}/>
-                  {caption}
-                </label>
-     </div>
-     )
-           
+    return (
+      <div className="form-check" style={margin}>
+        <label className="form-check-label" htmlFor={idString}>
+          <input
+            type="radio"
+            className="form-check-input"
+            id={idString}
+            name="post_type"
+            value={type}
+            onChange={updatePortingType}
+            checked={posting_type == type}
+          />
+          {caption}
+        </label>
+      </div>
+    );
   }
 
-  useEffect(()=> {
-    console.log("PostListingPage: useEffect");
+  useEffect(() => {
+    console.log('PostListingPage: useEffect');
   });
 
-  return(
-    <div> 
+  return (
+    <div>
       <div className="row">
-        <div className="col-md-4" style={{marginLeft:"20px"}}>
-          <div style={{marginTop:"20px"}}>
-          <h1>Choose what to post</h1>
+        <div className="col-md-4" style={{ marginLeft: '20px' }}>
+          <div style={{ marginTop: '20px' }}>
+            <h1>Choose what to post</h1>
           </div>
           <form action="/listing" method="POST">
-            {postingItem("landlord", 1, "Looking for tenant(s)")}
-            <hr/>
-            {postingItem("tenant",   2, "Looking for house/room")}
-            <hr/>
-            {postingItem("3rdParty", 3, "3rd party listing, like craigslist or SF Korean etc")}
+            {postingItem('landlord', 1, 'Looking for tenant(s)')}
+            <hr />
+            {postingItem('tenant', 2, 'Looking for house/room')}
+            <hr />
+            {postingItem('3rdParty', 3, '3rd party listing, like craigslist or SF Korean etc')}
 
             <button type="submit" className="btn btn-primary float-left" onClick={submitListingType}>Next</button>
 
@@ -72,8 +72,7 @@ function PostListingPage(props)
         </div>
       </div>
     </div>
-    ) 
+  );
 }
 
-export default PostListingPage
-
+export default PostListingPage;

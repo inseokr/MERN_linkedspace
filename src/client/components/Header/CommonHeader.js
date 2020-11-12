@@ -6,71 +6,54 @@ import LoginMenu from '../Login/LoginMenu';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
-function CommonHeader (props){
-
-  const {loadFriendList, friendsList, setCurrentUser, currentUser, isUserLoggedIn} = useContext(GlobalContext);
-  const {switchChattingChannel, getDmChannelId} = useContext(MessageContext);
-
-  // TODO uncomment when needed.
-  // const {loadFriendList, loadSocialNetworkDb, friendsList, setCurrentUser, currentUser, isUserLoggedIn} = useContext(GlobalContext);
-  // const {loadChattingDatabase, switchChattingChannel, getDmChannelId} = useContext(MessageContext);
-  //
-  // async function loadDataBases() {
-  //   if(isUserLoggedIn()===true) {
-  //     console.log("loading databases");
-  //
-  //     // note: following 2 API should be called in sequence.
-  //     // It's not being called at all.
-  //     console.log("loading friend list");
-  //     const result1 = await loadFriendList();
-  //     console.log("loading chatting Database");
-  //     const result2 = await loadChattingDatabase();
-  //     console.log("loading social network DB");
-  //     const result3 = await loadSocialNetworkDb();
-  //   } else {
-  //     console.log("loadDataBases failed as the user is  not logged in properly?");
-  //   }
-  // }
+function CommonHeader(props) {
+  const {
+    loadFriendList, friendsList, setCurrentUser, currentUser, isUserLoggedIn
+  } = useContext(GlobalContext);
+  const { switchChattingChannel, getDmChannelId } = useContext(MessageContext);
 
   function getLoginStatus() {
     // This should be called only once when no current user is set
-    if(currentUser==null) {
-      fetch('/getLoginStatus')
+    if (currentUser == null) {
+      fetch('/LS_API/getLoginStatus')
         .then(res => res.json())
-        .then(user => {
-          console.log(" received user = " + user);
+        .then((user) => {
+          console.log(` received user = ${user}`);
           setCurrentUser(user);
-          props.updateLoginStatus(user!=null);
-        })
+          props.updateLoginStatus(user != null);
+        });
     }
   }
 
   useEffect(() => {
-
     getLoginStatus();
 
-    if(currentUser!=null) {
-      if(friendsList===undefined) loadFriendList();
+    if (currentUser != null) {
+      if (friendsList === undefined) loadFriendList();
     }
 
-    if(friendsList!==undefined && friendsList.length!==0) {
-      console.log("useEffect of commonHeader");
+    if (friendsList !== undefined && friendsList.length !== 0) {
+      console.log('useEffect of commonHeader');
       // how to prevent multiple loading?
-      let channelInfo = {channelName: getDmChannelId(friendsList[0].username),
+      const channelInfo = {
+        channelName: getDmChannelId(friendsList[0].username),
         dm: {
           name: friendsList[0].username,
           distance: 1
-        }};
+        }
+      };
       switchChattingChannel(channelInfo, true);
     }
   }, [currentUser, friendsList]);
+
+  const { loginClickHandler } = props;
 
   return (
     <div className="navBarContainer">
       <LinkedSpaceHeader />
       { isUserLoggedIn()
         ? <LoginMenu />
-        : <NoLoginMenu loginClickHandler={props.loginClickHandler}/>
+        : <NoLoginMenu loginClickHandler={loginClickHandler} />
       }
     </div>
   );

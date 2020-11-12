@@ -1,10 +1,12 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import '../../app.css';
+import { STYLESHEET_URL } from '../../globalConstants';
 import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
-import Map from "../MapPage/index";
-import Search from "../SearchPage/SearchPage";
-import {ListingsContext} from "../../contexts/ListingsContext";
+import Map from '../MapPage/index';
+import Search from '../SearchPage/SearchPage';
+import { ListingsContext } from '../../contexts/ListingsContext';
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -23,9 +25,9 @@ export default class LandingPage extends Component {
 	static contextType = ListingsContext;
 
 	state = {
-		lastMenu : "",
-		fetchedMenu: false,
-		loggedIn : "yes"
+	  lastMenu: '',
+	  fetchedMenu: false,
+	  loggedIn: 'yes'
 	};
 
 	 constructor(props) {
@@ -33,47 +35,51 @@ export default class LandingPage extends Component {
 	 }
 
 	componentWillMount() {
-		fetch('/getLastMenu')
-			.then(res => res.json())
-			.then(menuFromExpress => {
-					console.log("menuFromExpress:", menuFromExpress);
-					this.setState({lastMenu: menuFromExpress, fetchedMenu: true});
-				}
-			)
+	  fetch('/LS_API/getLastMenu')
+	    .then(res => res.json())
+	    .then((menuFromExpress) => {
+	      console.log('menuFromExpress:', menuFromExpress);
+	      this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
+	    });
 	}
 
 	componentDidMount() {
-		const {search} = this.context;
-		console.log("LandingPage is loaded. search = " + search);
+	  const { search } = this.context;
+	  console.log(`LandingPage is loaded. search = ${search}`);
 	}
 
 	render() {
+	  const { lastMenu } = this.state;
 
-		const {lastMenu} = this.state;
-		let pageToRender = <div></div>;
-		if (lastMenu === "map") {
-			console.log("is this even being called",lastMenu);
-			pageToRender = <Map/>
-		} else {
-			pageToRender = <div>
-				<link rel="stylesheet"
-							href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>
-				<link rel="stylesheet" href="/stylesheets/landing.css"/>
-				<div className="container landingPage">
-					<div className="row landingPage">
-						<div className="col-lg-12">
-							<div className="content">
-								<h1> LinkedSpaces</h1>
-								<h3> Make your next move through a trusted network. </h3>
-								<Search />
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		}
-		return (
-			pageToRender
-		);
+	  let pageToRender = <div />;
+	  if (lastMenu === 'map') {
+	    console.log('is this even being called', lastMenu);
+	    pageToRender = <Map />;
+	  } else {
+	    pageToRender = (
+		  <div>
+		    <link
+		      rel="stylesheet"
+		      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+		    />
+		    <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"} />
+		    <div className="container landingPage">
+
+		      <div className="row landingPage">
+		        <div className="col-lg-12">
+		          <div className="content">
+		            <h1> LinkedSpaces</h1>
+		            <h3> Make your next move through a trusted network. </h3>
+		            <Search />
+		          </div>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+	    );
+	  }
+	  return (
+	    pageToRender
+	  );
 	}
 }

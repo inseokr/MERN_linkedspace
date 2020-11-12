@@ -1,44 +1,52 @@
 import React, { useContext } from 'react';
 import '../../app.css';
-import {Link} from 'react-router-dom';
-import {GlobalContext} from "../../contexts/GlobalContext";
-import {MessageContext} from "../../contexts/MessageContext";
+import { Link } from 'react-router-dom';
+import { GlobalContext } from '../../contexts/GlobalContext';
+import { MessageContext } from '../../contexts/MessageContext';
+import { FILE_SERVER_URL } from '../../globalConstants';
 
 function LoginMenu() {
-  const {currentUser} = useContext(GlobalContext);
-  const {checkIfAnyNewMsgArrived} = useContext(MessageContext);
+  const { currentUser } = useContext(GlobalContext);
+  const { checkIfAnyNewMsgArrived } = useContext(MessageContext);
 
-  let newMsgMarker = (checkIfAnyNewMsgArrived())?
-    <React.Fragment>
-      <span className="fa fa-comment"/>
-      <span className="newMsgSignature">N</span></React.Fragment>: "";
+  const newMsgMarker = (checkIfAnyNewMsgArrived())
+    ? (
+      <React.Fragment>
+        <span className="fa fa-comment" />
+        <span className="newMsgSignature">N</span>
+      </React.Fragment>
+    ) : '';
 
   function editProfile() {
     return (
-      <img className="img-responsive center rounded-circle"
-           style={{
-             maxHeight: '70%',
-             height: '30px'
+      <img
+        className="img-responsive center rounded-circle"
+        style={{
+          maxHeight: '70%',
+          height: '30px'
+        }
            }
-           }
-           src={currentUser.profile_picture} alt="Edit Profile"/>
-    )
+        src={FILE_SERVER_URL + currentUser.profile_picture}
+        alt="Edit Profile"
+      />
+    );
   }
 
-  let myNetworkBaloon = 
-    (currentUser.incoming_friends_requests.length>=1) ? 
+  const myNetworkBaloon = (currentUser.incoming_friends_requests.length >= 1)
+    ? (
       <React.Fragment>
-        <span className="fa fa-comment"/>
+        <span className="fa fa-comment" />
         <span className="newMsgSignature">{currentUser.incoming_friends_requests.length}</span>
       </React.Fragment>
-      : <React.Fragment> </React.Fragment>
+    )
+    : <React.Fragment> </React.Fragment>;
 
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div className="container">
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#linkedSpacesNavbarToggler" aria-controls="linkedSpacesNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"/>
+            <span className="navbar-toggler-icon" />
           </button>
           <div className="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
             <a className="navbar-brand" href="/">LinkedSpaces</a>

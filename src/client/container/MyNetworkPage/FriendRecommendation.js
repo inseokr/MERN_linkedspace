@@ -1,102 +1,103 @@
-import React, {useContext, useEffect} from 'react' 
-import './mynetwork_style.css'
-import { GlobalContext } from '../../contexts/GlobalContext'
+/* eslint-disable */
+import React, { useContext, useEffect } from 'react';
+import './mynetwork_style.css';
+import { GlobalContext } from '../../contexts/GlobalContext';
+import { FILE_SERVER_URL } from '../../globalConstants';
 
 
-function FriendRecommendation()
-{
-	const {network_info} = useContext(GlobalContext);
+function FriendRecommendation() {
+  const { network_info } = useContext(GlobalContext);
 
-	const profile_style = {
-		maxWidth: "100%", 
-		maxHeight: "100%",
-		marginTop: "10px"
-	};
+  const profile_style = {
+    maxWidth: '100%',
+    maxHeight: '100%',
+    marginTop: '10px'
+  };
 
-	function getRecommendedFriends()
-	{
-		let recommendedFriends = [];
+  function getRecommendedFriends() {
+    const recommendedFriends = [];
 
-		if(network_info==null) return recommendedFriends;
+    if (network_info == null) return recommendedFriends;
 
-		console.log("getRecommendedFriends length = " + network_info.recommended_friends_list.length);
+    console.log(`getRecommendedFriends length = ${network_info.recommended_friends_list.length}`);
 
-		for(var i = 0; i< network_info.recommended_friends_list.length; i++)
-		{
-			recommendedFriends.push(
-				<div class="network_board">
-					<div class="profile_picture">
-						<img class="img-responsive center rounded-circle" style={profile_style} src={network_info.recommended_friends_list[i].profile_picture}/>
-					</div>
-					<div class="friend_information">
-						<span class="bold_fonts">{network_info.recommended_friends_list[i].name}</span>
-						<br />
-						<span class="normal_fonts">{network_info.recommended_friends_list[i].address.city},{network_info.recommended_friends_list[i].address.state}</span>
-					</div>
+    for (let i = 0; i < network_info.recommended_friends_list.length; i++) {
+      recommendedFriends.push(
+        <div className="network_board">
+          <div className="profile_picture">
+            <img className="img-responsive center rounded-circle" style={profile_style} src={FILE_SERVER_URL+network_info.recommended_friends_list[i].profile_picture} />
+          </div>
+          <div className="friend_information">
+            <span className="bold_fonts">{network_info.recommended_friends_list[i].name}</span>
+            <br />
+            <span className="normal_fonts">
+              {network_info.recommended_friends_list[i].address.city}
+              ,
+              {network_info.recommended_friends_list[i].address.state}
+            </span>
+          </div>
 
-					<form role="form" action={"/mynetwork/"+network_info.recommended_friends_list[i].id+"/friend_request"} method="post">
-						<div class="action">
-							<button class="btn btn-info">Connect</button>
-						</div>
-					</form>
-				</div>
-			);
-		}
+          <form role="form" action={`/mynetwork/${network_info.recommended_friends_list[i].id}/friend_request`} method="post">
+            <div className="action">
+              <button className="btn btn-info">Connect</button>
+            </div>
+          </form>
+        </div>
+      );
+    }
 
-		return recommendedFriends;
-	}
+    return recommendedFriends;
+  }
 
-	function getPendingFriendRequest()
-	{
-		let friendRequests = [];
+  function getPendingFriendRequest() {
+    const friendRequests = [];
 
-		if(network_info==null) return friendRequests;
+    if (network_info == null) return friendRequests;
 
-		console.log("getPendingFriendRequest length = " + network_info.pending_friends_request_list.length);
+    console.log(`getPendingFriendRequest length = ${network_info.pending_friends_request_list.length}`);
 
-		for(var i = 0; i< network_info.pending_friends_request_list.length; i++)
-		{
-			friendRequests.push(
-				<div class="network_board">
-					<div class="profile_picture">
-						<img class="img-responsive center rounded-circle" style={profile_style} src={network_info.pending_friends_request_list[i].profile_picture}/>
-					</div>
-					<div class="friend_information">
-						<span class="bold_fonts">{network_info.pending_friends_request_list[i].name}</span>
-						<br />
-						<span class="normal_fonts">{network_info.pending_friends_request_list[i].address.city + "," + network_info.pending_friends_request_list[i].address.state}</span>
-					</div>
+    for (let i = 0; i < network_info.pending_friends_request_list.length; i++) {
+      friendRequests.push(
+        <div className="network_board">
+          <div className="profile_picture">
+            <img className="img-responsive center rounded-circle" style={profile_style} src={FILE_SERVER_URL+network_info.pending_friends_request_list[i].profile_picture} />
+          </div>
+          <div className="friend_information">
+            <span className="bold_fonts">{network_info.pending_friends_request_list[i].name}</span>
+            <br />
+            <span className="normal_fonts">{`${network_info.pending_friends_request_list[i].address.city},${network_info.pending_friends_request_list[i].address.state}`}</span>
+          </div>
 
-					<form role="form" action={"/mynetwork/"+network_info.pending_friends_request_list[i].id+"/friend_request"} method="post">
-						<div class="action">
-							<button class="btn btn-info">Pending</button>
-						</div>
-					</form>
-				</div>
-			);
-		}
+          <form role="form" action={`/mynetwork/${network_info.pending_friends_request_list[i].id}/friend_request`} method="post">
+            <div className="action">
+              <button className="btn btn-info">Pending</button>
+            </div>
+          </form>
+        </div>
+      );
+    }
 
-		return friendRequests;
-	}
+    return friendRequests;
+  }
 
-	useEffect(()=>{}, [network_info]);
+  useEffect(() => {}, [network_info]);
 
-	return (
-		<div>
-			<div class="bottom-shadow">
-				<span style={{textAlign:"center"}}><h3> Friends Recommendation </h3></span>
-				<hr/>
-				<div class="d-flex justify-content-between" style={{flexWrap: "wrap"}}>
-					{getRecommendedFriends()}
-				</div>
+  return (
+    <div>
+      <div className="bottom-shadow">
+        <span style={{ textAlign: 'center' }}><h3> Friends Recommendation </h3></span>
+        <hr />
+        <div className="d-flex justify-content-between" style={{ flexWrap: 'wrap' }}>
+          {getRecommendedFriends()}
+        </div>
 
-				<hr/>
-				<div class="d-flex justify-content-between" style={{flexWrap: "wrap"}}>
-					{getPendingFriendRequest()}
-				</div>
-			</div>
-		</div>
-	);
+        <hr />
+        <div className="d-flex justify-content-between" style={{ flexWrap: 'wrap' }}>
+          {getPendingFriendRequest()}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default FriendRecommendation;

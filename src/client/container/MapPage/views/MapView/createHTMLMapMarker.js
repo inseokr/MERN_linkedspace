@@ -1,3 +1,4 @@
+/* eslint-disable */
 const createHTMLMapMarker = ({ OverlayView = window.google.maps.OverlayView, ...args }) => {
   class HTMLMapMarker extends OverlayView {
     constructor() {
@@ -8,13 +9,13 @@ const createHTMLMapMarker = ({ OverlayView = window.google.maps.OverlayView, ...
     }
 
     createDiv() {
-      this.div = document.createElement("div");
-      this.div.style.position = "absolute";
+      this.div = document.createElement('div');
+      this.div.style.position = 'absolute';
       if (this.html) {
         this.div.innerHTML = this.html;
       }
-      window.google.maps.event.addDomListener(this.div, "click", event => {
-        window.google.maps.event.trigger(this, "click");
+      window.google.maps.event.addDomListener(this.div, 'click', (event) => {
+        window.google.maps.event.trigger(this, 'click');
       });
     }
 
@@ -25,7 +26,7 @@ const createHTMLMapMarker = ({ OverlayView = window.google.maps.OverlayView, ...
 
     positionDiv() {
       const point = this.getProjection().fromLatLngToDivPixel(this.latlng);
-      let offset = 25;
+      const offset = 25;
       if (point) {
         this.div.style.left = `${point.x - offset}px`;
         this.div.style.top = `${point.y - offset}px`;

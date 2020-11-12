@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import '../../app.css';
-import Search from "../SearchPage/SearchPage";
+import Search from '../SearchPage/SearchPage';
 
 export default class MessagingWindow extends Component {
-	
-	render() {
+  render() {
      	return (
-      		<div>
-      		<h2> MessagingWindow </h2>
-	        </div>
-     	)
-	}
+       <div>
+         <h2> MessagingWindow </h2>
+       </div>
+     	);
+  }
 }

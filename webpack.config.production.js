@@ -1,7 +1,7 @@
 module.exports = {
-    devServer: {
-      proxy: {
-      '/': 'https://localhost:5000'
-      }
+  devServer: {
+    proxy: {
+      '/LS_API': 'http://localhost:3000'
     }
+  }
 };

@@ -1,10 +1,11 @@
+/* eslint-disable */
 import React, { useContext } from 'react';
 import shortid from 'shortid';
 import '../../app.css';
-import './GeneralChatMainPage.css'
-import OnlineStatus from "../../components/Message/OnlineStatus";
-import {MessageContext} from "../../contexts/MessageContext";
-import {GlobalContext} from "../../contexts/GlobalContext";
+import './GeneralChatMainPage.css';
+import OnlineStatus from '../../components/Message/OnlineStatus';
+import { MessageContext } from '../../contexts/MessageContext';
+import { GlobalContext } from '../../contexts/GlobalContext';
 
 
 // ISEO-TBD:
@@ -12,46 +13,42 @@ import {GlobalContext} from "../../contexts/GlobalContext";
 // We may consider adding more information
 // Group Chat should be considered
 function ChatPartySummary() {
-
-  let {currChannelInfo} = useContext(MessageContext);
-  let {currentUser} = useContext(GlobalContext);
+  const { currChannelInfo } = useContext(MessageContext);
+  const { currentUser } = useContext(GlobalContext);
 
   function getSocialDistanceString(distance) {
-    switch(distance) {
-      case 1: return "1st";
-      case 2: return "2nd";
-      case 3: return "3rd";
-      case 4: return "4th";
-      default: return "";
+    switch (distance) {
+      case 1: return '1st';
+      case 2: return '2nd';
+      case 3: return '3rd';
+      case 4: return '4th';
+      default: return '';
     }
   }
 
 
-  function getChatPartySummary()
-  {
-    let _chatPartySummary = [];
+  function getChatPartySummary() {
+    const _chatPartySummary = [];
 
-    if(currChannelInfo.members==undefined)
-    {
-      return ""
+    if (currChannelInfo.members == undefined) {
+      return '';
     }
 
-    for(let i=0; i<currChannelInfo.members.length;i++)
-    {
-      if(currentUser.username==currChannelInfo.members[i]) continue;
-      
+    for (let i = 0; i < currChannelInfo.members.length; i++) {
+      if (currentUser.username == currChannelInfo.members[i]) continue;
+
       _chatPartySummary.push(
         <React.Fragment key={shortid.generate()}>
           <div className="ChatPartyName">
-            {(currChannelInfo!==undefined&&currChannelInfo.members[i]!==undefined)? 
-              currChannelInfo.members[i]: ""}
+            {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined)
+              ? currChannelInfo.members[i] : ''}
           </div>
           <div className="SocialDistance">
             {getSocialDistanceString(1)}
           </div>
-          {(currChannelInfo!==undefined&&currChannelInfo.members[i]!==undefined)? <OnlineStatus />: ""}
+          {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? <OnlineStatus /> : ''}
         </React.Fragment>
-        )
+      );
     }
 
     return _chatPartySummary;

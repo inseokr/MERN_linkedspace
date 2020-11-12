@@ -1,9 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ListingsContext } from '../../../../contexts/ListingsContext';
+/* eslint-disable */
+import React, {
+  useContext, useEffect, useRef, useState
+} from 'react';
 import TextField from '@material-ui/core/TextField';
+import { ListingsContext } from '../../../../contexts/ListingsContext';
 
 function SearchFilter() {
-  const {filterListingsBySearch, search} = useContext(ListingsContext);
+  const { filterListingsBySearch, search } = useContext(ListingsContext);
   const node = useRef();
 
   const [showForm, setShowForm] = useState(false);
@@ -21,7 +24,7 @@ function SearchFilter() {
   };
 
   const handleChange = (event) => {
-    let value = event.target.value;
+    let { value } = event.target;
     if (value.length === 0) { // Toggle back to default button if value is empty.
       toggleForm();
       value = search; // Default the value of search.
@@ -45,13 +48,13 @@ function SearchFilter() {
     setShowForm(false);
   };
 
-  const searchLabel = search.length > 0 ? search : "Search";
+  const searchLabel = search.length > 0 ? search : 'Search';
 
   return (
-    <div className={`${showForm ? "blur" : undefined} modal-app`} ref={node}>
+    <div className={`${showForm ? 'blur' : undefined} modal-app`} ref={node}>
       {showForm ? (
-        <form onSubmit={(event) => {toggleForm(); onSubmit(event);}}>
-          <TextField id="search-text-field" label="Search" type="search" variant="outlined" size="small" placeholder={interimSearch} onChange={handleChange}/>
+        <form onSubmit={(event) => { toggleForm(); onSubmit(event); }}>
+          <TextField id="search-text-field" label="Search" type="search" variant="outlined" size="small" placeholder={interimSearch} onChange={handleChange} />
         </form>
       ) : (
         <button className="filter-button" onClick={toggleForm}>
