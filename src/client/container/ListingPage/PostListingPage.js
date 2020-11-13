@@ -59,7 +59,7 @@ function PostListingPage(props) {
           <div style={{ marginTop: '20px' }}>
             <h1>Choose what to post</h1>
           </div>
-          <form action="/listing" method="POST">
+          <form action="/LS_API/listing" method="POST">
             {postingItem('landlord', 1, 'Looking for tenant(s)')}
             <hr />
             {postingItem('tenant', 2, 'Looking for house/room')}

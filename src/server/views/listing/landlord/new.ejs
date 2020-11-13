@@ -1,7 +1,8 @@
 <% include ../../partials/header %>
 
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
-<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+
+<link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/step_wizard.css'%>">
 
 <div class="container" style="text-align: center; margin-bottom: 10px">
   <h3>Listing room/house</h3>  
@@ -15,9 +16,9 @@
 	<% include ../../partials/stepwizard_v2 %>
 
 	<%if(listing_info.listing==null) {%>
-	  <form role="form" action="/listing/landlord/new" method="POST">
+	  <form role="form" action="/LS_API/listing/landlord/new" method="POST">
 	<%}else{%>
-	  <form role="form" action="<%=`/listing/landlord/${listing_info.listing_id}/new`%>" method="POST"> <!-- Add id to action url if it exists. -->
+	  <form role="form" action="<%=`/LS_API/listing/landlord/${listing_info.listing_id}/new`%>" method="POST"> <!-- Add id to action url if it exists. -->
 	<%}%>
 		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
 			<div class="col-md-6 offset-md-3">

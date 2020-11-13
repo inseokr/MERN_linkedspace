@@ -131,6 +131,9 @@ app.namespace('/LS_API', () => {
   app.locals.profile_picture = '/public/user_resources/pictures/profile_pictures/default_profile.jpg';
   app.locals.lastReactMenu = '';
   app.locals.currentUser = [];
+
+  app.locals.serverUrl = (process.env.NODE_ENV == 'development') ? 'http://localhost:3000' : process.env.EXPRESS_SERVER_URL;
+
   global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
   console.log(`basedir=${__dirname}`);
