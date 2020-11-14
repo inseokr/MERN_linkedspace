@@ -14,18 +14,18 @@
 <div class="stepwizard offset-md-3">
     <div class="stepwizard-row setup-panel">
       <div class="stepwizard-step">
-        <a class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
+        <a class="btn btn-outline-secondary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
       </div>
       <div class="stepwizard-step">
-        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
       </div>
       <div class="stepwizard-step">
-        <a disabled="disabled" class="btn btn-primary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
+        <a disabled="disabled" class="btn btn-primary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
       </div>
     </div>
   </div>
 
-  <form role="form" action="/listing/tenant/<%=listing_info.listing_id%>?_method=PUT" method="post">
+  <form role="form" action="/LS_API/listing/tenant/<%=listing_info.listing_id%>?_method=PUT" method="post">
     <div class="row setup-content" id="step-2" style="margin-top:30px;">
       <div class="col-md-6 offset-md-3">
         <div class="col-md-12">
@@ -58,7 +58,7 @@
 
                 <div class="avatar-preview" id="avatar-preview">
                     <div id="imagePreview"  onmouseover="handleOnMouseHooverImagePreview(this)" onmouseout="handleOnMouseOutImagePreview(this)" style="width:100%; max-height:100%; object-fit: cover; object-position: 100% 0% !important;">
-                          <input type='file' name="file_name" id="imageDefaultUpload" onchange="readURL(this, '/listing/tenant', '<%=`${listing_info.listing_id}`%>')" accept=".png, .jpg, .jpeg"/>
+                          <input type='file' name="file_name" id="imageDefaultUpload" onchange="readURL(this, '/LS_API/listing/tenant', '<%=`${listing_info.listing_id}`%>')" accept=".png, .jpg, .jpeg"/>
                           <label class="pictureAddLabel" id="previewLabel" for="imageDefaultUpload" style="opacity: 1">+</label>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
             </div>
 
             <div style="margin-top: 40px">
-              <a href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' class="btn btn-success btn-lg float-left">Prev</a>
+              <a href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step2"%>' class="btn btn-success btn-lg float-left">Prev</a>
               <button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="final">Submit</button>
             </div>
         </div>
@@ -162,7 +162,7 @@
 
   // load profile photo
   <%if(listing_info.listing.num_of_profile_picture_uploaded>=1){%>
-  $("#imagePreview").css('background-image', 'url("/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>")');
+  $("#imagePreview").css('background-image', 'url("<%=locals.serverUrl%>/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>")');
 
    $("#imagePreview").css('background-position', '0% 10%');
    $("#imagePreview").css('background-size', '100%');
@@ -193,9 +193,7 @@
 <%}%>
 </script>
 
-
-
-<script src="/scripts/file_upload.js"></script>
+<script src="<%=locals.serverUrl+'/LS_API/scripts/file_upload.js'%>"> </script>
 
 <script>
 

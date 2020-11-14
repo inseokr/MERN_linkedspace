@@ -1,8 +1,8 @@
 <% include ../../partials/header %>
 
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
-<link rel="stylesheet" href="/stylesheets/step_wizard.css">
 
+<link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/step_wizard.css'%>">
 
 <div class="container" style="text-align: center; margin-bottom: 10px">
   <h3>Posting Rental Request</h3>  
@@ -13,18 +13,18 @@
 <div class="stepwizard offset-md-3">
     <div class="stepwizard-row setup-panel">
       <div class="stepwizard-step">
-        <a class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
+        <a class="btn btn-outline-secondary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
       </div>
       <div class="stepwizard-step">
-        <a disabled="disabled" class="btn btn-primary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
+        <a disabled="disabled" class="btn btn-primary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
       </div>
       <div class="stepwizard-step">
-        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
       </div>
     </div>
   </div>
   
-  <form role="form" action="/listing/tenant/<%=listing_info.listing_id%>?_method=PUT" method="post">
+  <form role="form" action="/LS_API/listing/tenant/<%=listing_info.listing_id%>?_method=PUT" method="post">
     <div class="row setup-content" id="step-2" style="margin-top:30px;">
       <div class="col-md-6 offset-md-3">
         <div class="col-md-12">
@@ -175,7 +175,7 @@
             </div>
             <hr>
             <div style="margin-top: 40px">
-              <a href='<%="/listing/tenant/"+listing_info.listing_id+"/step1"%>' class="btn btn-success btn-lg float-left">Prev</a>
+              <a href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step1"%>' class="btn btn-success btn-lg float-left">Prev</a>
               <button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="step#2">Next</button>
             </div>
         </div>

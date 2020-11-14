@@ -13,21 +13,21 @@
 <div class="stepwizard offset-md-3">
     <div class="stepwizard-row setup-panel">
       <div class="stepwizard-step">
-        <a class="btn btn-primary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
+        <a class="btn btn-primary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step1"%>' type="button">1</a>
       </div>
       <div class="stepwizard-step">
-        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step2"%>' type="button">2</a>
       </div>
       <div class="stepwizard-step">
-        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
+        <a disabled="disabled" class="btn btn-outline-secondary btn-circle" href='<%="/LS_API/listing/tenant/"+listing_info.listing_id+"/step3"%>' type="button">3</a>
       </div>
     </div>
   </div>
 
 <%if(listing_info.listing==null) {%>
-  <form role="form" action="/listing/tenant/new" method="POST">
+  <form role="form" action="/LS_API/listing/tenant/new" method="POST">
 <%} else {%>
-  <form role="form" action="<%=`/listing/tenant/${listing_info.listing_id}/new`%>" method="POST">
+  <form role="form" action="<%=`/LS_API/listing/tenant/${listing_info.listing_id}/new`%>" method="POST">
 <%}%>
     <div class="row setup-content" id="step-1" style="margin-top:30px;">
       <div class="col-md-6 offset-md-3">
