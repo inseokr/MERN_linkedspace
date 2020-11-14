@@ -37,7 +37,7 @@ export default class NoLoginMenu extends Component {
                 </li>
 
                 <li className="nav-item">
-                  <a className="nav-link" onClick={this.handleLoginClick}>Login</a>
+                  <a className="nav-link" onClick={this.handleLoginClick} href="#">Login</a>
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Signup">
