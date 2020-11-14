@@ -18,7 +18,7 @@ function readURL(event, picIndex) {
   if (input.files && input.files[0]) {
 	const reader = new FileReader();
 	reader.onload = function (evt) {
-	    $(`#imagePreview-${picIndex}`).css('background-image', `url(${evt.target.result})`);
+	    $(`#imagePreview-${picIndex}`).css('background-image', `url(${"/LS_API"+evt.target.result})`);
 	    $(`#imagePreview-${picIndex}`).hide();
 	    $(`#imagePreview-${picIndex}`).fadeIn(650);
 	};
@@ -218,7 +218,7 @@ function Post3rdPartyListing(props) {
     // Let's load the data!!
 
     if (listing.picture != undefined) {
-      $('#imagePreview-1').css('background-image', `url(${listing.picture})`);
+      $('#imagePreview-1').css('background-image', `url(${"/LS_API"+listing.picture})`);
 
       $('#imagePreview-1').css('background-position', '0% 10%');
       $('#imagePreview-1').css('background-size', '100%');
