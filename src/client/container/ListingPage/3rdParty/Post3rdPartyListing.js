@@ -16,22 +16,22 @@ function readURL(event, picIndex) {
   const input = event.target;
 
   if (input.files && input.files[0]) {
-	        const reader = new FileReader();
-	        reader.onload = function (evt) {
-	            $(`#imagePreview-${picIndex}`).css('background-image', `url(${evt.target.result})`);
-	            $(`#imagePreview-${picIndex}`).hide();
-	            $(`#imagePreview-${picIndex}`).fadeIn(650);
-	        };
-	        reader.readAsDataURL(input.files[0]);
+	const reader = new FileReader();
+	reader.onload = function (evt) {
+	    $(`#imagePreview-${picIndex}`).css('background-image', `url(${evt.target.result})`);
+	    $(`#imagePreview-${picIndex}`).hide();
+	    $(`#imagePreview-${picIndex}`).fadeIn(650);
+	};
+	reader.readAsDataURL(input.files[0]);
 
-		    $(`#previewLabel-${picIndex}`).css('opacity', 0);
+	$(`#previewLabel-${picIndex}`).css('opacity', 0);
 
-		    const picturePreviewId = document.getElementById('avatar-upload-1');
+	const picturePreviewId = document.getElementById('avatar-upload-1');
     picturePreviewId.style.display = 'inline-block';
 
-		    /* Let's upload it altogether */
-		    /* ISEO-TBD: let's not upload the file yet */
-	        // Upload the file along with caption
+	/* Let's upload it altogether */
+	/* ISEO-TBD: let's not upload the file yet */
+	// Upload the file along with caption
     const myFormData = new FormData();
     myFormData.append('file_name', input.files[0]);
     myFormData.append('caption', $('#imageCapture-1').val());
@@ -39,13 +39,13 @@ function readURL(event, picIndex) {
     console.log('Posting New Picture');
 
     $.ajax({
-			  enctype: 'multipart/form-data',
-			  url: '/listing/3rdparty/file_upload',
-			  type: 'POST',
-			  processData: false, // important
-			  contentType: false, // important
-			  dataType: 'application/json',
-			  data: myFormData
+	  enctype: 'multipart/form-data',
+	  url: '/LS_API/listing/3rdparty/file_upload',
+	  type: 'POST',
+	  processData: false, // important
+	  contentType: false, // important
+	  dataType: 'application/json',
+	  data: myFormData
     });
   }
 }
@@ -129,11 +129,11 @@ function getCoverPhoto() {
                 id="previewLabel-1"
                 htmlFor="imageDefaultUpload-1"
                 style={{
-  opacity: '1', left: '55px', bottom: '80px', fontSize: '3em'
-}}
+				  opacity: '1', left: '55px', bottom: '80px', fontSize: '3em'
+				}}
               >
                 Add Cover Photo
-</label>
+			  </label>
             </div>
           </div>
 
@@ -290,7 +290,7 @@ function Post3rdPartyListing(props) {
           </div>
         </div>
 
-        <form role="form" action={`/listing/3rdparty/${listingId}new`} method="POST">
+        <form role="form" action={`/LS_API/listing/3rdparty/${listingId}new`} method="POST">
 
           <div className="row setup-content" id="step-1" style={{ marginTop: '30px' }}>
             <div className="col-md-6 offset-md-3">
