@@ -24,7 +24,7 @@ function EditProfileMain() {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
       reader.onload = function (evt) {
-        $('#imagePreview').css('background-image', `url(${evt.target.result})`);
+        $('#imagePreview').css('background-image', `url(${"LS_API"+evt.target.result})`);
         $('#imagePreview').hide();
         $('#imagePreview').fadeIn(650);
       };
@@ -189,7 +189,7 @@ function EditProfileMain() {
 
     // load profile picture
     if (currentUser.profile_picture != undefined) {
-      $('#imagePreview').css('background-image', `url(${currentUser.profile_picture})`);
+      $('#imagePreview').css('background-image', `url(${"LS_API"+currentUser.profile_picture})`);
 
       $('#imagePreview').css('background-position', '0% 10%');
       $('#imagePreview').css('background-size', '100%');
