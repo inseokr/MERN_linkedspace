@@ -104,12 +104,14 @@ module.exports = function (app) {
               // need to add user ID of roommates if exists.
               req.flash('success', 'Listing posted successfully');
 
-      					var facilities = [];
-      					var amenities = [];
+      		  var facilities = [];
+      		  var amenities = [];
 
-      					preprocessListing(foundListing, facilities, amenities);
-              res.render('listing/landlord/show',
-                { listing_info: { listing: foundListing, accessibleSpaces: facilities, availableAmenities: amenities } });
+      		  preprocessListing(foundListing, facilities, amenities);
+
+      		  res.redirect(`/listing/landlord/${foundListing._id}/get`);
+              /* res.render('listing/landlord/show',
+                { listing_info: { listing: foundListing, accessibleSpaces: facilities, availableAmenities: amenities } }); */
               break;
             default:
               req.flash('error', 'No such step found');
