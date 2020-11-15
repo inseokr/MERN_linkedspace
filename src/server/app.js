@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const fileUpload = require('express-fileupload');
 const User = require('./models/user');
 require('express-namespace');
+const { fileUpload2Cloud } = require('./aws_s3_api');
 
 const app = express();
 
@@ -295,7 +296,6 @@ app.namespace('/LS_API', () => {
         return res.status(400).send('No files were uploaded.');
       }
 
-
       console.log('ISEO: uploading profile picture...');
 
       // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
@@ -315,6 +315,9 @@ app.namespace('/LS_API', () => {
         curr_user.profile_picture = picPath;
         app.locals.profile_picture = picPath;
         curr_user.save();
+        // TBD
+        fileUpload2Cloud(serverPath, picPath);
+
         res.send('File uploaded!');
       });
     });
