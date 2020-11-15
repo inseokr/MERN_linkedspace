@@ -3,7 +3,7 @@ import '../../app.css';
 import { Link } from 'react-router-dom';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
-import { FILE_SERVER_URL } from '../../globalConstants';
+// import { FILE_SERVER_URL } from '../../globalConstants';
 
 function LoginMenu() {
   const { currentUser } = useContext(GlobalContext);
@@ -26,7 +26,7 @@ function LoginMenu() {
           height: '30px'
         }
            }
-        src={FILE_SERVER_URL + currentUser.profile_picture}
+        src={`https://s3-us-west-1.amazonaws.com/linkedspaces.fs${currentUser.profile_picture}`}
         alt="Edit Profile"
       />
     );

@@ -315,7 +315,7 @@ app.namespace('/LS_API', () => {
         curr_user.profile_picture = picPath;
         app.locals.profile_picture = picPath;
         curr_user.save();
-        // TBD
+
         fileUpload2Cloud(serverPath, picPath);
 
         res.send('File uploaded!');

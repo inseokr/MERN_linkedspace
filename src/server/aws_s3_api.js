@@ -1,17 +1,14 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 
-const ID = 'AKIAIOR2QXVKW2F3N63Q';
-const SECRET = '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';
 const BUCKET_NAME = 'linkedspaces.fs';
 
 const s3 = new AWS.S3({
-  accessKeyId: ID,
-  secretAccessKey: SECRET
+  accessKeyId: process.env.AWS_ID,
+  secretAccessKey: process.env.AWS_SECRET
 });
 
 const fileUpload2Cloud = (serverPath, fileName) => {
-  return;
   const fileContent = fs.readFileSync(serverPath + fileName);
 
   const adjustedFileName = fileName.substring(1);
