@@ -9,9 +9,9 @@ const LandlordRequest = require('../../../models/listing/landlord_request');
 const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 
+const { fileDeleteFromCloud } = require('../../../aws_s3_api');
 
 node.loop = node.runLoopOnce;
-
 
 module.exports = function (app) {
   router.post('/new', (req, res) => {
@@ -436,7 +436,8 @@ module.exports = function (app) {
     	try {
     		for (let picIndex = 0; picIndex < foundListing.num_of_pictures_uploaded; picIndex++) {
           if (foundListing.pictures[picIndex].path != '') {
-		    		fs.unlinkSync(foundListing.pictures[picIndex].path);
+          	fileDeleteFromCloud(foundListing.pictures[picIndex].path);
+		    fs.unlinkSync(foundListing.pictures[picIndex].path);
           }
         }
 	    } catch (err) {

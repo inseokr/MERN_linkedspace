@@ -10,7 +10,7 @@ import $ from 'jquery';
 
 import { GlobalContext } from '../../contexts/GlobalContext';
 import CollectLocationInfo from '../../components/location/CollectLocationInfo';
-import {API_SERVER_URL} from '../../globalConstants';
+import {API_SERVER_URL, FILE_SERVER_URL} from '../../globalConstants';
 
 
 function EditProfileMain() {
@@ -62,7 +62,7 @@ function EditProfileMain() {
   function handleonClickDeletePic(evt) {
     $('#imagePreview').css('background-image', 'url("")');
     $('#previewLabel').css('opacity', 1);
-    $('#deleteLabe}').css('opacity', 0);
+    $('#deleteLabel').css('opacity', 0);
 
     const myFormData = new FormData();
 
@@ -189,8 +189,7 @@ function EditProfileMain() {
 
     // load profile picture
     if (currentUser.profile_picture != undefined) {
-      $('#imagePreview').css('background-image', `url(${"LS_API"+currentUser.profile_picture})`);
-
+      $('#imagePreview').css('background-image', `url(${FILE_SERVER_URL}${currentUser.profile_picture}`);
       $('#imagePreview').css('background-position', '0% 10%');
       $('#imagePreview').css('background-size', '100%');
 

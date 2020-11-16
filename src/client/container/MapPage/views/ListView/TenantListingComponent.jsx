@@ -63,7 +63,7 @@ function TenantListingComponent(props) {
       listing_type: childListing.listingType
     };
 
-    const result = await axios.post('/listing/tenant/addChild', data)
+    const result = await axios.post('/LS_API/listing/tenant/addChild', data)
       .then((result) => {
         console.log(`addChildListing result = ${result}`);
         fetchCurrentListing(currentListing._id, 'tenant');
@@ -87,7 +87,7 @@ function TenantListingComponent(props) {
       listing_type: childListing.listingType
     };
 
-    const result = await axios.post('/listing/tenant/removeChild', data)
+    const result = await axios.post('/LS_API/listing/tenant/removeChild', data)
       .then(async (result) => {
         console.log(`removeChildListing result = ${result}`);
         fetchCurrentListing(currentListing._id, 'tenant');

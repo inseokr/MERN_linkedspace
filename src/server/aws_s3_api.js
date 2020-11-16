@@ -9,6 +9,8 @@ const s3 = new AWS.S3({
 });
 
 const fileUpload2Cloud = (serverPath, fileName) => {
+  if (process.env.NODE_ENV == 'development') return;
+
   const fileContent = fs.readFileSync(serverPath + fileName);
 
   const adjustedFileName = fileName.substring(1);
@@ -16,15 +18,34 @@ const fileUpload2Cloud = (serverPath, fileName) => {
   const params = {
     Bucket: BUCKET_NAME,
     Key: adjustedFileName,
-    Body: fileContent
+    Body: fileContent,
+    ACL: 'public-read'
   };
 
   s3.upload(params, (err, data) => {
     if (err) {
       throw err;
     }
-    console.log(`File uploaded successfully. ${data.Location}`);
+    console.log(`AWS S3:File uploaded successfully. ${data.Location}`);
   });
 };
 
-module.exports = { fileUpload2Cloud };
+const fileDeleteFromCloud = (fileName) => {
+  if (process.env.NODE_ENV == 'development') return;
+
+  const adjustedFileName = fileName.substring(1);
+
+  const params = {
+    Bucket: BUCKET_NAME,
+    Key: adjustedFileName
+  };
+
+  s3.deleteObject(params, (err, data) => {
+    if (err) {
+      throw err;
+    }
+    console.log('AWS S3:File deleted successfully.');
+  });
+};
+
+module.exports = { fileUpload2Cloud, fileDeleteFromCloud };

@@ -31,7 +31,7 @@ function ListingControlButtons() {
   }
 
   async function forward2friend() {
-    const post_url = `/listing/landlord/${currentListing.list_id}/forward`;
+    const post_url = `/LS_API/listing/landlord/${currentListing.list_id}/forward`;
 
     console.log(`forward2friend called: url = ${post_url}`);
     const result = await axios.post(post_url).then((result) => {

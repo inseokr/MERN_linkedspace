@@ -8,8 +8,8 @@
   "main": "src/server/index.js",
   "scripts": {
     "build": "webpack --mode production ",
-    "client": "webpack-dev-server --mode production --disable-host-check --devtool inline-source-map --hot",
-    "start": "concurrently \"npm run build && node src/server/app.js\" \"npm run client\"",
+    "client": "react-scripts start && npm run bulid",
+    "start": "concurrently \"node src/server/app.js\" \"npm run client\"",
     "build-dev": "webpack --mode development",
     "client-dev": "react-scripts start && npm run build-dev",
     "start-dev": "concurrently \"node src/server/app.js \" \"npm run client-dev\""

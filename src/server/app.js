@@ -13,7 +13,7 @@ const crypto = require('crypto');
 const fileUpload = require('express-fileupload');
 const User = require('./models/user');
 require('express-namespace');
-const { fileUpload2Cloud } = require('./aws_s3_api');
+const { fileUpload2Cloud, fileDeleteFromCloud } = require('./aws_s3_api');
 
 const app = express();
 
@@ -160,27 +160,6 @@ app.namespace('/LS_API', () => {
     res.render('drag_drop_demo_v1');
   });
 
-  // /////////////////////////////////////////////////////////////////////////////////
-  // All the file upload will be defined in below
-  // <note> File upload feature is not working well inside router.
-  // /////////////////////////////////////////////////////////////////////////////////
-  /* app.post('/listing/3rdparty/file_upload', function(req, res) {
-
-  let sampleFile = req.files.file_name;
-  let picPath = "/public/user_resources/pictures/3rdparty/"+sampleFile.name;
-
-  console.log("file_upload: picPath=" + picPath);
-    // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv(serverPath+picPath, function(err) {
-      if (err)
-        return res.status(500).send(err);
-      console.log("ISEO: Successful File upload");
-
-      res.send('File uploaded!');
-  });
-
-}); */
-
   // ISEO: req.files were undefined if it's used in routers.
   // We need to address this problem later, but I will define it inside app.js for now.
   app.post('/listing/landlord/:list_id/file_upload', (req, res) => {
@@ -211,17 +190,19 @@ app.namespace('/LS_API', () => {
         }
         foundListing.num_of_pictures_uploaded += 1;
         foundListing.save();
+        fileUpload2Cloud(serverPath, picPath);
         res.send('File uploaded!');
       });
     });
   });
 
   app.post('/listing/landlord/:list_id/file_delete', (req, res) => {
-    console.log(`ISEO: file_delete called with pic_index=${req.body.pic_index}`);
     const picIndex = req.body.pic_index;
     LandlordRequest.findById(req.params.list_id, (err, foundListing) => {
       try {
         const picPath = `/public/user_resources/pictures/landdlord/${req.params.list_id}_${picIndex}.jpg`;
+
+        fileDeleteFromCloud(picPath);
 
         fs.unlinkSync(serverPath + picPath);
         foundListing.pictures[picIndex - 1].path = '';
@@ -248,14 +229,12 @@ app.namespace('/LS_API', () => {
       const { list_id } = req.params;
       const picPath = `/public/user_resources/pictures/tenant/${list_id}_${sampleFile.name}`;
 
-      console.log(`picPath=${picPath}`);
       // Use the mv() method to place the file somewhere on your server
       sampleFile.mv(serverPath + picPath, (err) => {
         if (err) {
           console.log(`mv operation failed with error code=${err}`);
           return res.status(500).send(err);
         }
-        console.log('ISEO: Successful File upload');
         const picture = { path: picPath, caption: req.body.caption };
         // We will allow only 1 photo for now, and the same array entry will be used.
         if (foundListing.profile_pictures.length == 0) {
@@ -265,6 +244,7 @@ app.namespace('/LS_API', () => {
         }
         foundListing.num_of_profile_picture_uploaded += 1;
         foundListing.save();
+        fileUpload2Cloud(serverPath, picPath);
         res.send('File uploaded!');
       });
     });
@@ -274,6 +254,7 @@ app.namespace('/LS_API', () => {
     TenantRequest.findById(req.params.list_id, (err, foundListing) => {
       try {
         console.log(`File path=${foundListing.profile_pictures[0].path}`);
+        fileDeleteFromCloud(foundListing.profile_pictures[0].path);
         fs.unlinkSync(serverPath + foundListing.profile_pictures[0].path);
 
         foundListing.profile_pictures[0].path = '';
@@ -301,8 +282,7 @@ app.namespace('/LS_API', () => {
       // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
       const sampleFile = req.files.file_name;
       const { user_id } = req.params;
-      // ISEO-TBD: Wow... what is it?
-      const picPath = `/public/user_resources/pictures/${user_id}_` + 'profile' + `.${sampleFile.name.split('.')[1]}`;
+      const picPath = `/public/user_resources/pictures/profile_pictures/${user_id}_profile_${sampleFile.name}`;
 
       // Use the mv() method to place the file somewhere on your server
       sampleFile.mv(serverPath + picPath, (err) => {
@@ -311,7 +291,10 @@ app.namespace('/LS_API', () => {
           return res.status(500).send(err);
         }
 
-        console.log('ISEO: Successful File upload');
+        if (curr_user.profile_picture) {
+          fileDeleteFromCloud(curr_user.profile_picture);
+        }
+
         curr_user.profile_picture = picPath;
         app.locals.profile_picture = picPath;
         curr_user.save();
@@ -325,6 +308,7 @@ app.namespace('/LS_API', () => {
   app.post('/profile/:user_id/file_delete', (req, res) => {
     User.findById(req.params.user_id, (err, curr_user) => {
       try {
+        fileDeleteFromCloud(curr_user.profile_picture);
         fs.unlinkSync(serverPath + curr_user.profile_picture);
 
         curr_user.profile_picture = '';
@@ -385,8 +369,8 @@ app.namespace('/LS_API', () => {
       console.log('LinkedSpacess API server listening on port 3000!');
     });
   } else {
-    httpServer = app.listen(process.env.PORT || 8080, () => {
-      console.log(`LinkedSpacess API server listening on port ${process.env.PORT || 8080}!`);
+    httpServer = app.listen(process.env.API_SERVER_PORT || process.env.PORT || 8080, () => {
+      console.log(`LinkedSpacess API server listening on port ${process.env.API_SERVER_PORT || process.env.PORT || 8080}!`);
     });
   }
 

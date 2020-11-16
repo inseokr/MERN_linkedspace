@@ -143,7 +143,7 @@ export function MessageContextProvider(props) {
   async function addContactList(_friend) {
     // 1. update database through API
     // + update shared_user_group
-    const post_url = `/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
+    const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
 
     const data = {
       friend: { id: _friend.id, username: _friend.username },
@@ -166,7 +166,7 @@ export function MessageContextProvider(props) {
   async function postSelectedContactList() {
     // DM case
     if (selectedChatList.length == 1) {
-      const post_url = `/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
+      const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
       const data = {
         friend: { id: selectedChatList[0].id, username: selectedChatList[0].username },
         chattingType: chattingContextType,
@@ -207,7 +207,7 @@ export function MessageContextProvider(props) {
       friends.push({ id: currentUser._id, username: currentUser.username });
       concatenatedFriendsString = `${concatenatedFriendsString}-${currentUser.username}`;
 
-      const post_url = `/listing/${currentListing.listingType}/${currentListing._id}/addGroupChat`;
+      const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addGroupChat`;
       const channel_id = (chattingContextType == 1)
         ? `${currentListing._id}-parent-${concatenatedFriendsString}`
         : `${currentListing._id}-child-${currentListing.child_listings[childIndex].listing_id._id}-${concatenatedFriendsString}`;
@@ -236,7 +236,9 @@ export function MessageContextProvider(props) {
   if (socketCreated == false) {
     let ws = null;
 
-    if (process.env.NODE_ENV === 'development') {
+    console.log("process.env="+JSON.stringify(process.env));
+    console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
+    if (process.env.REACT_APP_WS_ENV === 'development') {
       ws = new WebSocket(`ws://${window.location.hostname}:3030`);
     } else {
       const HOST = window.location.origin.replace(/^http/, 'ws');
@@ -320,7 +322,7 @@ export function MessageContextProvider(props) {
           lastReadIndex: dmChannelContexts[channelInfo.channelName].chattingHistory.length
         };
 
-        const result = await axios.post('/chatting/update', data)
+        const result = await axios.post('/LS_API/chatting/update', data)
           .then((result) => {
             updateLastReadIndex(data);
             resolve('successful update');
@@ -700,7 +702,7 @@ export function MessageContextProvider(props) {
       // console.log("creating channels = " + chatChannel[i].channel_id);
 
       // note: problem in handling the result!!
-      const result = await axios.post('/chatting/new', data)
+      const result = await axios.post('/LS_API/chatting/new', data)
         .then((result) => {
           // console.log(result.data);
 

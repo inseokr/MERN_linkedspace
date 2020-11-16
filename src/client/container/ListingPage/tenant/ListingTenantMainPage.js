@@ -161,7 +161,7 @@ function ListingTenantMainPage(props) {
     }
 
     async function forward2friend() {
-      const post_url = `/listing/tenant/${match.params.id}/forward`;
+      const post_url = `/LS_API/listing/tenant/${match.params.id}/forward`;
       await axios.post(post_url).then((result) => {
         console.log(`result = ${result.data.result}`);
         alert(`Result = ${result.data.result}`);
