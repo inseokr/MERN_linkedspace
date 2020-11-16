@@ -1,7 +1,7 @@
 module.exports = {
   devServer: {
     proxy: {
-      '/LS_API': 'http://localhost:3000'
+      '/LS_API': 'https://linkedspaces-api-server.herokuapp.com'
     }
   }
 };
