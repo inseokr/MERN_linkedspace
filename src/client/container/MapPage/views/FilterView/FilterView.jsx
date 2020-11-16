@@ -7,25 +7,25 @@ import PriceFilter from './PriceFilter';
 import DateFilter from './DateFilter';
 
 function FilterView() {
-  return (
-    <div>
-      <CssBaseline />
-      <Grid container direction="row" justify="space-evenly">
-        <Grid item xs={4}>
-          <SearchFilter/>
-        </Grid>
-        <Grid item xs={4}>
-          <PlaceFilter/>
-        </Grid>
-        <Grid item xs={4}>
-          <PriceFilter/>
-        </Grid>
-        {/*<Grid item xs={3}>*/}
-        {/*  <DateFilter/>*/}
-        {/*</Grid>*/}
-      </Grid>
-    </div>
-  );
+    return (
+        <div>
+            <CssBaseline />
+            <Grid container direction="row" justify="space-evenly">
+                <Grid item xs={4}>
+                    <SearchFilter/>
+                </Grid>
+                <Grid item xs={4}>
+                    <PlaceFilter/>
+                </Grid>
+                <Grid item xs={4}>
+                    <PriceFilter/>
+                </Grid>
+                {/*<Grid item xs={3}>*/}
+                {/*  <DateFilter/>*/}
+                {/*</Grid>*/}
+            </Grid>
+        </div>
+    );
 }
 
 export default FilterView;

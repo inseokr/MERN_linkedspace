@@ -3,7 +3,7 @@ import ShowActiveListingPage from "./ShowActiveListingPage";
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 export default class ShowActiveListingPageWrapper extends Component {
-  
+
   static contextType = CurrentListingContext;
 
   constructor(props){
@@ -21,7 +21,7 @@ export default class ShowActiveListingPageWrapper extends Component {
 
   componentWillUnmount() {
     //console.log("ShowActiveListingPageWrapper: componentWillUnmount");
-    this.context.cleanupListingInfoType();
+    this.context.setListingInfoType("");
   }
 
   // This is the first method that is called when a component gets updated.
