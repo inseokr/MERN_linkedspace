@@ -132,8 +132,7 @@ module.exports = function(app) {
         else
         {
           req.flash("success", "Welcome back to LinkedSpaces " + req.body.username);
-          res.redirect("/homepage");
-
+          res.redirect("/");
           User.findOne({username:req.body.username}, function(err, user) {
             if (err) { console.log("User Not Found"); return; }
             app.locals.currentUser[req.user.username] = user;

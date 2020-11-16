@@ -6,6 +6,7 @@ import { Paper, Grid, Typography } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel'
 import constructListingInformationBullets from '../../helper/helper';
 import {CurrentListingContext} from '../../../../contexts/CurrentListingContext';
+import {MSG_CHANNEL_TYPE_LISTING_CHILD} from "../../../../contexts/MessageContext";
 import ChildListing from './ChildListing'
 
 /*
@@ -59,9 +60,6 @@ export default class ChildListingsView extends Component {
 	}
 
 	handleClickState(index) {
-
-		//console.log("handleClickState, index="+index);
-
 		// update clickStates where the index is referring to
 		let listClickStates  = [...this.state.clickStates];
 
@@ -98,6 +96,7 @@ export default class ChildListingsView extends Component {
 	}
 
 	buildChildListingViews(){
+		//console.warn("buildChildListingViews");
 
 		// build it only if there is any change in the number of child listing
 		let refArray = [];
@@ -106,21 +105,14 @@ export default class ChildListingsView extends Component {
 		let initialLength = listClickStates.length;
 
 		this.context.currentListing.child_listings.map(function(childListing, index) {
-		console.log("childListingsViews: index="+index);
+		//console.warn("childListingsViews: index="+index);
 
-		if(this.state.clickStates.length==0 && index==0)
-		{
-			listClickStates[index] = 1;
-		}
-		else
-		{
-			if(listClickStates[index]==undefined) listClickStates[index] = 0;
-		}
+		listClickStates[index] = 0;
 
 		let curRef = React.createRef();
 		refArray.push(curRef);
 
-		console.log("curRef=" + curRef);
+		//console.log("curRef=" + curRef);
 		_childListingViews.push(<div key={shortid.generate()}>
 									<ChildListing clickState={listClickStates[index]}
 								              clickHandler={this.handleClickState}
@@ -163,9 +155,19 @@ export default class ChildListingsView extends Component {
 
 	componentDidUpdate(previousProps, previousState, snapshot) {
 
+		//console.warn("componentDidUpdate="+JSON.stringify(this.props));
+
 		this.handleClickFromMap(this.context.currentChildIndex);
 
 		if(this.context.currentListing.child_listings.length!=this.state.childListingsViews.length)
+		{
+			this.buildChildListingViews();
+		}
+
+		//clear click states if the chatting context is changed
+		if( (this.props.chattingContextType != previousProps.chattingContextType)
+			&& 
+			(this.props.chattingContextType!=MSG_CHANNEL_TYPE_LISTING_CHILD) )
 		{
 			this.buildChildListingViews();
 		}

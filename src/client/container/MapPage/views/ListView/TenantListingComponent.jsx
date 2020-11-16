@@ -196,7 +196,9 @@ function TenantListingComponent(props) {
             <ChildListingsView handleSelect={handleSelect}
                                messageClickHandler={toggle}
                                listing={listing}
-                               removeHandler = {removeChildListing}/>
+                               removeHandler = {removeChildListing}
+                               chattingContextType = {chattingContextType} 
+                               />
         </div>
     );
 }

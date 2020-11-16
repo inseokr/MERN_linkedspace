@@ -34,7 +34,8 @@ const WebSocket = require('ws');
 const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
 const userDbHandler = require('./db_utilities/user_db/access_user_db');
 
-const wss = new WebSocket.Server({ port: 3030});
+//const wss = new WebSocket.Server({ port: 3030});
+var wss = null;
 
 // MAP: user/channelID/socket
 // ISEO-TBD: is there any map to manage per user?
@@ -313,16 +314,29 @@ function removeChannelFromUserDb(name, channel_id)
 
 }
 
-function chatServerMain(){
+function chatServerMain(server){
+
+    console.log("chatServerMain: httpServer = " + JSON.stringify(server));
+
+    // ISEO-TBD: What the heck!!!! Java Script's so fucking strange...
+    // I have so wrong assumption around it... dang... it's too flexible, and I've got to be extremely careful about it.
+    if(process.env.NODE_ENV==="development")
+    {
+        wss = new WebSocket.Server({port: 3030});
+    }
+    else
+    {
+        wss = new WebSocket.Server({server});
+    }
 
     wss.on('connection', function connection(ws) {
         ws.id = uuidv4();
         
-        //console.log("New connection: UUID = " + ws.id);
+        console.log("New connection: UUID = " + ws.id);
 
         ws.on('message', function incoming(data) {
 
-            //console.log("Chat Server: received data = " + data + "id = " + ws.id);
+            console.log("Chat Server: received data = " + data + "id = " + ws.id);
             // It goes through all sockets registered to this server
             const result = handleCtrlMsg(data);
 
@@ -334,7 +348,7 @@ function chatServerMain(){
                         // <note> we may need to keep 2 separate mapping then?
                         // <note> how to handle the case when there are multiple sockets for the same users?
                         updateUserSocketMap(ws, result[2]);
-                        //console.log("Yay, now I could register the socket");
+                        console.log("Yay, now I could register the socket");
                         break;
                     default: break;
                 }
@@ -348,7 +362,7 @@ function chatServerMain(){
             // ISEO-TBD: Need to remove this socket from all the map.
             // List all the maps to be updated.
             removeSocket(ws);
-            //console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
+            console.log("SOCKET IS BEING DISCONNECTED!!!!!!!!!!!!!!!!!!!!");
         });
     });
 }
