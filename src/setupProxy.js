@@ -4,7 +4,8 @@ module.exports = function (app) {
   app.use(
     '/LS_API',
     createProxyMiddleware({
-      target: process.env.EXPRESS_SERVER_URL
+      target: process.env.EXPRESS_SERVER_URL,
+      changeOrigin: true
     })
   );
 };

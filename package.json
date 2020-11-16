@@ -8,7 +8,7 @@
   "main": "src/server/index.js",
   "scripts": {
     "build": "webpack --mode production ",
-    "client": "react-scripts start && npm run bulid",
+    "client": "npm run build && react-scripts start",
     "start": "npm run client",
     "build-dev": "webpack --mode development",
     "client-dev": "react-scripts start && npm run build-dev",
