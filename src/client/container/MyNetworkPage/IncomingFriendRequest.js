@@ -36,7 +36,7 @@ function IncomingFriendRequest() {
             </span>
           </div>
 
-          <form role="form" action={`/mynetwork/${network_info.incoming_friends_request_list[i].id}/friend_accept`} method="post">
+          <form role="form" action={`/LS_API/mynetwork/${network_info.incoming_friends_request_list[i].id}/friend_accept`} method="post">
             <div className="action">
               <button className="btn btn-info">Accept</button>
             </div>

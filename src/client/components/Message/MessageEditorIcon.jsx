@@ -19,6 +19,7 @@ function MessageEditorIcon(props) {
   const [modalShow, setModalShow] = useState(false);
   const {
     postSelectedContactList,
+    selectedChatList,
     resetChatList
   } = useContext(MessageContext);
 
@@ -55,9 +56,13 @@ function MessageEditorIcon(props) {
 
   const handleClose = async () => {
     setModalShow(false);
-    postSelectedContactList().then(() => { resetChatList(); });
-    // need to make it sure that the selected chatting party is shown in the contact list.
-    onClickHandler();
+
+    console.log(`selectedChatList length = ${selectedChatList.length}`);
+    if (selectedChatList !== undefined && selectedChatList.length >= 1) {
+      postSelectedContactList().then(() => { resetChatList(); });
+      // need to make it sure that the selected chatting party is shown in the contact list.
+      onClickHandler();
+    }
   };
 
   function messageEditorOnClick(evt) {

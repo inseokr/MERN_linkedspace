@@ -37,7 +37,7 @@ function FriendRecommendation() {
             </span>
           </div>
 
-          <form role="form" action={`/mynetwork/${network_info.recommended_friends_list[i].id}/friend_request`} method="post">
+          <form role="form" action={`/LS_API/mynetwork/${network_info.recommended_friends_list[i].id}/friend_request`} method="post">
             <div className="action">
               <button className="btn btn-info">Connect</button>
             </div>
@@ -68,7 +68,7 @@ function FriendRecommendation() {
             <span className="normal_fonts">{`${network_info.pending_friends_request_list[i].address.city},${network_info.pending_friends_request_list[i].address.state}`}</span>
           </div>
 
-          <form role="form" action={`/mynetwork/${network_info.pending_friends_request_list[i].id}/friend_request`} method="post">
+          <form role="form" action={`/LS_API/mynetwork/${network_info.pending_friends_request_list[i].id}/friend_request`} method="post">
             <div className="action">
               <button className="btn btn-info">Pending</button>
             </div>

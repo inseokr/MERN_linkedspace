@@ -788,6 +788,7 @@ export function MessageContextProvider(props) {
       addToChatList,
       removeFromChatList,
       resetChatList,
+      selectedChatList,
       postSelectedContactList,
       reset,
       msgCounter
