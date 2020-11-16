@@ -13,7 +13,7 @@ function PickChattingParty(props) {
   const _listingId = props.listing_id;
 
   // <note> friendsList doesn't include current user.
-  const { friendsList, currentUser } = useContext(GlobalContext);
+  const { friendsList, getProfilePicture, currentUser } = useContext(GlobalContext);
   const { loadChattingDatabase, removeFromChatList, addToChatList } = useContext(MessageContext);
 
   // this should be done just once
@@ -63,7 +63,7 @@ function PickChattingParty(props) {
       <div key={shortid.generate()}>
         <div className={_style} key={_friend.id} onClick={() => handleClickFriend(_friend, index)}>
           <div>
-            <img className="center rounded-circle imgCover" src={FILE_SERVER_URL+_friend.profile_picture} alt="myFriend" />
+            <img className="center rounded-circle imgCover" src={FILE_SERVER_URL+getProfilePicture(_friend.username)} alt="myFriend" />
           </div>
           <div className="friendName">
             <h5>
