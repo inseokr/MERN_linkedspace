@@ -133,7 +133,8 @@ app.namespace('/LS_API', () => {
   app.locals.lastReactMenu = '';
   app.locals.currentUser = [];
 
-  app.locals.serverUrl = (process.env.NODE_ENV == 'development') ? 'http://localhost:3000' : process.env.EXPRESS_SERVER_URL;
+  app.locals.serverUrl = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000' : process.env.EXPRESS_SERVER_URL;
+  app.locals.filerServerUrl = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000': process.env.REACT_APP_FILE_SERVER_URL;
 
   global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
