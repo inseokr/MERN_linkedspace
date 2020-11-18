@@ -769,6 +769,7 @@ export function MessageContextProvider(props) {
   return (
     <MessageContext.Provider value={{
       currChannelInfo,
+      setCurrChannelInfo,
       dmChannelContexts,
       getLastReadIndex,
       switchDmByFriendName,
