@@ -78,6 +78,12 @@ function ListingComponent(props) {
   }
 
   function getConnectedFriends() {
+    
+    if(currentUser===null) 
+    {
+      return (<React.Fragment></React.Fragment>);
+    }
+
     console.log(`Length of direct friends = ${currentUser.direct_friends.length}`);
     if (currentUser.direct_friends.length > 0) {
       const profile_picture = (currentUser.direct_friends[0] === undefined) ? '' : currentUser.direct_friends[0].profile_picture;
