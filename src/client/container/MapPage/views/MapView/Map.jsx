@@ -1,7 +1,9 @@
 /* eslint-disable */
 import React, { useContext, useEffect, useRef } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
+import {FILE_SERVER_URL} from '../../../../globalConstants';
 import './Map.css';
+
 
 function Map() {
   const {
