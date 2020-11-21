@@ -9,14 +9,12 @@ const outputDirectory = 'dist';
 const env = dotenv.config().parsed;
 
 // reduce it to a nice object, the same as before
-/*
 const envKeys = Object.keys(env).reduce((prev, next) => {
   console.log(`Env: ${JSON.stringify(env[next])}`);
   prev[`process.env.${next}`] = JSON.stringify(env[next]);
 
   return prev;
-}, {}); */
-const envKeys = [];
+}, {});
 
 module.exports = {
   entry: ['babel-polyfill', './src/client/index.js'],
