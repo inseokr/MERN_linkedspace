@@ -242,7 +242,8 @@ export function MessageContextProvider(props) {
       ws = new WebSocket(`ws://${window.location.hostname}:3030`);
     } else {
       //const HOST = window.location.origin.replace(/^http/, 'ws');
-      ws = new WebSocket(process.env.REACT_WS_SERVER);
+      console.log(`env = ${JSON.stringify(process.env)}`);
+      ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
     }
 
     setSocketCreated(true);
