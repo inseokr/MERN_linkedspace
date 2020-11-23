@@ -133,7 +133,8 @@ app.namespace('/LS_API', () => {
   app.locals.lastReactMenu = '';
   app.locals.currentUser = [];
 
-  app.locals.serverUrl = (process.env.NODE_ENV == 'development') ? 'http://localhost:3000' : process.env.EXPRESS_SERVER_URL;
+  app.locals.serverUrl = (process.env.NODE_ENV == 'development') ? 'http://localhost:5000' : process.env.EXPRESS_SERVER_URL;
+  app.locals.fileServerUrl = (process.env.NODE_ENV == 'development') ? '/LS_API' : process.env.FILE_SERVER_URL;
 
   global.__basedir = __dirname; // ISEO-TBD: not sure if it's needed change
 
@@ -365,8 +366,8 @@ app.namespace('/LS_API', () => {
   let httpServer = null;
 
   if (process.env.NODE_ENV == 'development') {
-    httpServer = app.listen(3000, () => {
-      console.log('LinkedSpacess API server listening on port 3000!');
+    httpServer = app.listen(process.env.API_SERVER_PORT, () => {
+      console.log(`LinkedSpacess API server listening on port ${process.env.API_SERVER_PORT}!`);
     });
   } else {
     httpServer = app.listen(process.env.API_SERVER_PORT || process.env.PORT || 8080, () => {

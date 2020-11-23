@@ -162,7 +162,7 @@
 
   // load profile photo
   <%if(listing_info.listing.num_of_profile_picture_uploaded>=1){%>
-  $("#imagePreview").css('background-image', 'url("<%=locals.serverUrl%>/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>")');
+  $("#imagePreview").css('background-image', 'url("<%=locals.fileServerUrl%>/public/user_resources/pictures/tenant/<%=listing_info.listing.profile_pictures[0].path.split("/")[listing_info.listing.profile_pictures[0].path.split("/").length-1]%>")');
 
    $("#imagePreview").css('background-position', '0% 10%');
    $("#imagePreview").css('background-size', '100%');
