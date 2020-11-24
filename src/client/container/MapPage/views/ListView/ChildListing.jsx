@@ -156,7 +156,7 @@ const ChildListing = React.forwardRef(({
                 <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
                 <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
                   {' '}
-                  Hosted by
+                  Hosted by 
                   {childListing.requester.username}
                 </Typography>
               </div>

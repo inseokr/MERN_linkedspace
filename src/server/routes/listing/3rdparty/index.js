@@ -62,7 +62,6 @@ module.exports = function (app) {
 
     // let's create a database
     // rename the file with listing_id
-
     if(filename!="")
     {
 
@@ -74,7 +73,6 @@ module.exports = function (app) {
         console.log('File renamed successfully');
         fileUpload2Cloud(serverPath, new_full_picture_path);
       });
-
       // ISEO-TBD: The path should start from "/public/..."?
       newListing.coverPhoto.path = new_full_picture_path;
     }
@@ -108,16 +106,13 @@ module.exports = function (app) {
 	    foundListing.rentalPrice = req.body.rentalPrice.replace(/\$|,/g, '');
 	    foundListing.location = req.body.location;
 
-
-      if(filename!="")
-      {
+      if (filename != '') {
   	    const original_path = serverPath + picturePath + filename;
         const new_full_picture_path = `${picturePath + foundListing.requester.id}_${filename}`;
         const new_path = `${serverPath + new_full_picture_path}`;
         fs.rename(original_path, new_path, (err) => {
           if (err) throw err;
           console.log('File renamed successfully');
-
           fileUpload2Cloud(serverPath, new_full_picture_path);
         });
 

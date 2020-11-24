@@ -1,7 +1,9 @@
 /* eslint-disable */
 import React, { useContext, useEffect, useRef } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
+import {FILE_SERVER_URL} from '../../../../globalConstants';
 import './Map.css';
+
 
 function Map() {
   const {
@@ -32,6 +34,8 @@ function Map() {
       const bounds = new window.google.maps.LatLngBounds();
       filteredListings.map((listing) => {
         const { coordinates } = listing.rental_property_information;
+        const imgSource = listing.requester.profile_picture.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+listing.requester.profile_picture.length;
+   
         const marker = createMarker(googleMap, coordinates, '/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg');
         marker.addListener('click', () => {
           alert('Clicked!');

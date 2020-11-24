@@ -86,9 +86,9 @@
 					</li>
 					<li class="nav-item">
 							<% if(locals.profile_picture != "") {%>
-							<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.serverUrl+'/LS_API'+locals.profile_picture%>">
+							<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.fileServerUrl+locals.profile_picture%>">
 							<% } else {%>
-								<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.serverUrl+'/LS_API/public/user_resources/pictures/profile_pictures/default_profile.jpg'%>">
+								<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.fileServerUrl+'/public/user_resources/pictures/profile_pictures/default_profile.jpg'%>">
 							<%}%>
 						</a>
 					</li>

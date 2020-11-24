@@ -62,14 +62,20 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
 
     if (type === 'own') {
       const listing_url_type = (listing_prefix === '_3rdparty') ? '3rdparty' : listing_prefix;
-      return (
-        <React.Fragment>
+      const editForm = (listing_prefix === '_3rdparty') ? 
           <Link to={{ pathname: '/3rdParty', listing_db: listing }}>
             <div className="action">
               <button className="btn btn-info">Edit</button>
             </div>
-          </Link>
-
+          </Link> :
+          <form role="form" action={`/LS_API/listing/${listing_url_type}/${listing.id}/edit`} method="post" target="_blank">
+            <div className="action">
+              <button className="btn btn-info">Edit</button>
+            </div>
+          </form>
+      return (
+        <React.Fragment>
+          {editForm}
           <iframe name="hiddenFrame" className="hide" />
 
           <form role="form" action={`/LS_API/listing/${listing_url_type}/${listing.id}?_method=DELETE`} method="post" target="_blank">

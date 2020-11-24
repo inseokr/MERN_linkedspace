@@ -100,7 +100,7 @@
 	<%if(listing_info.listing!=null){%>
 		<%for(var i=0; i<listing_info.listing.pictures.length; i++){%>
 			// Load the image and the caption
-			$("#imagePreview-<%=i+1%>").css('background-image', 'url("/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>")');
+			$("#imagePreview-<%=i+1%>").css('background-image', 'url("<%=locals.fileServerUrl%>/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>")');
 			$("#previewLabel-<%=i+1%>").css('opacity', 0);
 			$("#imageCapture-<%=i+1%>").val('<%=listing_info.listing.pictures[i].caption%>');
 			// Display the next image

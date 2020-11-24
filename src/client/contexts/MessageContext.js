@@ -236,13 +236,14 @@ export function MessageContextProvider(props) {
   if (socketCreated == false) {
     let ws = null;
 
-    console.log("process.env="+JSON.stringify(process.env));
-    console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
+    //console.log("process.env="+JSON.stringify(process.env));
+    //console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
     if (process.env.REACT_APP_WS_ENV === 'development') {
       ws = new WebSocket(`ws://${window.location.hostname}:3030`);
     } else {
-      const HOST = window.location.origin.replace(/^http/, 'ws');
-      ws = new WebSocket(HOST);
+      //const HOST = window.location.origin.replace(/^http/, 'ws');
+      //console.log(`env = ${JSON.stringify(process.env)}`);
+      ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
     }
 
     setSocketCreated(true);
@@ -683,7 +684,11 @@ export function MessageContextProvider(props) {
     setNewMsgArrived(false);
 
     // note: it will be good time to register the user again?
-    chatSocket.send(`CSC:Register:${currentUser.username}`);
+    try {
+        chatSocket.send(`CSC:Register:${currentUser.username}`);
+    } catch (error) {
+        console.error(error);
+    } 
 
     // ISEO-TBD: need to load group chatting as well.
     const chatChannel = getListOfChatChannels();
@@ -765,6 +770,7 @@ export function MessageContextProvider(props) {
   return (
     <MessageContext.Provider value={{
       currChannelInfo,
+      setCurrChannelInfo,
       dmChannelContexts,
       getLastReadIndex,
       switchDmByFriendName,

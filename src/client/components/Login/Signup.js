@@ -61,7 +61,7 @@ export default function Signup() {
       <div className="row">
         <div className="offset-sm-1 col-sm-2" />
         <div className="col-sm-6">
-          <form action="/signup" method="post" acceptCharset="utf-8" className="form">
+          <form action="/LS_API/signup" method="post" acceptCharset="utf-8" className="form">
             <div className="row">
               <div className="col-xs-6 col-md-6">
                 <input type="text" name="firstname" className="form-control input-lg" id="firstname" placeholder="First Name" />

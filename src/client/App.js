@@ -44,6 +44,8 @@ export default class App extends Component {
 
     console.log('App componentDidMount');
     console.log(`props = ${JSON.stringify(this.props)}`);
+
+    console.log(`env = ${JSON.stringify(process.env)}`);
   }
 
   clickHandler() {

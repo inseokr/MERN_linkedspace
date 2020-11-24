@@ -52,7 +52,7 @@
 				    			<span class="input-group-text">$</span>
 				  			</div>
 				  			<div style="width:20%">
-				  			<input type="text" class="form-control" name="rental_terms[asking_price]"aria-label="Amount">
+				  			<input type="text" class="form-control" name="rental_terms[asking_price]" id="asking_price" aria-label="Amount">
 				  			</div>
 				  			<div class="input-group-append">
 				    			<span class="input-group-text">per month</span>
@@ -67,7 +67,7 @@
 				    			<span class="input-group-text">$</span>
 				  			</div>
 				  			<div style="width:20%">
-				  			<input type="text" class="form-control" name="rental_terms[security_deposit]" aria-label="Amount">
+				  			<input type="text" class="form-control" name="rental_terms[security_deposit]" id="security_deposit" aria-label="Amount">
 				  			</div>
 						</div>
 
@@ -76,7 +76,7 @@
 						    	<label> Rental Duration </label>
 					    	</div>
 				  			<div style="width:10%; margin-left: 30px;">
-				  			<input type="text" class="form-control" name="rental_terms[duration]">
+				  			<input type="text" class="form-control" name="rental_terms[duration]" id="duration">
 				  			</div>
 				  			<div class="input-group-append">
 				    			<span class="input-group-text">months</span>
@@ -89,7 +89,7 @@
 					      </div>
 
 					      <div style="width: 30%">
-					      <select class="form-control" required="required" name="move_in_date[month]" style="width:80%" placeholder="">
+					      <select class="form-control" required="required" name="move_in_date[month]" id="month" style="width:80%" placeholder="">
 					          <% 
 					            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 					            for (var cur_month=0; cur_month<12; cur_month++) {%>
@@ -99,7 +99,7 @@
 					      </div>
 
 					      <div style="width: 30%">
-					      <select class="form-control" required="required" name="move_in_date[date]" style="width:80%" placeholder="">
+					      <select class="form-control" required="required" name="move_in_date[date]" id="date" style="width:80%" placeholder="">
 					          <% 
 					            for (var cur_day=1; cur_day<32; cur_day++) {%>
 					                <option value=<%=cur_day%>> <%=cur_day%> </option>
@@ -107,7 +107,7 @@
 					      </select>
 					      </div>
 					      <div style="width: 30%">
-					      <select class="form-control" required="required" name="move_in_date[year]" style="width:80%" placeholder="">
+					      <select class="form-control" required="required" name="move_in_date[year]" id="year" style="width:80%" placeholder="">
 					          <% var this_year = new Date();
 					            var starting_year=this_year.getFullYear();
 					            var last_year = starting_year + 2;
@@ -124,10 +124,10 @@
 				            <label >Contact Information</label>
 				              <div class="flex-container">
 				                <div style="width: 35%">
-				                  <input type="text" class="form-control" style="width: 90%" name="contact[phone]" placeholder="Phone number">
+				                  <input type="text" class="form-control" style="width: 90%" name="contact[phone]" id="phone" placeholder="Phone number">
 				                </div>
 				                <div style="width: 65%">
-				                  <input type="text" class="form-control" style="width: 100%" name="contact[email]" placeholder="Your email">
+				                  <input type="text" class="form-control" style="width: 100%" name="contact[email]" id="email" placeholder="Your email">
 				                </div>
 				              </div>
 				        </div>
@@ -145,5 +145,26 @@
 		</div>
 	</form>
 </div>
+
+
+<script>
+
+	// listing summary
+	$("#summaryOfListing").val('<%=listing_info.listing.summary_of_listing%>');
+	$("#summaryOfNeighborhood").val('<%=listing_info.listing.summary_of_neighborhood%>');
+	$("#summaryOfTransportation").val('<%=listing_info.listing.summary_of_transportation%>');
+
+	$("#asking_price").val('<%=listing_info.listing.rental_terms.asking_price%>');
+	$("#security_deposit").val('<%=listing_info.listing.rental_terms.security_deposit%>');
+	$("#duration").val('<%=listing_info.listing.rental_terms.duration%>');
+
+	$("#month").val('<%=listing_info.listing.move_in_date.month%>');
+	$("#date").val('<%=listing_info.listing.move_in_date.date%>');
+	$("#year").val('<%=listing_info.listing.move_in_date.year%>');
+
+	$("#phone").val('<%=listing_info.listing.contact.phone%>');
+	$("#email").val('<%=listing_info.listing.contact.email%>');
+
+</script>
 
 <% include ../../partials/footer %>

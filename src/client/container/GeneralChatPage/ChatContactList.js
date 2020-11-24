@@ -17,6 +17,7 @@ function ChatContactList() {
     switchChattingChannel,
     currChannelInfo,
     dmChannelContexts,
+    setCurrChannelInfo,
     childIndex,
     loadChattingDatabase,
     chattingContextType,
@@ -143,8 +144,6 @@ function ChatContactList() {
       console.warn(`buildContactStates: error = ${err}`);
     }
 
-    // console.log.log("total entries = " + _contactStates.length);
-
     return _contactStates;
   }
 
@@ -188,6 +187,13 @@ function ChatContactList() {
       // let's click the last item.
       handleClickState(contactStates.length - 1);
     }
+
+    // <note> this will ensure the clean up of chatting history.
+    // You may see previous chatting history without it.
+    if(contactStates.length===0)
+    {
+      setCurrChannelInfo({channelName: null, members: null});
+    }
   }, [contactStates]);
 
   useEffect(() => {
@@ -197,11 +203,6 @@ function ChatContactList() {
 
   function buildContactList() {
     const contacts = [];
-
-
-    // console.log.log("buildContactList: chattingContextType = " + chattingContextType);
-
-
     for (let i = 0; i < contactStates.length; i++) {
       const _context = dmChannelContexts[contactStates[i].channelInfo.channelName];
       const channelSummary = {

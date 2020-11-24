@@ -14,8 +14,9 @@ function ChattingWindow() {
   const messagesEndRef = useRef(null);
 
   const {
-    currChannelInfo, msgCounter, dmChannelContexts, getChattingHistory, getLastReadIndex, currentChatPartyPicture
+    dmChannelContexts, getChattingHistory, getLastReadIndex
   } = useContext(MessageContext);
+  
   const { getProfilePicture } = useContext(GlobalContext);
 
   // const [numOfHistory, setNumOfHistory] = useState(0);
