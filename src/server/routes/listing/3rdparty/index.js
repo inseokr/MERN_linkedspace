@@ -62,7 +62,9 @@ module.exports = function (app) {
 
     // let's create a database
     // rename the file with listing_id
-    if (filename) {
+    if(filename!="")
+    {
+
       const original_path = serverPath + picturePath + filename;
       const new_full_picture_path = `${picturePath + newListing.requester.id}_${filename}`;
       const new_path = `${serverPath + new_full_picture_path}`;
@@ -71,11 +73,10 @@ module.exports = function (app) {
         console.log('File renamed successfully');
         fileUpload2Cloud(serverPath, new_full_picture_path);
       });
-
       // ISEO-TBD: The path should start from "/public/..."?
       newListing.coverPhoto.path = new_full_picture_path;
     }
-
+    
     newListing.save((err) => {
       if (err) {
 	    	console.log('New Listing Save Failure');
@@ -112,7 +113,6 @@ module.exports = function (app) {
         fs.rename(original_path, new_path, (err) => {
           if (err) throw err;
           console.log('File renamed successfully');
-
           fileUpload2Cloud(serverPath, new_full_picture_path);
         });
 
