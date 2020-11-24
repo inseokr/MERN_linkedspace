@@ -9,8 +9,8 @@
   
   "scripts": {
     "build": "webpack --mode production ",       
-    "client": "react-scripts start && npm run bulid",   
-    "start": "concurrently \"node src/server/app.js\" \"npm run client\"",  
+    "client": "react-scripts start",   
+    "start": "concurrently \"npm run build \" \"npm run client\"",
     "build-dev": "webpack --mode development",  
     "client-dev": "react-scripts start && npm run build-dev",   
     "start-dev": "concurrently \"node src/server/app.js \" \"npm run client-dev\""
