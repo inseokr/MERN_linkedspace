@@ -9,8 +9,8 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="/stylesheets/main.css">
-	<link rel="stylesheet" href="/stylesheets/bootstrap_switch.css">
+	<link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/main.css'%>">
+	<link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/bootstrap_switch.css'%>">
 	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 </head>
 
@@ -73,8 +73,6 @@
 					<li class="nav-item">
 						<a class="nav-link" href="/MyNetworks">
 							My Network
-							<span class="fa fa-comment"></span>
-							<span class="num">2</span>
 						</a>
 					</li>
 					<li class="nav-item"><a class="nav-link" href="/Messages">Messages</a></li>
@@ -88,9 +86,9 @@
 					</li>
 					<li class="nav-item">
 							<% if(locals.profile_picture != "") {%>
-							<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.profile_picture%>">
+							<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.fileServerUrl+locals.profile_picture%>">
 							<% } else {%>
-								<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="/public/user_resources/pictures/profile_pictures/default_profile.jpg">
+								<img class="img-responsive center rounded-circle" style="max-height: 70%; height: 30px;" src="<%=locals.fileServerUrl+'/public/user_resources/pictures/profile_pictures/default_profile.jpg'%>">
 							<%}%>
 						</a>
 					</li>

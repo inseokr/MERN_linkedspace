@@ -1,5 +1,6 @@
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
-<link rel="stylesheet" href="/stylesheets/step_wizard.css">
+<link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/step_wizard.css'%>">
+
 	<!-- totalSteps/curr_step/action_url/action_method should be provided -->
 	<div class="stepwizard offset-md-3" style="margin-top: 20px">
 		<div class="stepwizard-row setup-panel">
@@ -10,7 +11,7 @@
 					               <%}else{%>
 					                 	btn-outline-secondary
 					               <%}%>
-					          btn-circle" href='<%="/listing/landlord/"+listing_info.listing_id+"/step"+step%>' type="button"><%=step%></a>
+					          btn-circle" href='<%="/LS_API/listing/landlord/"+listing_info.listing_id+"/step"+step%>' type="button"><%=step%></a>
 				</div>
 		  <%}%>
 		</div>

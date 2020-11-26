@@ -11,7 +11,7 @@
 	  var title = "What amenities do you offer?"%> 
 	<% include ../../partials/stepwizard_v2 %>
 	
-	<form role="form" action="/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
+	<form role="form" action="/LS_API/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
 		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
 			<div class="col-md-6 offset-md-3">
 				<div class="col-md-12">
@@ -105,7 +105,7 @@
 					</div>
 
 					<div class="p-2">
-						<a href='<%="/listing/landlord/"+listing_info.listing_id+"/step2"%>' class="btn btn-success btn-lg float-left">Prev</a>
+						<a href='<%="/LS_API/listing/landlord/"+listing_info.listing_id+"/step2"%>' class="btn btn-success btn-lg float-left">Prev</a>
 				    	<button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="step#3">Next</button>
 				    </div>
 				</div>

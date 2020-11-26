@@ -7,53 +7,62 @@ import SimpleModal from '../Modal/SimpleModal';
 import { MessageContext } from '../../contexts/MessageContext';
 // import { GlobalContext } from '../../contexts/GlobalContext';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
+/* eslint no-underscore-dangle: 0 */
 
-function clickHandler()
-{
-	//alert("Default clickHandler")
+function defaultClickHandler() {
+  // alert("Default defaultClickHandler")
 }
 
 // ISEO-TBD: this page will be re-rendered....
 // ChildListingsView seems to be reloaded again when the message editor is clicked again.
 function MessageEditorIcon(props) {
-
   const [modalShow, setModalShow] = useState(false);
-  const {postSelectedContactList, resetChatList, resetloadChattingDatabase} = useContext(MessageContext);
+  const {
+    postSelectedContactList,
+    selectedChatList,
+    resetChatList
+  } = useContext(MessageContext);
 
   // const {currentUser} = useContext(GlobalContext);
-  const {currentListing, currentChildIndex} = useContext(CurrentListingContext);
+  const { currentListing, currentChildIndex } = useContext(CurrentListingContext);
 
   // let modalFlag = false;
+  const { clickHandler, callerType } = props;
 
   // provide cllick handler if any customization is needed.
-  let onClickHandler = (props.clickHandler!==undefined)? props.clickHandler : clickHandler;
+  const onClickHandler = (clickHandler !== undefined) ? clickHandler : defaultClickHandler;
 
   // "general": general messaging without any listing associated
   // "listing_dashboard": message window in the listing dashboard
   // <note> Currently it's only for tenant listing.
-  let messageEditorCallerType = props.callerType;
+  const messageEditorCallerType = callerType;
 
   // general type doesn't need _childListing.
-  let _childListing = (messageEditorCallerType==="listing_dashboard")?
-    currentListing.child_listings[currentChildIndex]:
-    [];
+  const _childListing = (messageEditorCallerType === 'listing_dashboard')
+    ? currentListing.child_listings[currentChildIndex]
+    : [];
 
-  if (messageEditorCallerType==="listing_dashboard") {
-    console.log("currentChildIndex=" + currentChildIndex);
-    if(currentListing.child_listings.length>0 && currentListing.child_listings[currentChildIndex]!==undefined) {
-      console.log("listing =" + JSON.stringify(currentListing.child_listings[currentChildIndex].listing_id));
+  if (messageEditorCallerType === 'listing_dashboard') {
+    console.log(`currentChildIndex=${currentChildIndex}`);
+    if (currentListing.child_listings.length > 0
+        && currentListing.child_listings[currentChildIndex] !== undefined) {
+      console.log(`listing =${JSON.stringify(currentListing.child_listings[currentChildIndex].listing_id)}`);
     }
   }
 
-  let showModal = () => {
+  const showModal = () => {
     setModalShow(true);
   };
 
-  let handleClose = async () => {
+  const handleClose = async () => {
     setModalShow(false);
-    postSelectedContactList().then(()=>{resetChatList();});
-    // need to make it sure that the selected chatting party is shown in the contact list.
-    onClickHandler();
+
+    console.log(`selectedChatList length = ${selectedChatList.length}`);
+    if (selectedChatList !== undefined && selectedChatList.length >= 1) {
+      postSelectedContactList().then(() => { resetChatList(); });
+      // need to make it sure that the selected chatting party is shown in the contact list.
+      onClickHandler();
+    }
   };
 
   function messageEditorOnClick(evt) {
@@ -61,31 +70,37 @@ function MessageEditorIcon(props) {
     showModal();
   }
 
-  let user_group = [];
+  let userGroup = [];
 
-  if (_childListing!==undefined) {
-    //user_group = _childListing.listing.shared_user_group;
-    user_group = _childListing.shared_user_group;
+  if (_childListing !== undefined) {
+    // userGroup = _childListing.listing.shared_userGroup;
+    userGroup = _childListing.shared_user_group;
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     // DB will be loaded only after chattingContextType is updated properly
-    //console.log("MessageEditorIcon: loadChattingDatabase");
+    // console.log("MessageEditorIcon: loadChattingDatabase");
     // ISEO-TBD: loadChattingDatabase is called multiple times
-    //loadChattingDatabase();
-    //}, [chattingContextType, modalShow]);
+    // loadChattingDatabase();
+    // }, [chattingContextType, modalShow]);
   }, [modalShow]);
 
   return (
     <div>
       <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
-        <PickChattingParty group={user_group}/>
+        <PickChattingParty group={userGroup} />
       </SimpleModal>
-      <div className="MessageEditIcon" onClick={messageEditorOnClick}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor"
-             width="24" height="24" focusable="false">
-          <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
-          </path>
+      <div role="button" tabIndex={0} className="MessageEditIcon" onClick={messageEditorOnClick} onKeyDown={messageEditorOnClick}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          data-supported-dps="24x24"
+          fill="currentColor"
+          width="24"
+          height="24"
+          focusable="false"
+        >
+          <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z" />
         </svg>
       </div>
     </div>
@@ -93,5 +108,3 @@ function MessageEditorIcon(props) {
 }
 
 export default MessageEditorIcon;
-
-

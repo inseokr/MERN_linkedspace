@@ -1,14 +1,15 @@
+/* eslint-disable */
 import React, { useState, useContext } from 'react';
 import { MessageContext } from '../../contexts/MessageContext';
 import '../../app.css';
 import './GeneralChatMainPage.css';
 
 function WriteChat() {
-  const {updateChatHistory} = useContext(MessageContext);
-  const [chatMessage, setChatMessage] = useState("Write message...");
+  const { updateChatHistory } = useContext(MessageContext);
+  const [chatMessage, setChatMessage] = useState('Write message...');
 
   const handleKeyPress = (e) => {
-    if(e.which === 13 && !e.shiftKey) {
+    if (e.which === 13 && !e.shiftKey) {
       handleSubmit(e);
       e.preventDefault();
     }
@@ -20,13 +21,13 @@ function WriteChat() {
 
   const cleanMessage = (event) => {
     event.preventDefault();
-    setChatMessage("");
+    setChatMessage('');
   };
 
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setChatMessage("");
+    setChatMessage('');
     updateChatHistory(chatMessage, true);
   };
 
@@ -44,7 +45,7 @@ function WriteChat() {
             id="ChattingMessage"
             cols="50"
             placeholder="Write a message..."
-			      value={chatMessage}
+            value={chatMessage}
             onChange={handleChangeChatMessage}
             onKeyPress={handleKeyPress}
             onClick={cleanMessage}

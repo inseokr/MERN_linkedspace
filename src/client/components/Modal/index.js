@@ -1,14 +1,15 @@
-import React, { Fragment, PureComponent } from "react";
-import { createPortal } from "react-dom";
-import PropTypes from "prop-types";
+/* eslint-disable */
+import React, { Fragment, PureComponent } from 'react';
+import { createPortal } from 'react-dom';
+import PropTypes from 'prop-types';
 
 class Index extends PureComponent {
   componentDidMount() {
-    document.addEventListener("click", this.closeModal, false);
+    document.addEventListener('click', this.closeModal, false);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("click", this.closeModal, false);
+    document.removeEventListener('click', this.closeModal, false);
   }
 
   closeModal = ({ target }) => {
@@ -17,20 +18,19 @@ class Index extends PureComponent {
     }
   };
 
-  render = () =>
-    createPortal(
-      <Fragment>
-        <div className="modal-overlay" />
-        <div className="modal-window-container">
-          <div className="modal-container">
-            <div ref={node => (this.modal = node)} id="modal">
-              {this.props.children}
-            </div>
+  render = () => createPortal(
+    <Fragment>
+      <div className="modal-overlay" />
+      <div className="modal-window-container">
+        <div className="modal-container">
+          <div ref={node => (this.modal = node)} id="modal">
+            {this.props.children}
           </div>
         </div>
-      </Fragment>,
-      document.body
-    );
+      </div>
+    </Fragment>,
+    document.body
+  );
 }
 
 Index.propTypes = {

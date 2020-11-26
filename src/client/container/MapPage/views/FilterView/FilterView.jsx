@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,17 +13,17 @@ function FilterView() {
       <CssBaseline />
       <Grid container direction="row" justify="space-evenly">
         <Grid item xs={4}>
-          <SearchFilter/>
+          <SearchFilter />
         </Grid>
         <Grid item xs={4}>
-          <PlaceFilter/>
+          <PlaceFilter />
         </Grid>
         <Grid item xs={4}>
-          <PriceFilter/>
+          <PriceFilter />
         </Grid>
-        {/*<Grid item xs={3}>*/}
-        {/*  <DateFilter/>*/}
-        {/*</Grid>*/}
+        {/* <Grid item xs={3}> */}
+        {/*  <DateFilter/> */}
+        {/* </Grid> */}
       </Grid>
     </div>
   );

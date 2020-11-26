@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 // import { ListingsContext } from '../../../../contexts/ListingsContext';
 import Modal from '../../../../components/Modal';
@@ -11,7 +12,7 @@ function DateFilter() {
   };
 
   return (
-    <div className={`${showModal ? "blur" : undefined} modal-app`}>
+    <div className={`${showModal ? 'blur' : undefined} modal-app`}>
       <button className="filter-button" onClick={toggleModal}>
         Date
       </button>

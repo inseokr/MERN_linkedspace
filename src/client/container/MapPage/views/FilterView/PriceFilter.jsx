@@ -1,14 +1,15 @@
+/* eslint-disable */
 import React, { useContext, useState } from 'react';
-import Modal from "../../../../components/Modal"
-import { ListingsContext } from '../../../../contexts/ListingsContext';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import clsx from 'clsx';
+import { ListingsContext } from '../../../../contexts/ListingsContext';
+import Modal from '../../../../components/Modal';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     width: 250 + theme.spacing(3) * 2,
   },
@@ -73,7 +74,9 @@ function LinkedSpacesThumbComponent(props) {
 function PriceFilter() {
   const classes = useStyles();
 
-  const {filterListings, places, price, date} = useContext(ListingsContext);
+  const {
+    filterListings, places, price, date
+  } = useContext(ListingsContext);
 
   const [showModal, setShowModal] = useState(false);
   const [interimPrice, setPrice] = useState(price);
@@ -89,7 +92,7 @@ function PriceFilter() {
 
   const handleMinChange = (event) => {
     let min = event.target.value;
-    let max = interimPrice[1];
+    const max = interimPrice[1];
 
     if (!isNaN(min)) { // True if value is a number.
       min = parseInt(min);
@@ -100,10 +103,10 @@ function PriceFilter() {
   };
 
   const handleMaxChange = (event) => {
-    let min = interimPrice[0];
+    const min = interimPrice[0];
     let max = event.target.value;
 
-    if (max.slice(-1) === "+") {
+    if (max.slice(-1) === '+') {
       max = max.slice(0, -1); // Remove +
     }
 
@@ -131,15 +134,15 @@ function PriceFilter() {
     setPrice([1, 1000]);
   };
 
-  let interimMin = interimPrice[0];
-  let interimMax = interimPrice[1];
+  const interimMin = interimPrice[0];
+  const interimMax = interimPrice[1];
 
-  let priceTitle = "Price";
-  let min = price[0];
-  let max = price[1];
+  let priceTitle = 'Price';
+  const min = price[0];
+  const max = price[1];
   if (priceSubmitted) {
     if (min === 1 && max === 1000) {
-      priceTitle = "$1 - $1000+";
+      priceTitle = '$1 - $1000+';
     } else if (min === 1) {
       priceTitle = `Up to $${max}`;
     } else if (max === 1000) {
@@ -150,7 +153,7 @@ function PriceFilter() {
   }
 
   return (
-    <div className={`${showModal ? "blur" : undefined} modal-app`}>
+    <div className={`${showModal ? 'blur' : undefined} modal-app`}>
       <button className="filter-button" onClick={toggleModal}>
         {priceTitle}
       </button>
@@ -158,7 +161,7 @@ function PriceFilter() {
         <Modal toggleModal={toggleModal}>
           <Grid container spacing={5} alignContent="center" alignItems="center" className={classes.root}>
             <Grid item xs={12}>
-              <div className={`modal-slider`}>
+              <div className="modal-slider">
                 <LinkedSpacesSlider
                   ThumbComponent={LinkedSpacesThumbComponent}
                   min={1}
@@ -190,7 +193,7 @@ function PriceFilter() {
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   }}
-                  value={interimMax >= 1000 ? "1000+" : interimMax}
+                  value={interimMax >= 1000 ? '1000+' : interimMax}
                   onChange={handleMaxChange}
                   variant="outlined"
                   size="small"
@@ -202,9 +205,9 @@ function PriceFilter() {
                 Clear
               </button>
             </Grid>
-            <Grid item xs={4}/>
+            <Grid item xs={4} />
             <Grid item xs={4} className="submit-button-grid">
-              <button className="submit-button" onClick={() => {toggleModal(); onSubmit();}}>
+              <button className="submit-button" onClick={() => { toggleModal(); onSubmit(); }}>
                 Submit
               </button>
             </Grid>

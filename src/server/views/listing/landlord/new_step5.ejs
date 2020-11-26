@@ -12,7 +12,7 @@
 	  var title = "Set the scenes for online tour"%>
 	<% include ../../partials/stepwizard_v2 %>
 
-	<form role="form" action="/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
+	<form role="form" action="/LS_API/listing/landlord/<%=listing_info.listing_id%>?_method=PUT" method="post">
 		<div class="row setup-content" id="step-<%=curr_step%><" style="margin-top:40px;">
 			<div class="col-md-6 offset-md-3">
 				<div class="col-md-12">
@@ -21,7 +21,7 @@
 					</div>
 					<hr>
 
-					<link rel="stylesheet" href="/stylesheets/file_upload_v1.css">
+					<link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/file_upload_v1.css'%>">
 					
 					<!--<div class="row text-center">-->
 					<%for(var picIndex=1; picIndex<=20; picIndex++) {
@@ -65,7 +65,7 @@
 				<hr>
 
 				<div class="d-flex">
-					<a href='<%="/listing/landlord/"+listing_info.listing_id+"/step4"%>' class="btn btn-success btn-lg float-left">Prev</a>
+					<a href='<%="/LS_API/listing/landlord/"+listing_info.listing_id+"/step4"%>' class="btn btn-success btn-lg float-left">Prev</a>
 					<button class="btn btn-primary nextBtn btn-lg ml-auto" type="submit" name="submit" value="step#5">Next</button>	
 				</div>
 			</div>
@@ -100,7 +100,7 @@
 	<%if(listing_info.listing!=null){%>
 		<%for(var i=0; i<listing_info.listing.pictures.length; i++){%>
 			// Load the image and the caption
-			$("#imagePreview-<%=i+1%>").css('background-image', 'url("/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>")');
+			$("#imagePreview-<%=i+1%>").css('background-image', 'url("<%=locals.fileServerUrl%>/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>")');
 			$("#previewLabel-<%=i+1%>").css('opacity', 0);
 			$("#imageCapture-<%=i+1%>").val('<%=listing_info.listing.pictures[i].caption%>');
 			// Display the next image
@@ -117,7 +117,7 @@
 		// ISEO: may need to add listing ID as well.
 		$.ajax({
 		  enctype: 'multipart/form-data',
-		  url:  `/listing/landlord/${_id}/file_delete`,
+		  url:  `/LS_API/listing/landlord/${_id}/file_delete`,
 		  type: 'POST',
 		  processData: false, // important
 		  contentType: false, // important
@@ -192,7 +192,7 @@
 			// ISEO: may need to add listing ID as well.
 			$.ajax({
 			  enctype: 'multipart/form-data',
-			  url: `/listing/landlord/${_id}/file_upload`,
+			  url: `/LS_API/listing/landlord/${_id}/file_upload`,
 			  type: 'POST',
 			  processData: false, // important
 			  contentType: false, // important

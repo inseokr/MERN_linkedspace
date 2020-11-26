@@ -1,7 +1,7 @@
 module.exports = {
-    devServer: {
-      proxy: {
-      '/': 'http://localhost:5000'
-      }
+  devServer: {
+    proxy: {
+      '/LS_API': process.env.REACT_APP_EXPRESS_SERVER_URL
     }
+  }
 };
