@@ -141,6 +141,7 @@ function ListingComponent(props) {
                     <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
                       {' '}
                       Hosted by 
+                      {' '}
                       {listing.requester.username}
                     </Typography>
                   </div>
