@@ -175,11 +175,11 @@ function ListingTenantMainPage(props) {
       <div style={{ marginTop: '30px' }}>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         <div className="d-flex justify-content-start">
-          <button className="btn btn-primary" onClick={() => copyCurrentUrl}>Copy link of this posting</button>
+          <button className="btn btn-outline-dark" onClick={() => copyCurrentUrl}>Copy link of this posting</button>
 
-          <button className="btn btn-info" style={{ marginLeft: '70px ' }} onClick={() => forward2friend()}>Send listing to friends</button>
+          <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => forward2friend()}>Send listing to friends</button>
           <Link to={`/listing/tenant/${match.params.id}/dashboard`}>
-            <button className="btn btn-danger" style={{ marginLeft: '70px ' }}>Dashboard</button>
+            <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
           </Link>
         </div>
       </div>
