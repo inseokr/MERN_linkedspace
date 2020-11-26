@@ -26,7 +26,7 @@ function LoginMenu() {
           height: '30px'
         }
            }
-        src={`https://s3-us-west-1.amazonaws.com/linkedspaces.fs${currentUser.profile_picture}`}
+        src={`${process.env.REACT_APP_FILE_SERVER_URL}${currentUser.profile_picture}`}
         alt="Edit Profile"
       />
     );

@@ -31,7 +31,7 @@ function ListingIntro() {
 
       <div className="col-4" style={{ marginLeft: '10px' }}>
         <div className="_tw4pe52">
-          Hosted by
+          Hosted by 
           {' '}
           {`${currentListing.listing.requester.id.firstname} ${currentListing.listing.requester.id.lastname}`}
         </div>

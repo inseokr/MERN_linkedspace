@@ -15,6 +15,8 @@ const User = require('./models/user');
 require('express-namespace');
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('./aws_s3_api');
 
+const userDbHandler = require('./db_utilities/user_db/access_user_db');
+
 const app = express();
 
 app.namespace('/LS_API', () => {
@@ -301,6 +303,8 @@ app.namespace('/LS_API', () => {
         curr_user.save();
 
         fileUpload2Cloud(serverPath, picPath);
+
+        userDbHandler.populateProfilePicture(curr_user);
 
         res.send('File uploaded!');
       });

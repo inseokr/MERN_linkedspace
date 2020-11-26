@@ -65,7 +65,7 @@ function DirectFriends() {
     <div className="bottom-shadow" id="direct_friends">
       <span style={{ textAlign: 'center' }}><h3> Direct Friends </h3></span>
       <hr />
-      <div className="d-flex justify-content-between">
+      <div className="d-flex flex-wrap justify-content-between">
         {getDirectFriends()}
       </div>
       <hr />
