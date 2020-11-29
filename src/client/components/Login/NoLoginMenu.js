@@ -10,6 +10,7 @@ export default class NoLoginMenu extends Component {
     super(props);
 
     this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleSignupClick = this.handleSignupClick.bind(this);
   }
 
   componentDidMount() {
@@ -19,6 +20,12 @@ export default class NoLoginMenu extends Component {
     console.log('handleLoginClick');
     const { loginClickHandler } = this.props;
     loginClickHandler();
+  }
+
+  handleSignupClick() {
+    console.log('handleSignupClick');
+    const { signupClickHandler } = this.props;
+    signupClickHandler();
   }
 
   render() {
@@ -40,9 +47,7 @@ export default class NoLoginMenu extends Component {
                   <a className="nav-link" onClick={this.handleLoginClick} href="#">Login</a>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/Signup">
-                    Sign up
-                  </Link>
+                  <a className="nav-link" onClick={this.handleSignupClick} href="#">Sign Up</a>
                 </li>
               </ul>
             </div>

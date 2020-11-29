@@ -6,16 +6,14 @@
   },
   "description": "First LinkedSpaces service based on MERN",
   "main": "src/server/index.js",
-  
   "scripts": {
-    "build": "webpack --mode production ",       
-    "client": "react-scripts start && npm run build", 
+    "build": "webpack --mode production ",
+    "client": "react-scripts start && npm run build",
     "start": "npm run client",
-    "build-dev": "webpack --mode development",  
-    "client-dev": "react-scripts start && npm run build-dev",   
+    "build-dev": "webpack --mode development",
+    "client-dev": "react-scripts start && npm run build-dev",
     "start-dev": "concurrently \"node src/server/app.js \" \"npm run client-dev\""
   },
-
   "author": "In Seo",
   "license": "ISC",
   "dependencies": {
@@ -78,6 +76,7 @@
     "passport-local-mongoose": "^5.0.1",
     "path": "^0.12.7",
     "prop-types": "^15.6.0",
+    "rand-token": "^1.0.1",
     "react": "^16.14.0",
     "react-alert": "^7.0.2",
     "react-art": "^16.13.1",
