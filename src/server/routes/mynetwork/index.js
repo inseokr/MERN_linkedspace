@@ -79,6 +79,91 @@ module.exports = function (app) {
     return bFound;
   }
 
+
+  // establish the friendship between friend_1 & friend_2
+  function establishFriendship(res, friend_id_1, friend_id_2) {
+    User.findById(friend_id_1, (err, friend_1) => {
+      if (err) {
+        console.log('No such user found');
+      } else {
+        User.findById(friend_id_2, (err, friend_2) => {
+          if (isDirectFriend(friend_2, friend_id_1) === true) {
+            console.log("we're friend already");
+            res.redirect('/MyNetworks');
+            return;
+          }
+
+          const _friend1 = {
+            id: friend_id_2,
+            name: friend_2.firstname + friend_2.lastname,
+            username: friend_2.username,
+            profile_picture: friend_2.profile_picture,
+            email: friend_2.email
+          };
+          friend_1.direct_friends.push(_friend1);
+
+          // remove both incoming&outgoing entries if any
+          // This works but non-sense to me... why should I query again??
+          User.update({
+            _id: friend_id_1
+          }, {
+            $pull:
+                  { incoming_friends_requests: { id: friend_id_2 } }
+          },
+          (err, val) => {
+            User.update({
+              _id: friend_id_1
+            }, {
+              $pull:
+                    { outgoing_friends_requests: { id: friend_id_2 } }
+            },
+            (err, val) => {
+              friend_1.save();
+            });
+          });
+
+          // remove both incoming&outgoing entries if any
+          // This works but non-sense to me... why should I query again??
+
+
+          const _friend2 = {
+            id: friend_id_1,
+            name: friend_1.firstname + friend_1.lastname,
+            username: friend_1.username,
+            profile_picture: friend_1.profile_picture,
+            email: friend_1.email
+          };
+          friend_2.direct_friends.push(_friend2);
+
+          // remove both incoming&outgoing entries if any
+          // This works but non-sense to me... why should I query again??
+          User.update({
+            _id: friend_id_2
+          }, {
+            $pull:
+                  { incoming_friends_requests: { id: friend_id_1 } }
+          },
+          (err, val) => {
+            // Let's render with updated database...
+            // remove both incoming&outgoing entries if any
+            // This works but non-sense to me... why should I query again??
+            User.update({
+              _id: friend_id_2
+            }, {
+              $pull:
+                    { outgoing_friends_requests: { id: friend_id_1 } }
+            },
+            (err, val) => {
+              friend_2.save();
+              // Let's render with updated database...
+              res.redirect('/MyNetworks');
+            });
+          });
+        });
+      }
+    });
+  }
+
   async function buildRecommendedFriendsList(curr_user) {
     return new Promise((resolve) => {
       User.find({}, (error, users) => {
@@ -180,6 +265,7 @@ module.exports = function (app) {
       if (err) {
         console.log('No such user found');
       } else {
+        // <note> req.user: isn't it User object already?
         User.findById(req.user._id, (err, curr_user) => {
           // ISEO: I don't know why name is not saved to the database...
           const requestingFriend = { id: req.user._id, name: curr_user.firstname + curr_user.lastname };
@@ -190,7 +276,6 @@ module.exports = function (app) {
 
           curr_user.outgoing_friends_requests.push(invitedFriend);
           curr_user.save();
-
           // Let's render with updated database...
           res.redirect('/MyNetworks');
         });
@@ -201,6 +286,8 @@ module.exports = function (app) {
   router.post('/:friend_id/friend_accept', (req, res) => {
     console.log('ISEO:friend_accept');
 
+    establishFriendship(res, req.user._id, req.params.friend_id);
+    /*
     User.findById(req.params.friend_id, (err, friend) => {
       if (err) {
         console.log('No such user found');
@@ -208,11 +295,11 @@ module.exports = function (app) {
         User.findById(req.user._id, (err, curr_user) => {
           const acceptingFriend = {
             id: req.user._id,
-						                    name: curr_user.firstname + curr_user.lastname,
-						                    username: curr_user.username,
-						                    profile_picture: curr_user.profile_picture,
-						                    email: curr_user.email
-						                  };
+            name: curr_user.firstname + curr_user.lastname,
+            username: curr_user.username,
+            profile_picture: curr_user.profile_picture,
+            email: curr_user.email
+          };
           friend.direct_friends.push(acceptingFriend);
 
 
@@ -228,12 +315,11 @@ module.exports = function (app) {
 
           const acceptedFriend = {
             id: friend._id,
-						                   name: friend.firstname + friend.lastname,
-										   username: friend.username,
-										   profile_picture: friend.profile_picture,
-										   email: friend.email
+            name: friend.firstname + friend.lastname,
+            username: friend.username,
+            profile_picture: friend.profile_picture,
+            email: friend.email
           };
-
           curr_user.direct_friends.push(acceptedFriend);
 
           // ISEO-TBD:... can't believe but remove/pull only works with _id, not other fields.
@@ -255,6 +341,7 @@ module.exports = function (app) {
         });
       }
     });
+    */
   });
 
   router.get('/:filename', (req, res) => {
