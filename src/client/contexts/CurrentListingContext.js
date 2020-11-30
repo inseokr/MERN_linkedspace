@@ -1,63 +1,39 @@
-import React, {createContext, useState, useEffect} from "react";
-import axios from 'axios';
+import React, { createContext, useState, useEffect } from "react";
 
 export const CurrentListingContext = createContext();
 
 export function CurrentListingProvider(props) {
     const [listing_info, setListingInfo] = useState();
-    const [currentListing, setCurrentListing] = useState();
-    const [ListingInfoType, setListingInfoType] = useState("");
+    const [currentListing, setCurrentListing] = useState({});
+    const [listingInfoType, setListingInfoType] = useState("");
     const [currentChildIndex, setCurrentChildIndex] = useState(0);
 
-    function cleanupListingInfoType() {
-        setListingInfoType("");
-    }
-
-    async function fetchListingInfo(_type) {
-
-        //console.log("ISEO: fetchListingInfo: _type =" + _type);
-        //console.log("ISEO: ListingInfoType =" + ListingInfoType);
-
-        if (ListingInfoType!==_type) {
-            setListingInfoType(_type);
-            // type
-            // + own: created by the user
-            // + friend: forwarded from other users
-            //console.log("get_active_listing: type = " + _type);
-
-            if(_type==="child") _type = "own";
-
-            fetch('/listing/get_active_listing/'+_type)
-                .then(res => res.json())
+    function fetchListingInfo(_type) {
+        const listingType = _type === "child" ? "child" : "own";
+        if (listingInfoType !== listingType) {
+            setListingInfoType(listingType);
+            fetch('/listing/get_active_listing/'+_type).then(response => response.json())
                 .then(listing => {
-                    //console.log("listing = " + JSON.stringify(listing));
                     setListingInfo(listing)
                 });
         }
     }
 
-    useEffect(() => {
-    }, [currentChildIndex]);
+    function fetchCurrentListing(id, listingType) {
+        console.log(`fetchCurrentListing called with listing_id: ${id}, type: ${listingType}`);
 
-    async function fetchCurrentListing(id, listing_type) {
-        console.log("fetchCurrentListing is called with listing_id = " + id + ", type = " + listing_type);
-        const _prefix = (listing_type==="landlord") ? "/listing/landlord/" : "/listing/tenant/";
-
-        let successful = 0;
-
-        await fetch(_prefix+id+'/fetch')
-            .then(res => res.json())
+        return fetch(`/listing/${listingType}/${id}/fetch`).then(response => response.json())
             .then(listing => {
-                console.log("listing = " + JSON.stringify(listing));
+                console.log(`listing: ${JSON.stringify(listing)}`);
                 setCurrentListing(listing);
-                successful = 1;
+                return true
+            }).catch(() => {
+                return false
             });
-
-        return successful;
     }
 
     return (
-        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType, currentChildIndex, setCurrentChildIndex}}>
+        <CurrentListingContext.Provider value={{listing_info, currentListing, fetchCurrentListing, fetchListingInfo, setListingInfoType, currentChildIndex, setCurrentChildIndex}}>
             {props.children}
         </CurrentListingContext.Provider>
     );
