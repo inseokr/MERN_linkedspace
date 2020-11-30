@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useContext } from 'react';
 import '../../app.css';
 import LinkedSpaceHeader from './LinkedSpaceHeader';
@@ -46,14 +47,14 @@ function CommonHeader(props) {
     }
   }, [currentUser, friendsList]);
 
-  const { loginClickHandler } = props;
+  const { loginClickHandler, signupClickHandler } = props;
 
   return (
     <div className="navBarContainer">
       <LinkedSpaceHeader />
       { isUserLoggedIn()
         ? <LoginMenu />
-        : <NoLoginMenu loginClickHandler={loginClickHandler} />
+        : <NoLoginMenu loginClickHandler={loginClickHandler} signupClickHandler={signupClickHandler} />
       }
     </div>
   );

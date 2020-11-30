@@ -20,7 +20,11 @@ node.loop = node.runLoopOnce;
 
 module.exports = function (app) {
   router.get('/getLoginStatus', (req, res) => {
-    console.log('getLoginStatus called');
+    if (req.user == undefined) {
+      console.log(' user is undefined');
+    } else {
+      console.log(`getLoginStatus called with username = ${req.user.username}`);
+    }
     if (req.user == undefined) res.json(null);
     else res.json(app.locals.currentUser[req.user.username]);
   });
@@ -29,6 +33,17 @@ module.exports = function (app) {
     console.log('getLastMenu called');
     res.json(app.locals.lastReactMenu);
     app.locals.lastReactMenu = '';
+  });
+
+  router.post('/getLoginStatus', (req, res) => {
+    if (req.body.username == undefined) {
+      console.log(' user is undefined');
+    } else {
+      console.log(`getLoginStatus called with username = ${req.body.username}`);
+    }
+
+    if (req.body.username == undefined) res.json(null);
+    else res.json(app.locals.currentUser[req.body.username]);
   });
 
   router.get('/getData', (req, res) => {
@@ -85,6 +100,7 @@ module.exports = function (app) {
       lastname: req.body.lastname,
       email: req.body.email,
       gender: req.body.gender,
+      password: req.body.password,
       birthdate: new Date(birthdayString)
     });
     User.register(newUser, req.body.password, (err, user) => {
@@ -134,7 +150,7 @@ module.exports = function (app) {
           if (err) { console.log('User Not Found'); return; }
           app.locals.currentUser[req.user.username] = user;
           app.locals.profile_picture = user.profile_picture;
-          // console.log("Updating current user = " + app.locals.currentUser );
+          console.log(`Updating current user = ${app.locals.currentUser}`);
         });
       }
     });
