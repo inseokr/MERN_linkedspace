@@ -157,6 +157,7 @@ const ChildListing = React.forwardRef(({
                 <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
                   {' '}
                   Hosted by 
+                  {' '}
                   {childListing.requester.username}
                 </Typography>
               </div>

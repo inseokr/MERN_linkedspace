@@ -11,7 +11,10 @@ const async = require('async');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const fileUpload = require('express-fileupload');
+const Axios = require('axios');
 const User = require('./models/user');
+
+
 require('express-namespace');
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('./aws_s3_api');
 
@@ -56,7 +59,76 @@ app.namespace('/LS_API', () => {
 
   const os = require('os');
 
-  const url = process.env.DATABASEURL || 'mongodb://localhost/Linkedspaces';
+  // 'mongodb://localhost/Linkedspaces';
+  const url = process.env.DATABASEURL || process.env.DEV_DATABASEURL;
+
+
+  async function downloadProfilePicture(profileFullPath, profilePath, accessToken) {
+    const url = `https://graph.facebook.com/me/picture?access_token=${accessToken}`;
+
+    const writer = fs.createWriteStream(profileFullPath);
+
+    const response = await Axios({
+      url,
+      method: 'GET',
+      responseType: 'stream'
+    });
+
+    response.data.pipe(writer);
+
+    fileUpload2Cloud(serverPath, profilePath);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+  }
+
+  async function createUserByFacebookProfile(facebookProfile, accessToken) {
+    const splitedName = facebookProfile.name.split(' ');
+    const profilePath = '/public/user_resources/pictures/profile_pictures/' + `${facebookProfile.id}.jpg`;
+    const profileFullPath = path.resolve(__dirname, 'public/user_resources/pictures/profile_pictures', `${facebookProfile.id}.jpg`);
+    const result = await downloadProfilePicture(profileFullPath, profilePath, accessToken);
+
+    // console.log(`Profile picture download result = ${result}`);
+
+    const newUser = new User({
+      username: facebookProfile.email,
+      firstname: splitedName[0],
+      lastname: splitedName[1],
+      email: facebookProfile.email,
+      password: 'linkedspaces',
+      profile_picture: profilePath
+    });
+
+    return new Promise((resolve, reject) => {
+      User.register(newUser, 'linkedspaces', (err, user) => {
+        resolve(user);
+      });
+    });
+  }
+
+  async function downloadImage() {
+    // const url = 'https://unsplash.com/photos/AaEQmoufHLk/download?force=true';
+    const url = 'https://graph.facebook.com/me/picture?access_token=EAAOX3hjbtykBAFmQdG42jZAYewvVq0Vr5Bcsb6ZCs5VMDVPjNeZC8KwFZBJn7XleMtn3RLk8iC6rYuZCHLRQDpTwCCkIgUsr25asdQZBMyOgsK205NaZBagzfHYmI3PPKM1YBJFqzG8dgkJOQjb22TP4dUbeEo8g2gZD';
+    const path_ = path.resolve(__dirname, 'images', 'code.jpg');
+    const writer = fs.createWriteStream(path_);
+
+    const response = await Axios({
+      url,
+      method: 'GET',
+      responseType: 'stream'
+    });
+
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+  }
+
+
   mongoose.connect(url, { useNewUrlParser: true });
   // app.use(bodyParser.urlencoded({extended: true}));
 
@@ -72,15 +144,19 @@ app.namespace('/LS_API', () => {
   app.use(methodOverride('_method'));
   app.use(flash());
   app.use(express.static('dist'));
+
   // app.get('/api/getUsername', (req, res) => res.send({ username: os.userInfo().username }));
+
 
   // PASSPORT CONFIGURATION
   app.use(require('express-session')({
-    secret: 'Once again Rusty wins cutest dog!',
+    secret: 'anything',
     resave: false,
     saveUninitialized: false
   }));
 
+
+  // app.use(express.session({ secret: 'anything' }));
   app.use(passport.initialize());
   app.use(passport.session());
   passport.use(new LocalStrategy(User.authenticate())); // iseo: passport will use User's authenticate method which is passport-mongoose-local
@@ -90,24 +166,44 @@ app.namespace('/LS_API', () => {
   passport.use(new FacebookStrategy({
     clientID: '1011405085718313',
     clientSecret: '3b630313a8a2c8983405b55c11289e8b',
-    callbackURL: 'http://localhost:5000/auth/facebook/callback'
+    callbackURL: '/LS_API/auth/facebook/callback'
   },
   ((accessToken, refreshToken, profile, done) => {
-    console.log(`Facebook Login Completed. ID=${profile.id}`);
+    console.log(`Facebook Login Completed. ID=${JSON.stringify(profile)}`);
+    console.log(`Facebook Login Completed. accessToken=${accessToken}`);
 
     facebook.getFbData(accessToken, `/${profile.id}`, 'friends,email,name',
       (response) => {
         console.log(response);
-      });
 
-    // Login completed... but how I could redirect the page??
-    User.findOne({ username: 'inseo' }, (err, user) => {
-      if (err) { return done(err); }
-      console.log('Facebook login: saving current user');
-      // ISEO-TBD: need work!!
-      app.locals.currentUser.inseo = user;
-      done(null, user);
-    });
+        // Login completed... but how I could redirect the page??
+        User.findOne({ email: response.email }, async (err, user) => {
+          if (err || user == null) {
+            console.log('user not found, create one with Facebook profile');
+            user = await createUserByFacebookProfile(response, accessToken);
+            app.locals.currentUser[user.username] = user;
+
+            if (user) {
+              console.log('user created successfully');
+              done(null, user);
+            } else {
+              console.log('user creation failure');
+              done(null, null);
+            }
+
+            // Is it needed?
+            return;
+          }
+          console.log('Facebook login: saving current user');
+          // ISEO-TBD: need work!!
+          // app.locals.currentUser[req.user.username]
+          console.log(`Facebook login: username = ${user.username}`);
+          app.locals.currentUser[user.username] = user;
+          // ISEO-TBD: What it is exactly?
+          // what happens when done is called. who's getting user parameter?
+          done(null, user);
+        });
+      });
   })));
 
   // iseo: It's kind of pre-processing or middleware for route handling
@@ -388,20 +484,99 @@ app.namespace('/LS_API', () => {
   //  /auth/facebook/callback
   app.get('/auth/facebook', passport.authenticate('facebook',
     {
-      successRedirect: '/listing',
+      successRedirect: `${process.env.REACT_SERVER_URL}/facebooklogin/?user=inseo/`,
       failureRedirect: '/login'
     }), (req, res) => {
     console.log('This callback is not expected, auth/facebook/callback will be called instead');
   });
+
   // Facebook will redirect the user to this URL after approval.  Finish the
   // authentication process by attempting to obtain an access token.  If
   // access was granted, the user will be logged in.  Otherwise,
   // authentication has failed.
+  app.post('/auth/facebook/relogin', (req, res) => {
+    User.findOne({ username: req.body.username }, (err, user) => {
+      if (err) {
+        console.log('User Not Found');
+        res.json(null);
+        return;
+      }
+
+      console.log(`relogin is called: user = ${JSON.stringify(user)}`);
+      // req.body.username = 'inseo';
+      req.body.password = user.password;
+
+      console.log(`user password = ${user.password}`);
+
+      downloadImage();
+
+      // check if the user is logged in already
+      if (app.locals.currentUser[req.body.username] != null) {
+        passport.authenticate('local')(req, res, (error) => {
+          if (error) {
+            console.log('relogin failed');
+            res.redirect(`${process.env.REACT_SERVER_URL}/login`);
+          } else {
+            req.flash('success', `Welcome back to LinkedSpaces ${req.body.username}`);
+            console.log(`Welcome back to LinkedSpaces ${req.body.username}`);
+            // res.redirect(`${process.env.REACT_SERVER_URL}`);
+            res.json(user);
+          }
+        });
+      } else {
+        console.log('user is not logged in yet');
+        res.json(null);
+      }
+    });
+  });
+
+
+  app.get('/auth/facebook/profile',
+    (req, res) => {
+      console.log(`profile called: user=${JSON.stringify(req.user)}`);
+      res.redirect(`${process.env.REACT_SERVER_URL}/facebooklogin/${req.user.username}/login`);
+    });
+
   app.get('/auth/facebook/callback',
-    passport.authenticate('facebook', {
-      successRedirect: '/listing',
-      failureRedirect: '/login'
-    }));
+    passport.authenticate('facebook',
+      {
+        successRedirect: '/LS_API/auth/facebook/profile',
+        // successRedirect: `${process.env.REACT_SERVER_URL}`,
+        failureRedirect: '/login'
+      }));
+
+
+  // handle sign up logic
+  app.post('/signup/local', (req, res) => {
+    console.log(`signup: req.body = ${JSON.stringify(req.body)}`);
+    const newUser = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+    });
+
+    User.register(newUser, req.body.password, (err, user) => {
+      if (err) {
+        console.log(`User.register failed = ${err.message}`);
+        req.flash('error', err.message);
+        return res.redirect('/');
+      }
+      // how to use facebook login?
+      passport.authenticate('local')(req, res, () => {
+        req.flash('success', `Welcome to LinkedSpaces ${user.username}`);
+        res.redirect('/');
+      });
+    });
+  });
+
+
+  app.get('/signup/facebook', passport.authenticate('facebook',
+    {
+      successRedirect: `${process.env.REACT_SERVER_URL}/facebooklogin/?user=inseo/`,
+      failureRedirect: `${process.env.REACT_SERVER_URL}/signup`
+    }), (req, res) => {
+    console.log('This callback is not expected, auth/facebook/callback will be called instead');
+  });
 });
 
 // app.get(['/app','/app/*'], (req,res) => {

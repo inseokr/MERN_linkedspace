@@ -1,40 +1,41 @@
-var mongoose = require("mongoose");
-var passportLocalMongoose = require("passport-local-mongoose");
+const mongoose = require('mongoose');
+const randtoken = require('rand-token');
+const passportLocalMongoose = require('passport-local-mongoose');
 
-var UserSchema = new mongoose.Schema({
-	firstname:       String,
-	lastname:        String,
-	username:        String,
-	password:        String,
-	email:           String,
-	phone: 			 String,
-    resetPasswordToken: String,
-    resetPasswordExpires: Date,
-	gender:          String,
-	birthdate:       Date,
+const UserSchema = new mongoose.Schema({
+  firstname: String,
+  lastname: String,
+  username: String,
+  password: String,
+  email: String,
+  phone: String,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
+  gender: String,
+  birthdate: Date,
 
-	profile_picture: String, // The path to the profile picture
-	
-	address: {
-        street: String,
-        city: String,
-        state: String,
-        country: String,
-        zipcode: Number
-    },
+  profile_picture: String, // The path to the profile picture
 
-    chatting_channels: {
-    	nextGroupChannelIndex: { type:  Number, default: 0 },
-    	
-    	dm_channels: 
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    country: String,
+    zipcode: Number
+  },
+
+  chatting_channels: {
+    	nextGroupChannelIndex: { type: Number, default: 0 },
+
+    	dm_channels:
     	[
 	    	{
 	    		id: {
 	    			type: mongoose.Schema.Types.ObjectId,
-	    			ref: "ChattingChannel"
+	    			ref: 'ChattingChannel'
 	    		},
-	    		name: { type: String, unique: true},
-	    		lastReadIndex: { type: Number, default: 0 } 
+	    		name: { type: String },
+	    		lastReadIndex: { type: Number, default: 0 }
 	    	}
     	],
 
@@ -44,18 +45,18 @@ var UserSchema = new mongoose.Schema({
     		{
 	    		id: {
 	    			type: mongoose.Schema.Types.ObjectId,
-	    			ref: "ChattingChannelLevel1Parent"
+	    			ref: 'ChattingChannelLevel1Parent'
 	    		},
 
-	    		dm_channels: 
+	    		dm_channels:
 	    		[
 		    		{
 			    		id: {
 			    			type: mongoose.Schema.Types.ObjectId,
-			    			ref: "ChattingChannel"
+			    			ref: 'ChattingChannel'
 			    		},
 			    		name: String,
-			    		lastReadIndex: { type: Number, default: 0 } 
+			    		lastReadIndex: { type: Number, default: 0 }
 		    		}
 	    		],
 
@@ -64,18 +65,18 @@ var UserSchema = new mongoose.Schema({
 		    		{
 			    		id: {
 			    			type: mongoose.Schema.Types.ObjectId,
-			    			ref: "ChattingChannelLevel2Parent"
+			    			ref: 'ChattingChannelLevel2Parent'
 			    		},
-			    		
+
 		    			dm_channels:
 			    		[
 				    		{
 					    		id: {
 					    			type: mongoose.Schema.Types.ObjectId,
-					    			ref: "ChattingChannel"
+					    			ref: 'ChattingChannel'
 					    		},
 					    		name: String,
-					    		lastReadIndex: { type: Number, default: 0 } 
+					    		lastReadIndex: { type: Number, default: 0 }
 				    		}
 			    		]
 			    	}
@@ -89,18 +90,18 @@ var UserSchema = new mongoose.Schema({
     		{
 	    		id: {
 	    			type: mongoose.Schema.Types.ObjectId,
-	    			ref: "ChattingChannelLevel1Parent"
+	    			ref: 'ChattingChannelLevel1Parent'
 	    		},
 
-	    		dm_channels: 
+	    		dm_channels:
 	    		[
 		    		{
 			    		id: {
 			    			type: mongoose.Schema.Types.ObjectId,
-			    			ref: "ChattingChannel"
+			    			ref: 'ChattingChannel'
 			    		},
 			    		name: String,
-			    		lastReadIndex: { type: Number, default: 0 } 
+			    		lastReadIndex: { type: Number, default: 0 }
 		    		}
 	    		],
 
@@ -109,136 +110,136 @@ var UserSchema = new mongoose.Schema({
 		    		{
 			    		id: {
 			    			type: mongoose.Schema.Types.ObjectId,
-			    			ref: "ChattingChannelLevel2Parent"
+			    			ref: 'ChattingChannelLevel2Parent'
 			    		},
-			    		
+
 		    			dm_channels:
 			    		[
 				    		{
 					    		id: {
 					    			type: mongoose.Schema.Types.ObjectId,
-					    			ref: "ChattingChannel"
+					    			ref: 'ChattingChannel'
 					    		},
 					    		name: String,
-					    		lastReadIndex: { type: Number, default: 0 } 
+					    		lastReadIndex: { type: Number, default: 0 }
 				    		}
 			    		]
 			    	}
 		    	]
 		    }
     	]
-    },  
+  },
 
-	direct_friends: [
-		{
-			id: {
+  direct_friends: [
+    {
+      id: {
 		     	type: mongoose.Schema.Types.ObjectId,
-		     	ref: "User"
+		     	ref: 'User'
 		    },
 		    name: String,
 		    username: String,
 		    email: String,
 		    profile_picture: String,
-		}
-	],
+    }
+  ],
 
-	incoming_friends_requests: [
-		{
-			id: {
+  incoming_friends_requests: [
+    {
+      id: {
 			    type: mongoose.Schema.Types.ObjectId,
-			     ref: "User"
-			},
-			name: String
-		}
-	],
+			     ref: 'User'
+      },
+      name: String
+    }
+  ],
 
-	outgoing_friends_requests: [
-		{
-			id: {
+  outgoing_friends_requests: [
+    {
+      id: {
 		     	type: mongoose.Schema.Types.ObjectId,
-		     	ref: "User"
+		     	ref: 'User'
 		     },
-			name: String
-		}
-	],
+      name: String
+    }
+  ],
 
-	// listing created by myself
-	tenant_listing: [ 
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "TenantRequest"
-		}
-	],
+  // listing created by myself
+  tenant_listing: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TenantRequest'
+    }
+  ],
 
-	landlord_listing: [ 
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "LandlordRequest"
-		}
-	],
+  landlord_listing: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'LandlordRequest'
+    }
+  ],
 
-	_3rdparty_listing: [ 
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "_3rdPartyListing"
-		}
-	],
+  _3rdparty_listing: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: '_3rdPartyListing'
+    }
+  ],
 
-	// listing from my friends
-	incoming_tenant_listing: [
-		{
-			id: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "TenantRequest"
-			},
+  // listing from my friends
+  incoming_tenant_listing: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TenantRequest'
+      },
 
-			list_of_referring_friends: [
-			{
-				profile_picture: String,
+      list_of_referring_friends: [
+        {
+          profile_picture: String,
 
-				friend_id: {
-						type: mongoose.Schema.Types.ObjectId,
-			     		ref: "User"
+          friend_id: {
+            type: mongoose.Schema.Types.ObjectId,
+			     		ref: 'User'
 			    },
 
 			    friend_name: String,
-			}],
+        }],
 
   			received_date: Date,
 
-  			status: { type: String, default: "New" } // New, Read, Forwarded
-		}
-	],
+  			status: { type: String, default: 'New' } // New, Read, Forwarded
+    }
+  ],
 
-	// listing from my friends
-	incoming_landlord_listing: [
-		{
-			id: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "TenantRequest"
-			},
+  // listing from my friends
+  incoming_landlord_listing: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TenantRequest'
+      },
 
-			cover_picture: String,
+      cover_picture: String,
 
-			list_of_referring_friends: [
-			{
-				profile_picture: String,
+      list_of_referring_friends: [
+        {
+          profile_picture: String,
 
-				friend_id: {
-						type: mongoose.Schema.Types.ObjectId,
-			     		ref: "User"
+          friend_id: {
+            type: mongoose.Schema.Types.ObjectId,
+			     		ref: 'User'
 			    },
 
 			    friend_name: String,
-			}],
+        }],
 
   			received_date: Date,
 
-  			status: {type: String, default: "New"}// New, Read, Forwarded
-		}
-	],
+  			status: { type: String, default: 'New' }// New, Read, Forwarded
+    }
+  ],
 });
 
-UserSchema.plugin(passportLocalMongoose)
+UserSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model('User', UserSchema);

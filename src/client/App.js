@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import './app.css';
 import {
@@ -10,6 +11,7 @@ import LandingPage from './container/LandingPage/LandingPage';
 import GeneralChatMainPage from './container/GeneralChatPage/GeneralChatMainPage';
 import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
+import ModalSignupForm from './components/Login/ModalSignupForm';
 import Signup from './components/Login/Signup';
 import Logout from './components/Login/Logout';
 import Map from './container/MapPage/index';
@@ -20,6 +22,7 @@ import ShowActiveListingPageWrapper from './container/ListingPage/ShowActiveList
 import PostListingPage from './container/ListingPage/PostListingPage';
 import Post3rdPartyListing from './container/ListingPage/3rdParty/Post3rdPartyListing';
 import EditProfileMain from './container/EditProfilePage/EditProfileMain';
+import FacebookLogin from './components/Login/FacebookLogin';
 
 
 import { MessageContextProvider } from './contexts/MessageContext';
@@ -32,10 +35,12 @@ export default class App extends Component {
     super(props);
     this.state = {
       showLoginModal: false,
+      showSignupModal: false,
       loggedInStatus: false
     };
 
     this.clickHandler = this.clickHandler.bind(this);
+    this.signupClickHandler = this.signupClickHandler.bind(this);
     this.updateLoginStatus = this.updateLoginStatus.bind(this);
   }
 
@@ -53,6 +58,12 @@ export default class App extends Component {
     this.setState({ showLoginModal: true });
   }
 
+
+  signupClickHandler() {
+    console.log('signupClickHandler called');
+    this.setState({ showSignupModal: true });
+  }
+
   updateLoginStatus(status) {
     console.log(`updateLoginStatus: status = ${status}`);
 
@@ -60,7 +71,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { loggedInStatus, showLoginModal } = this.state;
+    const { loggedInStatus, showLoginModal, showSignupModal } = this.state;
 
     return (
       <GlobalProvider>
@@ -70,9 +81,11 @@ export default class App extends Component {
               <Router>
                 <CommonHeader
                   loginClickHandler={this.clickHandler}
+                  signupClickHandler={this.signupClickHandler}
                   updateLoginStatus={this.updateLoginStatus}
                 />
                 <ModalLoginForm display={showLoginModal} />
+                <ModalSignupForm display={showSignupModal} />
                 <Switch>
                   <Route exact path="/Map">
                     <Map />
@@ -100,6 +113,8 @@ export default class App extends Component {
                   <Route exact path="/">
                     <LandingPage />
                   </Route>
+
+                  <Route path="/facebooklogin/:id/login" render={props => <FacebookLogin {...props} updateLoginStatus={this.updateLoginStatus} />} />
 
                   <Route exact path="/homepage">
                     <LandingPage />

@@ -6,11 +6,9 @@
   },
   "description": "First LinkedSpaces service based on MERN",
   "main": "src/server/index.js",
-  
   "scripts": {
     "start": "node src/server/app.js"
   },
-
   "author": "In Seo",
   "license": "ISC",
   "dependencies": {
@@ -73,6 +71,7 @@
     "passport-local-mongoose": "^5.0.1",
     "path": "^0.12.7",
     "prop-types": "^15.6.0",
+    "rand-token": "^1.0.1",
     "react": "^16.14.0",
     "react-alert": "^7.0.2",
     "react-art": "^16.13.1",
