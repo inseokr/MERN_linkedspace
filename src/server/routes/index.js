@@ -24,6 +24,7 @@ module.exports = function (app) {
       console.log(' user is undefined');
     } else {
       console.log(`getLoginStatus called with username = ${req.user.username}`);
+      console.log(`${JSON.stringify(app.locals.currentUser[req.user.username])}`);
     }
     if (req.user == undefined) res.json(null);
     else res.json(app.locals.currentUser[req.user.username]);
@@ -98,6 +99,7 @@ module.exports = function (app) {
       username: req.body.username,
       firstname: req.body.firstname,
       lastname: req.body.lastname,
+      name: `${req.body.lastname} ${req.body.firstname}`,
       email: req.body.email,
       gender: req.body.gender,
       password: req.body.password,
@@ -146,11 +148,11 @@ module.exports = function (app) {
       } else {
         req.flash('success', `Welcome back to LinkedSpaces ${req.body.username}`);
         res.redirect('/');
-        User.findOne({ username: req.body.username }, (err, user) => {
+        User.findOne({ username: req.body.username }).populate('direct_friends', 'profile_picture email username name').exec((err, user) => {
           if (err) { console.log('User Not Found'); return; }
           app.locals.currentUser[req.user.username] = user;
           app.locals.profile_picture = user.profile_picture;
-          console.log(`Updating current user = ${app.locals.currentUser}`);
+          console.log(`Updating current user = ${user}`);
         });
       }
     });

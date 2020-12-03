@@ -1,25 +1,17 @@
-var mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-var LandlordRequestSchema = new mongoose.Schema({
+const LandlordRequestSchema = new mongoose.Schema({
   requester: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    },
-    username: String,
-    profile_picture: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
 
-  listingType: {type: String, default: "landlord"},
+  listingType: { type: String, default: 'landlord' },
 
   shared_user_group: [
     {
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      },
-      username: String,
-      profile_picture: String
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
 
@@ -37,7 +29,7 @@ var LandlordRequestSchema = new mongoose.Schema({
       responder: {
         id: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "User"
+          ref: 'User'
         },
         username: String,
         // 1: middlemen, 2: landlord
@@ -47,7 +39,7 @@ var LandlordRequestSchema = new mongoose.Schema({
         // TBD
         post_id: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "RentalPost"
+          ref: 'RentalPost'
         },
         // TBD...
         // 1: middlemen
@@ -77,7 +69,7 @@ var LandlordRequestSchema = new mongoose.Schema({
   },
 
   // bedroom information
-  num_of_bedrooms: {type: Number, default: 0}, // TBD: should be Number instead?
+  num_of_bedrooms: { type: Number, default: 0 }, // TBD: should be Number instead?
 
   bedrooms: {
     type: Array,
@@ -117,7 +109,7 @@ var LandlordRequestSchema = new mongoose.Schema({
 
 
   // index 0 wil be the cover photo.
-  num_of_pictures_uploaded: {type: Number, default: 0},
+  num_of_pictures_uploaded: { type: Number, default: 0 },
 
   pictures: [
     {
@@ -153,17 +145,17 @@ var LandlordRequestSchema = new mongoose.Schema({
   },
 
   list_of_referring_friends: [
-      {
-        profile_picture: String,
+    {
+      profile_picture: String,
 
-        friend_id: {
-            type: mongoose.Schema.Types.ObjectId,
-              ref: "User"
-          },
+      friend_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
 
-          friend_name: String,
-      }]
+      friend_name: String,
+    }]
 
 });
 
-module.exports = mongoose.model("LandlordRequest", LandlordRequestSchema);
+module.exports = mongoose.model('LandlordRequest', LandlordRequestSchema);

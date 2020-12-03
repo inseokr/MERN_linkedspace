@@ -209,8 +209,11 @@ app.namespace('/LS_API', () => {
   // iseo: It's kind of pre-processing or middleware for route handling
   app.use((req, res, next) => {
     if (req.user != undefined) {
-      res.locals.currentUser = req.user;
-      app.locals.currentUser[req.user.username] = req.user;
+      // console.log('login middleware called?');
+      if (app.locals.currentUser[req.user.username] == null) {
+        res.locals.currentUser = req.user;
+        app.locals.currentUser[req.user.username] = req.user;
+      }
     }
     res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
@@ -398,9 +401,9 @@ app.namespace('/LS_API', () => {
         app.locals.profile_picture = picPath;
         curr_user.save();
 
+        // ISEO-TBD:
+        app.locals.currentUser[curr_user.username] = curr_user;
         fileUpload2Cloud(serverPath, picPath);
-
-        userDbHandler.populateProfilePicture(curr_user);
 
         res.send('File uploaded!');
       });
