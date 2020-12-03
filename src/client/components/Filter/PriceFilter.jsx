@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useContext, useState } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
@@ -6,8 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import clsx from 'clsx';
-import { ListingsContext } from '../../../../contexts/ListingsContext';
-import Modal from '../../../../components/Modal';
+import Modal from '../Modal';
+import { ListingsContext } from '../../contexts/ListingsContext';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -74,12 +73,10 @@ function LinkedSpacesThumbComponent(props) {
 function PriceFilter() {
   const classes = useStyles();
 
-  const {
-    filterListings, places, price, date
-  } = useContext(ListingsContext);
+  const { filterParams, setFilterParams } = useContext(ListingsContext);
 
   const [showModal, setShowModal] = useState(false);
-  const [interimPrice, setPrice] = useState(price);
+  const [interimPrice, setPrice] = useState(filterParams.price);
   const [priceSubmitted, setPriceSubmitted] = useState(false);
 
   const toggleModal = () => {
@@ -94,8 +91,8 @@ function PriceFilter() {
     let min = event.target.value;
     const max = interimPrice[1];
 
-    if (!isNaN(min)) { // True if value is a number.
-      min = parseInt(min);
+    if (!Number.isNaN(Number(min))) { // True if value is a number.
+      min = parseInt(min, 10);
       if (min < max) {
         setPrice([min, max]);
       }
@@ -110,8 +107,8 @@ function PriceFilter() {
       max = max.slice(0, -1); // Remove +
     }
 
-    if (!isNaN(max)) { // True if value is a number.
-      max = parseInt(max);
+    if (!Number.isNaN(Number(max))) { // True if value is a number.
+      max = parseInt(max, 10);
       if (min < max) {
         if (max > 1000) {
           max = 1000; // Change to 1000 if its larger than 1000
@@ -122,8 +119,8 @@ function PriceFilter() {
   };
 
   const onSubmit = () => {
-    if (interimPrice !== price) {
-      filterListings(places, interimPrice, date);
+    if (interimPrice !== filterParams.price) {
+      setFilterParams({ ...filterParams, price: interimPrice });
     }
     if (!priceSubmitted) {
       setPriceSubmitted(!priceSubmitted);
@@ -138,8 +135,10 @@ function PriceFilter() {
   const interimMax = interimPrice[1];
 
   let priceTitle = 'Price';
+  const { price } = filterParams;
   const min = price[0];
   const max = price[1];
+
   if (priceSubmitted) {
     if (min === 1 && max === 1000) {
       priceTitle = '$1 - $1000+';
@@ -154,7 +153,7 @@ function PriceFilter() {
 
   return (
     <div className={`${showModal ? 'blur' : undefined} modal-app`}>
-      <button className="filter-button" onClick={toggleModal}>
+      <button className="filter-button" type="button" onClick={toggleModal}>
         {priceTitle}
       </button>
       {showModal && (
@@ -201,13 +200,13 @@ function PriceFilter() {
               </div>
             </Grid>
             <Grid item xs={4} className="clear-button-grid">
-              <button className="clear-button" onClick={onClear}>
+              <button className="clear-button" type="button" onClick={onClear}>
                 Clear
               </button>
             </Grid>
             <Grid item xs={4} />
             <Grid item xs={4} className="submit-button-grid">
-              <button className="submit-button" onClick={() => { toggleModal(); onSubmit(); }}>
+              <button className="submit-button" type="button" onClick={() => { toggleModal(); onSubmit(); }}>
                 Submit
               </button>
             </Grid>

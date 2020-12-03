@@ -51,10 +51,10 @@ export default class LandingPage extends Component {
 	render() {
 	  const { lastMenu } = this.state;
 
-	  let pageToRender = <div />;
+	  let pageToRender = <div/>;
 	  if (lastMenu === 'map') {
 	    console.log('is this even being called', lastMenu);
-	    pageToRender = <Map />;
+	    pageToRender = <Map/>;
 	  } else {
 	    pageToRender = (
 		  <div>
@@ -70,7 +70,7 @@ export default class LandingPage extends Component {
 		          <div className="content">
 		            <h1> LinkedSpaces</h1>
 		            <h3> Make your next move through a trusted network. </h3>
-		            <Search />
+		            <Search/>
 		          </div>
 		        </div>
 		      </div>

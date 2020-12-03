@@ -1,20 +1,9 @@
-/* eslint-disable */
 import React, { Component } from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Link,
-  Redirect,
-  withRouter
-} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { ListingsContext } from '../../contexts/ListingsContext';
-
-
 import './SearchPage.css';
 
 export default class Search extends Component {
-  static contextType = ListingsContext;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -35,23 +24,27 @@ export default class Search extends Component {
   handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       console.log(`Search value = ${this.search.value}`);
-      // <note> not sure why... but the enter key event is caught only by handleKeyDown, not keyPressed.
+      // not sure why... but the enter key event is caught only by handleKeyDown, not keyPressed.
       this.setState({ EnterKeyPressed: true });
     }
   };
 
+  static contextType = ListingsContext;
+
   // how to link only if input value it set or enterKey?
   // <note> we could link it to other route if the form is placed under Link
-  // <note> history.push() could do the job as well, but I need to pass history data through withRouter package??
+  // <note> history.push() works, but need to pass history data through withRouter package?
   // <note> this component doesn't work in the navbar/header portion
   render() {
-    if (this.state.EnterKeyPressed) {
-      const { setSearch } = this.context;
-      const { query } = this.state;
+    const { EnterKeyPressed, query } = this.state;
+
+    if (EnterKeyPressed) {
+      const { filterParams, setFilterParams } = this.context;
       const searchQuery = query.length > 0 ? query : 'Fremont, CA, USA';
-      setSearch(searchQuery);
+      setFilterParams({ ...filterParams, search: searchQuery });
       return <Redirect to="/Map" />;
     }
+
     return (
       <div>
         <form className="btn btn-default btn-lg">
@@ -59,7 +52,7 @@ export default class Search extends Component {
           <input
             className="searchInput"
             placeholder="City, State, Country"
-            ref={input => this.search = input}
+            ref={(input) => { this.search = input; }}
             onKeyDown={this.handleKeyDown}
             onChange={this.handleInputChange}
           />

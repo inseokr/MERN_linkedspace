@@ -1,51 +1,46 @@
-/* eslint-disable */
 import React, { useContext, useEffect, useRef } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
-import {FILE_SERVER_URL} from '../../../../globalConstants';
+import { constructBounds, centerCoordinates, createMarker } from '../../../../contexts/helper/helper';
+
 import './Map.css';
 
-
 function Map() {
-  const {
-    filteredListings, filterListingsByBounds, center, zoom, initGoogleMap, createMarker, constructBounds, centerCoordinates
-  } = useContext(ListingsContext);
-  const googleMapRef = useRef(null);
-  let googleMap = null;
+    const {filteredListings, mapParams, setMapParams} = useContext(ListingsContext);
 
-  useEffect(() => {
-    console.log('useEffect', center, zoom, filteredListings);
-    googleMap = initGoogleMap(googleMapRef, zoom, center);
+    const googleMapRef = useRef(null);
+    let googleMap = null;
 
-    googleMap.addListener('dragend', () => {
-      const idleListener = googleMap.addListener('idle', () => {
-        window.google.maps.event.removeListener(idleListener);
-        filterListingsByBounds(constructBounds(googleMap.getBounds()), centerCoordinates(googleMap.getCenter()), zoom);
-      });
-    });
+    useEffect(() => {
+        googleMap = new window.google.maps.Map(googleMapRef.current, {zoom: mapParams["zoom"], center: mapParams["center"], mapTypeControl: false, streetViewControl: false});
 
-    googleMap.addListener('zoom_changed', () => {
-      const idleListener = googleMap.addListener('idle', () => {
-        window.google.maps.event.removeListener(idleListener);
-        filterListingsByBounds(constructBounds(googleMap.getBounds()), centerCoordinates(googleMap.getCenter()), googleMap.getZoom());
-      });
-    });
-
-    if (filteredListings.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      filteredListings.map((listing) => {
-        const { coordinates } = listing.rental_property_information;
-        const imgSource = listing.requester.profile_picture.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+listing.requester.profile_picture.length;
-   
-        const marker = createMarker(googleMap, coordinates, '/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg');
-        marker.addListener('click', () => {
-          alert('Clicked!');
+        googleMap.addListener('dragend', function () {
+            const idleListener = googleMap.addListener('idle', function () {
+                window.google.maps.event.removeListener(idleListener);
+                setMapParams({"bounds": constructBounds(googleMap.getBounds()), "center": centerCoordinates(googleMap.getCenter()), "zoom": googleMap.getZoom()});
+            });
         });
-        bounds.extend(coordinates);
-      });
-    }
-  }, [filteredListings]);
 
-  return <div id="mapView" ref={googleMapRef} style={{ height: '100vh', width: '100vh' }} />;
+        googleMap.addListener('zoom_changed', function () {
+            const idleListener = googleMap.addListener('idle', function () {
+                window.google.maps.event.removeListener(idleListener);
+                setMapParams({"bounds": constructBounds(googleMap.getBounds()), "center": centerCoordinates(googleMap.getCenter()), "zoom": googleMap.getZoom()});
+            });
+        });
+
+        const bounds = new window.google.maps.LatLngBounds();
+        filteredListings.map(listing => {
+            console.log("T E S T", listing);
+            const coordinates = listing.rental_property_information.coordinates;
+            const image = listing.pictures.length > 0 ? listing.pictures[0]["path"] : "/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg";
+            const marker = createMarker(googleMap, coordinates, image);
+            marker.addListener("click", () => {
+                alert("Clicked!");
+            });
+            bounds.extend(coordinates);
+        });
+    }, [filteredListings]);
+
+    return <div id="mapView" ref={googleMapRef} style={{height: '100vh'}}/>;
 }
 
 export default Map;

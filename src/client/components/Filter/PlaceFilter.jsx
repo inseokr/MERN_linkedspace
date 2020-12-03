@@ -1,5 +1,4 @@
-/* eslint-disable */
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -7,8 +6,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Modal from '../../../../components/Modal';
-import { ListingsContext } from '../../../../contexts/ListingsContext';
+import Modal from '../Modal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,31 +17,29 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function PlaceFilter() {
-  const {
-    filterListings, places, price, date
-  } = useContext(ListingsContext);
+function PlaceFilter(props) {
+  const { places, setPlaces } = props;
   const classes = useStyles();
 
   const [showModal, setShowModal] = useState(false);
-  const [interimPlaces, setPlaces] = React.useState(places);
+  const [interimPlaces, setInterimPlaces] = useState(places);
 
   const toggleModal = () => {
     setShowModal(!showModal);
   };
 
   const handleChange = (event) => {
-    setPlaces({ ...interimPlaces, [event.target.name]: event.target.checked });
+    setInterimPlaces({ ...interimPlaces, [event.target.name]: event.target.checked });
   };
 
   const onSubmit = () => {
     if (interimPlaces !== places) {
-      filterListings(interimPlaces, price, date);
+      setPlaces(interimPlaces);
     }
   };
 
   const onClear = () => {
-    setPlaces({
+    setInterimPlaces({
       Entire: false,
       Private: false,
       Shared: false
@@ -54,7 +50,7 @@ function PlaceFilter() {
 
   return (
     <div className={`${showModal ? 'blur' : undefined} modal-app`}>
-      <button className="filter-button" onClick={toggleModal}>
+      <button className="filter-button" type="button" onClick={toggleModal}>
         Type of place
       </button>
       {showModal && (
@@ -104,12 +100,12 @@ function PlaceFilter() {
           </FormControl>
           <Grid container spacing={5}>
             <Grid item xs={6} className="clear-button-grid">
-              <button className="clear-button" onClick={onClear}>
+              <button className="clear-button" type="button" onClick={onClear}>
                 Clear
               </button>
             </Grid>
             <Grid item xs={6} className="submit-button-grid">
-              <button className="submit-button" onClick={() => { toggleModal(); onSubmit(); }}>
+              <button className="submit-button" type="button" onClick={() => { toggleModal(); onSubmit(); }}>
                 Submit
               </button>
             </Grid>
