@@ -14,6 +14,8 @@ const UserSchema = new mongoose.Schema({
   gender: String,
   birthdate: Date,
 
+  loggedInTime: { type: Date, default: null },
+
   profile_picture: String, // The path to the profile picture
 
   address: {
@@ -132,34 +134,22 @@ const UserSchema = new mongoose.Schema({
 
   direct_friends: [
     {
-      id: {
-		     	type: mongoose.Schema.Types.ObjectId,
-		     	ref: 'User'
-		    },
-		    name: String,
-		    username: String,
-		    email: String,
-		    profile_picture: String,
+     	type: mongoose.Schema.Types.ObjectId,
+     	ref: 'User'
     }
   ],
 
   incoming_friends_requests: [
     {
-      id: {
-			    type: mongoose.Schema.Types.ObjectId,
-			     ref: 'User'
-      },
-      name: String
+	    type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
 
   outgoing_friends_requests: [
     {
-      id: {
-		     	type: mongoose.Schema.Types.ObjectId,
-		     	ref: 'User'
-		     },
-      name: String
+     	type: mongoose.Schema.Types.ObjectId,
+     	ref: 'User'
     }
   ],
 

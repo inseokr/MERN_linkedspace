@@ -3,15 +3,17 @@ import '../../app.css';
 import './MessageStyle.css';
 
 function OnlineStatus(props) {
-  const { marginLeft } = props;
+  const { marginLeft, loginStatus } = props;
   const additionalStyle = (marginLeft !== undefined)
     ? { marginLeft } : {};
+  const status = (loginStatus === true) ? 'Online' : 'Offline';
+  const doghnutClass = (loginStatus === true) ? 'onlineDoughnut' : 'offlineDoughnut';
 
   return (
     <div className="onlineWrapper">
-      <div className="doughnut" style={additionalStyle} />
+      <div className={doghnutClass} style={additionalStyle} />
       <div className="OnlineStatus">
-        12h ago
+        {status}
       </div>
     </div>
   );

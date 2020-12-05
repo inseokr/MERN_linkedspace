@@ -76,7 +76,7 @@ function deleteListingFromFriends(user, listing) {
 }
 
 async function deleteListingFromUserDB(listing) {
-  const creator = await findUserById_(listing.requester.id);
+  const creator = await findUserById_(listing.requester);
 
   // 1. remove it from creator
   deleteOwnListing(creator, listing);
@@ -86,7 +86,7 @@ async function deleteListingFromUserDB(listing) {
   //   let's go through friends list for now.
   //   Later we need to keep track of it.
   for (let index = 0; index < creator.direct_friends.length; index++) {
-    const friend = await findUserById_(creator.direct_friends[index].id);
+    const friend = await findUserById_(creator.direct_friends[index]);
     if (friend != null) {
       deleteListingFromFriends(friend, listing);
       friend.save();
@@ -119,7 +119,7 @@ async function getRequesterId(listing_id, type) {
             resolve(null);
           }
 
-          resolve(listing.requester.id);
+          resolve(listing.requester);
         });
         break;
 
@@ -130,7 +130,7 @@ async function getRequesterId(listing_id, type) {
             resolve(null);
           }
 
-          resolve(listing.requester.id);
+          resolve(listing.requester);
         });
         break;
 
@@ -213,7 +213,7 @@ function handleListingForward(req, res, type) {
 
       foundUser.direct_friends.forEach((friend) => {
         // Need to find the friend object and then update it.
-        const result = User.findById(friend.id, (err, foundFriend) => {
+        const result = User.findById(friend, (err, foundFriend) => {
           if (err) {
             console.log('No friend found with given ID');
             return 0;
@@ -222,13 +222,13 @@ function handleListingForward(req, res, type) {
           // let's check duplicate records
           if (checkDuplicate((type == 'tenant')
             ? foundFriend.incoming_tenant_listing : foundFriend.incoming_landlord_listing, listing_info.id) == true
-             || foundFriend._id.equals(listing.requester.id)) {
+             || foundFriend._id.equals(listing.requester)) {
             return 1;
           }
 
           // build list_of_referring_friends
           // 1. check if the user owns the listing or just forwarding it from others
-          if (listing.requester.id.equals(req.user._id) == true) {
+          if (listing.requester.equals(req.user._id) == true) {
             const referringFriends = [];
 
             const creator = {
@@ -283,28 +283,10 @@ function handleListingForward(req, res, type) {
   });
 }
 
-async function updateProfilePictureOfDirectFriend(userId, friendName, profilePicture) {
-  const foundUser = await findUserById_(userId);
-
-  if (foundUser != null) {
-    const friendEntry = foundUser.direct_friends.find(friend_ => friend_.username === friendName);
-    if (friendEntry != null) {
-      friendEntry.profile_picture = profilePicture;
-    }
-  }
-}
-
-function populateProfilePicture(user) {
-  user.direct_friends.forEach((friend) => {
-    updateProfilePictureOfDirectFriend(friend.id, user.username, user.profile_picture);
-  });
-}
-
 module.exports = {
   getUserByName: getUserByName_,
   findUserById: findUserById_,
   deleteListingFromUserDB,
   getReferringFriendsByListingId,
-  handleListingForward,
-  populateProfilePicture
+  handleListingForward
 };

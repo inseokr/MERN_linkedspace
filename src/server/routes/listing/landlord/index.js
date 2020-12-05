@@ -21,9 +21,7 @@ module.exports = function (app) {
       const newListing = new LandlordRequest();
 
       // add username and id
-      newListing.requester.id = req.user._id;
-      newListing.requester.username = req.user.username;
-      newListing.requester.profile_picture = req.user.profile_picture;
+      newListing.requester = req.user._id;
 
       newListing.rental_property_information = req.body.rental_property_information;
       newListing.rental_property_information.location = req.body.location;
@@ -184,8 +182,7 @@ module.exports = function (app) {
   });
 
   function handleStep1(req, res, foundListing) {
-    foundListing.requester.id = req.user._id;
-    foundListing.requester.username = req.user.username;
+    foundListing.requester = req.user._id;
     foundListing.rental_property_information = req.body.rental_property_information;
     foundListing.rental_property_information.location = req.body.location;
     foundListing.move_in_date = req.body.move_in_date;
@@ -406,7 +403,7 @@ module.exports = function (app) {
 
     // console.log("REACT: fetch landlord listing request with listing id = " + req.params.list_id);
     // Get landlord listing.
-    LandlordRequest.findById(req.params.list_id).populate('requester.id').exec((err, foundListing) => {
+    LandlordRequest.findById(req.params.list_id).populate('requester').exec((err, foundListing) => {
     	if (err) {
     		console.log('Listing not found');
     		return;

@@ -1,47 +1,43 @@
-var mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-var _3rdPartyListingSchema = new mongoose.Schema({
-    
-    requester: {
-      id: {
-         type: mongoose.Schema.Types.ObjectId,
-         ref: "User"
-      },
-      username: String,
-      profile_picture: String
-    },
+const _3rdPartyListingSchema = new mongoose.Schema({
 
-    listingType: {type: String, default: "_3rdparty"},	  
+  requester: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
 
-    // 3rd party ID
-    listingSource: {type: String, default: "craigslist"},
+  listingType: { type: String, default: '_3rdparty' },
 
-    // external URL to the listing
-    listingUrl: String,
+  // 3rd party ID
+  listingSource: { type: String, default: 'craigslist' },
 
-    // rental summary
-    listingSummary: String,
+  // external URL to the listing
+  listingUrl: String,
 
-    // rental price
-    rentalPrice: Number,
-    
-    coverPhoto: {
-      path: String,
-      caption: String
-    },
+  // rental summary
+  listingSummary: String,
 
-    location: {
-      street: String,
-      city: String,
-      state: String,
-      country: String,
-      zipcode: String
-    },
+  // rental price
+  rentalPrice: Number,
 
-    coordinates: {
-      lat: Number,
-      lng: Number
-    }
+  coverPhoto: {
+    path: String,
+    caption: String
+  },
+
+  location: {
+    street: String,
+    city: String,
+    state: String,
+    country: String,
+    zipcode: String
+  },
+
+  coordinates: {
+    lat: Number,
+    lng: Number
+  }
 });
 
-module.exports = mongoose.model("_3rdPartyListing", _3rdPartyListingSchema);
+module.exports = mongoose.model('_3rdPartyListing', _3rdPartyListingSchema);

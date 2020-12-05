@@ -46,18 +46,12 @@ export default class App extends Component {
 
   componentDidMount() {
     document.title = 'LinkedSpaces';
-
-    console.log('App componentDidMount');
-    console.log(`props = ${JSON.stringify(this.props)}`);
-
-    console.log(`env = ${JSON.stringify(process.env)}`);
   }
 
   clickHandler() {
     console.log('loginClickHander called');
     this.setState({ showLoginModal: true });
   }
-
 
   signupClickHandler() {
     console.log('signupClickHandler called');
