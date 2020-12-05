@@ -83,7 +83,7 @@ function cleanChildListingFromParent(foundListing, child_listing_id, channel_id_
       // 1. go through check shared_group and remove dm channels from there
       listing.shared_user_group.map(async (user, userIndex) => {
         const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
-        await foundListing.populate(pathToPopulate, 'username').execPopulate();
+        await foundListing.populate(pathToPopulate, 'username profle_picture loggedInTime').execPopulate();
         foundListing.populated(pathToPopulate);
 
         chatServer.removeChannelFromUserDb(listing.shared_user_group[userIndex].username, channel_id_prefix);
@@ -120,7 +120,7 @@ function cleanAllChildListingsFromParent(parent, bRequiredSave = false) {
     // 1. go through check shared_group and remove dm channels from there
     listing.shared_user_group.map(async (user, userIndex) => {
       const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
-      await parent.populate(pathToPopulate, 'username').execPopulate();
+      await parent.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
       parent.populated(pathToPopulate);
 
       chatServer.removeChannelFromUserDb(listing.shared_user_group[userIndex].username, channel_id_prefix);

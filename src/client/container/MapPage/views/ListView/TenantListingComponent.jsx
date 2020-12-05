@@ -150,7 +150,7 @@ function TenantListingComponent(props) {
 
   return (
     <div>
-      <ListItem key={listing.requester.id}>
+      <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>
             <Carousel interval={null} slide activeIndex={index} onSelect={handleSelect} className="carousel">

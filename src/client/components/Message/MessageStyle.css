@@ -186,9 +186,18 @@
     margin-left: 5px;
 }
 
-.doughnut { 
+.onlineDoughnut { 
     border: 3px solid #28a745;
     border-radius: 15px;
+    height: 15px;
+    width: 15px;
+    margin-left: 70px;
+    margin-top: 5px;
+}
+
+.offlineDoughnut { 
+    border: 1px solid #28a745;
+    border-radius: 5px;
     height: 15px;
     width: 15px;
     margin-left: 70px;

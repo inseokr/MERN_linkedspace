@@ -19,7 +19,7 @@ function HostDetails() {
 
       <div className="row no_border" style={{ marginTop: '30px' }}>
         <div className="col-3">
-          <img src={FILE_SERVER_URL+currentListing.listing.requester.id.profile_picture} className="center rounded-circle" style={{ width: '100%', maxHeight: '100%', marginLeft: '25px' }} alt="profilePicture" />
+          <img src={FILE_SERVER_URL+currentListing.listing.requester.profile_picture} className="center rounded-circle" style={{ width: '100%', maxHeight: '100%', marginLeft: '25px' }} alt="profilePicture" />
         </div>
 
         <div className="col-4 _1ezjrwzo" style={{ marginLeft: '50px' }}>

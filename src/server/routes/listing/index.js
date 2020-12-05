@@ -84,7 +84,7 @@ router.get('/get_active_listing/own', (req, res) => {
         foundUser._3rdparty_listing.forEach(async (listing, index) => {
           // populate requester
           const pathToPopulate = `_3rdparty_listing.${index}.requester`;
-          await foundUser.populate(pathToPopulate, 'username profile_picture').execPopulate();
+          await foundUser.populate(pathToPopulate, 'username profile_picture firtname lastname').execPopulate();
 
           foundUser.populated(pathToPopulate);
 

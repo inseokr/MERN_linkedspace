@@ -48,20 +48,11 @@ module.exports = function (app) {
   });
 
   router.get('/getData', (req, res) => {
-    // console.log("getData is called");
-
     // read listing information from database.
     LandlordRequest.find({}).then((listings) => {
       res.send(listings);
-      // console.log("getData = " + listings);
     });
   });
-
-  /*
-  router.get('/', (req, res) => {
-    // res.render('/');
-    res.redirect('/');
-  }); */
 
   router.get('/about', (req, res) => {
     app.locals.lastReactMenu = 'dashboard';
@@ -119,15 +110,20 @@ module.exports = function (app) {
   });
   // hanle log-out
   router.get('/logout', (req, res) => {
+    if (req.user != null) {
+      const currUserName = req.user.username;
+
+      User.findById(req.user._id, (err, foundUser) => {
+        foundUser.loggedInTime = null;
+        foundUser.save();
+        app.locals.currentUser[currUserName] = null;
+      });
+    }
+
     req.logout();
     req.flash('success', 'Logged you out!');
 
-    console.log('logout called');
-
-    if (req.user != null) app.locals.currentUser[req.user.username] = null;
-
     res.send({ result: 'successful logout' });
-    // res.redirect("/homepage");
   });
 
   // show login form
@@ -148,28 +144,16 @@ module.exports = function (app) {
       } else {
         req.flash('success', `Welcome back to LinkedSpaces ${req.body.username}`);
         res.redirect('/');
-        User.findOne({ username: req.body.username }).populate('direct_friends', 'profile_picture email username name').exec((err, user) => {
+        User.findOne({ username: req.body.username }).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, user) => {
+          user.loggedInTime = Date.now();
+          user.save();
           if (err) { console.log('User Not Found'); return; }
           app.locals.currentUser[req.user.username] = user;
           app.locals.profile_picture = user.profile_picture;
-          console.log(`Updating current user = ${user}`);
         });
       }
     });
   });
-
-  /*
-  //handling login logic
-  router.post("/login", passport.authenticate("local",
-    {
-      successRedirect: "/homepage",
-      failureRedirect: "/"
-    }), function(req, res){
-
-    // it's not called
-    console.log("Why it's not called?");
-  }); */
-
 
   router.get('/homepage', (req, res) => {
     res.render('homepage');

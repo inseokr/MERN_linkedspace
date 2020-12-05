@@ -33,18 +33,6 @@ function CommonHeader(props) {
       if (friendsList === undefined) loadFriendList();
     }
 
-    if (friendsList !== undefined && friendsList.length !== 0) {
-      console.log('useEffect of commonHeader');
-      // how to prevent multiple loading?
-      const channelInfo = {
-        channelName: getDmChannelId(friendsList[0].username),
-        dm: {
-          name: friendsList[0].username,
-          distance: 1
-        }
-      };
-      switchChattingChannel(channelInfo, true);
-    }
   }, [currentUser, friendsList]);
 
   const { loginClickHandler, signupClickHandler } = props;

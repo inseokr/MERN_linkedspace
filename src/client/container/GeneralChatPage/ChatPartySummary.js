@@ -14,7 +14,7 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 // Group Chat should be considered
 function ChatPartySummary() {
   const { currChannelInfo } = useContext(MessageContext);
-  const { currentUser } = useContext(GlobalContext);
+  const { currentUser, getUserLoginStatus} = useContext(GlobalContext);
 
   function getSocialDistanceString(distance) {
     switch (distance) {
@@ -26,7 +26,6 @@ function ChatPartySummary() {
     }
   }
 
-
   function getChatPartySummary() {
     const _chatPartySummary = [];
 
@@ -35,6 +34,7 @@ function ChatPartySummary() {
     }
 
     for (let i = 0; i < currChannelInfo.members.length; i++) {
+
       if (currentUser.username == currChannelInfo.members[i]) continue;
 
       _chatPartySummary.push(
@@ -46,7 +46,7 @@ function ChatPartySummary() {
           <div className="SocialDistance">
             {getSocialDistanceString(1)}
           </div>
-          {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? <OnlineStatus /> : ''}
+          {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? <OnlineStatus loginStatus={getUserLoginStatus(currChannelInfo.members[i])}/> : ''}
         </React.Fragment>
       );
     }

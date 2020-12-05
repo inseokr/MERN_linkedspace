@@ -14,6 +14,8 @@ const UserSchema = new mongoose.Schema({
   gender: String,
   birthdate: Date,
 
+  loggedInTime: { type: Date, default: null },
+
   profile_picture: String, // The path to the profile picture
 
   address: {

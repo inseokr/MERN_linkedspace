@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import sampleProfile from '../assets/images/Chinh - Vy.jpg';
 
 export const GlobalContext = createContext();
@@ -31,6 +31,22 @@ export function GlobalProvider(props) {
     return friendsMap[user_name].profile_picture;
   }
 
+
+  function getUserLoginStatus(user_name) {
+    if (user_name === undefined) return false;
+
+    if (user_name === currentUser.username) {
+      return (currentUser.loggedInTime!=null);
+    }
+
+    if (friendsMap[user_name] == undefined) {
+      console.warn(`Current user: ${user_name} is no direct friend`);
+      return false;
+    }
+
+    return (friendsMap[user_name].loggedInTime!=null);
+  }
+
   function buildFriendsMap(friends) {
     const tempFriendsMap = [];
 
@@ -42,13 +58,11 @@ export function GlobalProvider(props) {
   }
 
   async function loadFriendList() {
-  	await fetch('/LS_API/mynetwork/friend_list')
-      .then(res => res.json())
-      .then((friends) => {
-      	  setFriends(friends, buildFriendsMap(friends));
-        // buildFriendsMap(friends);
-      	  console.log(`friends = ${friends}`);
-      });
+
+    if(currentUser!=undefined && currentUser.direct_friends!=undefined)
+    {
+      setFriends(currentUser.direct_friends, buildFriendsMap(currentUser.direct_friends));
+    }
   }
 
   async function loadSocialNetworkDb() {
@@ -59,9 +73,24 @@ export function GlobalProvider(props) {
       });
   }
 
+  function refreshUserData() {
+    fetch('/LS_API/refresh', { method: 'GET'})
+    .then(res => res.json())
+    .then((user) => {
+      setCurrentUser(user);
+      loadFriendList();
+    });
+  }
+
+  useEffect(() => {
+    const interval = setInterval(refreshUserData, 5000);
+    return () => clearInterval(interval);
+  }, [currentUser]);
+
   return (
     <GlobalContext.Provider value={{
-      currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, loadSocialNetworkDb, network_info, getProfilePicture
+      currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, 
+      loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus
     }}
     >
       {props.children}

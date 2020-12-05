@@ -258,7 +258,7 @@ module.exports = function (app) {
         if (foundListing.child_listings.length > 0) {
           let numberOfPopulatedChildListing = 0;
 
-          await foundListing.populate('shared_user_group', 'username profile_picture').execPopulate();
+          await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
           foundListing.populated('shared_user_group');
 
           foundListing.child_listings.forEach(async (child, index, array) => {
@@ -270,12 +270,12 @@ module.exports = function (app) {
             foundListing.populated(pathToPopulate);
 
             const pathToRequester = `child_listings.${index}.listing_id.requester`;
-            await foundListing.populate(pathToRequester, 'username profile_picture').execPopulate();
+            await foundListing.populate(pathToRequester, 'username profile_picture loggedInTime').execPopulate();
             foundListing.populated(pathToRequester);
 
 
             const pathToSharedUserGroup = `child_listings.${index}.shared_user_group`;
-            await foundListing.populate(pathToSharedUserGroup, 'username profile_picture').execPopulate();
+            await foundListing.populate(pathToSharedUserGroup, 'username profile_picture loggedInTime').execPopulate();
             foundListing.populated(pathToSharedUserGroup);
             // console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
             // console.log("listing: index =  " + index);
@@ -631,7 +631,7 @@ module.exports = function (app) {
           // 1. go through check shared_group and remove dm channels from there
           listing.shared_user_group.map(async (user, userIndex) => {
             const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
-            await foundListing.populate(pathToPopulate, 'username').execPopulate();
+            await foundListing.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
             foundListing.populated(pathToPopulate);
             chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
           });

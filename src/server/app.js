@@ -533,6 +533,17 @@ app.namespace('/LS_API', () => {
     });
   });
 
+  app.get('/refresh', (req, res) => {
+    if (req.user != undefined) {
+      User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+        // console.log(`foundUser = ${JSON.stringify(foundUser)}`);
+        app.locals.currentUser[req.user.username].direct_friends = foundUser.direct_friends;
+        res.json(app.locals.currentUser[req.user.username]);
+      });
+    } else {
+      res.json(null);
+    }
+  });
 
   app.get('/auth/facebook/profile',
     (req, res) => {

@@ -16,6 +16,7 @@ import SimpleModal from '../../../components/Modal/SimpleModal';
 
 import { ListingsContext } from '../../../contexts/ListingsContext';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
+import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 
 
@@ -25,6 +26,7 @@ function TenantListingDashBoard(props) {
   const {
     mapLoaded, initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel
   } = useContext(ListingsContext);
+  const {friendsMap} = useContext(GlobalContext);
   const googleMapRef = useRef(null);
   let googleMap = null;
 
@@ -133,7 +135,7 @@ function TenantListingDashBoard(props) {
         // googleMap.fitBounds(bounds);
       }
     }
-  }, [currentListing, zoom, rightPaneMode, currentChildIndex]);
+  }, [currentListing, zoom, rightPaneMode, currentChildIndex], friendsMap);
 
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, 'tenant');
