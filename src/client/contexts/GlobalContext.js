@@ -83,14 +83,15 @@ export function GlobalProvider(props) {
   }
 
   useEffect(() => {
-    const interval = setInterval(refreshUserData, 5000);
+    const interval = setInterval(refreshUserData, 1000*60*2);
     return () => clearInterval(interval);
   }, [currentUser]);
 
   return (
     <GlobalContext.Provider value={{
       currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, 
-      loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus
+      loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus, 
+      refreshUserData
     }}
     >
       {props.children}

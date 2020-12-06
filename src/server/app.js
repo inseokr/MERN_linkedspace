@@ -536,8 +536,14 @@ app.namespace('/LS_API', () => {
   app.get('/refresh', (req, res) => {
     if (req.user != undefined) {
       User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+        // ISEO-TBD: Need to make it sure that we populate things needed.
         // console.log(`foundUser = ${JSON.stringify(foundUser)}`);
-        app.locals.currentUser[req.user.username].direct_friends = foundUser.direct_friends;
+        // app.locals.currentUser[req.user.username].direct_friends = foundUser.direct_friends;
+        // console.log(`Before refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
+        app.locals.currentUser[req.user.username] = foundUser;
+
+        // console.log(`After refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
+
         res.json(app.locals.currentUser[req.user.username]);
       });
     } else {
@@ -577,6 +583,7 @@ app.namespace('/LS_API', () => {
       }
       // how to use facebook login?
       passport.authenticate('local')(req, res, () => {
+        console.log(`User signed up successfully: user = ${user.username}`);
         req.flash('success', `Welcome to LinkedSpaces ${user.username}`);
         res.redirect('/');
       });

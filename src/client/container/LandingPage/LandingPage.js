@@ -6,7 +6,7 @@ import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from '../MapPage/index';
 import Search from '../SearchPage/SearchPage';
-import { ListingsContext } from '../../contexts/ListingsContext';
+import { GlobalContext } from '../../contexts/GlobalContext';
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -22,7 +22,7 @@ import { ListingsContext } from '../../contexts/ListingsContext';
 
 export default class LandingPage extends Component {
 	// <note> can we have multiple contexts?
-	static contextType = ListingsContext;
+	static contextType = GlobalContext;
 
 	state = {
 	  lastMenu: '',
@@ -44,8 +44,9 @@ export default class LandingPage extends Component {
 	}
 
 	componentDidMount() {
-	  const { search } = this.context;
-	  console.log(`LandingPage is loaded. search = ${search}`);
+	  const { refreshUserData } = this.context;
+	  //console.log(`LandingPage is loaded. search = ${search}`);
+	  refreshUserData();
 	}
 
 	render() {
