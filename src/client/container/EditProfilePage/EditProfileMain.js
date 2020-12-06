@@ -112,7 +112,7 @@ function EditProfileMain() {
 
   function getMonthOptions() {
     const listOfMonths = [];
-    const monthStrings = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dev'];
+    const monthStrings = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
       listOfMonths.push(<option key={shortid.generate()} value={monthIndex + 1}>
@@ -176,7 +176,7 @@ function EditProfileMain() {
     if (currentUser.birthdate != undefined) {
       const tempDate = new Date(currentUser.birthdate);
 
-      $('#date').val(tempDate.getDate());
+      $('#date').val(tempDate.getDate()+1);
       $('#month').val(tempDate.getMonth() + 1);
       $('#year').val(tempDate.getFullYear());
     }
