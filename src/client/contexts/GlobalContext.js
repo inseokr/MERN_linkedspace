@@ -90,7 +90,8 @@ export function GlobalProvider(props) {
   return (
     <GlobalContext.Provider value={{
       currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, 
-      loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus
+      loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus, 
+      refreshUserData
     }}
     >
       {props.children}
