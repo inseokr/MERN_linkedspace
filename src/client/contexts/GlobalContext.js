@@ -17,7 +17,7 @@ export function GlobalProvider(props) {
   }
 
   function getProfilePicture(user_name) {
-    if (user_name === undefined) return sampleProfile;
+    if (user_name === undefined || currentUser === null) return sampleProfile;
 
     if (user_name === currentUser.username) {
       return currentUser.profile_picture;

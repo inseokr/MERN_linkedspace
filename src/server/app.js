@@ -208,12 +208,15 @@ app.namespace('/LS_API', () => {
 
   // iseo: It's kind of pre-processing or middleware for route handling
   app.use((req, res, next) => {
-    if (req.user != undefined) {
-      // console.log('login middleware called?');
-      if (app.locals.currentUser[req.user.username] == null) {
-        res.locals.currentUser = req.user;
-        app.locals.currentUser[req.user.username] = req.user;
-      }
+    // console.log('middleware is called');
+    if (req.user != undefined && req.user != null) {
+      User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+        if (err) {
+          console.warn('User not found??');
+        } else {
+          app.locals.currentUser[foundUser.username] = foundUser;
+        }
+      });
     }
     res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
@@ -584,6 +587,8 @@ app.namespace('/LS_API', () => {
       // how to use facebook login?
       passport.authenticate('local')(req, res, () => {
         console.log(`User signed up successfully: user = ${user.username}`);
+        user.loggedInTime = Date.now();
+        user.save();
         req.flash('success', `Welcome to LinkedSpaces ${user.username}`);
         res.redirect('/');
       });

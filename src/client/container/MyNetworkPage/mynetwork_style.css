@@ -111,6 +111,13 @@
   height: 70px;
 }
 
+.extraFriends {
+  position: absolute;
+  top: 20px;
+  left: 90px;
+  height: 70px;
+}
+
 .connection_caption {
   position: relative;
   top: 35%;

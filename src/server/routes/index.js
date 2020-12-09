@@ -104,6 +104,9 @@ module.exports = function (app) {
       // how to use facebook login?
       passport.authenticate('local')(req, res, () => {
         req.flash('success', `Welcome to LinkedSpaces ${user.username}`);
+        // Why is it not called?
+        user.loggedInTime = Date.now();
+        user.save();
         res.redirect('/');
       });
     });
