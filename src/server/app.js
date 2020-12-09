@@ -552,6 +552,7 @@ app.namespace('/LS_API', () => {
         }
       });
     } else {
+      // this may happen when it's redirected to landing page after logout!!
       console.warn('req.user is undefined??');
       res.json(null);
     }

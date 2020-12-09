@@ -116,9 +116,12 @@ module.exports = function (app) {
     if (req.user != null) {
       const currUserName = req.user.username;
 
+      console.log(`Logging out: username = ${currUserName}`);
+
       User.findById(req.user._id, (err, foundUser) => {
         foundUser.loggedInTime = null;
         foundUser.save();
+        console.log(`Clearing app.locals.currentUser[${currUserName}] to null`);
         app.locals.currentUser[currUserName] = null;
       });
     }
