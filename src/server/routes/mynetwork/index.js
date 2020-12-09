@@ -268,7 +268,12 @@ module.exports = function (app) {
   router.post('/:friend_id/friend_accept', (req, res) => {
     console.log('ISEO:friend_accept');
 
-    establishFriendship(res, req.user._id, req.params.friend_id);
+    if (req.user === undefined) {
+      console.warning('friend_accept: req.user is undefined!!!');
+      res.redirect('/MyNetworks');
+    } else {
+      establishFriendship(res, req.user._id, req.params.friend_id);
+    }
   });
 
   router.get('/:filename', (req, res) => {

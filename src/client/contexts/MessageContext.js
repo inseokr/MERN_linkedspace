@@ -66,7 +66,7 @@ export function MessageContextProvider(props) {
 
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
-  const { currentUser, setCurrentUser, friendsList } = useContext(GlobalContext);
+  const { currentUser, setCurrentUser, friendsList , refreshUserData} = useContext(GlobalContext);
 
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
@@ -92,6 +92,11 @@ export function MessageContextProvider(props) {
   // console.log("childType="+childType);
   // console.log("childIndex="+childIndex);
   // console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
+
+
+  function refreshUserDataFromMessageContext() {
+    refreshUserData();
+  }
 
 
   function reset(mode) {
@@ -797,7 +802,8 @@ export function MessageContextProvider(props) {
       selectedChatList,
       postSelectedContactList,
       reset,
-      msgCounter
+      msgCounter,
+      refreshUserDataFromMessageContext
     }}
     >
       {props.children}
