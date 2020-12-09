@@ -77,8 +77,11 @@ export function GlobalProvider(props) {
     fetch('/LS_API/refresh', { method: 'GET'})
     .then(res => res.json())
     .then((user) => {
-      setCurrentUser(user);
-      loadFriendList();
+      if(user!==null)
+      {
+        setCurrentUser(user);
+        loadFriendList();
+      }
     });
   }
 

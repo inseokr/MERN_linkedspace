@@ -543,13 +543,17 @@ app.namespace('/LS_API', () => {
         // console.log(`foundUser = ${JSON.stringify(foundUser)}`);
         // app.locals.currentUser[req.user.username].direct_friends = foundUser.direct_friends;
         // console.log(`Before refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
-        app.locals.currentUser[req.user.username] = foundUser;
-
-        // console.log(`After refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
-
-        res.json(app.locals.currentUser[req.user.username]);
+        if (err) {
+          console.warn('User not found!!');
+        } else {
+          app.locals.currentUser[req.user.username] = foundUser;
+          // console.log(`After refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
+          res.json(app.locals.currentUser[req.user.username]);
+        }
       });
     } else {
+      // this may happen when it's redirected to landing page after logout!!
+      console.warn('req.user is undefined??');
       res.json(null);
     }
   });
