@@ -73,8 +73,7 @@ function PickChattingParty(props) {
             </h5>
           </div>
           <div>
-            <OnlineStatus marginLeft="auto" loginStatus={getUserLoginStatus(_friend.username)}/> : '
-            <OnlineStatus marginLeft="auto" />
+            <OnlineStatus marginLeft="auto" loginStatus={getUserLoginStatus(_friend.username)}/>
           </div>
         </div>
         <hr />
