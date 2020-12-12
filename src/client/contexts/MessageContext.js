@@ -236,55 +236,61 @@ export function MessageContextProvider(props) {
     }
   }
 
-  // create or connect messaging socket
-  //    if(sessionStorage.getItem('socketCreated')===null)
-  if (socketCreated == false) {
-    let ws = null;
+  function webSocketConnect() {
+    // create or connect messaging socket
+    //    if(sessionStorage.getItem('socketCreated')===null)
+    if (socketCreated == false) {
+      let ws = null;
 
-    //console.log("process.env="+JSON.stringify(process.env));
-    //console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
-    if (process.env.REACT_APP_WS_ENV === 'development') {
-      ws = new WebSocket(`ws://${window.location.hostname}:3030`);
-    } else {
-      //const HOST = window.location.origin.replace(/^http/, 'ws');
-      //console.log(`env = ${JSON.stringify(process.env)}`);
-      ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
-    }
-
-    setSocketCreated(true);
-    setWebSocket(ws);
-
-    const audio = new Audio(messageAlertSound);
-    setAlertSound(audio);
-  } else {
-    // ISEO: not sure how it will be called upon every message reception?
-    chatSocket.onopen = () => {
-      console.log('Chat Server Connected');
-      // let's send the first message to register this socket.
-      if (currentUser != null) {
-        chatSocket.send(`CSC:Register:${currentUser.username}`);
+      //console.log("process.env="+JSON.stringify(process.env));
+      //console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
+      if (process.env.REACT_APP_WS_ENV === 'development') {
+        ws = new WebSocket(`ws://${window.location.hostname}:3030`);
       } else {
-        // console.log("No current user is set yet!!!");
+        //const HOST = window.location.origin.replace(/^http/, 'ws');
+        //console.log(`env = ${JSON.stringify(process.env)}`);
+        ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
       }
-    };
 
-    chatSocket.onmessage = (evt) => {
-      const message = evt.data;
-      updateChatHistory(message, false);
-      setWaitMessage(false);
-    };
+      setSocketCreated(true);
+      setWebSocket(ws);
 
-    chatSocket.onclose = () => {
-      // console.log("Disconnected");
-    };
+      const audio = new Audio(messageAlertSound);
+      setAlertSound(audio);
+    } else {
+      // ISEO: not sure how it will be called upon every message reception?
+      chatSocket.onopen = () => {
+        console.log('Chat Server Connected');
+        // let's send the first message to register this socket.
+        if (currentUser != null) {
+          chatSocket.send(`CSC:Register:${currentUser.username}`);
+        } else {
+          // console.log("No current user is set yet!!!");
+        }
+      };
+
+      chatSocket.onmessage = (evt) => {
+        const message = evt.data;
+        updateChatHistory(message, false);
+        setWaitMessage(false);
+      };
+
+      chatSocket.onclose = () => {
+        console.warn("ChatSocket is being closed. Will reconnect it after 1 second.");
+        setSocketCreated(false);
+        setTimeout(function() {
+          webSocketConnect();
+        }, 1000);
+      };
+    }
   }
-
 
   function updateLastReadIndex(data) {
     for (let i = 0; i < currentUser.chatting_channels.dm_channels.length; i++) {
       if (currentUser.chatting_channels.dm_channels[i].name == data.channel_id) {
         const tempUser = currentUser;
         tempUser.chatting_channels.dm_channels[i].lastReadIndex = data.lastReadIndex;
+        console.log("updateLastReadIndex");
         setCurrentUser(tempUser);
       }
     }
@@ -771,6 +777,8 @@ export function MessageContextProvider(props) {
 
     loadChattingDatabase();
   }, [currChannelInfo, channelContextLength]);
+
+  webSocketConnect();
 
   return (
     <MessageContext.Provider value={{

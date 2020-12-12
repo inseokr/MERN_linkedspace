@@ -16,6 +16,7 @@ function CommonHeader(props) {
   function getLoginStatus() {
     // This should be called only once when no current user is set
     if (currentUser == null) {
+      console.log("getLoginStatus");
       fetch('/LS_API/getLoginStatus')
         .then(res => res.json())
         .then((user) => {
@@ -36,6 +37,8 @@ function CommonHeader(props) {
   }, [currentUser, friendsList]);
 
   const { loginClickHandler, signupClickHandler } = props;
+
+  console.log("ISEO: rendering CommonHeader: isUserLoggedIn = " + isUserLoggedIn());
 
   return (
     <div className="navBarContainer">

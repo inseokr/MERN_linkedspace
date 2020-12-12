@@ -74,6 +74,8 @@ export function GlobalProvider(props) {
   }
 
   function refreshUserData() {
+    console.log("ISEO: refreshUserData");
+    
     fetch('/LS_API/refresh', { method: 'GET'})
     .then(res => res.json())
     .then((user) => {

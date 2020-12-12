@@ -62,6 +62,8 @@ app.namespace('/LS_API', () => {
   // 'mongodb://localhost/Linkedspaces';
   const url = process.env.DATABASEURL || process.env.DEV_DATABASEURL;
 
+  console.log(`MongoDB URL = ${url}`);
+
 
   async function downloadProfilePicture(profileFullPath, profilePath, accessToken) {
     const url = `https://graph.facebook.com/me/picture?access_token=${accessToken}`;
@@ -305,7 +307,7 @@ app.namespace('/LS_API', () => {
     const picIndex = req.body.pic_index;
     LandlordRequest.findById(req.params.list_id, (err, foundListing) => {
       try {
-        const picPath = `/public/user_resources/pictures/landdlord/${req.params.list_id}_${picIndex}.jpg`;
+        const picPath = `/public/user_resources/pictures/landlord/${req.params.list_id}_${picIndex}.jpg`;
 
         fileDeleteFromCloud(picPath);
 
@@ -537,7 +539,7 @@ app.namespace('/LS_API', () => {
   });
 
   app.get('/refresh', (req, res) => {
-    if (req.user != undefined) {
+    if (req.user != undefined && app.locals.currentUser[req.user.username] !== null) {
       User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
         // ISEO-TBD: Need to make it sure that we populate things needed.
         // console.log(`foundUser = ${JSON.stringify(foundUser)}`);
@@ -581,6 +583,7 @@ app.namespace('/LS_API', () => {
       email: req.body.email,
       password: req.body.password,
     });
+
 
     User.register(newUser, req.body.password, (err, user) => {
       if (err) {

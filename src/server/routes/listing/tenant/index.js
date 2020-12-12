@@ -255,11 +255,11 @@ module.exports = function (app) {
       }
 
       const populateChildren = new Promise(async (resolve, reject) => {
+        await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
+        foundListing.populated('shared_user_group');
+
         if (foundListing.child_listings.length > 0) {
           let numberOfPopulatedChildListing = 0;
-
-          await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
-          foundListing.populated('shared_user_group');
 
           foundListing.child_listings.forEach(async (child, index, array) => {
             const pathToPopulate = `child_listings.${index}.listing_id`;
@@ -279,7 +279,7 @@ module.exports = function (app) {
             foundListing.populated(pathToSharedUserGroup);
             // console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
             // console.log("listing: index =  " + index);
-            console.log(`foundListing = ${JSON.stringify(foundListing)}`);
+            // console.log(`foundListing = ${JSON.stringify(foundListing)}`);
             if (++numberOfPopulatedChildListing == array.length) resolve();
           });
         } else {
@@ -394,12 +394,12 @@ module.exports = function (app) {
 
   router.post('/:list_id/addUserGroup', (req, res) => {
     TenantRequest.findById(req.params.list_id, (err, foundListing) => {
-      function checkDuplicate(user_list, name) {
+      function checkDuplicate(user_list, _id) {
         let bDuplicate = false;
 
         if (user_list.length >= 1) {
           bDuplicate = user_list.some(
-            _user => _user.username === name
+            _user => _user.equals(_id)
           );
         }
 
@@ -428,7 +428,7 @@ module.exports = function (app) {
 	    	switch (chattingType) {
 	    		case 1:
 	    			// find the ID of the friend
-	    			if (checkDuplicate(foundListing.shared_user_group, _friend.username) == true) {
+	    			if (checkDuplicate(foundListing.shared_user_group, _friend._id) == true) {
 	    				console.log('Duplicate found');
 	    				res.json({ result: 'Duplicate found' });
 	    				return;
@@ -441,7 +441,7 @@ module.exports = function (app) {
 	    				res.json({ result: 'Duplicate found' });
 	    				return;
 	    			}
-
+            console.log(`Pushing friend = ${_friend.username}`);
     				foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
 	    			break;
 	    		default:
