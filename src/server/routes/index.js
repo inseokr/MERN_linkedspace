@@ -23,11 +23,16 @@ module.exports = function (app) {
     if (req.user == undefined) {
       console.log(' user is undefined');
     } else {
-      console.log(`getLoginStatus called with username = ${req.user.username}`);
-      console.log(`${JSON.stringify(app.locals.currentUser[req.user.username])}`);
+      // console.log(`getLoginStatus called with username = ${req.user.username}`);
+      // console.log(`${JSON.stringify(app.locals.currentUser[req.user.username])}`);
     }
     if (req.user == undefined) res.json(null);
-    else res.json(app.locals.currentUser[req.user.username]);
+    else
+    if (app.locals.currentUser[req.user.username] == undefined) {
+      res.json(null);
+    } else {
+      res.json(app.locals.currentUser[req.user.username]);
+    }
   });
 
   router.get('/getLastMenu', (req, res) => {
@@ -96,6 +101,8 @@ module.exports = function (app) {
       password: req.body.password,
       birthdate: new Date(birthdayString)
     });
+
+
     User.register(newUser, req.body.password, (err, user) => {
       if (err) {
         req.flash('error', err.message);
@@ -115,21 +122,24 @@ module.exports = function (app) {
   router.get('/logout', (req, res) => {
     if (req.user != null) {
       const currUserName = req.user.username;
+      const userId = req.user._id;
 
       console.log(`Logging out: username = ${currUserName}`);
+      app.locals.currentUser[currUserName] = null;
+      req.logout();
 
-      User.findById(req.user._id, (err, foundUser) => {
+      User.findById(userId, (err, foundUser) => {
         foundUser.loggedInTime = null;
         foundUser.save();
         console.log(`Clearing app.locals.currentUser[${currUserName}] to null`);
-        app.locals.currentUser[currUserName] = null;
+        // res.redirect('/');
+        res.send({ result: 'successful logout' });
       });
+    } else {
+      // req.flash('success', 'Logged you out!');
+      res.send({ result: 'successful logout' });
+      // res.redirect('/');
     }
-
-    req.logout();
-    req.flash('success', 'Logged you out!');
-
-    res.send({ result: 'successful logout' });
   });
 
   // show login form

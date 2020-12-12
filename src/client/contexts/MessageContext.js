@@ -290,6 +290,7 @@ export function MessageContextProvider(props) {
       if (currentUser.chatting_channels.dm_channels[i].name == data.channel_id) {
         const tempUser = currentUser;
         tempUser.chatting_channels.dm_channels[i].lastReadIndex = data.lastReadIndex;
+        console.log("updateLastReadIndex");
         setCurrentUser(tempUser);
       }
     }

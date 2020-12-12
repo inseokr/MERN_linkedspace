@@ -12,7 +12,7 @@ function checkDuplicate(user_list, _id) {
 
   if (user_list.length >= 1) {
     bDuplicate = user_list.some(
-      _user => _user === _id
+      _user => _user.equals(_id)
     );
   }
 
@@ -44,9 +44,11 @@ async function addToSharedUserGroup(listing, friend_name, type, child_index, bSa
         // child
         case 2:
           if (checkDuplicate(listing.child_listings[child_index].shared_user_group, _friend._id) == true) {
-            console.log('Duplicate found');
+            console.log(`addToSharedUserGroup: Duplicate found with friend = ${_friend.username}`);
             resolve(0);
           } else {
+            console.log(`addToSharedUserGroup: Adding friend name = ${_friend.username}`);
+            console.log(`addToSharedUserGroup: Adding friend id = ${_friend._id.toString()}`);
             listing.child_listings[child_index].shared_user_group.push(_friend._id);
           }
           break;
