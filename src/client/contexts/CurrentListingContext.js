@@ -1,10 +1,11 @@
 /* eslint-disable */
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { loadGoogleMapScript } from './helper/helper';
 
 export const CurrentListingContext = createContext();
 
 export function CurrentListingProvider(props) {
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [listing_info, setListingInfo] = useState();
   const [currentListing, setCurrentListing] = useState();
   const [ListingInfoType, setListingInfoType] = useState('');
@@ -15,9 +16,6 @@ export function CurrentListingProvider(props) {
   }
 
   async function fetchListingInfo(_type) {
-    // console.log("ISEO: fetchListingInfo: _type =" + _type);
-    // console.log("ISEO: ListingInfoType =" + ListingInfoType);
-
     if (ListingInfoType !== _type) {
       setListingInfoType(_type);
       // type
@@ -36,9 +34,6 @@ export function CurrentListingProvider(props) {
     }
   }
 
-  useEffect(() => {
-  }, [currentChildIndex]);
-
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
     const _prefix = (listing_type === 'landlord') ? '/listing/landlord/' : '/listing/tenant/';
@@ -56,10 +51,24 @@ export function CurrentListingProvider(props) {
     return successful;
   }
 
+  useEffect(() => { // Initial useEffect to load google map.
+    loadGoogleMapScript(() => {
+      setMapLoaded(true);
+    });
+  }, []);
+
   return (
-    <CurrentListingContext.Provider value={{
-      listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType, currentChildIndex, setCurrentChildIndex
-    }}
+    <CurrentListingContext.Provider
+      value={{
+        mapLoaded,
+        listing_info,
+        currentListing,
+        currentChildIndex,
+        setCurrentChildIndex,
+        fetchCurrentListing,
+        fetchListingInfo,
+        cleanupListingInfoType
+      }}
     >
       {props.children}
     </CurrentListingContext.Provider>
