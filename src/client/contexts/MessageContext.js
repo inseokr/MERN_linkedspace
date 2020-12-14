@@ -71,7 +71,7 @@ export function MessageContextProvider(props) {
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing, setCurrentChildIndex, setChildIndexByChannelId } = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setCurrentChildIndex, setChildIndexByChannelId, focusParentListing } = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -93,7 +93,6 @@ export function MessageContextProvider(props) {
   // console.log("childIndex="+childIndex);
   // console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
 
-
   function parseChattingChannelName(channel_name)
   {
     // list of chatting channel
@@ -108,7 +107,15 @@ export function MessageContextProvider(props) {
     if(result===null)
     {
       // check if it's parent chatting channel
-      return null;
+      result = channel_name.match(/(.*)-parent-(.*)/);
+      if(result!==null)
+      {
+        return "parent";
+      }
+      else
+      {
+        return null;
+      }
     }
     else
     {
@@ -485,12 +492,21 @@ export function MessageContextProvider(props) {
 
       // const newHistory = [...chattingHistory, processedMsg[2]];
       // addMsgToChatHistory(newHistory);
-      let childListingId = parseChattingChannelName(processedMsg[1]);
+      let _channelId = parseChattingChannelName(processedMsg[1]);
 
-      if(childListingId!==null)
+      if(_channelId!==null)
       {
-        console.log("childListingId: " + childListingId);
-        setChildIndexByChannelId(childListingId);
+        console.log("childListingId: " + _channelId);
+
+        if(_channelId==="parent")
+        {
+          focusParentListing();
+        }
+        else
+        {
+          setChildIndexByChannelId(_channelId);
+        }
+
       }
       else
       {

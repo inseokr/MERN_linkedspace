@@ -174,9 +174,9 @@ export default class ChildListingsView extends Component {
 
 	render() {
 	  return (
-  <React.Fragment>
-    {this.state.childListingsViews}
-  </React.Fragment>
+		  <React.Fragment>
+		    {this.state.childListingsViews}
+		  </React.Fragment>
 	  );
 	}
 }

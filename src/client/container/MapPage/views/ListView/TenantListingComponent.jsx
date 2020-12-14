@@ -22,7 +22,8 @@ function TenantListingComponent(props) {
   const [modalShow, setModalShow] = useState(false);
   const { currentUser } = useContext(GlobalContext);
   const {
-    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex
+    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex, 
+    parentRef, setParentRef
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
@@ -145,11 +146,14 @@ function TenantListingComponent(props) {
                handleParentOnClick();
            }
         } */
+    const _parentRef = React.createRef();
+    setParentRef(_parentRef);
 
   }, [listing]);
 
   return (
     <div>
+      <div ref={parentRef} onClick={handleParentOnClick}>
       <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>
@@ -211,6 +215,8 @@ function TenantListingComponent(props) {
           </Grid>
         </Grid>
       </ListItem>
+      </div>
+
       <ChildListingsView
         handleSelect={handleSelect}
         messageClickHandler={toggle}

@@ -10,10 +10,26 @@ export function CurrentListingProvider(props) {
   const [ListingInfoType, setListingInfoType] = useState('');
   const [currentChildIndex, setCurrentChildIndex] = useState(0);
   const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
+  const [parentRef, setParentRef] = useState(null);
 
   function cleanupListingInfoType() {
     setListingInfoType('');
   }
+
+  function focusParentListing() {
+
+    if(parentRef!==null && parentRef.current !==undefined && parentRef.current !== null)
+    {
+      console.log("Focusing Parent Listing");
+      parentRef.current.click();
+      parentRef.current.scrollIntoView();
+    }
+    else
+    {
+      console.warn("focusParentListing failure");
+    }
+  }
+
 
   function buildChildListingMappingTable() {
     let _tempMap = [];
@@ -106,7 +122,9 @@ export function CurrentListingProvider(props) {
     <CurrentListingContext.Provider value={{
       listing_info, currentListing, fetchCurrentListing, fetchListingInfo, 
       cleanupListingInfoType, currentChildIndex, setCurrentChildIndex,
-      getChildIndexByListingId,setChildIndexByChannelId
+      getChildIndexByListingId,setChildIndexByChannelId, 
+      setParentRef, parentRef,
+      focusParentListing
     }}
     >
       {props.children}
