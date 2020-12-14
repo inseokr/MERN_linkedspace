@@ -9,9 +9,52 @@ export function CurrentListingProvider(props) {
   const [currentListing, setCurrentListing] = useState();
   const [ListingInfoType, setListingInfoType] = useState('');
   const [currentChildIndex, setCurrentChildIndex] = useState(0);
+  const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
 
   function cleanupListingInfoType() {
     setListingInfoType('');
+  }
+
+  function buildChildListingMappingTable() {
+    let _tempMap = [];
+
+    if(currentListing===undefined) return;
+    
+    for(let index=0; index< currentListing.child_listings.length; index++)
+    {
+      if(currentListing.child_listings[index].listing_id===undefined)
+      {
+        console.warn("listing ID is undefined for index = " + index);
+      }
+      else
+      {
+        _tempMap[currentListing.child_listings[index].listing_id._id] = index;
+      }
+    }
+    setChildListingId2ChildIndexMap(_tempMap);
+  }
+
+  function getChildIndexByListingId(_listingId)
+  {
+    //console.log("getChildIndexByListingId = " + childListingId2ChildIndexMap[_listingId]);
+
+    if(childListingId2ChildIndexMap[_listingId]!==null && childListingId2ChildIndexMap[_listingId]!==undefined)
+    {
+      //console.log("getChildIndexByListingId: return index = " + childListingId2ChildIndexMap[_listingId]);
+      return (childListingId2ChildIndexMap[_listingId]);
+    }
+    else
+    {
+      console.warn("No child listing available");
+      return 0;
+    }
+  }
+
+  function setChildIndexByChannelId(_listingId)
+  {
+    let _childIndex = getChildIndexByListingId(_listingId);
+
+    setCurrentChildIndex(_childIndex);
   }
 
   async function fetchListingInfo(_type) {
@@ -51,6 +94,9 @@ export function CurrentListingProvider(props) {
         console.log(`listing = ${JSON.stringify(listing)}`);
         setCurrentListing(listing);
         successful = 1;
+
+        // build mapping table between child listing ID and child index
+        buildChildListingMappingTable();
       });
 
     return successful;
@@ -58,7 +104,9 @@ export function CurrentListingProvider(props) {
 
   return (
     <CurrentListingContext.Provider value={{
-      listing_info, currentListing, fetchCurrentListing, fetchListingInfo, cleanupListingInfoType, currentChildIndex, setCurrentChildIndex
+      listing_info, currentListing, fetchCurrentListing, fetchListingInfo, 
+      cleanupListingInfoType, currentChildIndex, setCurrentChildIndex,
+      getChildIndexByListingId,setChildIndexByChannelId
     }}
     >
       {props.children}

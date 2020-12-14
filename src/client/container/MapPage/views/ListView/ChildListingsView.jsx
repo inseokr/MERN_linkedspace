@@ -110,18 +110,19 @@ export default class ChildListingsView extends Component {
 	    refArray.push(curRef);
 
 	    // console.log("curRef=" + curRef);
-	    _childListingViews.push(<div key={shortid.generate()}>
-  <ChildListing
-    clickState={listClickStates[index]}
-    clickHandler={this.handleClickState}
-    handleSelect={this.props.handleSelect}
-    listing={childListing}
-    index={index}
-    messageClickHandler={this.props.messageClickHandler}
-    removeHandler={this.props.removeHandler}
-    ref={curRef}
-  />
-                             </div>);
+	    _childListingViews.push(
+	    	<div key={shortid.generate()}>
+			  <ChildListing
+			    clickState={listClickStates[index]}
+			    clickHandler={this.handleClickState}
+			    handleSelect={this.props.handleSelect}
+			    listing={childListing}
+			    index={index}
+			    messageClickHandler={this.props.messageClickHandler}
+			    removeHandler={this.props.removeHandler}
+			    ref={curRef}
+			  />
+            </div>);
 	  	}, this);
 
 	  	this.setState({
