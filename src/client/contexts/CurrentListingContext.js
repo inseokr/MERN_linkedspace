@@ -20,7 +20,7 @@ export function CurrentListingProvider(props) {
 
     if(parentRef!==null && parentRef.current !==undefined && parentRef.current !== null)
     {
-      console.log("Focusing Parent Listing");
+      //console.log("Focusing Parent Listing");
       parentRef.current.click();
       parentRef.current.scrollIntoView();
     }
@@ -34,7 +34,7 @@ export function CurrentListingProvider(props) {
   function buildChildListingMappingTable() {
     let _tempMap = [];
 
-    if(currentListing===undefined) return;
+    if(currentListing===undefined || currentListing.child_listings===undefined) return;
     
     for(let index=0; index< currentListing.child_listings.length; index++)
     {

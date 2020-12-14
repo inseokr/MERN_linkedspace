@@ -510,7 +510,7 @@ export function MessageContextProvider(props) {
       }
       else
       {
-        console.warn("No child index found");        
+        console.warn("No child index found");
       }
 
       updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
