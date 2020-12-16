@@ -18,11 +18,14 @@ import {FILE_SERVER_URL} from '../../../../globalConstants';
 
 
 function TenantListingComponent(props) {
+
+
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const { currentUser } = useContext(GlobalContext);
   const {
-    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex
+    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex, 
+    parentRef, setParentRef
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
@@ -40,7 +43,7 @@ function TenantListingComponent(props) {
 
 
   if (chattingContextType === MSG_CHANNEL_TYPE_GENERAL) {
-    // This will be called only if chatting conext is changed from general to dashboard
+    //This will be called only if chatting conext is changed from general to dashboard
     setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
     toggle(true);
   }
@@ -135,21 +138,16 @@ function TenantListingComponent(props) {
     );
   }
 
-
-  useEffect(() => {
-    // It's needed to initiate the context switching of messaging window.
-    /* if(listing.child_listings.length==0)
-        {
-           console.log("Clicking parent,  chattingContextType = " + chattingContextType);
-           if (chattingContextType!==MSG_CHANNEL_TYPE_LISTING_PARENT) {
-               handleParentOnClick();
-           }
-        } */
-
-  }, [listing]);
+  // Create reference for the parent listing
+  // <note> how to clean the reference?
+  if(parentRef===null)
+  {
+    setParentRef(React.createRef());
+  }
 
   return (
     <div>
+      <div ref={parentRef} onClick={handleParentOnClick}>
       <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>
@@ -189,13 +187,13 @@ function TenantListingComponent(props) {
               <div className="flex-container" style={{ justifyContent: 'space-between' }}>
                 <Typography className="description__address" color="textSecondary">
                   Username: 
-{' '}
-{userName}
+                  {' '}
+                  {userName}
                 </Typography>
                 <Typography className="description__address" color="textSecondary">
                   Email: 
-{' '}
-{listing.email}
+                  {' '}
+                  {listing.email}
                 </Typography>
               </div>
 
@@ -211,6 +209,8 @@ function TenantListingComponent(props) {
           </Grid>
         </Grid>
       </ListItem>
+      </div>
+
       <ChildListingsView
         handleSelect={handleSelect}
         messageClickHandler={toggle}

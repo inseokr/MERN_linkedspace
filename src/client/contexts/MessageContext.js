@@ -71,7 +71,7 @@ export function MessageContextProvider(props) {
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing } = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setCurrentChildIndex, setChildIndexByChannelId, focusParentListing } = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -93,6 +93,38 @@ export function MessageContextProvider(props) {
   // console.log("childIndex="+childIndex);
   // console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
 
+  function parseChattingChannelName(channel_name)
+  {
+    // list of chatting channel
+    // 1. general chat
+    // : friend1-dm-friend2
+    // 2. listing related chat
+    // 2.1 parent level
+    // : listing_id-parent-[friend_list]
+    // 2.2 child listing
+    // : listing_id-child-listing_id
+    let result = channel_name.match(/(.*)-child-([^-]*)-(.*)/);
+    if(result===null)
+    {
+      // check if it's parent chatting channel
+      result = channel_name.match(/(.*)-parent-(.*)/);
+      if(result!==null)
+      {
+        return "parent";
+      }
+      else
+      {
+        return null;
+      }
+    }
+    else
+    {
+      // it's child chatting channel
+      // <note> [2] contains the child listing ID
+      return result[2];
+    }
+
+  }
 
   function refreshUserDataFromMessageContext() {
     refreshUserData();
@@ -272,6 +304,7 @@ export function MessageContextProvider(props) {
       chatSocket.onmessage = (evt) => {
         const message = evt.data;
         updateChatHistory(message, false);
+        //setCurrentChildIndex(0);
         setWaitMessage(false);
       };
 
@@ -459,6 +492,27 @@ export function MessageContextProvider(props) {
 
       // const newHistory = [...chattingHistory, processedMsg[2]];
       // addMsgToChatHistory(newHistory);
+      let _channelId = parseChattingChannelName(processedMsg[1]);
+
+      if(_channelId!==null)
+      {
+        console.log("childListingId: " + _channelId);
+
+        if(_channelId==="parent")
+        {
+          focusParentListing();
+        }
+        else
+        {
+          setChildIndexByChannelId(_channelId);
+        }
+
+      }
+      else
+      {
+        console.warn("No child index found");
+      }
+
       updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
     }
   }

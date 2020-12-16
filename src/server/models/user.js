@@ -16,6 +16,8 @@ const UserSchema = new mongoose.Schema({
 
   loggedInTime: { type: Date, default: null },
 
+  lastVistedListingId: { type: mongoose.Schema.Types.ObjectId, ref: 'TenantRequest', default: null },
+
   profile_picture: String, // The path to the profile picture
 
   address: {
