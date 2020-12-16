@@ -53,6 +53,19 @@ router.get('/show_active_listing', (req, res) => {
   });
 });
 
+router.get('/getLastVisitedListingId', (req, res) => {
+  // console.log('getLastVisitedListingId called');
+  User.findById(req.user._id, (err, foundUser) => {
+    if (err) {
+      console.log('User not found');
+      res.json(null);
+    }
+
+    // console.log(`sending lastVisitedListingId = ${JSON.stringify(foundUser.lastVistedListingId)}`);
+    res.json(foundUser.lastVistedListingId);
+  });
+});
+
 router.get('/get_active_listing/own', (req, res) => {
   User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing')
     .exec((err, foundUser) => {

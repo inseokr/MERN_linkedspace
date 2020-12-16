@@ -76,6 +76,13 @@ function LoginMenu() {
                   Listing From Friends
                 </Link>
               </li>
+
+              <li className="nav-item">
+                <Link className="nav-link" to="/Favorite">
+                  Favorite Dashboard
+                </Link>
+              </li>
+
               <li className="nav-item">
                 <Link className="nav-link" to="/Logout">
                   Logout

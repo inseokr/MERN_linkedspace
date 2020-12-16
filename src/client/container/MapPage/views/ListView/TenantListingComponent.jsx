@@ -18,6 +18,8 @@ import {FILE_SERVER_URL} from '../../../../globalConstants';
 
 
 function TenantListingComponent(props) {
+
+
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const { currentUser } = useContext(GlobalContext);
@@ -41,7 +43,7 @@ function TenantListingComponent(props) {
 
 
   if (chattingContextType === MSG_CHANNEL_TYPE_GENERAL) {
-    // This will be called only if chatting conext is changed from general to dashboard
+    //This will be called only if chatting conext is changed from general to dashboard
     setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
     toggle(true);
   }
@@ -136,20 +138,12 @@ function TenantListingComponent(props) {
     );
   }
 
-
-  useEffect(() => {
-    // It's needed to initiate the context switching of messaging window.
-    /* if(listing.child_listings.length==0)
-        {
-           console.log("Clicking parent,  chattingContextType = " + chattingContextType);
-           if (chattingContextType!==MSG_CHANNEL_TYPE_LISTING_PARENT) {
-               handleParentOnClick();
-           }
-        } */
-    const _parentRef = React.createRef();
-    setParentRef(_parentRef);
-
-  }, [listing]);
+  // Create reference for the parent listing
+  // <note> how to clean the reference?
+  if(parentRef===null)
+  {
+    setParentRef(React.createRef());
+  }
 
   return (
     <div>
@@ -193,13 +187,13 @@ function TenantListingComponent(props) {
               <div className="flex-container" style={{ justifyContent: 'space-between' }}>
                 <Typography className="description__address" color="textSecondary">
                   Username: 
-{' '}
-{userName}
+                  {' '}
+                  {userName}
                 </Typography>
                 <Typography className="description__address" color="textSecondary">
                   Email: 
-{' '}
-{listing.email}
+                  {' '}
+                  {listing.email}
                 </Typography>
               </div>
 

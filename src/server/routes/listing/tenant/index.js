@@ -297,6 +297,11 @@ module.exports = function (app) {
           // console.log("foundListing = " + JSON.stringify(foundListing));
 
           res.json(foundListing);
+
+          // update recent visited listing
+          foundUser.lastVistedListingId = req.params.list_id;
+          // console.log(`Recording liast visited listing ID =  ${JSON.stringify(foundUser.lastVistedListingId)}`);
+          foundUser.save();
         });
       });
     });

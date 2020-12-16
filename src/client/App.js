@@ -23,6 +23,7 @@ import PostListingPage from './container/ListingPage/PostListingPage';
 import Post3rdPartyListing from './container/ListingPage/3rdParty/Post3rdPartyListing';
 import EditProfileMain from './container/EditProfilePage/EditProfileMain';
 import FacebookLogin from './components/Login/FacebookLogin';
+import FavoriteDashboard from './container/Favorite/FavoriteDashboard';
 
 
 import { MessageContextProvider } from './contexts/MessageContext';
@@ -116,6 +117,7 @@ export default class App extends Component {
 
                   <Route exact path="/3rdParty" component={Post3rdPartyListing} />
 
+                  <Route exact path="/Favorite" render={props => <FavoriteDashboard {...props} />} />
                   <Route exact path="/ActiveListing">
                     <ShowActiveListingPageWrapper type="own" listingControl="" />
                   </Route>
