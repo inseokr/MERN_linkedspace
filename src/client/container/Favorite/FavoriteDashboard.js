@@ -1,12 +1,22 @@
 /* eslint-disable */
 import React, { useEffect, useContext } from 'react';
 import { GlobalContext } from '../../contexts/GlobalContext';
+import $ from 'jquery';
 
 function FavoriteDashboard(props) {
 
   const {currentUser} = useContext(GlobalContext);
 
   function getLastVisitedListingId() {
+
+    console.log("getLastVisitedListingId: before JQuery");
+
+    $.get("https://sfbay.craigslist.org/eby/apa/d/oakland-nice-view-bay-bridge-bedrooms/7247926599.html", 
+      function(response) { 
+        console.log("received response = " + response);
+        alert(response) 
+      });
+
     // This should be called only once when no current user is set
     //console.log("getLastVisitedListingId");
     fetch('/LS_API/listing/getLastVisitedListingId')
