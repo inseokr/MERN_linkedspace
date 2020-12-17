@@ -111,8 +111,8 @@ export default class ModalLoginForm extends Component {
               <div className="modal-footer d-flex justify-content-center">
                 <a href="/LS_API/forgot"> Forgot Password </a>
               </div>
-
             </form>
+
           </div>
 
         </div>

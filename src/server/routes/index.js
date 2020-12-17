@@ -211,7 +211,7 @@ module.exports = function (app) {
           service: 'Gmail',
           auth: {
             user: 'inseo.kr@gmail.com',
-            pass: '!newintern0320'
+            pass: '!taylormade0320'
           }
         });
         const mailOptions = {
