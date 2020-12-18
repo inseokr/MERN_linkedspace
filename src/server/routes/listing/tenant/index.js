@@ -300,6 +300,13 @@ module.exports = function (app) {
 
           // update recent visited listing
           foundUser.lastVistedListingId = req.params.list_id;
+
+          // update status of listing ID from friends
+          console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
+          console.log(`foundUser._id=${JSON.stringify(foundUser._id)}`);
+          if (!foundListing.requester.equals(foundUser._id)) {
+            userDbHandler.readListingFromFriends(foundUser, 'tenant', req.params.list_id);
+          }
           // console.log(`Recording liast visited listing ID =  ${JSON.stringify(foundUser.lastVistedListingId)}`);
           foundUser.save();
         });

@@ -208,7 +208,7 @@ const UserSchema = new mongoose.Schema({
     {
       id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'TenantRequest'
+        ref: 'LandlordRequest'
       },
 
       cover_picture: String,
