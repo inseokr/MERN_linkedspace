@@ -142,6 +142,20 @@ async function getRequesterId(listing_id, type) {
   });
 }
 
+function readListingFromFriends(user, listing_type, listing_id) {
+  console.log('readListingFromFriends');
+
+  const listingArray = (listing_type === 'tenant') ? user.incoming_tenant_listing : user.incoming_landlord_listing;
+
+  for (let index = 0; index < listingArray.length; index++) {
+    if (listingArray[index].id.equals(listing_id)) {
+      console.log('readListingFromFriends: found listing!!');
+      listingArray[index].status = 'Read';
+      return;
+    }
+  }
+}
+
 async function getListingById(listing_id, type) {
   console.log(`listing_id = ${JSON.stringify(listing_id)}`);
 
@@ -288,5 +302,6 @@ module.exports = {
   findUserById: findUserById_,
   deleteListingFromUserDB,
   getReferringFriendsByListingId,
-  handleListingForward
+  handleListingForward,
+  readListingFromFriends
 };

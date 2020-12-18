@@ -6,10 +6,19 @@ import { MessageContext } from '../../contexts/MessageContext';
 // import { FILE_SERVER_URL } from '../../globalConstants';
 
 function LoginMenu() {
-  const { currentUser } = useContext(GlobalContext);
+  const { currentUser, checkUnreadListing } = useContext(GlobalContext);
   const { checkIfAnyNewMsgArrived } = useContext(MessageContext);
 
   const newMsgMarker = (checkIfAnyNewMsgArrived())
+    ? (
+      <React.Fragment>
+        <span className="fa fa-comment" />
+        <span className="newMsgSignature">N</span>
+      </React.Fragment>
+    ) : '';
+
+
+  const newListingMarker = (checkUnreadListing())
     ? (
       <React.Fragment>
         <span className="fa fa-comment" />
@@ -74,6 +83,7 @@ function LoginMenu() {
               <li className="nav-item">
                 <Link className="nav-link" to="/ShowListingFromFriends">
                   Listing From Friends
+                  {newListingMarker}
                 </Link>
               </li>
 

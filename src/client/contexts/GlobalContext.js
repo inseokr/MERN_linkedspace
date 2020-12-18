@@ -16,6 +16,35 @@ export function GlobalProvider(props) {
     return currentUser != null;
   }
 
+  function checkUnreadListing() {
+
+    if(currentUser != null)
+    {
+
+      for(let index=0; index<currentUser.incoming_tenant_listing.length; index++)
+      {
+        if(currentUser.incoming_tenant_listing[index].status==="New")
+        {
+          return true;
+        }
+      }
+
+      for(let index=0; index<currentUser.incoming_landlord_listing.length; index++)
+      {
+        if(currentUser.incoming_landlord_listing[index].status==="New")
+        {
+          return true;
+        }
+      }
+
+    }
+    else
+    {
+      return false;
+    }
+
+  }
+
   function getProfilePicture(user_name) {
     if (user_name === undefined || currentUser === null) return sampleProfile;
 
@@ -96,7 +125,7 @@ export function GlobalProvider(props) {
     <GlobalContext.Provider value={{
       currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, 
       loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus, 
-      refreshUserData
+      refreshUserData, checkUnreadListing
     }}
     >
       {props.children}

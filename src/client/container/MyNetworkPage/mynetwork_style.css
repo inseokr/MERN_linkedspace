@@ -1,11 +1,16 @@
 .network_board {
   display: inline-grid;
-  border: 1px solid #dee2e6!important;
+  border: 1px solid #dee2e6;
   grid-template-columns:180px; 
   grid-auto-rows: 60px;
   background-image: url("../../assets/images/wooden_background_v1.jpeg") !important;
   opacity: 1;
 } 
+
+.bottom_highlight {
+    border-bottom-width: thick !important;
+    border-bottom-color: red !important;
+}
 
 .network_board .profile_picture { 
   grid-row-start: 1; 

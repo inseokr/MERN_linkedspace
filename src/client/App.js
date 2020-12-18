@@ -12,6 +12,7 @@ import GeneralChatMainPage from './container/GeneralChatPage/GeneralChatMainPage
 import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 import ModalSignupForm from './components/Login/ModalSignupForm';
+import ModalForgotPasswordForm from './components/Login/ModalForgotPasswordForm';
 import Signup from './components/Login/Signup';
 import Logout from './components/Login/Logout';
 import Map from './container/MapPage/index';
@@ -37,11 +38,13 @@ export default class App extends Component {
     this.state = {
       showLoginModal: false,
       showSignupModal: false,
+      showForgotPasswordModal: false,
       loggedInStatus: false
     };
 
     this.clickHandler = this.clickHandler.bind(this);
     this.signupClickHandler = this.signupClickHandler.bind(this);
+    this.forgotPasswordClickHandler = this.forgotPasswordClickHandler.bind(this);
     this.updateLoginStatus = this.updateLoginStatus.bind(this);
   }
 
@@ -59,6 +62,12 @@ export default class App extends Component {
     this.setState({ showSignupModal: true });
   }
 
+  forgotPasswordClickHandler() {
+    console.log('forgotPasswordClickHandler called');
+    this.setState({ showLoginModal: false });
+    this.setState({ showForgotPasswordModal: true });
+  }
+
   updateLoginStatus(status) {
     console.log(`updateLoginStatus: status = ${status}`);
 
@@ -66,7 +75,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { loggedInStatus, showLoginModal, showSignupModal } = this.state;
+    const { loggedInStatus, showLoginModal, showSignupModal, showForgotPasswordModal } = this.state;
 
     return (
       <GlobalProvider>
@@ -79,8 +88,9 @@ export default class App extends Component {
                   signupClickHandler={this.signupClickHandler}
                   updateLoginStatus={this.updateLoginStatus}
                 />
-                <ModalLoginForm display={showLoginModal} />
+                <ModalLoginForm display={showLoginModal} forgotPasswordHandler={this.forgotPasswordClickHandler}/>
                 <ModalSignupForm display={showSignupModal} />
+                <ModalForgotPasswordForm display={showForgotPasswordModal} />
                 <Switch>
                   <Route exact path="/Map">
                     <Map />

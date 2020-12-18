@@ -42,7 +42,7 @@ export default class ModalLoginForm extends Component {
   }
 
   render() {
-    const { display } = this.props;
+    const { display, forgotPasswordHandler } = this.props;
     // console.log("rendering ModalLoginForm. display = " + this.props.display);
     const displayStyle = (display === true) ? { display: 'block', opacity: '1' } : { display: 'none' };
 
@@ -109,7 +109,7 @@ export default class ModalLoginForm extends Component {
               </div>
 
               <div className="modal-footer d-flex justify-content-center">
-                <a href="/LS_API/forgot"> Forgot Password </a>
+                <button type="submit" style={{ border: 'none' }} onClick={forgotPasswordHandler}> Forgot Password </button>
               </div>
             </form>
 
