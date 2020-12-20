@@ -8,6 +8,7 @@ import { MessageContext } from '../../contexts/MessageContext';
 function LoginMenu() {
   const { currentUser, checkUnreadListing } = useContext(GlobalContext);
   const { checkIfAnyNewMsgArrived } = useContext(MessageContext);
+  const { checkIfAnyNewMsgArrivedListingChannel } = useContext(MessageContext);
 
   const newMsgMarker = (checkIfAnyNewMsgArrived())
     ? (
@@ -19,6 +20,15 @@ function LoginMenu() {
 
 
   const newListingMarker = (checkUnreadListing())
+    ? (
+      <React.Fragment>
+        <span className="fa fa-comment" />
+        <span className="newMsgSignature">N</span>
+      </React.Fragment>
+    ) : '';
+
+
+  const newMsgFavoriteDashboardMarker = (checkIfAnyNewMsgArrivedListingChannel())
     ? (
       <React.Fragment>
         <span className="fa fa-comment" />
@@ -90,6 +100,7 @@ function LoginMenu() {
               <li className="nav-item">
                 <Link className="nav-link" to="/Favorite">
                   Favorite Dashboard
+                  {newMsgFavoriteDashboardMarker}
                 </Link>
               </li>
 

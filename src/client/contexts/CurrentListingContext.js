@@ -8,7 +8,7 @@ export function CurrentListingProvider(props) {
   const [listing_info, setListingInfo] = useState();
   const [currentListing, setCurrentListing] = useState();
   const [ListingInfoType, setListingInfoType] = useState('');
-  const [currentChildIndex, setCurrentChildIndex] = useState(0);
+  const [currentChildIndex, setCurrentChildIndex] = useState(-1);
   const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
   const [parentRef, setParentRef] = useState(null);
 
@@ -34,8 +34,12 @@ export function CurrentListingProvider(props) {
   function buildChildListingMappingTable() {
     let _tempMap = [];
 
-    if(currentListing===undefined || currentListing.child_listings===undefined) return;
-    
+    if(currentListing===undefined || currentListing.child_listings===undefined)
+    {
+      console.warn("buildChildListingMappingTable: child listing it not available??");
+      return;
+    } 
+    //console.log(`currentListing = ${currentListing}`);
     for(let index=0; index< currentListing.child_listings.length; index++)
     {
       if(currentListing.child_listings[index].listing_id===undefined)
@@ -70,6 +74,8 @@ export function CurrentListingProvider(props) {
   {
     let _childIndex = getChildIndexByListingId(_listingId);
 
+    //console.warn(`setChildIndexByChannelId: setCurrentChildIndex=${currentChildIndex}, new index = ${_childIndex}`);
+
     setCurrentChildIndex(_childIndex);
   }
 
@@ -98,6 +104,12 @@ export function CurrentListingProvider(props) {
   useEffect(() => {
   }, [currentChildIndex]);
 
+
+  useEffect(() => {
+    buildChildListingMappingTable();
+  }, [currentListing]);
+
+
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
     const _prefix = (listing_type === 'landlord') ? '/listing/landlord/' : '/listing/tenant/';
@@ -112,7 +124,7 @@ export function CurrentListingProvider(props) {
         successful = 1;
 
         // build mapping table between child listing ID and child index
-        buildChildListingMappingTable();
+        //buildChildListingMappingTable();
       });
 
     return successful;

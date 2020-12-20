@@ -141,7 +141,8 @@ function ChatContactList() {
         _contactStates[_currentActiveIndex].active = 0;
       }
     } catch (err) {
-      console.warn(`buildContactStates: error = ${err}`);
+      // Error may happen because contactStates is being access even before it's created.
+      //console.warn(`buildContactStates: error = ${err}`);
     }
 
     return _contactStates;
