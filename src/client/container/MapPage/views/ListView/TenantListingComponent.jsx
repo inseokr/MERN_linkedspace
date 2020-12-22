@@ -25,7 +25,7 @@ function TenantListingComponent(props) {
   const { currentUser } = useContext(GlobalContext);
   const {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex, 
-    parentRef, setParentRef
+    parentRef, setParentRef, setCurrentChildIndex
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
@@ -119,6 +119,7 @@ function TenantListingComponent(props) {
       setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
       toggle(true);
     }
+    setCurrentChildIndex(-1);
     // need to reload the message window...
   };
 
