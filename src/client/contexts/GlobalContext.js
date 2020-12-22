@@ -117,8 +117,8 @@ export function GlobalProvider(props) {
   }
 
   useEffect(() => {
-    /*const interval = setInterval(refreshUserData, 1000*60*2);
-    return () => clearInterval(interval);*/
+    const interval = setInterval(refreshUserData, 1000*60*3);
+    return () => clearInterval(interval);
   }, [currentUser]);
 
   return (
