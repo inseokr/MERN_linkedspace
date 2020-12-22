@@ -19,9 +19,11 @@ function ChatContactList() {
     dmChannelContexts,
     setCurrChannelInfo,
     childIndex,
+    currentChildIndex,
     loadChattingDatabase,
     chattingContextType,
-    getDmChannelId
+    getDmChannelId,
+    msgCounter
   } = useContext(MessageContext);
 
   function removeCurrentUserFromList(_list) {
@@ -43,6 +45,12 @@ function ChatContactList() {
 
     return ((currentListing.child_listings[childIndex] == undefined)
       ? null : currentListing.child_listings[childIndex].shared_user_group);
+  }
+
+  function checkIfAnyNewMessage(channelName)
+  {
+        const _context = dmChannelContexts[channelName];
+        return ((_context != undefined) ? _context.flag_new_msg : false);
   }
 
   function buildContactStates() {
@@ -72,11 +80,24 @@ function ChatContactList() {
 
         _contactState.channelInfo.members.push(adjustedFriendsList[i].username);
 
-        if (currChannelInfo.channelName == _contactState.channelInfo.channelName) {
+        if (bFoundDefaultContact==false && 
+            currChannelInfo.channelName == _contactState.channelInfo.channelName) {
           _contactState.active = 1;
           bFoundDefaultContact = true;
           _currentActiveIndex = i;
-          // switchChattingChannel(_contactState.channelInfo, true);
+        }
+
+        if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
+        {
+          _contactState.active = 1;
+
+          if(bFoundDefaultContact === true)
+          {
+            _contactState[_currentActiveIndex].active = 0;
+
+          }
+          _currentActiveIndex = i;
+          bFoundDefaultContact = true;
         }
 
         _contactStates.push(_contactState);
@@ -93,7 +114,6 @@ function ChatContactList() {
             ? currentListing.child_listings[childIndex].list_of_group_chats
             : [];
 
-        // console.log.log("list_of_group_chats.length =  " + list_of_group_chats.length);
         for (let i = 0; i < list_of_group_chats.length; i++) {
           const _contactState = {
             active: 0,
@@ -115,11 +135,30 @@ function ChatContactList() {
             _members.push(list_of_group_chats[i].friend_list[j].username);
           }
 
+
           if (bPartOfGroupChat == true) {
             _contactState.channelInfo.members = [..._members];
 
-            if (currChannelInfo.channelName == _contactState.channelInfo.channelName) {
+            if ((bFoundDefaultContact == false) && 
+                (currChannelInfo.channelName == _contactState.channelInfo.channelName)) {
               _contactState.active = 1;
+              bFoundDefaultContact = true;
+              _currentActiveIndex = i + _numOfDmChannels;
+            }
+            else
+            {
+              _contactState.active = 0;
+            }
+
+            if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
+            {
+              _contactState.active = 1;
+
+              if(bFoundDefaultContact === true)
+              {
+                _contactStates[_currentActiveIndex].active = 0;
+              }
+
               bFoundDefaultContact = true;
               _currentActiveIndex = i + _numOfDmChannels;
             }
@@ -140,6 +179,11 @@ function ChatContactList() {
         // console.log.log(" New Member added!!!");
         _contactStates[_currentActiveIndex].active = 0;
       }
+
+      if(bFoundDefaultContact === true)
+      {
+        switchChattingChannel(_contactStates[_currentActiveIndex].channelInfo, true);
+      }
     } catch (err) {
       // Error may happen because contactStates is being access even before it's created.
       //console.warn(`buildContactStates: error = ${err}`);
@@ -150,6 +194,7 @@ function ChatContactList() {
 
   // array of the following structure
   // {active: [1|0], type: [dm|group], channelName, userList, channelInfo}
+  // <note> buildContactStates won't be called even if GeneralChatMainpage is being rendered.
   const [contactStates, setContactStates] = useState(buildContactStates());
 
   async function handleClickState(index) {
@@ -201,6 +246,10 @@ function ChatContactList() {
     // need to re-build the states if chattingContextType is changed.
     setContactStates(buildContactStates());
   }, [chattingContextType, currentListing, friendsList]);
+
+  useEffect(() => {
+    setContactStates(buildContactStates());
+  }, [dmChannelContexts, msgCounter]);
 
   function buildContactList() {
     const contacts = [];

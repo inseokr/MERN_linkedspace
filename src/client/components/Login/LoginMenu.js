@@ -68,7 +68,7 @@ function LoginMenu() {
             <span className="navbar-toggler-icon" />
           </button>
           <div className="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
-            <a className="navbar-brand" href="/">LinkedSpaces</a>
+            <Link className="navbar-brand" to="/homepage">LinkedSpaces</Link>
 
             <ul className="navbar-nav ml-auto">
               <li className="nav-item">

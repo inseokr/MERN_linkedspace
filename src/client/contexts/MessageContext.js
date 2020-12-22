@@ -341,7 +341,7 @@ export function MessageContextProvider(props) {
       };
 
       chatSocket.onmessage = (evt) => {
-        //console.warn("Got message!!");
+        console.warn("Got message!!");
         const message = evt.data;
         updateChatHistory(message, false);
         //setCurrentChildIndex(0);
@@ -422,6 +422,7 @@ export function MessageContextProvider(props) {
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
     // save some of information back to database
+    console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
     pushCurrentChannelToDB(channelInfo).then((result) => {
       setCurrChannelInfo(channelInfo);
     });
@@ -510,6 +511,7 @@ export function MessageContextProvider(props) {
   }
 
   function updateChatHistory(msg, local) {
+    console.warn("updateChatHistory");
     if (local == true) {
       // sending to chat server
       //
@@ -539,6 +541,7 @@ export function MessageContextProvider(props) {
 
       // const newHistory = [...chattingHistory, processedMsg[2]];
       // addMsgToChatHistory(newHistory);
+      console.warn("message"+processedMsg[3]);
       let _channelId = parseChattingChannelName(processedMsg[1]);
 
       if(_channelId!==null)
@@ -860,6 +863,7 @@ export function MessageContextProvider(props) {
     }
   }
 
+  // <note> obsolete function.
   function switchDmByFriendName(name) {
     const channelInfo = {
       channelName: getDmChannelId(name),
@@ -890,10 +894,16 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(() => {
-    console.log('ISEO: Loading chatting database... ');
+    console.warn('ISEO: Loading chatting database... ');
 
     loadChattingDatabase();
   }, [currChannelInfo, channelContextLength]);
+
+  useEffect(() => {
+
+    console.warn("MessageContext: default useEffect");
+
+  });
 
   webSocketConnect();
 
