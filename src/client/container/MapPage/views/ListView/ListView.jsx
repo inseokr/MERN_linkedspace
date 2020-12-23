@@ -7,16 +7,16 @@ import { ListingsContext } from '../../../../contexts/ListingsContext';
 import ListingComponent from './ListingComponent';
 
 function ListView(props) {
-  const { filteredListings } = useContext(ListingsContext);
+  const { listingsByBounds } = useContext(ListingsContext);
   const { toggle, mode } = props;
 
   return (
     <div>
       <Paper style={{ maxHeight: '100vh', overflow: 'auto' }}>
         <List>
-          {filteredListings.length > 0 ? (
+          {listingsByBounds.length > 0 ? (
             <div>
-              {filteredListings.map(function (listing) {
+              {listingsByBounds.map(function (listing) {
                 return (
                   <div key={listing._id}>
                     <Divider variant={"middle"}/>

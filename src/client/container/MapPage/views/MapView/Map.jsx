@@ -13,11 +13,12 @@ function Map() {
   const {
     mapElementID,
     setMapElementID,
-    filteredListings,
+    listingsByBounds,
     mapParams,
     setMapParams
   } = useContext(ListingsContext);
   const { center, zoom } = mapParams;
+
   const bounds = new window.google.maps.LatLngBounds();
   const googleMapRef = useRef(null);
   let googleMap = null;
@@ -51,7 +52,7 @@ function Map() {
       });
     });
 
-    filteredListings.forEach((listing) => {
+    listingsByBounds.forEach((listing) => {
       const { coordinates } = listing.rental_property_information;
       const image = listing.pictures.length > 0
         ? `${FILE_SERVER_URL}${listing.pictures[0].path}`
@@ -62,7 +63,7 @@ function Map() {
       });
       bounds.extend(coordinates);
     });
-  }, [filteredListings]);
+  }, [listingsByBounds]);
 
   return <div id={mapElementID || 'mapView'} ref={googleMapRef} style={{ height: '100vh' }} />;
 }

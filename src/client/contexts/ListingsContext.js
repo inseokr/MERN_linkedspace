@@ -11,7 +11,8 @@ export function ListingsProvider(props) {
   const [mapElementID, setMapElementID] = useState('');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [listings, setListings] = useState([]);
-  const [filteredListings, setFilteredListings] = useState([]);
+  const [listingsByFilter, setListingsByFilter] = useState([]);
+  const [listingsByBounds, setListingsByBounds] = useState([]);
 
   const [mapParams, setMapParams] = useState({
     bounds: null,
@@ -36,14 +37,14 @@ export function ListingsProvider(props) {
     if (mapLoaded) {
       getLandLordRequests().then((response) => {
         setListings(response);
-        setFilteredListings(response); // Initially have same list as listings.
+        setListingsByFilter(response); // Initially have same list as listings.
       });
     }
   }, [mapLoaded]);
 
   useEffect(() => {
     if (mapParams.bounds) {
-      setFilteredListings(updateListingsByBounds(filteredListings, mapParams.bounds));
+      setListingsByBounds(updateListingsByBounds(listingsByFilter, mapParams.bounds));
     }
   }, [mapParams]);
 
@@ -54,7 +55,7 @@ export function ListingsProvider(props) {
     filterListings().then((response) => {
       if (response) {
         const [updatedFilteredListings, boundParams] = response;
-        setFilteredListings(updatedFilteredListings);
+        setListingsByFilter(updatedFilteredListings);
         setMapParams(boundParams);
       }
     });
@@ -65,7 +66,7 @@ export function ListingsProvider(props) {
       value={{
         setMapElementID,
         mapLoaded,
-        filteredListings,
+        listingsByBounds,
         mapParams,
         setMapParams,
         filterParams,
