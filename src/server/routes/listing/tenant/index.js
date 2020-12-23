@@ -30,9 +30,7 @@ module.exports = function (app) {
       const newListing = new TenantRequest();
 
       // add username and id
-      newListing.requester.id = req.user._id;
-      newListing.requester.username = req.user.username;
-      newListing.requester.profile_picture = req.user.profile_picture;
+      newListing.requester = req.user._id;
 
       newListing.location = req.body.location;
       newListing.move_in_date = req.body.move_in_date;
@@ -41,7 +39,7 @@ module.exports = function (app) {
       newListing.rental_budget = req.body.rental_budget;
       newListing.coordinates = { lat: 0, lng: 0 };
 
-      newListing.shared_user_group.push({ id: req.user._id, username: req.user.username, profile_picture: req.user.profile_picture });
+      newListing.shared_user_group.push(req.user._id);
 
       newListing.save((err) => {
         if (err) {
@@ -256,7 +254,10 @@ module.exports = function (app) {
         return;
       }
 
-      const populateChildren = new Promise((resolve, reject) => {
+      const populateChildren = new Promise(async (resolve, reject) => {
+        await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
+        foundListing.populated('shared_user_group');
+
         if (foundListing.child_listings.length > 0) {
           let numberOfPopulatedChildListing = 0;
 
@@ -267,9 +268,18 @@ module.exports = function (app) {
 
             await foundListing.populate({ path: pathToPopulate, model: child.listing_type }).execPopulate();
             foundListing.populated(pathToPopulate);
+
+            const pathToRequester = `child_listings.${index}.listing_id.requester`;
+            await foundListing.populate(pathToRequester, 'username profile_picture loggedInTime').execPopulate();
+            foundListing.populated(pathToRequester);
+
+
+            const pathToSharedUserGroup = `child_listings.${index}.shared_user_group`;
+            await foundListing.populate(pathToSharedUserGroup, 'username profile_picture loggedInTime').execPopulate();
+            foundListing.populated(pathToSharedUserGroup);
             // console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
             // console.log("listing: index =  " + index);
-            // console.log("foundListing = " + JSONstringify(foundListing.child_listings[index].listing_id));
+            // console.log(`foundListing = ${JSON.stringify(foundListing)}`);
             if (++numberOfPopulatedChildListing == array.length) resolve();
           });
         } else {
@@ -287,6 +297,18 @@ module.exports = function (app) {
           // console.log("foundListing = " + JSON.stringify(foundListing));
 
           res.json(foundListing);
+
+          // update recent visited listing
+          foundUser.lastVistedListingId = req.params.list_id;
+
+          // update status of listing ID from friends
+          console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
+          console.log(`foundUser._id=${JSON.stringify(foundUser._id)}`);
+          if (!foundListing.requester.equals(foundUser._id)) {
+            userDbHandler.readListingFromFriends(foundUser, 'tenant', req.params.list_id);
+          }
+          // console.log(`Recording liast visited listing ID =  ${JSON.stringify(foundUser.lastVistedListingId)}`);
+          foundUser.save();
         });
       });
     });
@@ -384,12 +406,12 @@ module.exports = function (app) {
 
   router.post('/:list_id/addUserGroup', (req, res) => {
     TenantRequest.findById(req.params.list_id, (err, foundListing) => {
-      function checkDuplicate(user_list, name) {
+      function checkDuplicate(user_list, _id) {
         let bDuplicate = false;
 
         if (user_list.length >= 1) {
           bDuplicate = user_list.some(
-            _user => _user.username === name
+            _user => _user.equals(_id)
           );
         }
 
@@ -418,29 +440,21 @@ module.exports = function (app) {
 	    	switch (chattingType) {
 	    		case 1:
 	    			// find the ID of the friend
-	    			if (checkDuplicate(foundListing.shared_user_group, _friend.username) == true) {
+	    			if (checkDuplicate(foundListing.shared_user_group, _friend._id) == true) {
 	    				console.log('Duplicate found');
 	    				res.json({ result: 'Duplicate found' });
 	    				return;
 	    			}
-	    			foundListing.shared_user_group.push({
-              id: _friend._id,
-	    				                                 username: _friend.username,
-	    				                             	 profile_picture: _friend.profile_picture
-            });
+	    			foundListing.shared_user_group.push(_friend._id);
 	    			break;
 	    		case 2:
-	    			if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend.username) == true) {
+	    			if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend._id) == true) {
 	    				console.log('Duplicate found');
 	    				res.json({ result: 'Duplicate found' });
 	    				return;
 	    			}
-
-    				foundListing.child_listings[childInfo.index].shared_user_group.push({
-              id: _friend._id,
-    					                                                                                     username: _friend.username,
-    					                                                                                   profile_picture: _friend.profile_picture
-            });
+            console.log(`Pushing friend = ${_friend.username}`);
+    				foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
 	    			break;
 	    		default:
 	    			console.log('Unknown chattingType');
@@ -519,7 +533,7 @@ module.exports = function (app) {
   router.post('/addChild', (req, res) => {
     // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
-    TenantRequest.findById(req.body.parent_listing_id).populate('requester.id').exec((err, foundListing) => {
+    TenantRequest.findById(req.body.parent_listing_id).populate('requester').populate('shared_user_group', 'username').exec((err, foundListing) => {
       if (err) {
         console.log('listing not found');
         res.send('listing_not_found');
@@ -531,13 +545,13 @@ module.exports = function (app) {
       const listing_type = (req.body.listing_type == '_3rdparty') ? '_3rdPartyListing' : 'LandlordRequest';
 
       const child_listing = {
- 		listing_id: {
+ 		    listing_id: {
           type: mongoose.Schema.Types.ObjectId,
 		  		      ref: listing_type
         },
-					  listing_type,
-					  created_by: { id: null, username: '' },
-					  shared_user_group: []
+			  listing_type,
+			  created_by: { id: null, username: '' },
+			  shared_user_group: []
       };
 
       // console.log("child_listing_id = " + req.body.child_listing_id);
@@ -571,10 +585,9 @@ module.exports = function (app) {
       // console.log("req.user._id="+req.user._id);
       // console.log("foundListing.requester.id="+foundListing.requester.id);
 
-      if (foundListing.requester.id.equals(req.user._id)) {
+      if (foundListing.requester.equals(req.user._id)) {
         // console.log("Updating user group, created by the current user");
-        const _user = { id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture };
-        child_listing.shared_user_group.push(_user);
+        child_listing.shared_user_group.push(foundListing.requester);
 
         child_listing.created_by.id = req.user._id;
         child_listing.created_by.username = foundListing.requester.username;
@@ -587,26 +600,43 @@ module.exports = function (app) {
 
         // <note> the 3rd party listing could be added by either tenant or friends.
         // It's a friend case.
-        const _creatorOfParent = { id: foundListing.requester.id, username: foundListing.requester.username, profile_picture: foundListing.requester.id.profile_picture };
-        const _creatorOfChild = { id: req.user._id, username: req.body.username, profile_picture: req.user.profile_picture };
-
-        child_listing.created_by.id = foundListing.requester.id;
+        child_listing.created_by.id = foundListing.requester;
         child_listing.created_by.username = req.user.username;
 
-        child_listing.shared_user_group.push(_creatorOfParent);
-        child_listing.shared_user_group.push(_creatorOfChild);
+        child_listing.shared_user_group.push(foundListing.requester);
+        child_listing.shared_user_group.push(req.user._id);
         foundListing.child_listings.push(child_listing);
       }
 
-      foundListing.save();
+      // send auto-refresh to shared_user_group
+      // build user name list
+      const userNameList = [];
+      for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+        userNameList.push(foundListing.shared_user_group[index].username);
+      }
 
-      res.send('Successfully added');
+      chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+      foundListing.save((err) => {
+        if (err) {
+          console.warn(`foundListing saving error = ${err}`);
+          res.send('child listing add failed');
+        } else {
+          res.send('Successfully added');
+          // send auto-refresh to shared_user_group
+          // build user name list
+          const userNameList = [];
+          for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+            userNameList.push(foundListing.shared_user_group[index].username);
+          }
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+        }
+      });
     });
   });
 
 
   router.post('/removeChild', (req, res) => {
-    TenantRequest.findById(req.body.parent_listing_id, (err, foundListing) => {
+    TenantRequest.findById(req.body.parent_listing_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
       if (err) {
         console.log('listing not found');
         res.send('listing_not_found');
@@ -624,14 +654,17 @@ module.exports = function (app) {
 
       // use filter to create a new array
       const tempArray = [];
-      foundListing.child_listings.forEach((listing) => {
+      foundListing.child_listings.forEach((listing, listingIndex) => {
         // console.log("req.body.child_listing_id = " + req.body.child_listing_id);
         // console.log("ID to compare against = " + listing.listing_id);
         if (listing.listing_id.equals(req.body.child_listing_id)) {
           // let's remove chatting channels as well
           // remove chatting channels
           // 1. go through check shared_group and remove dm channels from there
-          listing.shared_user_group.map((user) => {
+          listing.shared_user_group.map(async (user, userIndex) => {
+            const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
+            await foundListing.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
+            foundListing.populated(pathToPopulate);
             chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
           });
         } else {
@@ -647,10 +680,18 @@ module.exports = function (app) {
         if (err) {
           console.warn(`foundListing saving error = ${err}`);
           res.send('child listing removal failed');
+        } else {
+          // remove chatting channels from chatting channel DB as well
+          chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
+          res.send('Child listing removed successfully');
+          // send auto-refresh to shared_user_group
+          // build user name list
+          const userNameList = [];
+          for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+            userNameList.push(foundListing.shared_user_group[index].username);
+          }
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
         }
-        // remove chatting channels from chatting channel DB as well
-        chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
-        res.send('Child listing removed successfully');
       });
     });
   });

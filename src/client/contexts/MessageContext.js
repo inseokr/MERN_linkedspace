@@ -45,6 +45,7 @@ export function MessageContextProvider(props) {
   // ChattingWindow does render whenever the message counter increases even though the counter is not actually used in the page itself.
   const [msgCounter, setMsgCounter] = useState(0);
   const [newMsgArrived, setNewMsgArrived] = useState(false);
+  const [newMsgArrivedListingChannel, setNewMsgArrivedListingChannel] = useState(false);
 
   // channelType
   // 0: general chatting, not associated with any listing
@@ -66,12 +67,12 @@ export function MessageContextProvider(props) {
 
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
-  const { currentUser, setCurrentUser, friendsList } = useContext(GlobalContext);
+  const { currentUser, setCurrentUser, friendsList , refreshUserData} = useContext(GlobalContext);
 
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing } = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setCurrentChildIndex, setChildIndexByChannelId, focusParentListing } = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -93,6 +94,78 @@ export function MessageContextProvider(props) {
   // console.log("childIndex="+childIndex);
   // console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
 
+  function parseChattingChannelName(channel_name)
+  {
+    // list of chatting channel
+    // 1. general chat
+    // : friend1-dm-friend2
+    // 2. listing related chat
+    // 2.1 parent level
+    // : listing_id-parent-[friend_list]
+    // 2.2 child listing
+    // : listing_id-child-listing_id
+    let result = channel_name.match(/(.*)-child-([^-]*)-(.*)/);
+    if(result===null)
+    {
+      // check if it's parent chatting channel
+      result = channel_name.match(/(.*)-parent-(.*)/);
+      if(result!==null)
+      {
+        return "parent";
+      }
+      else
+      {
+        return null;
+      }
+    }
+    else
+    {
+      // it's child chatting channel
+      // <note> [2] contains the child listing ID
+      return result[2];
+    }
+  }
+
+
+  function processChattingChannelName(channel_name)
+  {
+    // list of chatting channel
+    // 1. general chat
+    // : friend1-dm-friend2
+    // 2. listing related chat
+    // 2.1 parent level
+    // : listing_id-parent-[friend_list]
+    // 2.2 child listing
+    // : listing_id-child-listing_id
+    let result = channel_name.match(/(.*)-child-([^-]*)-(.*)/);
+  
+    if(result===null)
+    {
+      // check if it's parent chatting channel
+      result = channel_name.match(/(.*)-parent-(.*)/);
+      if(result!==null)
+      {
+        return {type: "parent", parent_id: result[1], child_id: null};
+      }
+      else
+      {
+        return {type: "general", parent_id: null, child_id: null};
+      }
+    }
+    else
+    {
+      // it's child chatting channel
+      // <note> [2] contains the child listing ID
+      return {type: "child", parent_id: result[1], child_id: result[2]};
+    }
+
+  }
+
+
+  function refreshUserDataFromMessageContext() {
+    refreshUserData();
+  }
+
 
   function reset(mode) {
     // console.log("MessageContext: being reset");
@@ -100,6 +173,7 @@ export function MessageContextProvider(props) {
     setChannelContexts([]);
     setChannelContextLength(0);
     setNewMsgArrived(false);
+    setNewMsgArrivedListingChannel(false);
 
     // setCurrChannelInfo(initialCurrChannelInfo);
 
@@ -231,55 +305,65 @@ export function MessageContextProvider(props) {
     }
   }
 
-  // create or connect messaging socket
-  //    if(sessionStorage.getItem('socketCreated')===null)
-  if (socketCreated == false) {
-    let ws = null;
+  function webSocketConnect() {
+    // create or connect messaging socket
+    //    if(sessionStorage.getItem('socketCreated')===null)
+    if (socketCreated == false) {
 
-    //console.log("process.env="+JSON.stringify(process.env));
-    //console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
-    if (process.env.REACT_APP_WS_ENV === 'development') {
-      ws = new WebSocket(`ws://${window.location.hostname}:3030`);
-    } else {
-      //const HOST = window.location.origin.replace(/^http/, 'ws');
-      //console.log(`env = ${JSON.stringify(process.env)}`);
-      ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
-    }
+      console.warn("webSocketConnect");
+      let ws = null;
 
-    setSocketCreated(true);
-    setWebSocket(ws);
-
-    const audio = new Audio(messageAlertSound);
-    setAlertSound(audio);
-  } else {
-    // ISEO: not sure how it will be called upon every message reception?
-    chatSocket.onopen = () => {
-      console.log('Chat Server Connected');
-      // let's send the first message to register this socket.
-      if (currentUser != null) {
-        chatSocket.send(`CSC:Register:${currentUser.username}`);
+      //console.log("process.env="+JSON.stringify(process.env));
+      //console.log("process.env.REACT_APP_WS_ENV="+process.env.REACT_APP_WS_ENV);
+      if (process.env.REACT_APP_WS_ENV === 'development') {
+        ws = new WebSocket(`ws://${window.location.hostname}:3030`);
       } else {
-        // console.log("No current user is set yet!!!");
+        //const HOST = window.location.origin.replace(/^http/, 'ws');
+        //console.log(`env = ${JSON.stringify(process.env)}`);
+        ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
       }
-    };
 
-    chatSocket.onmessage = (evt) => {
-      const message = evt.data;
-      updateChatHistory(message, false);
-      setWaitMessage(false);
-    };
+      setSocketCreated(true);
+      setWebSocket(ws);
 
-    chatSocket.onclose = () => {
-      // console.log("Disconnected");
-    };
+      const audio = new Audio(messageAlertSound);
+      setAlertSound(audio);
+    } else {
+      // ISEO: not sure how it will be called upon every message reception?
+      chatSocket.onopen = () => {
+        console.warn('Chat Server Connected');
+        // let's send the first message to register this socket.
+        if (currentUser != null) {
+          chatSocket.send(`CSC:Register:${currentUser.username}`);
+        } else {
+          // console.log("No current user is set yet!!!");
+        }
+      };
+
+      chatSocket.onmessage = (evt) => {
+        console.warn("Got message!!");
+        const message = evt.data;
+        updateChatHistory(message, false);
+        //setCurrentChildIndex(0);
+        setWaitMessage(false);
+      };
+
+      chatSocket.onclose = () => {
+        console.warn("ChatSocket is being closed. Will reconnect it after 1 second.");
+        setSocketCreated(false);
+        setTimeout(function() {
+          webSocketConnect();
+        }, 1000);
+      };
+    }
   }
-
 
   function updateLastReadIndex(data) {
     for (let i = 0; i < currentUser.chatting_channels.dm_channels.length; i++) {
       if (currentUser.chatting_channels.dm_channels[i].name == data.channel_id) {
         const tempUser = currentUser;
         tempUser.chatting_channels.dm_channels[i].lastReadIndex = data.lastReadIndex;
+        console.log("updateLastReadIndex");
         setCurrentUser(tempUser);
       }
     }
@@ -330,7 +414,7 @@ export function MessageContextProvider(props) {
           })
           .catch((err) => { console.log(err); resolve('posting error'); });
       } else {
-        console.warn(`!!!! Channel Context is not created yet !!! channel name = ${channelInfo.channelName}`);
+        //console.warn(`!!!! Channel Context is not created yet !!! channel name = ${channelInfo.channelName}`);
         resolve("channel doesn't exist");
       }
     });
@@ -338,6 +422,7 @@ export function MessageContextProvider(props) {
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
     // save some of information back to database
+    //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
     pushCurrentChannelToDB(channelInfo).then((result) => {
       setCurrChannelInfo(channelInfo);
     });
@@ -388,7 +473,14 @@ export function MessageContextProvider(props) {
 
     // set the global indicator as well.
     if (channelContexts[channelName].flag_new_msg == true) {
-      setNewMsgArrived(true);
+      if(processChattingChannelName(channelName).type==="general")
+      {
+        setNewMsgArrived(true);
+      }
+      else
+      {
+        setNewMsgArrivedListingChannel(true);
+      }
     }
 
     setChannelContexts(channelContexts);
@@ -419,6 +511,7 @@ export function MessageContextProvider(props) {
   }
 
   function updateChatHistory(msg, local) {
+    //console.warn("updateChatHistory");
     if (local == true) {
       // sending to chat server
       //
@@ -440,15 +533,47 @@ export function MessageContextProvider(props) {
       alertSound.play();
       const processedMsg = parseIncomingMessage(msg);
 
-      // <note>
-      // processedMsg[1]: channel information.
-      // processedMsg[2]: sender name
-      // processedMsg[3]: message
-      // console.log("Message for channel ID = " + processedMsg[1]);
+      if(processedMsg!==null)
+      {
+        // <note>
+        // processedMsg[1]: channel information.
+        // processedMsg[2]: sender name
+        // processedMsg[3]: message
+        // console.log("Message for channel ID = " + processedMsg[1]);
 
-      // const newHistory = [...chattingHistory, processedMsg[2]];
-      // addMsgToChatHistory(newHistory);
-      updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
+        // const newHistory = [...chattingHistory, processedMsg[2]];
+        // addMsgToChatHistory(newHistory);
+        //console.warn("message"+processedMsg[3]);
+        let _channelId = parseChattingChannelName(processedMsg[1]);
+
+        if(_channelId!==null)
+        {
+          //console.warn("childListingId: " + _channelId);
+
+          if(_channelId==="parent")
+          {
+            //console.warn("focusParentListing");
+            focusParentListing();
+          }
+          else
+          {
+            //console.warn("setChildIndexByChannelId");
+            setChildIndexByChannelId(_channelId);
+          }
+
+        }
+        else
+        {
+          console.warn("No child index found");
+        }
+        updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
+      }
+      else
+      {
+        //console.warn('Got control message');
+        // need to refresh the currentListing.
+        reloadChattingDbWithCurrentListing();
+      }
     }
   }
 
@@ -625,6 +750,11 @@ export function MessageContextProvider(props) {
     return newMsgArrived;
   }
 
+
+  function checkIfAnyNewMsgArrivedListingChannel() {
+    return newMsgArrivedListingChannel;
+  }
+
   function loadChatHistory(channel_id, history) {
     // console.log("loadChatHistory: currChannelInfo.channelName = " + currChannelInfo.channelName);
 
@@ -649,7 +779,14 @@ export function MessageContextProvider(props) {
       dmChannel.datestamp = dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].datestamp;
 
       if (dmChannel.flag_new_msg == true) {
-        setNewMsgArrived(true);
+        if(processChattingChannelName(channel_id).type==="general")
+        {
+          setNewMsgArrived(true);
+        }
+        else
+        {
+          setNewMsgArrivedListingChannel(true);
+        }
       }
     }
 
@@ -657,11 +794,12 @@ export function MessageContextProvider(props) {
 
     const dmChannelContextArray = dmChannelContexts;
 
+/*
     if (dmChannelContextArray[channel_id] != undefined) {
       console.warn(`channel_id${channel_id} is already in the array `);
     } else {
       // console.log("channel_id" + channel_id +" is being added ");
-    }
+    }*/
 
     dmChannelContextArray[channel_id] = dmChannel;
 
@@ -682,6 +820,7 @@ export function MessageContextProvider(props) {
 
     // clear new message arrival;
     setNewMsgArrived(false);
+    setNewMsgArrivedListingChannel(false);
 
     // note: it will be good time to register the user again?
     try {
@@ -732,6 +871,7 @@ export function MessageContextProvider(props) {
     }
   }
 
+  // <note> obsolete function.
   function switchDmByFriendName(name) {
     const channelInfo = {
       channelName: getDmChannelId(name),
@@ -762,10 +902,18 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(() => {
-    console.log('ISEO: Loading chatting database... ');
+    //console.warn('ISEO: Loading chatting database... ');
 
     loadChattingDatabase();
   }, [currChannelInfo, channelContextLength]);
+
+  useEffect(() => {
+
+    //console.warn("MessageContext: default useEffect");
+
+  });
+
+  webSocketConnect();
 
   return (
     <MessageContext.Provider value={{
@@ -781,6 +929,7 @@ export function MessageContextProvider(props) {
       loadChattingDatabase,
       checkNewlyLoaded,
       checkIfAnyNewMsgArrived,
+      checkIfAnyNewMsgArrivedListingChannel,
       addContactList,
       getContactList,
       setChattingContextType,
@@ -797,7 +946,8 @@ export function MessageContextProvider(props) {
       selectedChatList,
       postSelectedContactList,
       reset,
-      msgCounter
+      msgCounter,
+      refreshUserDataFromMessageContext
     }}
     >
       {props.children}

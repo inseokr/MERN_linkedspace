@@ -12,6 +12,7 @@ import GeneralChatMainPage from './container/GeneralChatPage/GeneralChatMainPage
 import MyNetworkPage from './container/MyNetworkPage/MyNetworkPage';
 import ModalLoginForm from './components/Login/ModalLoginForm';
 import ModalSignupForm from './components/Login/ModalSignupForm';
+import ModalForgotPasswordForm from './components/Login/ModalForgotPasswordForm';
 import Signup from './components/Login/Signup';
 import Logout from './components/Login/Logout';
 import Map from './container/MapPage/index';
@@ -23,6 +24,7 @@ import PostListingPage from './container/ListingPage/PostListingPage';
 import Post3rdPartyListing from './container/ListingPage/3rdParty/Post3rdPartyListing';
 import EditProfileMain from './container/EditProfilePage/EditProfileMain';
 import FacebookLogin from './components/Login/FacebookLogin';
+import FavoriteDashboard from './container/Favorite/FavoriteDashboard';
 
 
 import { MessageContextProvider } from './contexts/MessageContext';
@@ -36,21 +38,18 @@ export default class App extends Component {
     this.state = {
       showLoginModal: false,
       showSignupModal: false,
+      showForgotPasswordModal: false,
       loggedInStatus: false
     };
 
     this.clickHandler = this.clickHandler.bind(this);
     this.signupClickHandler = this.signupClickHandler.bind(this);
+    this.forgotPasswordClickHandler = this.forgotPasswordClickHandler.bind(this);
     this.updateLoginStatus = this.updateLoginStatus.bind(this);
   }
 
   componentDidMount() {
     document.title = 'LinkedSpaces';
-
-    console.log('App componentDidMount');
-    console.log(`props = ${JSON.stringify(this.props)}`);
-
-    console.log(`env = ${JSON.stringify(process.env)}`);
   }
 
   clickHandler() {
@@ -58,10 +57,15 @@ export default class App extends Component {
     this.setState({ showLoginModal: true });
   }
 
-
   signupClickHandler() {
     console.log('signupClickHandler called');
     this.setState({ showSignupModal: true });
+  }
+
+  forgotPasswordClickHandler() {
+    console.log('forgotPasswordClickHandler called');
+    this.setState({ showLoginModal: false });
+    this.setState({ showForgotPasswordModal: true });
   }
 
   updateLoginStatus(status) {
@@ -71,7 +75,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { loggedInStatus, showLoginModal, showSignupModal } = this.state;
+    const { loggedInStatus, showLoginModal, showSignupModal, showForgotPasswordModal } = this.state;
 
     return (
       <GlobalProvider>
@@ -84,8 +88,9 @@ export default class App extends Component {
                   signupClickHandler={this.signupClickHandler}
                   updateLoginStatus={this.updateLoginStatus}
                 />
-                <ModalLoginForm display={showLoginModal} />
+                <ModalLoginForm display={showLoginModal} forgotPasswordHandler={this.forgotPasswordClickHandler}/>
                 <ModalSignupForm display={showSignupModal} />
+                <ModalForgotPasswordForm display={showForgotPasswordModal} />
                 <Switch>
                   <Route exact path="/Map">
                     <Map />
@@ -122,6 +127,7 @@ export default class App extends Component {
 
                   <Route exact path="/3rdParty" component={Post3rdPartyListing} />
 
+                  <Route exact path="/Favorite" render={props => <FavoriteDashboard {...props} />} />
                   <Route exact path="/ActiveListing">
                     <ShowActiveListingPageWrapper type="own" listingControl="" />
                   </Route>

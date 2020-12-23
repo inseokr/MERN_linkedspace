@@ -34,6 +34,8 @@ const WebSocket = require('ws');
 const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
 const userDbHandler = require('./db_utilities/user_db/access_user_db');
 
+const DASHBOARD_AUTO_REFRESH = 0;
+
 // const wss = new WebSocket.Server({ port: 3030});
 let wss = null;
 
@@ -211,6 +213,24 @@ function routeMessage(data, incomingSocket) {
   }
 }
 
+function sendDashboardControlMessage(command, userNameList) {
+  switch (command) {
+    case DASHBOARD_AUTO_REFRESH:
+      userNameList.forEach((name) => {
+        console.log(`sending control message to user = ${name}`);
+        if (userToSocketMap[name] !== undefined) {
+          userToSocketMap[name].forEach((_socket) => {
+            console.log('sending control message');
+            _socket.send('CSC:0');
+          });
+        }
+      });
+      break;
+    default: console.warn('Unknown command'); break;
+  }
+}
+
+
 // remove the socket from all the maps
 function removeSocket(socket_) {
   // 0. need to know the asscciated user information from socket
@@ -321,4 +341,6 @@ function chatServerMain(server) {
 }
 
 
-module.exports = { chatServerMain, removeChannel, removeChannelFromUserDb };
+module.exports = {
+  chatServerMain, removeChannel, removeChannelFromUserDb, sendDashboardControlMessage, DASHBOARD_AUTO_REFRESH
+};

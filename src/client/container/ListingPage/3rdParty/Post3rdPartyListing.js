@@ -235,7 +235,7 @@ function Post3rdPartyListing(props) {
   }
 
   function getListingSource() {
-    const listOfSources = ['Airbnb', 'Craigslist', 'SF Korean', 'Trulia', 'Realtor', 'Zillow', 'Rent', 'Roommates', 'Roomster', 'Roomies', 'Others'];
+    const listOfSources = ['Airbnb', 'Craigslist', 'SF Korean', 'Trulia', 'Realtor', 'Zillow', 'Rent', 'Roommates', 'Roomster', 'Roomies', 'Zillow', 'Others'];
 
     return (
       <div className="form-group" style={{ width: '30%' }}>

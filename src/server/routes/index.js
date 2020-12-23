@@ -23,10 +23,16 @@ module.exports = function (app) {
     if (req.user == undefined) {
       console.log(' user is undefined');
     } else {
-      console.log(`getLoginStatus called with username = ${req.user.username}`);
+      // console.log(`getLoginStatus called with username = ${req.user.username}`);
+      // console.log(`${JSON.stringify(app.locals.currentUser[req.user.username])}`);
     }
     if (req.user == undefined) res.json(null);
-    else res.json(app.locals.currentUser[req.user.username]);
+    else
+    if (app.locals.currentUser[req.user.username] == undefined) {
+      res.json(null);
+    } else {
+      res.json(app.locals.currentUser[req.user.username]);
+    }
   });
 
   router.get('/getLastMenu', (req, res) => {
@@ -47,20 +53,11 @@ module.exports = function (app) {
   });
 
   router.get('/getData', (req, res) => {
-    // console.log("getData is called");
-
     // read listing information from database.
     LandlordRequest.find({}).then((listings) => {
       res.send(listings);
-      // console.log("getData = " + listings);
     });
   });
-
-  /*
-  router.get('/', (req, res) => {
-    // res.render('/');
-    res.redirect('/');
-  }); */
 
   router.get('/about', (req, res) => {
     app.locals.lastReactMenu = 'dashboard';
@@ -98,11 +95,14 @@ module.exports = function (app) {
       username: req.body.username,
       firstname: req.body.firstname,
       lastname: req.body.lastname,
+      name: `${req.body.lastname} ${req.body.firstname}`,
       email: req.body.email,
       gender: req.body.gender,
       password: req.body.password,
       birthdate: new Date(birthdayString)
     });
+
+
     User.register(newUser, req.body.password, (err, user) => {
       if (err) {
         req.flash('error', err.message);
@@ -111,21 +111,35 @@ module.exports = function (app) {
       // how to use facebook login?
       passport.authenticate('local')(req, res, () => {
         req.flash('success', `Welcome to LinkedSpaces ${user.username}`);
+        // Why is it not called?
+        user.loggedInTime = Date.now();
+        user.save();
         res.redirect('/');
       });
     });
   });
   // hanle log-out
   router.get('/logout', (req, res) => {
-    req.logout();
-    req.flash('success', 'Logged you out!');
+    if (req.user != null) {
+      const currUserName = req.user.username;
+      const userId = req.user._id;
 
-    console.log('logout called');
+      console.log(`Logging out: username = ${currUserName}`);
+      app.locals.currentUser[currUserName] = null;
+      req.logout();
 
-    if (req.user != null) app.locals.currentUser[req.user.username] = null;
-
-    res.send({ result: 'successful logout' });
-    // res.redirect("/homepage");
+      User.findById(userId, (err, foundUser) => {
+        foundUser.loggedInTime = null;
+        foundUser.save();
+        console.log(`Clearing app.locals.currentUser[${currUserName}] to null`);
+        // res.redirect('/');
+        res.send({ result: 'successful logout' });
+      });
+    } else {
+      // req.flash('success', 'Logged you out!');
+      res.send({ result: 'successful logout' });
+      // res.redirect('/');
+    }
   });
 
   // show login form
@@ -146,28 +160,16 @@ module.exports = function (app) {
       } else {
         req.flash('success', `Welcome back to LinkedSpaces ${req.body.username}`);
         res.redirect('/');
-        User.findOne({ username: req.body.username }, (err, user) => {
+        User.findOne({ username: req.body.username }).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, user) => {
+          user.loggedInTime = Date.now();
+          user.save();
           if (err) { console.log('User Not Found'); return; }
           app.locals.currentUser[req.user.username] = user;
           app.locals.profile_picture = user.profile_picture;
-          console.log(`Updating current user = ${app.locals.currentUser}`);
         });
       }
     });
   });
-
-  /*
-  //handling login logic
-  router.post("/login", passport.authenticate("local",
-    {
-      successRedirect: "/homepage",
-      failureRedirect: "/"
-    }), function(req, res){
-
-    // it's not called
-    console.log("Why it's not called?");
-  }); */
-
 
   router.get('/homepage', (req, res) => {
     res.render('homepage');
@@ -208,28 +210,31 @@ module.exports = function (app) {
         const smtpTransport = nodemailer.createTransport({
           service: 'Gmail',
           auth: {
-            user: 'inseo.kr@gmail.com',
-            pass: '!newintern0320'
+            user: 'linkedspaces.seo@gmail.com',
+            pass: '!taylormade0320'
+          },
+          tls: {
+            rejectUnauthorized: false
           }
         });
         const mailOptions = {
           to: user.email,
-          from: 'inseo.kr@gmail.com',
-          subject: 'Node.js Password Reset',
-          text: `${'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
+          from: 'linkedspaces.seo@gmail.com',
+          subject: 'LinkedSpaces - Password Reset',
+          text: `${'You are receiving this because you have requested the reset of the password for your account.\n\n'
             + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
-            + 'http://'}${req.headers.host}/reset/${token}\n\n`
+            + 'https://'}linkedspaces.herokuapp.com/LS_API/reset/${token}\n\n`
             + 'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         };
         smtpTransport.sendMail(mailOptions, (err) => {
-          console.log('mail sent');
+          console.log(`mail sent to ${user.email}`);
           req.flash('success', `An e-mail has been sent to ${user.email} with further instructions.`);
           done(err, 'done');
         });
       }
     ], (err) => {
       if (err) return next(err);
-      res.redirect('/forgot');
+      res.redirect('/');
     });
   });
 
@@ -271,13 +276,13 @@ module.exports = function (app) {
         const smtpTransport = nodemailer.createTransport({
           service: 'Gmail',
           auth: {
-            user: 'inseo.kr@gmail.com',
-            pass: '!newintern0320'
+            user: 'linkedspaces.seo@gmail.com',
+            pass: '!taylormade0320'
           }
         });
         const mailOptions = {
           to: user.email,
-          from: 'inseo.kr@mail.com',
+          from: 'linkedspaces.seo@gmail.com',
           subject: 'Your password has been changed',
           text: `${'Hello,\n\n'
             + 'This is a confirmation that the password for your account '}${user.email} has just been changed.\n`

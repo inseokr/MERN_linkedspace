@@ -6,10 +6,29 @@ import { MessageContext } from '../../contexts/MessageContext';
 // import { FILE_SERVER_URL } from '../../globalConstants';
 
 function LoginMenu() {
-  const { currentUser } = useContext(GlobalContext);
+  const { currentUser, checkUnreadListing } = useContext(GlobalContext);
   const { checkIfAnyNewMsgArrived } = useContext(MessageContext);
+  const { checkIfAnyNewMsgArrivedListingChannel } = useContext(MessageContext);
 
   const newMsgMarker = (checkIfAnyNewMsgArrived())
+    ? (
+      <React.Fragment>
+        <span className="fa fa-comment" />
+        <span className="newMsgSignature">N</span>
+      </React.Fragment>
+    ) : '';
+
+
+  const newListingMarker = (checkUnreadListing())
+    ? (
+      <React.Fragment>
+        <span className="fa fa-comment" />
+        <span className="newMsgSignature">N</span>
+      </React.Fragment>
+    ) : '';
+
+
+  const newMsgFavoriteDashboardMarker = (checkIfAnyNewMsgArrivedListingChannel())
     ? (
       <React.Fragment>
         <span className="fa fa-comment" />
@@ -49,7 +68,7 @@ function LoginMenu() {
             <span className="navbar-toggler-icon" />
           </button>
           <div className="collapse navbar-collapse" id="linkedSpacesNavbarToggler">
-            <a className="navbar-brand" href="/">LinkedSpaces</a>
+            <Link className="navbar-brand" to="/homepage">LinkedSpaces</Link>
 
             <ul className="navbar-nav ml-auto">
               <li className="nav-item">
@@ -74,8 +93,17 @@ function LoginMenu() {
               <li className="nav-item">
                 <Link className="nav-link" to="/ShowListingFromFriends">
                   Listing From Friends
+                  {newListingMarker}
                 </Link>
               </li>
+
+              <li className="nav-item">
+                <Link className="nav-link" to="/Favorite">
+                  Favorite Dashboard
+                  {newMsgFavoriteDashboardMarker}
+                </Link>
+              </li>
+
               <li className="nav-item">
                 <Link className="nav-link" to="/Logout">
                   Logout

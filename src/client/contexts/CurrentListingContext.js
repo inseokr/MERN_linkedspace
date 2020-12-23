@@ -9,13 +9,81 @@ export function CurrentListingProvider(props) {
   const [listing_info, setListingInfo] = useState();
   const [currentListing, setCurrentListing] = useState();
   const [ListingInfoType, setListingInfoType] = useState('');
-  const [currentChildIndex, setCurrentChildIndex] = useState(0);
+  const [currentChildIndex, setCurrentChildIndex] = useState(-1);
+  const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
+  const [parentRef, setParentRef] = useState(null);
 
   function cleanupListingInfoType() {
     setListingInfoType('');
   }
 
+  function focusParentListing() {
+
+    if(parentRef!==null && parentRef.current !==undefined && parentRef.current !== null)
+    {
+      //console.log("Focusing Parent Listing");
+      parentRef.current.click();
+      parentRef.current.scrollIntoView();
+    }
+    else
+    {
+      console.warn("focusParentListing failure");
+    }
+  }
+
+
+  function buildChildListingMappingTable() {
+    let _tempMap = [];
+
+    if(currentListing===undefined || currentListing.child_listings===undefined)
+    {
+      console.warn("buildChildListingMappingTable: child listing it not available??");
+      return;
+    }
+    //console.log(`currentListing = ${currentListing}`);
+    for(let index=0; index< currentListing.child_listings.length; index++)
+    {
+      if(currentListing.child_listings[index].listing_id===undefined)
+      {
+        console.warn("listing ID is undefined for index = " + index);
+      }
+      else
+      {
+        _tempMap[currentListing.child_listings[index].listing_id._id] = index;
+      }
+    }
+    setChildListingId2ChildIndexMap(_tempMap);
+  }
+
+  function getChildIndexByListingId(_listingId)
+  {
+    //console.log("getChildIndexByListingId = " + childListingId2ChildIndexMap[_listingId]);
+
+    if(childListingId2ChildIndexMap[_listingId]!==null && childListingId2ChildIndexMap[_listingId]!==undefined)
+    {
+      //console.log("getChildIndexByListingId: return index = " + childListingId2ChildIndexMap[_listingId]);
+      return (childListingId2ChildIndexMap[_listingId]);
+    }
+    else
+    {
+      console.warn("No child listing available");
+      return 0;
+    }
+  }
+
+  function setChildIndexByChannelId(_listingId)
+  {
+    let _childIndex = getChildIndexByListingId(_listingId);
+
+    //console.warn(`setChildIndexByChannelId: setCurrentChildIndex=${currentChildIndex}, new index = ${_childIndex}`);
+
+    setCurrentChildIndex(_childIndex);
+  }
+
   async function fetchListingInfo(_type) {
+    // console.log("ISEO: fetchListingInfo: _type =" + _type);
+    // console.log("ISEO: ListingInfoType =" + ListingInfoType);
+
     if (ListingInfoType !== _type) {
       setListingInfoType(_type);
       // type
@@ -34,6 +102,16 @@ export function CurrentListingProvider(props) {
     }
   }
 
+  useEffect(() => {
+    buildChildListingMappingTable();
+  }, [currentListing]);
+
+  useEffect(() => { // Initial useEffect to load google map.
+    loadGoogleMapScript(() => {
+      setMapLoaded(true);
+    });
+  }, []);
+
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
     const _prefix = (listing_type === 'landlord') ? '/listing/landlord/' : '/listing/tenant/';
@@ -46,29 +124,30 @@ export function CurrentListingProvider(props) {
         console.log(`listing = ${JSON.stringify(listing)}`);
         setCurrentListing(listing);
         successful = 1;
+
+        // build mapping table between child listing ID and child index
+        //buildChildListingMappingTable();
       });
 
     return successful;
   }
 
-  useEffect(() => { // Initial useEffect to load google map.
-    loadGoogleMapScript(() => {
-      setMapLoaded(true);
-    });
-  }, []);
-
   return (
-    <CurrentListingContext.Provider
-      value={{
-        mapLoaded,
-        listing_info,
-        currentListing,
-        currentChildIndex,
-        setCurrentChildIndex,
-        fetchCurrentListing,
-        fetchListingInfo,
-        cleanupListingInfoType
-      }}
+    <CurrentListingContext.Provider value={{
+      mapLoaded,
+      listing_info,
+      currentListing,
+      fetchCurrentListing,
+      fetchListingInfo,
+      cleanupListingInfoType,
+      currentChildIndex,
+      setCurrentChildIndex,
+      getChildIndexByListingId,
+      setChildIndexByChannelId,
+      setParentRef,
+      parentRef,
+      focusParentListing
+    }}
     >
       {props.children}
     </CurrentListingContext.Provider>

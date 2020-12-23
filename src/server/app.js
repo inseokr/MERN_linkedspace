@@ -62,6 +62,8 @@ app.namespace('/LS_API', () => {
   // 'mongodb://localhost/Linkedspaces';
   const url = process.env.DATABASEURL || process.env.DEV_DATABASEURL;
 
+  console.log(`MongoDB URL = ${url}`);
+
 
   async function downloadProfilePicture(profileFullPath, profilePath, accessToken) {
     const url = `https://graph.facebook.com/me/picture?access_token=${accessToken}`;
@@ -208,9 +210,15 @@ app.namespace('/LS_API', () => {
 
   // iseo: It's kind of pre-processing or middleware for route handling
   app.use((req, res, next) => {
-    if (req.user != undefined) {
-      res.locals.currentUser = req.user;
-      app.locals.currentUser[req.user.username] = req.user;
+    // console.log('middleware is called');
+    if (req.user != undefined && req.user != null) {
+      User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+        if (err) {
+          console.warn('User not found??');
+        } else {
+          app.locals.currentUser[foundUser.username] = foundUser;
+        }
+      });
     }
     res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
@@ -299,7 +307,7 @@ app.namespace('/LS_API', () => {
     const picIndex = req.body.pic_index;
     LandlordRequest.findById(req.params.list_id, (err, foundListing) => {
       try {
-        const picPath = `/public/user_resources/pictures/landdlord/${req.params.list_id}_${picIndex}.jpg`;
+        const picPath = `/public/user_resources/pictures/landlord/${req.params.list_id}_${picIndex}.jpg`;
 
         fileDeleteFromCloud(picPath);
 
@@ -398,9 +406,9 @@ app.namespace('/LS_API', () => {
         app.locals.profile_picture = picPath;
         curr_user.save();
 
+        // ISEO-TBD:
+        app.locals.currentUser[curr_user.username] = curr_user;
         fileUpload2Cloud(serverPath, picPath);
-
-        userDbHandler.populateProfilePicture(curr_user);
 
         res.send('File uploaded!');
       });
@@ -530,6 +538,27 @@ app.namespace('/LS_API', () => {
     });
   });
 
+  app.get('/refresh', (req, res) => {
+    if (req.user != undefined && app.locals.currentUser[req.user.username] !== null) {
+      User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+        // ISEO-TBD: Need to make it sure that we populate things needed.
+        // console.log(`foundUser = ${JSON.stringify(foundUser)}`);
+        // app.locals.currentUser[req.user.username].direct_friends = foundUser.direct_friends;
+        // console.log(`Before refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
+        if (err) {
+          console.warn('User not found!!');
+        } else {
+          app.locals.currentUser[req.user.username] = foundUser;
+          // console.log(`After refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
+          res.json(app.locals.currentUser[req.user.username]);
+        }
+      });
+    } else {
+      // this may happen when it's redirected to landing page after logout!!
+      console.warn('req.user is undefined??');
+      res.json(null);
+    }
+  });
 
   app.get('/auth/facebook/profile',
     (req, res) => {
@@ -555,6 +584,7 @@ app.namespace('/LS_API', () => {
       password: req.body.password,
     });
 
+
     User.register(newUser, req.body.password, (err, user) => {
       if (err) {
         console.log(`User.register failed = ${err.message}`);
@@ -563,6 +593,9 @@ app.namespace('/LS_API', () => {
       }
       // how to use facebook login?
       passport.authenticate('local')(req, res, () => {
+        console.log(`User signed up successfully: user = ${user.username}`);
+        user.loggedInTime = Date.now();
+        user.save();
         req.flash('success', `Welcome to LinkedSpaces ${user.username}`);
         res.redirect('/');
       });

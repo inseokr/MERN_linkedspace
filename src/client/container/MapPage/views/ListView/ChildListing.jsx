@@ -122,6 +122,9 @@ const ChildListing = React.forwardRef(({
         <img src={FILE_SERVER_URL+childListingSummary.coverPhoto} alt="Listing Picture" className="carouselImage" />
       </Link>
     );
+
+  let _backGroundColor = (clickState==1)? "#b0becc": "none";
+    
   return (
     <ListItem>
       <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
@@ -134,7 +137,7 @@ const ChildListing = React.forwardRef(({
         </Grid>
 
         <Grid item xs={8}>
-          <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
             <Typography className="description__title" color="textSecondary" gutterBottom>
               {listingTitle}
             </Typography>

@@ -33,10 +33,10 @@ function ListingIntro() {
         <div className="_tw4pe52">
           Hosted by 
           {' '}
-          {`${currentListing.listing.requester.id.firstname} ${currentListing.listing.requester.id.lastname}`}
+          {`${currentListing.listing.requester.firstname} ${currentListing.listing.requester.lastname}`}
         </div>
         <div style={{ maxWidth: '100px', marginTop: '20px' }}>
-          <img src={FILE_SERVER_URL+currentListing.listing.requester.id.profile_picture} className="center rounded-circle" style={{ width: '100%', maxHeight: '100%' }} />
+          <img src={FILE_SERVER_URL+currentListing.listing.requester.profile_picture} className="center rounded-circle" style={{ width: '100%', maxHeight: '100%' }} />
         </div>
 
         <div style={{ marginLeft: '30px' }}>

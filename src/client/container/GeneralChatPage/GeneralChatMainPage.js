@@ -14,31 +14,28 @@ import WriteChat from './WriteChat';
 export default class GeneralChatMainPage extends Component {
   static contextType = MessageContext;
 
+  constructor(props) {
+    super(props);
+  }
+
   componentDidMount() {
-    console.log('GeneralChatMainPage is being loaded');
-    // this.context.loadChattingDatabase();
+    //console.log('GeneralChatMainPage is being loaded');
   }
 
   componentWillMount() {
-    console.log('GeneralChatMainPage WillMount called');
 
-    if (this.props.compact === 'true' && this.context.chattingContextType === 0) {
-      console.log('ISEO: need to re-initialize the context: compact mode');
-      // this.context.setChattingContextType(1);
-    } else if (this.props.compact === 'false' && this.context.chattingContextType !== 0) {
+    if (this.props.compact === 'false' && this.context.chattingContextType !== 0) {
       // ISEO-TBD: switching to "2" will be possible only within the dashboard??
-      console.log('ISEO: need to re-initialize the context: full mode');
+      //console.log('ISEO: need to re-initialize the context: full mode');
       this.context.reset(0);
-      // this.context.setChattingContextType(1);
     }
   }
 
-  render() {
-    console.log('GeneralChatMainPage is being rendered');
 
+  render() {
     const leftPanelColumn = (this.props.compact === 'true') ? '1/4' : '4/6';
     const rightPanelColumn = (this.props.compact === 'true') ? '4/13' : '6/10';
-
+    
     return (
       <div
         className="GeneralChatMainWrapper bg-light"

@@ -44,18 +44,19 @@ export default class ChildListingsView extends Component {
 	    // console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
 	    // console.log("childListingsViews: refs="+this.state.refs[index]);
 
-	    _childListingViews.push(<div key={shortid.generate()}>
-  <ChildListing
-    clickState={this.state.clickStates[index]}
-    clickHandler={this.handleClickState}
-    handleSelect={this.props.handleSelect}
-    listing={childListing}
-    index={index}
-    messageClickHandler={this.props.messageClickHandler}
-    removeHandler={this.props.removeHandler}
-    ref={this.state.refs[index]}
-  />
-                             </div>);
+	    _childListingViews.push(
+	    	<div key={shortid.generate()}>
+			  <ChildListing
+			    clickState={this.state.clickStates[index]}
+			    clickHandler={this.handleClickState}
+			    handleSelect={this.props.handleSelect}
+			    listing={childListing}
+			    index={index}
+			    messageClickHandler={this.props.messageClickHandler}
+			    removeHandler={this.props.removeHandler}
+			    ref={this.state.refs[index]}
+			  />
+            </div>);
 	  	}, this);
 
 	  this.setState({ childListingsViews: _childListingViews });
@@ -76,25 +77,33 @@ export default class ChildListingsView extends Component {
 	}
 
 	handleClickFromMap(index) {
-	  // console.log("handleClickFromMap: index="+index);
-	  // console.log("currentActiveIndex="+this.state.currentActiveIndex);
+	  //console.warn("handleClickFromMap: index="+index);
+	  //console.warn("currentActiveIndex="+this.state.currentActiveIndex);
+
 	  if (index != this.state.currentActiveIndex) {
-	    if (this.state.refs != null) {
-	 			if (this.state.refs[index] != null) {
-	 				if (this.state.refs[index].current != null) {
-	 					// console.log("ISEO-TBD:calling focus!!");
-	 				 	this.state.refs[index].current.click();
-	 				 	this.state.refs[index].current.scrollIntoView();
-	 				 	this.setState({ currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
-	 				}
-	 			}
-	 		}
-	  }
+	  	// Parent listing is clicked
+	  	if(index===-1)
+	  	{
+	  		this.setState({ currentActiveIndex: index});
+	  	}
+	  	else
+	  	{
+		    if (this.state.refs != null) {
+		 			if (this.state.refs[index] != null) {
+		 				if (this.state.refs[index].current != null) {
+		 					// console.log("ISEO-TBD:calling focus!!");
+		 				 	this.state.refs[index].current.click();
+		 				 	this.state.refs[index].current.scrollIntoView();
+		 				 	this.setState({ currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
+		 				}
+		 			}
+		 		}
+		  	}
+	  	}
 	}
 
 	buildChildListingViews() {
 	  // console.warn("buildChildListingViews");
-
 	  // build it only if there is any change in the number of child listing
 	  const refArray = [];
 	  const _childListingViews = [];
@@ -110,18 +119,19 @@ export default class ChildListingsView extends Component {
 	    refArray.push(curRef);
 
 	    // console.log("curRef=" + curRef);
-	    _childListingViews.push(<div key={shortid.generate()}>
-  <ChildListing
-    clickState={listClickStates[index]}
-    clickHandler={this.handleClickState}
-    handleSelect={this.props.handleSelect}
-    listing={childListing}
-    index={index}
-    messageClickHandler={this.props.messageClickHandler}
-    removeHandler={this.props.removeHandler}
-    ref={curRef}
-  />
-                             </div>);
+	    _childListingViews.push(
+	    	<div key={shortid.generate()}>
+			  <ChildListing
+			    clickState={listClickStates[index]}
+			    clickHandler={this.handleClickState}
+			    handleSelect={this.props.handleSelect}
+			    listing={childListing}
+			    index={index}
+			    messageClickHandler={this.props.messageClickHandler}
+			    removeHandler={this.props.removeHandler}
+			    ref={curRef}
+			  />
+            </div>);
 	  	}, this);
 
 	  	this.setState({
@@ -135,10 +145,10 @@ export default class ChildListingsView extends Component {
 	  super(props);
 
 	  this.state = {
-	    clickStates: [],
-					  currentActiveIndex: 0,
-					  refs: [],
-					  childListingsViews: []
+		clickStates: [],
+		currentActiveIndex: -1,
+		refs: [],
+		childListingsViews: []
 	  };
 
 	  this.handleClickState = this.handleClickState.bind(this);
@@ -157,7 +167,6 @@ export default class ChildListingsView extends Component {
 
 	componentDidUpdate(previousProps, previousState, snapshot) {
 	  // console.warn("componentDidUpdate="+JSON.stringify(this.props));
-
 	  this.handleClickFromMap(this.context.currentChildIndex);
 
 	  if (this.context.currentListing.child_listings.length != this.state.childListingsViews.length) {
@@ -173,9 +182,9 @@ export default class ChildListingsView extends Component {
 
 	render() {
 	  return (
-  <React.Fragment>
-    {this.state.childListingsViews}
-  </React.Fragment>
+		  <React.Fragment>
+		    {this.state.childListingsViews}
+		  </React.Fragment>
 	  );
 	}
 }

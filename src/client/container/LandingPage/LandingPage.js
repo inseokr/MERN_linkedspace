@@ -6,6 +6,7 @@ import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from '../MapPage/index';
 import Search from '../SearchPage/SearchPage';
+import { GlobalContext } from '../../contexts/GlobalContext';
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -21,6 +22,8 @@ import Search from '../SearchPage/SearchPage';
 
 export default class LandingPage extends Component {
   // <note> can we have multiple contexts?
+  static contextType = GlobalContext;
+
   state = {
     lastMenu: '',
     fetchedMenu: false,
@@ -40,13 +43,19 @@ export default class LandingPage extends Component {
       });
   }
 
+  componentDidMount() {
+    const { refreshUserData } = this.context;
+    //console.log(`LandingPage is loaded. search = ${search}`);
+    refreshUserData();
+  }
+
   render() {
     const { lastMenu } = this.state;
 
-    let pageToRender = <div/>;
+    let pageToRender = <div />;
     if (lastMenu === 'map') {
       console.log('is this even being called', lastMenu);
-      pageToRender = <Map/>;
+      pageToRender = <Map />;
     } else {
       pageToRender = (
         <div>
@@ -62,7 +71,7 @@ export default class LandingPage extends Component {
                 <div className="content">
                   <h1> LinkedSpaces</h1>
                   <h3> Make your next move through a trusted network. </h3>
-                  <Search/>
+                  <Search />
                 </div>
               </div>
             </div>

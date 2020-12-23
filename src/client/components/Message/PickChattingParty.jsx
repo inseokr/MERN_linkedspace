@@ -13,7 +13,7 @@ function PickChattingParty(props) {
   const _listingId = props.listing_id;
 
   // <note> friendsList doesn't include current user.
-  const { friendsList, getProfilePicture, currentUser } = useContext(GlobalContext);
+  const { friendsList, getProfilePicture, currentUser, getUserLoginStatus } = useContext(GlobalContext);
   const { loadChattingDatabase, removeFromChatList, addToChatList } = useContext(MessageContext);
 
   // this should be done just once
@@ -73,7 +73,7 @@ function PickChattingParty(props) {
             </h5>
           </div>
           <div>
-            <OnlineStatus marginLeft="auto" />
+            <OnlineStatus marginLeft="auto" loginStatus={getUserLoginStatus(_friend.username)}/>
           </div>
         </div>
         <hr />

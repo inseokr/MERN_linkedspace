@@ -46,7 +46,7 @@ module.exports = function (app) {
 
   function requestedAlready(curr_user, friend_id) {
     for (let index = 0; index < curr_user.outgoing_friends_requests.length; index++) {
-      if (curr_user.outgoing_friends_requests[index].id.equals(friend_id) == true) {
+      if (curr_user.outgoing_friends_requests[index].equals(friend_id) == true) {
         return true;
       }
     }
@@ -56,7 +56,7 @@ module.exports = function (app) {
 
   function checkIncomingRequests(curr_user, friend_id) {
     for (let index = 0; index < curr_user.incoming_friends_requests.length; index++) {
-      if (curr_user.incoming_friends_requests[index].id.equals(friend_id) == true) {
+      if (curr_user.incoming_friends_requests[index].equals(friend_id) == true) {
         return true;
       }
     }
@@ -68,7 +68,7 @@ module.exports = function (app) {
     let bFound = false;
 
     curr_user.direct_friends.forEach((friend) => {
-      if (friend.id.equals(friend_id) == true) {
+      if (friend.equals(friend_id) == true) {
         bFound = true;
         // ISEO: seriously??? function return twice??
         // I returned true from here,
@@ -93,14 +93,7 @@ module.exports = function (app) {
             return;
           }
 
-          const _friend1 = {
-            id: friend_id_2,
-            name: friend_2.firstname + friend_2.lastname,
-            username: friend_2.username,
-            profile_picture: friend_2.profile_picture,
-            email: friend_2.email
-          };
-          friend_1.direct_friends.push(_friend1);
+          friend_1.direct_friends.push(friend_id_2);
 
           // remove both incoming&outgoing entries if any
           // This works but non-sense to me... why should I query again??
@@ -108,14 +101,14 @@ module.exports = function (app) {
             _id: friend_id_1
           }, {
             $pull:
-                  { incoming_friends_requests: { id: friend_id_2 } }
+                  { incoming_friends_requests: friend_id_2 }
           },
           (err, val) => {
             User.update({
               _id: friend_id_1
             }, {
               $pull:
-                    { outgoing_friends_requests: { id: friend_id_2 } }
+                    { outgoing_friends_requests: friend_id_2 }
             },
             (err, val) => {
               friend_1.save();
@@ -124,16 +117,7 @@ module.exports = function (app) {
 
           // remove both incoming&outgoing entries if any
           // This works but non-sense to me... why should I query again??
-
-
-          const _friend2 = {
-            id: friend_id_1,
-            name: friend_1.firstname + friend_1.lastname,
-            username: friend_1.username,
-            profile_picture: friend_1.profile_picture,
-            email: friend_1.email
-          };
-          friend_2.direct_friends.push(_friend2);
+          friend_2.direct_friends.push(friend_id_1);
 
           // remove both incoming&outgoing entries if any
           // This works but non-sense to me... why should I query again??
@@ -141,7 +125,7 @@ module.exports = function (app) {
             _id: friend_id_2
           }, {
             $pull:
-                  { incoming_friends_requests: { id: friend_id_1 } }
+                  { incoming_friends_requests: friend_id_1 }
           },
           (err, val) => {
             // Let's render with updated database...
@@ -151,7 +135,7 @@ module.exports = function (app) {
               _id: friend_id_2
             }, {
               $pull:
-                    { outgoing_friends_requests: { id: friend_id_1 } }
+                    { outgoing_friends_requests: friend_id_1 }
             },
             (err, val) => {
               friend_2.save();
@@ -176,9 +160,9 @@ module.exports = function (app) {
 					   && (isDirectFriend(curr_user, user._id) == false)) {
             const friend = {
               profile_picture: user.profile_picture,
-						              name: user.firstname + user.lastname,
-						              address: { city: user.address.city, state: user.address.state },
-						              id: user._id
+              name: user.firstname + user.lastname,
+              address: { city: user.address.city, state: user.address.state },
+              id: user._id
             };
             recommended_friends_list.push(friend);
           }
@@ -198,7 +182,7 @@ module.exports = function (app) {
       }
 
       for (let friend_idx = 0; friend_idx < input_list.length; friend_idx++) {
-        const friend = await getSummaryOfUser(input_list[friend_idx].id);
+        const friend = await getSummaryOfUser(input_list[friend_idx]);
         const res = await pushFriendReqstList(output_list, friend);
 
         if ((friend_idx + 1) == input_list.length) {
@@ -255,6 +239,7 @@ module.exports = function (app) {
     if (req.user.username == undefined) {
       res.json(null);
     } else {
+      // <note> we have to make it sure that direct_friends is already populated.
       res.json(app.locals.currentUser[req.user.username].direct_friends);
     }
   });
@@ -268,13 +253,10 @@ module.exports = function (app) {
         // <note> req.user: isn't it User object already?
         User.findById(req.user._id, (err, curr_user) => {
           // ISEO: I don't know why name is not saved to the database...
-          const requestingFriend = { id: req.user._id, name: curr_user.firstname + curr_user.lastname };
-          user.incoming_friends_requests.push(requestingFriend);
+          user.incoming_friends_requests.push(req.user._id);
           user.save();
 
-          const invitedFriend = { id: user._id, name: user.firstname + user.lastname };
-
-          curr_user.outgoing_friends_requests.push(invitedFriend);
+          curr_user.outgoing_friends_requests.push(user._id);
           curr_user.save();
           // Let's render with updated database...
           res.redirect('/MyNetworks');
@@ -286,62 +268,12 @@ module.exports = function (app) {
   router.post('/:friend_id/friend_accept', (req, res) => {
     console.log('ISEO:friend_accept');
 
-    establishFriendship(res, req.user._id, req.params.friend_id);
-    /*
-    User.findById(req.params.friend_id, (err, friend) => {
-      if (err) {
-        console.log('No such user found');
-      } else {
-        User.findById(req.user._id, (err, curr_user) => {
-          const acceptingFriend = {
-            id: req.user._id,
-            name: curr_user.firstname + curr_user.lastname,
-            username: curr_user.username,
-            profile_picture: curr_user.profile_picture,
-            email: curr_user.email
-          };
-          friend.direct_friends.push(acceptingFriend);
-
-
-          User.update({
-					    _id: req.params.friend_id
-          }, {
-					    $pull:
-					        { outgoing_friends_requests: { id: req.user._id } }
-					    },
-					    (err, val) => {
-            friend.save();
-          });
-
-          const acceptedFriend = {
-            id: friend._id,
-            name: friend.firstname + friend.lastname,
-            username: friend.username,
-            profile_picture: friend.profile_picture,
-            email: friend.email
-          };
-          curr_user.direct_friends.push(acceptedFriend);
-
-          // ISEO-TBD:... can't believe but remove/pull only works with _id, not other fields.
-          // result = curr_user.incoming_friends_requests.remove({_id: friendObjectToRemove._id});
-          // result =curr_user.incoming_friends_requests.pull(friend._id);
-
-          // This works but non-sense to me... why should I query again??
-          User.update({
-					    _id: req.user._id
-          }, {
-					    $pull:
-					        { incoming_friends_requests: { id: friend._id } }
-					    },
-					    (err, val) => {
-            curr_user.save();
-            // Let's render with updated database...
-            res.redirect('/MyNetworks');
-          });
-        });
-      }
-    });
-    */
+    if (req.user === undefined) {
+      console.warning('friend_accept: req.user is undefined!!!');
+      res.redirect('/MyNetworks');
+    } else {
+      establishFriendship(res, req.user._id, req.params.friend_id);
+    }
   });
 
   router.get('/:filename', (req, res) => {

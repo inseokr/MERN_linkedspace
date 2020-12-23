@@ -9,12 +9,17 @@ export default class MyNetworkPage extends Component {
   static contextType = GlobalContext;
 
   componentDidMount() {
-    console.log('MyNetworkPage is being loaded');
+    //console.log('MyNetworkPage is being loaded');
   }
 
   componentWillMount() {
-    console.log('MyNetworkPage WillMount called');
+    //console.log('MyNetworkPage WillMount called');
     this.context.loadSocialNetworkDb();
+  }
+
+  componentWillUnmount() {
+    //console.log("MyNetworkPage componentWillUnmount called");
+    this.context.refreshUserData();
   }
 
   render() {

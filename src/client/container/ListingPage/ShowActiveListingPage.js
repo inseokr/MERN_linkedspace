@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import '../../app.css';
 import {FILE_SERVER_URL} from '../../globalConstants';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
+import { GlobalContext } from '../../contexts/GlobalContext';
 import GetRatingDeco from '../../components/decos/GetRatingDeco';
 
 function checkChildListing(child_listings, id_) {
@@ -16,7 +17,23 @@ function checkChildListing(child_listings, id_) {
   return false;
 }
 
-function getListingContents(listingDB, listing_prefix, type, child_listings, listingControl) {
+function checkIfListingRead(user, listing_type, id_) {
+  const listingArray = (listing_type==='tenant')? user.incoming_tenant_listing: user.incoming_landlord_listing;
+
+  for(let index=0; index<listingArray.length; index++)
+  {
+    if(listingArray[index].id===id_)
+    {
+      if(listingArray[index].status==="Read")
+      {
+        return true;
+      } 
+    }
+  }
+  return false;
+}
+
+function getListingContents(currentUser, listingDB, listing_prefix, type, child_listings, listingControl) {
   const listings = [];
 
   function getCoverImg(listing_prefix, listing) {
@@ -125,9 +142,12 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
   }
 
   for (let index = 0; index < listingDB.length; index++) {
+    const additionalClasses = 
+      ((type==="friend") && (checkIfListingRead(currentUser, 'tenant', listingDB[index].id)===false))? 'bottom_highlight': "";
+
     if (!checkChildListing(child_listings, listingDB[index].id)) {
       const listing = (
-        <div className="network_board" key={listingDB[index].id}>
+        <div className={`network_board ${additionalClasses}`} key={listingDB[index].id}>
           <div className="profile_picture">
             {getCoverImg(listing_prefix, listingDB[index], type)}
             {getListingSourceInformation(listing_prefix, listingDB[index])}
@@ -149,6 +169,7 @@ function getListingContents(listingDB, listing_prefix, type, child_listings, lis
 
 function ShowActiveListingPage(props) {
   const { listing_info, currentListing } = useContext(CurrentListingContext);
+  const { currentUser } = useContext(GlobalContext);
 
   if (props.type === 'child' && currentListing == undefined) {
     console.warn('No listing available');
@@ -174,7 +195,7 @@ function ShowActiveListingPage(props) {
         <span style={{ textAlign: 'center' }}><h3> Room/House wanted  </h3></span>
         <hr />
         <div className="d-flex justify-content-between flex-wrap">
-          {getListingContents(listing_info.tenant_listing, 'tenant', props.type, child_listings)}
+          {getListingContents(currentUser, listing_info.tenant_listing, 'tenant', props.type, child_listings)}
         </div>
       </div>
     )
@@ -190,7 +211,7 @@ function ShowActiveListingPage(props) {
             <span style={{ textAlign: 'center' }}><h3> Listing from linkedspaces </h3></span>
             <hr />
             <div className="d-flex justify-content-between flex-wrap">
-              {getListingContents(listing_info.landlord_listing,
+              {getListingContents(currentUser, listing_info.landlord_listing,
                 'landlord', props.type, child_listings,
                 props.listingControl)}
             </div>
@@ -202,7 +223,7 @@ function ShowActiveListingPage(props) {
             <span style={{ textAlign: 'center' }}><h3> Listing from 3rd party  </h3></span>
             <hr />
             <div className="d-flex justify-content-between flex-wrap">
-              {getListingContents(listing_info._3rdparty_listing,
+              {getListingContents(currentUser, listing_info._3rdparty_listing,
                 '_3rdparty', props.type, child_listings,
                 props.listingControl)}
             </div>

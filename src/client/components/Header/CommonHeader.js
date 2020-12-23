@@ -16,6 +16,7 @@ function CommonHeader(props) {
   function getLoginStatus() {
     // This should be called only once when no current user is set
     if (currentUser == null) {
+      console.log("getLoginStatus");
       fetch('/LS_API/getLoginStatus')
         .then(res => res.json())
         .then((user) => {
@@ -33,21 +34,11 @@ function CommonHeader(props) {
       if (friendsList === undefined) loadFriendList();
     }
 
-    if (friendsList !== undefined && friendsList.length !== 0) {
-      console.log('useEffect of commonHeader');
-      // how to prevent multiple loading?
-      const channelInfo = {
-        channelName: getDmChannelId(friendsList[0].username),
-        dm: {
-          name: friendsList[0].username,
-          distance: 1
-        }
-      };
-      switchChattingChannel(channelInfo, true);
-    }
   }, [currentUser, friendsList]);
 
   const { loginClickHandler, signupClickHandler } = props;
+
+  console.log("ISEO: rendering CommonHeader: isUserLoggedIn = " + isUserLoggedIn());
 
   return (
     <div className="navBarContainer">
