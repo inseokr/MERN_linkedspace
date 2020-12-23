@@ -26,6 +26,16 @@ function ChatContactList() {
     msgCounter
   } = useContext(MessageContext);
 
+
+  function getActiveIndex(_states) {
+    for(let index=0; index<_states.length; index++)
+    {
+      if(_states[index].active===1) return index;
+    }
+
+    return 0;
+  }
+
   function removeCurrentUserFromList(_list) {
     if (_list == null) return null;
 
@@ -80,24 +90,31 @@ function ChatContactList() {
 
         _contactState.channelInfo.members.push(adjustedFriendsList[i].username);
 
-        if (bFoundDefaultContact==false && 
-            currChannelInfo.channelName == _contactState.channelInfo.channelName) {
-          _contactState.active = 1;
-          bFoundDefaultContact = true;
-          _currentActiveIndex = i;
+
+        if ((bFoundDefaultContact === false) && 
+            (currChannelInfo.channelName === _contactState.channelInfo.channelName)) {
+              _contactState.active = 1;
+              bFoundDefaultContact = true;
+              _currentActiveIndex = i;
         }
-
-        if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
+        else
         {
-          _contactState.active = 1;
-
-          if(bFoundDefaultContact === true)
+          if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
           {
-            _contactState[_currentActiveIndex].active = 0;
+            _contactState.active = 1;
 
+            if(bFoundDefaultContact === true && (_currentActiveIndex < _contactStates.length))
+            {
+              _contactStates[_currentActiveIndex].active = 0;
+            }
+
+            bFoundDefaultContact = true;
+            _currentActiveIndex = i;
           }
-          _currentActiveIndex = i;
-          bFoundDefaultContact = true;
+          else
+          {
+            _contactState.active = 0;
+          }
         }
 
         _contactStates.push(_contactState);
@@ -139,28 +156,30 @@ function ChatContactList() {
           if (bPartOfGroupChat == true) {
             _contactState.channelInfo.members = [..._members];
 
-            if ((bFoundDefaultContact == false) && 
-                (currChannelInfo.channelName == _contactState.channelInfo.channelName)) {
+            if ((bFoundDefaultContact === false) && 
+                (currChannelInfo.channelName === _contactState.channelInfo.channelName)) {
               _contactState.active = 1;
               bFoundDefaultContact = true;
               _currentActiveIndex = i + _numOfDmChannels;
             }
             else
             {
-              _contactState.active = 0;
-            }
-
-            if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
-            {
-              _contactState.active = 1;
-
-              if(bFoundDefaultContact === true)
+              if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
               {
-                _contactStates[_currentActiveIndex].active = 0;
-              }
+                _contactState.active = 1;
 
-              bFoundDefaultContact = true;
-              _currentActiveIndex = i + _numOfDmChannels;
+                if(bFoundDefaultContact === true && (_currentActiveIndex < _contactStates.length))
+                {
+                  _contactStates[_currentActiveIndex].active = 0;
+                }
+
+                bFoundDefaultContact = true;
+                _currentActiveIndex = i + _numOfDmChannels;
+              }
+              else
+              {
+                _contactState.active = 0;
+              }
             }
 
             _contactStates.push(_contactState);
@@ -182,11 +201,19 @@ function ChatContactList() {
 
       if(bFoundDefaultContact === true)
       {
-        switchChattingChannel(_contactStates[_currentActiveIndex].channelInfo, true);
+        if(contactStates!==undefined)
+        {
+          switchChattingChannel(_contactStates[_currentActiveIndex].channelInfo, true);
+        }
       }
     } catch (err) {
       // Error may happen because contactStates is being access even before it's created.
       //console.warn(`buildContactStates: error = ${err}`);
+    }
+
+    if(_contactStates.length===0)
+    {
+      console.warn("contactStates NULL!!");
     }
 
     return _contactStates;
@@ -244,11 +271,17 @@ function ChatContactList() {
 
   useEffect(() => {
     // need to re-build the states if chattingContextType is changed.
-    setContactStates(buildContactStates());
+    let _contactStates = buildContactStates();
+    if(_contactStates.length!==0) {
+      setContactStates(_contactStates);
+    }
   }, [chattingContextType, currentListing, friendsList]);
 
   useEffect(() => {
-    setContactStates(buildContactStates());
+    let _contactStates = buildContactStates();
+    if(_contactStates.length!==0 && (getActiveIndex(_contactStates)!==getActiveIndex(contactStates))) {
+      setContactStates(_contactStates);
+    }
   }, [dmChannelContexts, msgCounter]);
 
   function buildContactList() {
