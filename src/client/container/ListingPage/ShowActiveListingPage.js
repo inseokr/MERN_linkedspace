@@ -143,7 +143,7 @@ function getListingContents(currentUser, listingDB, listing_prefix, type, child_
 
   for (let index = 0; index < listingDB.length; index++) {
     const additionalClasses = 
-      (type=="own" || (checkIfListingRead(currentUser, 'tenant', listingDB[index].id)===true))? "":'bottom_highlight';
+      ((type==="friend") && (checkIfListingRead(currentUser, 'tenant', listingDB[index].id)===false))? 'bottom_highlight': "";
 
     if (!checkChildListing(child_listings, listingDB[index].id)) {
       const listing = (

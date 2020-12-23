@@ -533,7 +533,7 @@ module.exports = function (app) {
   router.post('/addChild', (req, res) => {
     // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
-    TenantRequest.findById(req.body.parent_listing_id).populate('requester').exec((err, foundListing) => {
+    TenantRequest.findById(req.body.parent_listing_id).populate('requester').populate('shared_user_group', 'username').exec((err, foundListing) => {
       if (err) {
         console.log('listing not found');
         res.send('listing_not_found');
@@ -608,15 +608,35 @@ module.exports = function (app) {
         foundListing.child_listings.push(child_listing);
       }
 
-      foundListing.save();
+      // send auto-refresh to shared_user_group
+      // build user name list
+      const userNameList = [];
+      for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+        userNameList.push(foundListing.shared_user_group[index].username);
+      }
 
-      res.send('Successfully added');
+      chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+      foundListing.save((err) => {
+        if (err) {
+          console.warn(`foundListing saving error = ${err}`);
+          res.send('child listing add failed');
+        } else {
+          res.send('Successfully added');
+          // send auto-refresh to shared_user_group
+          // build user name list
+          const userNameList = [];
+          for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+            userNameList.push(foundListing.shared_user_group[index].username);
+          }
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+        }
+      });
     });
   });
 
 
   router.post('/removeChild', (req, res) => {
-    TenantRequest.findById(req.body.parent_listing_id, (err, foundListing) => {
+    TenantRequest.findById(req.body.parent_listing_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
       if (err) {
         console.log('listing not found');
         res.send('listing_not_found');
@@ -660,10 +680,18 @@ module.exports = function (app) {
         if (err) {
           console.warn(`foundListing saving error = ${err}`);
           res.send('child listing removal failed');
+        } else {
+          // remove chatting channels from chatting channel DB as well
+          chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
+          res.send('Child listing removed successfully');
+          // send auto-refresh to shared_user_group
+          // build user name list
+          const userNameList = [];
+          for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+            userNameList.push(foundListing.shared_user_group[index].username);
+          }
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
         }
-        // remove chatting channels from chatting channel DB as well
-        chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
-        res.send('Child listing removed successfully');
       });
     });
   });

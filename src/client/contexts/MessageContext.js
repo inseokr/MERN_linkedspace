@@ -422,7 +422,7 @@ export function MessageContextProvider(props) {
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
     // save some of information back to database
-    console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
+    //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
     pushCurrentChannelToDB(channelInfo).then((result) => {
       setCurrChannelInfo(channelInfo);
     });
@@ -511,7 +511,7 @@ export function MessageContextProvider(props) {
   }
 
   function updateChatHistory(msg, local) {
-    console.warn("updateChatHistory");
+    //console.warn("updateChatHistory");
     if (local == true) {
       // sending to chat server
       //
@@ -533,39 +533,47 @@ export function MessageContextProvider(props) {
       alertSound.play();
       const processedMsg = parseIncomingMessage(msg);
 
-      // <note>
-      // processedMsg[1]: channel information.
-      // processedMsg[2]: sender name
-      // processedMsg[3]: message
-      // console.log("Message for channel ID = " + processedMsg[1]);
-
-      // const newHistory = [...chattingHistory, processedMsg[2]];
-      // addMsgToChatHistory(newHistory);
-      console.warn("message"+processedMsg[3]);
-      let _channelId = parseChattingChannelName(processedMsg[1]);
-
-      if(_channelId!==null)
+      if(processedMsg!==null)
       {
-        console.warn("childListingId: " + _channelId);
+        // <note>
+        // processedMsg[1]: channel information.
+        // processedMsg[2]: sender name
+        // processedMsg[3]: message
+        // console.log("Message for channel ID = " + processedMsg[1]);
 
-        if(_channelId==="parent")
+        // const newHistory = [...chattingHistory, processedMsg[2]];
+        // addMsgToChatHistory(newHistory);
+        //console.warn("message"+processedMsg[3]);
+        let _channelId = parseChattingChannelName(processedMsg[1]);
+
+        if(_channelId!==null)
         {
-          console.warn("focusParentListing");
-          focusParentListing();
+          //console.warn("childListingId: " + _channelId);
+
+          if(_channelId==="parent")
+          {
+            //console.warn("focusParentListing");
+            focusParentListing();
+          }
+          else
+          {
+            //console.warn("setChildIndexByChannelId");
+            setChildIndexByChannelId(_channelId);
+          }
+
         }
         else
         {
-          console.warn("setChildIndexByChannelId");
-          setChildIndexByChannelId(_channelId);
+          console.warn("No child index found");
         }
-
+        updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
       }
       else
       {
-        console.warn("No child index found");
+        //console.warn('Got control message');
+        // need to refresh the currentListing.
+        reloadChattingDbWithCurrentListing();
       }
-
-      updateChatContext(processedMsg[3], processedMsg[1], 0, 1, processedMsg[2]);
     }
   }
 
@@ -894,14 +902,14 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(() => {
-    console.warn('ISEO: Loading chatting database... ');
+    //console.warn('ISEO: Loading chatting database... ');
 
     loadChattingDatabase();
   }, [currChannelInfo, channelContextLength]);
 
   useEffect(() => {
 
-    console.warn("MessageContext: default useEffect");
+    //console.warn("MessageContext: default useEffect");
 
   });
 

@@ -36,8 +36,6 @@ export default class GeneralChatMainPage extends Component {
     const leftPanelColumn = (this.props.compact === 'true') ? '1/4' : '4/6';
     const rightPanelColumn = (this.props.compact === 'true') ? '4/13' : '6/10';
     
-    console.warn("GeneralChatMainPage is being rendered");
-
     return (
       <div
         className="GeneralChatMainWrapper bg-light"
