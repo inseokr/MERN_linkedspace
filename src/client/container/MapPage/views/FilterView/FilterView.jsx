@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import SearchFilter from '../../../../components/Filter/SearchFilter';
 import PlaceFilter from '../../../../components/Filter/PlaceFilter';
 import PriceFilter from '../../../../components/Filter/PriceFilter';
-import { ListingsContext } from '../../../../contexts/ListingsContext';
 // import DateFilter from '../../../../components/Filter/DateFilter';
 
-function FilterView() {
-  const { filterParams, setFilterParams } = useContext(ListingsContext);
+function FilterView(props) {
+  const { filterParams, setFilterParams, filters } = props;
   const { search, places, price } = filterParams;
   const [interimSearch, setSearch] = useState(search);
   const [interimPlaces, setPlaces] = useState(places);
@@ -31,13 +30,25 @@ function FilterView() {
       <CssBaseline />
       <Grid container direction="row" justify="space-evenly">
         <Grid item xs={4}>
-          <SearchFilter search={search} setSearch={setSearch} />
+          <div>
+            {
+              filters.search ? (<SearchFilter search={search} setSearch={setSearch} />) : (<></>)
+            }
+          </div>
         </Grid>
         <Grid item xs={4}>
-          <PlaceFilter places={places} setPlaces={setPlaces} />
+          <div>
+            {
+              filters.places ? (<PlaceFilter places={places} setPlaces={setPlaces} />) : (<></>)
+            }
+          </div>
         </Grid>
         <Grid item xs={4}>
-          <PriceFilter price={price} setPrice={setPrice} />
+          <div>
+            {
+              filters.price ? (<PriceFilter price={price} setPrice={setPrice} />) : (<></>)
+            }
+          </div>
         </Grid>
       </Grid>
     </div>

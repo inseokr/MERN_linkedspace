@@ -1,10 +1,11 @@
 /* eslint-disable */
 import React, { createContext, useState, useEffect } from 'react';
-import { loadGoogleMapScript } from './helper/helper';
+import { loadGoogleMapScript, getGeometryFromSearchString } from './helper/helper';
 
 export const CurrentListingContext = createContext();
 
 export function CurrentListingProvider(props) {
+  const [mapElementID, setMapElementID] = useState('');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [listing_info, setListingInfo] = useState();
   const [currentListing, setCurrentListing] = useState();
@@ -12,6 +13,19 @@ export function CurrentListingProvider(props) {
   const [currentChildIndex, setCurrentChildIndex] = useState(-1);
   const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
   const [parentRef, setParentRef] = useState(null);
+
+  const [mapParams, setMapParams] = useState({
+    bounds: null,
+    center: { lat: 37.338207, lng: -121.886330 },
+    zoom: 9
+  });
+
+  const [filterParams, setFilterParams] = useState({
+    search: '',
+    places: { Entire: true, Private: true, Shared: true },
+    price: [1, 1000],
+    date: ''
+  });
 
   function cleanupListingInfoType() {
     setListingInfoType('');
@@ -112,6 +126,21 @@ export function CurrentListingProvider(props) {
     });
   }, []);
 
+  useEffect(() => {
+    if (currentListing) { // Continue if currentListing exists.
+      const { search } = filterParams;
+      if (search) {
+        getGeometryFromSearchString(search).then(response => {
+          const {results, status} = response;
+          if (status === "OK") {
+            const geometry = results[0].geometry;
+            setMapParams({ ...mapParams, center: geometry.location });
+          }
+        });
+      }
+    }
+  }, [currentListing, filterParams]);
+
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
     const _prefix = (listing_type === 'landlord') ? '/listing/landlord/' : '/listing/tenant/';
@@ -125,6 +154,12 @@ export function CurrentListingProvider(props) {
         setCurrentListing(listing);
         successful = 1;
 
+        const location = listing.location;
+        if (location) {
+          const { city, state, country } = location;
+          const address = `${city}, ${state}, ${country}`;
+          setFilterParams({ ...filterParams, search: address });
+        }
         // build mapping table between child listing ID and child index
         //buildChildListingMappingTable();
       });
@@ -134,6 +169,8 @@ export function CurrentListingProvider(props) {
 
   return (
     <CurrentListingContext.Provider value={{
+      mapElementID,
+      setMapElementID,
       mapLoaded,
       listing_info,
       currentListing,
@@ -146,7 +183,11 @@ export function CurrentListingProvider(props) {
       setChildIndexByChannelId,
       setParentRef,
       parentRef,
-      focusParentListing
+      focusParentListing,
+      mapParams,
+      setMapParams,
+      filterParams,
+      setFilterParams
     }}
     >
       {props.children}

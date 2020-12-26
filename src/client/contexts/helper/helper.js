@@ -134,6 +134,24 @@ function updateListingsByBounds(listings, bounds) {
   return filteredListings;
 }
 
+// Logic for filtering a listing by filterParams
+function filteredByParams(roomType, askingPrice, coordinates, filterParams, boundParams) {
+  if (filterParams.places[roomType]) {
+    const { price } = filterParams;
+    const min = price[0];
+    const max = price[1];
+    if ((askingPrice >= min && askingPrice <= max) || max === 1000) {
+      const { bounds } = boundParams;
+      if (bounds) {
+        if (isInsideBounds(coordinates, bounds.northeast, bounds.southwest)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 async function updateListingsByFilters(mapElementID, listings, filterParams) {
   const { search } = filterParams;
   if (search.length > 0) {
@@ -156,21 +174,10 @@ async function updateListingsByFilters(mapElementID, listings, filterParams) {
 
         for (let i = 0; i < listings.length; i += 1) {
           const listing = listings[i];
-          if (filterParams.places[listing.rental_property_information.room_type]) {
-            const { price } = filterParams;
-            const min = price[0];
-            const max = price[1];
-            const askingPrice = listing.rental_terms.asking_price;
-            if ((askingPrice >= min && askingPrice <= max) || askingPrice > 1000) {
-              const { bounds } = boundParams;
-              if (bounds) {
-                if (isInsideBounds(listing.rental_property_information.coordinates,
-                  bounds.northeast,
-                  bounds.southwest)) {
-                  updatedFilteredListings.push(listing);
-                }
-              }
-            }
+          const { room_type: roomType, coordinates } = listing.rental_property_information;
+          const askingPrice = listing.rental_terms.asking_price;
+          if (filteredByParams(roomType, askingPrice, coordinates, filterParams, boundParams)) {
+            updatedFilteredListings.push(listing);
           }
         }
 

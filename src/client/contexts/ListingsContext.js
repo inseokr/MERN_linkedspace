@@ -21,7 +21,7 @@ export function ListingsProvider(props) {
   });
 
   const [filterParams, setFilterParams] = useState({
-    search: '',
+    search: 'Fremont, CA, USA',
     places: { Entire: true, Private: true, Shared: true },
     price: [1, 1000],
     date: ''
@@ -46,7 +46,7 @@ export function ListingsProvider(props) {
     if (mapParams.bounds) {
       setListingsByBounds(updateListingsByBounds(listingsByFilter, mapParams.bounds));
     }
-  }, [mapParams]);
+  }, [listingsByFilter, mapParams]);
 
   useEffect(() => {
     async function filterListings() {

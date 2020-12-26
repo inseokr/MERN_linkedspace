@@ -18,13 +18,11 @@ import {FILE_SERVER_URL} from '../../../../globalConstants';
 
 
 function TenantListingComponent(props) {
-
-
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const { currentUser } = useContext(GlobalContext);
   const {
-    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex, 
+    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
     parentRef, setParentRef, setCurrentChildIndex
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType } = useContext(MessageContext);
@@ -187,12 +185,12 @@ function TenantListingComponent(props) {
 
               <div className="flex-container" style={{ justifyContent: 'space-between' }}>
                 <Typography className="description__address" color="textSecondary">
-                  Username: 
+                  Username:
                   {' '}
                   {userName}
                 </Typography>
                 <Typography className="description__address" color="textSecondary">
-                  Email: 
+                  Email:
                   {' '}
                   {listing.email}
                 </Typography>

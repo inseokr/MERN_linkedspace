@@ -47,7 +47,7 @@ const ChildListing = React.forwardRef(({
     setChildIndex, childIndex,
     loadChattingDatabase
   } = useContext(MessageContext);
-  const { setCurrentChildIndex } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, filterParams } 	= useContext(CurrentListingContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
 
@@ -124,56 +124,65 @@ const ChildListing = React.forwardRef(({
     );
 
   let _backGroundColor = (clickState==1)? "#b0becc": "none";
-    
-  return (
-    <ListItem>
-      <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
-        <Grid item xs={4}>
-          <Carousel interval={null} slide activeIndex={0} onSelect={handleSelect} className="carousel">
-            <Carousel.Item>
-              {linkToListing}
-            </Carousel.Item>
-          </Carousel>
-        </Grid>
 
-        <Grid item xs={8}>
-          <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
-            <Typography className="description__title" color="textSecondary" gutterBottom>
-              {listingTitle}
-            </Typography>
-            <Typography className="description__summary">
-              {childListingSummary.listingSummary}
-            </Typography>
-            <Typography>
-              {' '}
-              Price: $
-              {childListingSummary.rentalPrice}
-            </Typography>
-            <Typography>
-              {' '}
-              City:
-              {childListingSummary.location}
-            </Typography>
-            <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '40px' }}>
-              <div className="flex-container" style={{ justifyContent: 'flex-start' }}>
-                <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
-                <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
-                  {' '}
-                  Hosted by 
-                  {' '}
-                  {childListing.requester.username}
-                </Typography>
+  console.log('PLEASEEE', filterParams, childListingSummary);
+  const { price } = filterParams;
+  const min = price[0];
+  const max = price[1];
+  const rentalPrice = childListing.rentalPrice;
+  if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
+    return (
+      <ListItem>
+        <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
+          <Grid item xs={4}>
+            <Carousel interval={null} slide activeIndex={0} onSelect={handleSelect} className="carousel">
+              <Carousel.Item>
+                {linkToListing}
+              </Carousel.Item>
+            </Carousel>
+          </Grid>
+
+          <Grid item xs={8}>
+            <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
+              <Typography className="description__title" color="textSecondary" gutterBottom>
+                {listingTitle}
+              </Typography>
+              <Typography className="description__summary">
+                {childListingSummary.listingSummary}
+              </Typography>
+              <Typography>
+                {' '}
+                Price: $
+                {childListingSummary.rentalPrice}
+              </Typography>
+              <Typography>
+                {' '}
+                City:
+                {childListingSummary.location}
+              </Typography>
+              <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '40px' }}>
+                <div className="flex-container" style={{ justifyContent: 'flex-start' }}>
+                  <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
+                  <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
+                    {' '}
+                    Hosted by
+                    {' '}
+                    {childListing.requester.username}
+                  </Typography>
+                </div>
+                <button className="btn btn-danger" onClick={removeListingHandler}>
+                  Remove
+                </button>
               </div>
-              <button className="btn btn-danger" onClick={removeListingHandler}>
-                Remove
-              </button>
-            </div>
 
-          </Paper>
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
-    </ListItem>
-  );
+      </ListItem>
+    );
+  } else {
+    return (<></>);
+  }
 });
 
 export default ChildListing;

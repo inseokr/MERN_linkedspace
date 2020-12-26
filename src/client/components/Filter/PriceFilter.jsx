@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 import Grid from '@material-ui/core/Grid';
@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import clsx from 'clsx';
 import Modal from '../Modal';
-import { ListingsContext } from '../../contexts/ListingsContext';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -70,13 +69,13 @@ function LinkedSpacesThumbComponent(props) {
   );
 }
 
-function PriceFilter() {
+function PriceFilter(props) {
   const classes = useStyles();
 
-  const { filterParams, setFilterParams } = useContext(ListingsContext);
+  const { price, setPrice } = props;
 
   const [showModal, setShowModal] = useState(false);
-  const [interimPrice, setPrice] = useState(filterParams.price);
+  const [interimPrice, setInterimPrice] = useState(price);
   const [priceSubmitted, setPriceSubmitted] = useState(false);
 
   const toggleModal = () => {
@@ -84,7 +83,7 @@ function PriceFilter() {
   };
 
   const handleChange = (event, newPriceRange) => {
-    setPrice(newPriceRange);
+    setInterimPrice(newPriceRange);
   };
 
   const handleMinChange = (event) => {
@@ -119,8 +118,8 @@ function PriceFilter() {
   };
 
   const onSubmit = () => {
-    if (interimPrice !== filterParams.price) {
-      setFilterParams({ ...filterParams, price: interimPrice });
+    if (interimPrice !== price) {
+      setPrice(interimPrice);
     }
     if (!priceSubmitted) {
       setPriceSubmitted(!priceSubmitted);
@@ -128,14 +127,13 @@ function PriceFilter() {
   };
 
   const onClear = () => {
-    setPrice([1, 1000]);
+    setInterimPrice([1, 1000]);
   };
 
   const interimMin = interimPrice[0];
   const interimMax = interimPrice[1];
 
   let priceTitle = 'Price';
-  const { price } = filterParams;
   const min = price[0];
   const max = price[1];
 
