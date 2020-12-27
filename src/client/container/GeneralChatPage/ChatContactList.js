@@ -189,7 +189,8 @@ function ChatContactList() {
 
       if (bFoundDefaultContact == false) {
         // let's make the last item active if there is no previous active channel
-        loadChattingDatabase();
+        // ISEO-TBD
+        //loadChattingDatabase();
       }
 
       // check if any new chattig channel added

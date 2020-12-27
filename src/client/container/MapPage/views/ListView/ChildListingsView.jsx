@@ -9,6 +9,8 @@ import constructListingInformationBullets from '../../helper/helper';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import { MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../../contexts/MessageContext';
 import ChildListing from './ChildListing';
+import axios from 'axios';
+
 
 /*
 	Programming business logic
@@ -44,11 +46,14 @@ export default class ChildListingsView extends Component {
 	    // console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
 	    // console.log("childListingsViews: refs="+this.state.refs[index]);
 
+
 	    _childListingViews.push(
 	    	<div key={shortid.generate()}>
 			  <ChildListing
-			    clickState={this.state.clickStates[index]}
+			  	clickState={this.state.clickStates[index]}
+			    likedState={this.state.likedStates[index]}
 			    clickHandler={this.handleClickState}
+			    likeClickHandler={this.handleLikedState}
 			    handleSelect={this.props.handleSelect}
 			    listing={childListing}
 			    index={index}
@@ -74,6 +79,46 @@ export default class ChildListingsView extends Component {
 	  listClickStates[index] = 1;
 
 	  this.setState({ clickStates: listClickStates, currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
+	}
+
+
+	async handleLikedState(index) {
+
+		const listLikedStates = [...this.state.likedStates];
+		// toggling the licked
+		let command = 'add';
+
+		if(listLikedStates[index]===0)
+		{
+			//console.warn("setLikeClicked to 1");
+			listLikedStates[index] = 1;
+			command = 'add';
+		}
+		else
+		{
+			//console.warn("setLikeClicked to 0");
+			listLikedStates[index] = 0;
+			command = 'remove'
+		}
+
+		this.setState({ likedStates: listLikedStates}, this.buildChildListingViewsByHandleClick);
+
+		const post_url = `/LS_API/listing/${this.context.currentListing.listingType}/${this.context.currentListing._id}/${this.context.currentListing.child_listings[index].listing_id._id}/liked/${command}`;
+		// empty data for now
+		const data = {
+		};
+
+		const result = await axios.post(post_url, data)
+		.then((result) => {
+		// ID of chatting channel will be returned.
+		// update dmChannelContexts
+			console.log("add to liked list: result = " + result);
+			//window.location.reload();
+			this.context.fetchCurrentListing(this.context.currentListing._id, "tenant");
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 	}
 
 	handleClickFromMap(index) {
@@ -103,27 +148,42 @@ export default class ChildListingsView extends Component {
 	}
 
 	buildChildListingViews() {
-	  // console.warn("buildChildListingViews");
+	  //console.warn("buildChildListingViews");
 	  // build it only if there is any change in the number of child listing
 	  const refArray = [];
 	  const _childListingViews = [];
 	  const listClickStates = [...this.state.clickStates];
+	  const listLikedStates = [...this.state.likedStates];
 	  const initialLength = listClickStates.length;
 
 	  this.context.currentListing.child_listings.map(function (childListing, index) {
-	    // console.warn("childListingsViews: index="+index);
 
 	    listClickStates[index] = 0;
+	    // check if current user is in the liked list
+	    // q1. we need current user information
+	    listLikedStates[index] = 0;
+
+		for(let user_index=0; user_index< childListing.listOfLikedUser.length; user_index++)
+		{
+			if(childListing.listOfLikedUser[user_index]===this.context.getCurrentUser()._id)
+			{
+				listLikedStates[index] = 1;
+				//console.warn("Setting liked state of index = " + index);
+			}  
+		}
 
 	    const curRef = React.createRef();
 	    refArray.push(curRef);
 
-	    // console.log("curRef=" + curRef);
+	    //console.warn(`likedState[${index}]=${listLikedStates[index]}`);
+
 	    _childListingViews.push(
 	    	<div key={shortid.generate()}>
 			  <ChildListing
 			    clickState={listClickStates[index]}
+			    likedState={listLikedStates[index]}
 			    clickHandler={this.handleClickState}
+			    likeClickHandler={this.handleLikedState}
 			    handleSelect={this.props.handleSelect}
 			    listing={childListing}
 			    index={index}
@@ -135,9 +195,10 @@ export default class ChildListingsView extends Component {
 	  	}, this);
 
 	  	this.setState({
-	    childListingsViews: _childListingViews,
-	  				   clickStates: listClickStates,
-	  				   refs: refArray
+		    childListingsViews: _childListingViews,
+		  	clickStates: listClickStates,
+		  	likedStates: listLikedStates,
+		  	refs: refArray
 	  });
 	}
 
@@ -146,12 +207,14 @@ export default class ChildListingsView extends Component {
 
 	  this.state = {
 		clickStates: [],
+		likedStates: [],
 		currentActiveIndex: -1,
 		refs: [],
 		childListingsViews: []
 	  };
 
 	  this.handleClickState = this.handleClickState.bind(this);
+	  this.handleLikedState = this.handleLikedState.bind(this);
 	  this.buildChildListingViews = this.buildChildListingViews.bind(this);
 	  this.buildChildListingViewsByHandleClick = this.buildChildListingViewsByHandleClick.bind(this);
 	  this.handleClickFromMap = this.handleClickFromMap.bind(this);

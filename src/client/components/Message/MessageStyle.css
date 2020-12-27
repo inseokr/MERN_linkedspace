@@ -11,6 +11,7 @@
     border-bottom-width: thick !important;
     border-bottom-color: red !important;
 }
+
 .network_board .profile_picture {
     grid-row-start: 1;
     grid-row-end: 4;

@@ -8,8 +8,10 @@ import Carousel from 'react-bootstrap/Carousel';
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import { MessageContext } from '../../../../contexts/MessageContext';
+import { GlobalContext } from '../../../../contexts/GlobalContext';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import { FILE_SERVER_URL } from '../../../../globalConstants';
+import axios from 'axios';
 
 function getChildListingSummary(childListing) {
   console.log(`getChildListingSummary, listingType = ${childListing.listingType}`);
@@ -38,7 +40,7 @@ function getChildListingSummary(childListing) {
 }
 
 const ChildListing = React.forwardRef(({
-  clickState, clickHandler, handleSelect, listing, index, messageClickHandler, removeHandler
+  clickState, likedState, clickHandler, likeClickHandler, handleSelect, listing, index, messageClickHandler, removeHandler
 }, ref) => {
   // const [modalShow, setModalShow] = useState(false);
   const {
@@ -47,7 +49,8 @@ const ChildListing = React.forwardRef(({
     setChildIndex, childIndex,
     loadChattingDatabase
   } = useContext(MessageContext);
-  const { setCurrentChildIndex } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, currentChildIndex } 	= useContext(CurrentListingContext);
+  const { getProfilePicture } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
 
@@ -87,6 +90,7 @@ const ChildListing = React.forwardRef(({
   }
 
   function listingClickHandler(e) {
+    e.stopPropagation();
     // e.preventDefault();
     clickHandler(index);
 
@@ -96,8 +100,17 @@ const ChildListing = React.forwardRef(({
     updateMessageContext();
   }
 
+  async function _likeClickHandler(e) {
+    e.stopPropagation();
+    //alert(e.currentTarget.id);
+    //likeClickHandler(index);
+    likeClickHandler(e.currentTarget.id);
+  }
+
   function removeListingHandler(e) {
     e.preventDefault();
+    e.stopPropagation();
+    
     removeHandler(childListing);
   }
 
@@ -123,8 +136,46 @@ const ChildListing = React.forwardRef(({
       </Link>
     );
 
+  function getListOfLikedFriends() {
+    if(index==-1 || currentListing.child_listings[index]===undefined) return "";
+
+    let _childListing = currentListing.child_listings[index];
+
+    function checkIfInLikedList(user_id)
+    {
+      for(let user_index=0; user_index< _childListing.listOfLikedUser.length; user_index++)
+      {
+        if(_childListing.listOfLikedUser[user_index]===user_id)
+        {
+          return true;
+        }  
+      }
+      return false;
+    }
+
+    let listOfFriendsImage = [];
+
+    // go through the list of liked friends
+    // get the profile picture by user ID
+    // <note> share_user_group does have the profile picture
+    _childListing.shared_user_group.forEach((user, _index) => {
+      if(checkIfInLikedList(user._id)===true)
+      {
+        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+getProfilePicture(user.username)} alt="Liked friend"  />);
+      }
+    });
+
+
+    return (
+      <div className="listOfLikedFriends">
+        {listOfFriendsImage}
+      </div>
+    );
+  }
+
   let _backGroundColor = (clickState==1)? "#b0becc": "none";
-    
+  let heartStyle = (likedState===1)? "fa-heart": "fa-heart-o";
+
   return (
     <ListItem>
       <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
@@ -134,6 +185,12 @@ const ChildListing = React.forwardRef(({
               {linkToListing}
             </Carousel.Item>
           </Carousel>
+          <div className="likedListing d-flex flex-row">
+            <button class="btn btn-less-margin" id={`${index}`} onClick={_likeClickHandler}>
+              <i className={`fa ${heartStyle} heartColor`} aria-hidden="true"></i>
+            </button>
+            {getListOfLikedFriends()}
+          </div>
         </Grid>
 
         <Grid item xs={8}>

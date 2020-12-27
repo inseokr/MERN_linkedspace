@@ -1,6 +1,8 @@
 /* eslint-disable */
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { GlobalContext } from './GlobalContext';
+
 
 export const CurrentListingContext = createContext();
 
@@ -11,6 +13,13 @@ export function CurrentListingProvider(props) {
   const [currentChildIndex, setCurrentChildIndex] = useState(-1);
   const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
   const [parentRef, setParentRef] = useState(null);
+
+  const {currentUser} = useContext(GlobalContext);
+
+  function getCurrentUser()
+  {
+    return currentUser;
+  }
 
   function cleanupListingInfoType() {
     setListingInfoType('');
@@ -107,6 +116,7 @@ export function CurrentListingProvider(props) {
 
   useEffect(() => {
     buildChildListingMappingTable();
+    // <note> how to trigger loadChattingDatabase from here?
   }, [currentListing]);
 
 
@@ -136,7 +146,7 @@ export function CurrentListingProvider(props) {
       cleanupListingInfoType, currentChildIndex, setCurrentChildIndex,
       getChildIndexByListingId,setChildIndexByChannelId, 
       setParentRef, parentRef,
-      focusParentListing
+      focusParentListing, getCurrentUser
     }}
     >
       {props.children}

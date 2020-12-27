@@ -210,8 +210,9 @@ export function MessageContextProvider(props) {
 
   async function reloadChattingDbWithCurrentListing() {
     // console.log("reloadChattingDbWithCurrentListing");
-    const result = await fetchCurrentListing(currentListing._id, 'tenant');
-    loadChattingDatabase();
+    //console.warn("reloadChattingDbWithCurrentListing");
+    let result = fetchCurrentListing(currentListing._id, 'tenant');
+    // <note> loadChattingDatabase will be called when currentListing is updated.
   }
 
   async function addContactList(_friend) {
@@ -651,7 +652,7 @@ export function MessageContextProvider(props) {
 
           chatChannels.push(chatInfo);
         }
-      } else if (chattingContextType == 2) {
+      } else if (chattingContextType == 2) { 
       // console.log("childIndex = " + childIndex);
 
         // console.log("currentListing=" + JSON.stringify(currentListing));
@@ -809,7 +810,7 @@ export function MessageContextProvider(props) {
 
   // loading chatting database from backend
   async function loadChattingDatabase() {
-    // console.log("loadChattingDatabase");
+    //console.log("loadChattingDatabase");
 
     if (currentUser == undefined) {
       // console.log("currentUser is not set yet");
@@ -823,12 +824,7 @@ export function MessageContextProvider(props) {
     setNewMsgArrivedListingChannel(false);
 
     // note: it will be good time to register the user again?
-    try {
-        chatSocket.send(`CSC:Register:${currentUser.username}`);
-    } catch (error) {
-        console.error(error);
-    } 
-
+    
     // ISEO-TBD: need to load group chatting as well.
     const chatChannel = getListOfChatChannels();
 
@@ -855,16 +851,28 @@ export function MessageContextProvider(props) {
             // console.log("result = " + result);
 
             // console.log("not a newly created channel");
-            // ISEO-TBD: channelData is not being used at all.
-            const channelData = {
-              channel_id: result.data.channel.channel_id,
-              channel_type: result.data.channel.channel_type,
-              last_read_index: getLastReadIndex(result.data.channel.channel_id)
-            };
+            // <note> channel could be null if it's a duplicate case.
+            if(result.data.channel!==null)
+            {
+              const channelData = {
+                channel_id: result.data.channel.channel_id,
+                channel_type: result.data.channel.channel_type,
+                last_read_index: getLastReadIndex(result.data.channel.channel_id)
+              };
 
-            loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+            }
           } else {
             loadChatHistory(chatChannel[i].channel_id, []);
+
+            // <note> registration should work after chattting channel is created first.
+            try {
+              //console.warn("CSC: register for username + " + currentUser.username);
+
+              chatSocket.send(`CSC:Register:${currentUser.username}`);
+            } catch (error) {
+              console.error(error);
+            } 
           }
         })
         .catch(err => console.warn(err));
@@ -902,16 +910,23 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(() => {
+    //console.log("currChannelInfo updated");
     //console.warn('ISEO: Loading chatting database... ');
-
-    loadChattingDatabase();
+    //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
+    setTimeout(()=> loadChattingDatabase(), 500);
   }, [currChannelInfo, channelContextLength]);
 
+  /*useEffect(() => {
+    //console.warn('ISEO: Loading chatting database... ');
+    loadChattingDatabase();
+  }, [currChannelInfo, channelContextLength]);*/
+
+  // loadChattingDatabase should be called by currentListing first.
+  // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-
-    //console.warn("MessageContext: default useEffect");
-
-  });
+    //console.log("CurrentListing is just updated");
+    setTimeout(()=> loadChattingDatabase(), 100);
+  }, [currentListing]);
 
   webSocketConnect();
 
@@ -947,7 +962,8 @@ export function MessageContextProvider(props) {
       postSelectedContactList,
       reset,
       msgCounter,
-      refreshUserDataFromMessageContext
+      refreshUserDataFromMessageContext,
+      reloadChattingDbWithCurrentListing
     }}
     >
       {props.children}

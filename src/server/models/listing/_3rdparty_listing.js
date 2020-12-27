@@ -38,6 +38,7 @@ const _3rdPartyListingSchema = new mongoose.Schema({
     lat: Number,
     lng: Number
   }
+
 });
 
 module.exports = mongoose.model('_3rdPartyListing', _3rdPartyListingSchema);
