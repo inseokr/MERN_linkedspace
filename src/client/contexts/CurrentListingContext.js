@@ -1,6 +1,7 @@
 /* eslint-disable */
-import React, { createContext, useState, useEffect } from 'react';
-import { loadGoogleMapScript, getGeometryFromSearchString } from './helper/helper';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { GlobalContext } from './GlobalContext';
+
 
 export const CurrentListingContext = createContext();
 
@@ -26,6 +27,13 @@ export function CurrentListingProvider(props) {
     price: [1, 1000],
     date: ''
   });
+
+  const {currentUser} = useContext(GlobalContext);
+
+  function getCurrentUser()
+  {
+    return currentUser;
+  }
 
   function cleanupListingInfoType() {
     setListingInfoType('');
@@ -117,29 +125,14 @@ export function CurrentListingProvider(props) {
   }
 
   useEffect(() => {
-    buildChildListingMappingTable();
-  }, [currentListing]);
+  }, [currentChildIndex]);
 
-  useEffect(() => { // Initial useEffect to load google map.
-    loadGoogleMapScript(() => {
-      setMapLoaded(true);
-    });
-  }, []);
 
   useEffect(() => {
-    if (currentListing) { // Continue if currentListing exists.
-      const { search } = filterParams;
-      if (search) {
-        getGeometryFromSearchString(search).then(response => {
-          const {results, status} = response;
-          if (status === "OK") {
-            const geometry = results[0].geometry;
-            setMapParams({ ...mapParams, center: geometry.location });
-          }
-        });
-      }
-    }
-  }, [currentListing, filterParams]);
+    buildChildListingMappingTable();
+    // <note> how to trigger loadChattingDatabase from here?
+  }, [currentListing]);
+
 
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
@@ -154,12 +147,6 @@ export function CurrentListingProvider(props) {
         setCurrentListing(listing);
         successful = 1;
 
-        const location = listing.location;
-        if (location) {
-          const { city, state, country } = location;
-          const address = `${city}, ${state}, ${country}`;
-          setFilterParams({ ...filterParams, search: address });
-        }
         // build mapping table between child listing ID and child index
         //buildChildListingMappingTable();
       });
@@ -184,6 +171,7 @@ export function CurrentListingProvider(props) {
       setParentRef,
       parentRef,
       focusParentListing,
+      getCurrentUser,
       mapParams,
       setMapParams,
       filterParams,

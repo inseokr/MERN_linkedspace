@@ -3,7 +3,6 @@ const User = require('../../models/user');
 const ChatChannel = require('../../models/chatting/chatting_channel');
 
 const userDbHandler = require('../user_db/access_user_db');
-
 // create DM channel
 async function getMemberInfoByUserName(name) {
   return new Promise((resolve) => {
@@ -58,25 +57,43 @@ async function getChannelByChannelId(channelName) {
   });
 }
 
-function addChannelToUser(chat_channel) {
-  chat_channel.members.forEach((member) => {
-	    userDbHandler.findUserById(member.id).then((foundUser) => {
-      console.log(`addChannelToUser: foundUser = ${foundUser.username}`);
+async function addChannelToUser(chat_channel) {
+  let numOfProcessed = 0;
+  const numOfMembers = chat_channel.members.length;
+  const userNameList = [];
 
-	    	if (foundUser) {
-        for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
-          if (foundUser.chatting_channels.dm_channels[index].name == chat_channel.channel_id) {
-            console.log('duplicate found');
-            return;
+  return new Promise((resolve) => {
+    if (numOfMembers === 0) resolve(null);
+
+    chat_channel.members.forEach((member) => {
+      userDbHandler.findUserById(member.id).then((foundUser) => {
+        numOfProcessed++;
+
+        if (foundUser) {
+          let bDuplicate = false;
+          userNameList.push(foundUser.username);
+
+          for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
+            if (foundUser.chatting_channels.dm_channels[index].name == chat_channel.channel_id) {
+              console.log('duplicate found');
+              bDuplicate = true;
+            }
+          }
+
+          // <note> id is now known yet.
+          if (bDuplicate === false) {
+            const dm_channel = { id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0 };
+            foundUser.chatting_channels.dm_channels.push(dm_channel);
+            foundUser.save();
           }
         }
 
-	    		// <note> id is now known yet.
-	    		const dm_channel = { id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0 };
-	    		foundUser.chatting_channels.dm_channels.push(dm_channel);
-	    		foundUser.save();
-	    	}
-	    });
+        if (numOfProcessed === chat_channel.members.length) {
+          // console.warn(`numOfProcessed=${numOfProcessed}, userNameList=${JSON.stringify(userNameList)}`);
+          resolve(userNameList);
+        }
+      });
+    });
   });
 }
 

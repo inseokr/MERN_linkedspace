@@ -51,6 +51,8 @@ async function registerSocketToChannels(currentSocket, user_name) {
 
   // ISEO-TBD: we should register listing related channels as well
   channels.dm_channels.forEach((channel) => {
+    // console.warn(`adding user=${user_name} to channel=${channel.name}`);
+
     addSocketToChannel(channel.name, currentSocket);
   });
 }
@@ -71,12 +73,12 @@ function updateUserSocketMap(currentSocket, user_name) {
     });
   }
 
-  if (bDuplicate == true) return;
+  if (bDuplicate === false) {
+    // console.log("Updating socketToUserMap for user = " + user_name);
+    userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
-  // console.log("Updating socketToUserMap for user = " + user_name);
-  userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
-
-  socketToUserMap[currentSocket.id] = user_name;
+    socketToUserMap[currentSocket.id] = user_name;
+  }
 
   // <TBD> When is the right point to do this?
   // We may consult DB here and get the list of channels for this user and update it.
@@ -107,15 +109,16 @@ function addUserToChannel(channelId, user) {
   addSocketToChannel(channelId, userToSocketMap[user]);
 }
 
+
 function addSocketToChannel(channelId, socket_) {
   if (channelIdToSocketList[channelId] == undefined) {
     channelIdToSocketList[channelId] = [socket_];
   } else {
     // check if there is any duplicate
+    // ISEO-TBD: why it's not handling duplicate.
     channelIdToSocketList[channelId].forEach((socket) => {
       if (socket.id == socket_.id) {
         // console.log("duplciate sockets");
-
       }
     });
 
@@ -214,22 +217,39 @@ function routeMessage(data, incomingSocket) {
 }
 
 function sendDashboardControlMessage(command, userNameList) {
+  try {
+    switch (command) {
+      case DASHBOARD_AUTO_REFRESH:
+        userNameList.forEach((name) => {
+          // console.log(`sending control message to user = ${name}`);
+          if (userToSocketMap[name] !== undefined) {
+            userToSocketMap[name].forEach((_socket) => {
+              // console.log('sending control message');
+              _socket.send('CSC:0');
+            });
+          }
+        });
+        break;
+      default: console.warn('Unknown command'); break;
+    }
+  } catch (error) {
+    console.warn(`sendDashboardControlMessage: error${error}`);
+  }
+}
+
+function sendDashboardControlMessageToSingleUser(command, userName) {
   switch (command) {
     case DASHBOARD_AUTO_REFRESH:
-      userNameList.forEach((name) => {
-        console.log(`sending control message to user = ${name}`);
-        if (userToSocketMap[name] !== undefined) {
-          userToSocketMap[name].forEach((_socket) => {
-            console.log('sending control message');
-            _socket.send('CSC:0');
-          });
-        }
-      });
+      if (userToSocketMap[userName] !== undefined) {
+        userToSocketMap[userName].forEach((_socket) => {
+          // console.log('sending control message');
+          _socket.send('CSC:0');
+        });
+      }
       break;
     default: console.warn('Unknown command'); break;
   }
 }
-
 
 // remove the socket from all the maps
 function removeSocket(socket_) {
@@ -342,5 +362,5 @@ function chatServerMain(server) {
 
 
 module.exports = {
-  chatServerMain, removeChannel, removeChannelFromUserDb, sendDashboardControlMessage, DASHBOARD_AUTO_REFRESH
+  chatServerMain, removeChannel, removeChannelFromUserDb, sendDashboardControlMessage, sendDashboardControlMessageToSingleUser, DASHBOARD_AUTO_REFRESH
 };

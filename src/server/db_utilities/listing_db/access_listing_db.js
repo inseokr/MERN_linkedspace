@@ -37,7 +37,7 @@ async function addToSharedUserGroup(listing, friend_name, type, child_index, bSa
             console.log('Friend already in the group');
             resolve(0);
           } else {
-            foundListing.shared_user_group.push(_friend._id);
+            listing.shared_user_group.push(_friend._id);
           }
           break;
 

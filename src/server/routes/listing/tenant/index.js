@@ -12,6 +12,8 @@ const User = require('../../../models/user');
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
 const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
+const { addUserToList, removeUserFromList } = require('../../../utilities/array_utilities');
+
 const chatServer = require('../../../chatting_server');
 
 const { fileDeleteFromCloud } = require('../../../aws_s3_api');
@@ -20,6 +22,15 @@ const serverPath = './src/server';
 
 node.loop = node.runLoopOnce;
 
+function sendDashboardAutoRefresh(currUserName, shared_user_group) {
+  const userNameList = [];
+  for (let index = 0; index < shared_user_group.length; index++) {
+    if (currUserName !== shared_user_group[index].username) {
+      userNameList.push(shared_user_group[index].username);
+    }
+  }
+  chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+}
 
 module.exports = function (app) {
   router.post('/new', (req, res) => {
@@ -530,6 +541,72 @@ module.exports = function (app) {
   	res.sendFile(path.join(__dirname, `../../../public/user_resources/pictures/${fileName}`));
   });
 
+  router.post('/:list_id/:child_id/liked/add', (req, res) => {
+    TenantRequest.findById(req.params.list_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
+      if (err) {
+        console.log('listing not found');
+        res.send('listing_not_found');
+      }
+
+      // find the index of child listing of which ID matches.
+      let indexOfMatchingChildListing = -1;
+      const childListingId = req.params.child_id;
+      for (let index = 0; index < foundListing.child_listings.length; index++) {
+        if (foundListing.child_listings[index].listing_id.equals(childListingId)) {
+          indexOfMatchingChildListing = index;
+          break;
+        }
+      }
+
+      if (indexOfMatchingChildListing !== -1) {
+        addUserToList(foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser, req.user._id);
+
+        foundListing.save();
+        // console.warn('Successfully added');
+        // sendDashboardAutoRefresh(foundListing.child_listings[indexOfMatchingChildListing].shared_user_group);
+        sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group);
+        res.send('Successfully added');
+      } else {
+        console.warn('No child listing found with given ID');
+        res.send('No child listing found with given ID');
+      }
+    });
+  });
+
+  router.post('/:list_id/:child_id/liked/remove', (req, res) => {
+    TenantRequest.findById(req.params.list_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
+      if (err) {
+        console.log('listing not found');
+        res.send('listing_not_found');
+      }
+
+      // find the index of child listing of which ID matches.
+      let indexOfMatchingChildListing = -1;
+      const childListingId = req.params.child_id;
+      for (let index = 0; index < foundListing.child_listings.length; index++) {
+        if (foundListing.child_listings[index].listing_id.equals(childListingId)) {
+          indexOfMatchingChildListing = index;
+          break;
+        }
+      }
+
+      if (indexOfMatchingChildListing !== -1) {
+        if (foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser !== undefined) {
+          foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser = foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser.filter(_objId => _objId.equals(req.user._id) === false);
+        }
+
+        foundListing.save();
+        // console.warn(`Successfully removed, length = ${foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser.length}`);
+        sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group);
+        res.send('Successfully removed');
+      } else {
+        console.warn('No child listing found with given ID');
+        res.send('No child listing found with given ID');
+      }
+    });
+  });
+
+
   router.post('/addChild', (req, res) => {
     // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
@@ -610,12 +687,14 @@ module.exports = function (app) {
 
       // send auto-refresh to shared_user_group
       // build user name list
+      /*
       const userNameList = [];
       for (let index = 0; index < foundListing.shared_user_group.length; index++) {
         userNameList.push(foundListing.shared_user_group[index].username);
       }
 
-      chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+      chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList); */
+
       foundListing.save((err) => {
         if (err) {
           console.warn(`foundListing saving error = ${err}`);
@@ -626,7 +705,9 @@ module.exports = function (app) {
           // build user name list
           const userNameList = [];
           for (let index = 0; index < foundListing.shared_user_group.length; index++) {
-            userNameList.push(foundListing.shared_user_group[index].username);
+            if (req.user.username !== foundListing.shared_user_group[index].username) {
+              userNameList.push(foundListing.shared_user_group[index].username);
+            }
           }
           chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
         }
@@ -654,45 +735,72 @@ module.exports = function (app) {
 
       // use filter to create a new array
       const tempArray = [];
-      foundListing.child_listings.forEach((listing, listingIndex) => {
-        // console.log("req.body.child_listing_id = " + req.body.child_listing_id);
-        // console.log("ID to compare against = " + listing.listing_id);
-        if (listing.listing_id.equals(req.body.child_listing_id)) {
-          // let's remove chatting channels as well
-          // remove chatting channels
-          // 1. go through check shared_group and remove dm channels from there
-          listing.shared_user_group.map(async (user, userIndex) => {
-            const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
-            await foundListing.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
-            foundListing.populated(pathToPopulate);
-            chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
-          });
+      let listingIndex = -1;
+
+      // find the matching listingIndex
+      for (let index = 0; index < foundListing.child_listings.length; index++) {
+        if (foundListing.child_listings[index].listing_id.equals(req.body.child_listing_id)) {
+          listingIndex = index;
         } else {
-          // console.log(" preserve this item");
-          tempArray.push(listing);
+          tempArray.push(foundListing.child_listings[index]);
         }
-      });
+      }
 
-      // console.log("size of tempArray = " + tempArray.length);
-      foundListing.child_listings = [...tempArray];
+      if (listingIndex !== -1) {
+        const listing = foundListing.child_listings[listingIndex];
+        const numOfUsers = listing.shared_user_group.length;
+        let numOfUsersProcessed = 0;
 
-      foundListing.save((err) => {
-        if (err) {
-          console.warn(`foundListing saving error = ${err}`);
-          res.send('child listing removal failed');
-        } else {
-          // remove chatting channels from chatting channel DB as well
-          chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
-          res.send('Child listing removed successfully');
-          // send auto-refresh to shared_user_group
-          // build user name list
-          const userNameList = [];
-          for (let index = 0; index < foundListing.shared_user_group.length; index++) {
-            userNameList.push(foundListing.shared_user_group[index].username);
+        listing.shared_user_group.map(async (user, userIndex) => {
+          // console.warn(`listingIndex = ${listingIndex}`);
+          // console.warn(`userIndex = ${userIndex}`);
+
+          const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
+          await foundListing.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
+          foundListing.populated(pathToPopulate);
+
+          // console.warn(`populated foundListing: ${JSON.stringify(foundListing)}`);
+
+          // console.warn(`foundListing: ${JSON.stringify(foundListing.child_listings[0].shared_user_group[userIndex])}`);
+
+          // chatServer.removeChannelFromUserDb(user.username, req.body.channel_id_prefix);
+          // console.warn('user name=', foundListing.child_listings[listingIndex].shared_user_group[userIndex].username);
+          chatServer.removeChannelFromUserDb(foundListing.child_listings[listingIndex].shared_user_group[userIndex].username, req.body.channel_id_prefix);
+
+          // <note> saving should be done here?
+          // Nope... not really. it's so messy logic.
+
+          numOfUsersProcessed++;
+
+          if (numOfUsersProcessed === numOfUsers) {
+            foundListing.child_listings = [...tempArray];
+
+            foundListing.save((err) => {
+              if (err) {
+                console.warn(`foundListing saving error = ${err}`);
+                res.send('child listing removal failed');
+              } else {
+                // remove chatting channels from chatting channel DB as well
+                chatDbHandler.removeChannelsByPartialChannelId(req.body.channel_id_prefix);
+                res.send('Child listing removed successfully');
+
+                // send auto-refresh to shared_user_group
+                // build user name list
+                const userNameList = [];
+                for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+                  if (req.user.username !== foundListing.shared_user_group[index].username) {
+                    userNameList.push(foundListing.shared_user_group[index].username);
+                  }
+                }
+                chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+              }
+            });
           }
-          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
-        }
-      });
+        });
+      } else {
+        console.log('no matching child listing found');
+        res.send('no child lising found');
+      }
     });
   });
 

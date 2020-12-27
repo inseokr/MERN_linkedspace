@@ -114,6 +114,13 @@ const TenantRequestSchema = new mongoose.Schema({
         }
       ],
 
+      listOfLikedUser: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+
       list_of_group_chats: [
         {
           // the user in the first entry will be the creator for this group chat

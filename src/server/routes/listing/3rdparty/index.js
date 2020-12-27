@@ -14,6 +14,7 @@ const picturePath = '/public/user_resources/pictures/3rdparty/';
 
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('../../../aws_s3_api');
 
+
 node.loop = node.runLoopOnce;
 
 module.exports = function (app) {
