@@ -17,8 +17,7 @@ import SimpleModal from '../../../components/Modal/SimpleModal';
 import {
   initGoogleMap,
   createMarker,
-  getGeometryFromSearchString,
-  getBoundsZoomLevel, constructBounds, centerCoordinates
+  getGeometryFromSearchString
 } from '../../../contexts/helper/helper';
 
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
@@ -175,7 +174,7 @@ function TenantListingDashBoard(props) {
           <CssBaseline />
           <Box className="App" component="div" display="flex" flexDirection="column">
             <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
-            <Grid container alignContent="stretch">
+            <Grid container alignContent="stretch" >
               <Grid item xs={6}>
                 <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
                 <Grid item xs={12}>
@@ -188,7 +187,6 @@ function TenantListingDashBoard(props) {
                     <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
                       <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                     </SimpleModal>
-
                     <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '100vh', width: '100vh' }} />
                   </React.Fragment>
                 ) : (

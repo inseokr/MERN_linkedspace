@@ -114,12 +114,29 @@ const ChildListing = React.forwardRef(({
     removeHandler(childListing);
   }
 
+  const scrollToBottom = () => {
+  // console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
+    if (reference.current !== undefined && reference.current != null) {
+      reference.current.scrollIntoView({ block: 'end', inline: 'nearest' });
+    }
+  };
+
+  function triggerScroll() {
+    // ISEO-TBD: It's very interesting bug, but I should re-schedule the scrollToBottom with some delay.
+    // I assume it's happening because React is doing things in parallel and the scroll operation is made
+    // while the data is still being loaded.
+    setTimeout(() => {
+    scrollToBottom();
+    }, 100);
+  }    
+
   useEffect(() => {
     if (reference != null) {
       console.log(`ChildListing: useEffect: ref.current=${reference.current}`);
       if (clicked == 1) {
         console.log('clicking from useEffect');
         // reference.current.click();
+        triggerScroll();
       }
     } else console.log('ref is null');
   }, [clicked, reference]);

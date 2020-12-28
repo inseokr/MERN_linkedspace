@@ -5,7 +5,7 @@ import '../../app.css';
 import './GeneralChatMainPage.css';
 
 function WriteChat() {
-  const { updateChatHistory } = useContext(MessageContext);
+  const { updateChatHistory, setDoNotDisturbMode } = useContext(MessageContext);
   const [chatMessage, setChatMessage] = useState('Write message...');
 
   const handleKeyPress = (e) => {
@@ -22,6 +22,14 @@ function WriteChat() {
   const cleanMessage = (event) => {
     event.preventDefault();
     setChatMessage('');
+  };
+
+  const handleFocusIn = (event) => {
+    setDoNotDisturbMode(true);
+  };
+
+  const handleFocusOut = (event) => {
+    setDoNotDisturbMode(false);
   };
 
 
@@ -49,6 +57,8 @@ function WriteChat() {
             onChange={handleChangeChatMessage}
             onKeyPress={handleKeyPress}
             onClick={cleanMessage}
+            onMouseEnter={handleFocusIn}
+            onMouseOut={handleFocusOut}
           />
         </form>
       </div>
