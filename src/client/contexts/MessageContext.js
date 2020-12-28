@@ -589,9 +589,18 @@ export function MessageContextProvider(props) {
       }
       else
       {
-        //console.warn('Got control message');
+        // console.warn('Got control message');
         // need to refresh the currentListing.
-        reloadChattingDbWithCurrentListing();
+        // This will be a rare occasion, and most likely it's ok to switch to the parent listing when there is a change in the child listing.
+        if(doNotDisturbMode===false)
+        {
+          focusParentListing();
+          reloadChattingDbWithCurrentListing();
+        }
+        else
+        {
+          setChannelWithLatestMessage(null);
+        }
       }
     }
   }
@@ -957,15 +966,22 @@ export function MessageContextProvider(props) {
 
     if(doNotDisturbMode===false && channelWithLatestMessagae!==null )
     {
-      if(channelWithLatestMessagae==="parent")
-      {
-        //console.warn("focusParentListing");
-        focusParentListing();
+      if(channelWithLatestMessagae!==null){
+        if(channelWithLatestMessagae==="parent")
+        {
+          //console.warn("focusParentListing");
+          focusParentListing();
+        }
+        else
+        {
+          //console.warn("setChildIndexByChannelId");
+          setChildIndexByChannelId(channelWithLatestMessagae);
+        }
       }
       else
       {
-        //console.warn("setChildIndexByChannelId");
-        setChildIndexByChannelId(channelWithLatestMessagae);
+        focusParentListing();
+        reloadChattingDbWithCurrentListing();
       }
     }
 
