@@ -810,7 +810,7 @@ export function MessageContextProvider(props) {
 
   // loading chatting database from backend
   async function loadChattingDatabase() {
-    //console.log("loadChattingDatabase");
+    console.log("loadChattingDatabase");
 
     if (currentUser == undefined) {
       // console.log("currentUser is not set yet");
@@ -861,6 +861,16 @@ export function MessageContextProvider(props) {
               };
 
               loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+
+              // ISEO-TBD-1227
+              // CSC:Register will be needed even if it's existing channel
+              try {
+                //console.warn("CSC: register for username + " + currentUser.username);
+
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              } catch (error) {
+                console.error(error);
+              } 
             }
           } else {
             loadChatHistory(chatChannel[i].channel_id, []);
@@ -910,11 +920,19 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(() => {
-    //console.log("currChannelInfo updated");
+    console.log("currChannelInfo updated");
     //console.warn('ISEO: Loading chatting database... ');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
-    setTimeout(()=> loadChattingDatabase(), 500);
-  }, [currChannelInfo, channelContextLength]);
+    setTimeout(()=> loadChattingDatabase(), 2000);
+  }, [currChannelInfo]);
+
+
+  useEffect(() => {
+    console.log("channelContextLength updated");
+    //console.warn('ISEO: Loading chatting database... ');
+    //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
+    //setTimeout(()=> loadChattingDatabase(), 4000);
+  }, [channelContextLength]);
 
   /*useEffect(() => {
     //console.warn('ISEO: Loading chatting database... ');
@@ -924,8 +942,8 @@ export function MessageContextProvider(props) {
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    //console.log("CurrentListing is just updated");
-    setTimeout(()=> loadChattingDatabase(), 100);
+    console.log("CurrentListing is just updated");
+    setTimeout(()=> loadChattingDatabase(), 1000);
   }, [currentListing]);
 
   webSocketConnect();
