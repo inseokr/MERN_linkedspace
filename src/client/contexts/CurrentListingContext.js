@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { GlobalContext } from './GlobalContext';
+import { loadGoogleMapScript } from './helper/helper';
 
 
 export const CurrentListingContext = createContext();
@@ -124,8 +125,11 @@ export function CurrentListingProvider(props) {
     }
   }
 
-  useEffect(() => {
-  }, [currentChildIndex]);
+  useEffect(() => { // Initial useEffect to load google map.
+    loadGoogleMapScript(() => {
+      setMapLoaded(true);
+    });
+  }, [mapElementID]);
 
 
   useEffect(() => {
