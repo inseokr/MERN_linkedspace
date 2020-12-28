@@ -37,6 +37,8 @@ export function MessageContextProvider(props) {
   // ISEO-TBD: React doesn't catch the change in the hashmap
   // I introduced a context length instead.
   const [dmChannelContexts, setChannelContexts] = useState([]);
+  const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
+  const [channelWithLatestMessagae, setChannelWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
 
   // ISEO-TBD:
@@ -210,8 +212,9 @@ export function MessageContextProvider(props) {
 
   async function reloadChattingDbWithCurrentListing() {
     // console.log("reloadChattingDbWithCurrentListing");
-    const result = await fetchCurrentListing(currentListing._id, 'tenant');
-    loadChattingDatabase();
+    //console.warn("reloadChattingDbWithCurrentListing");
+    let result = fetchCurrentListing(currentListing._id, 'tenant');
+    // <note> loadChattingDatabase will be called when currentListing is updated.
   }
 
   async function addContactList(_friend) {
@@ -355,6 +358,15 @@ export function MessageContextProvider(props) {
           webSocketConnect();
         }, 1000);
       };
+    }
+  }
+
+  function deregisterSocket() {
+    try {
+      chatSocket.send(`CSC:DeRegister:${currentUser.username}`);
+    } catch(error)
+    {
+      console.warn("deregisterSocket: error = " + error);
     }
   }
 
@@ -549,18 +561,25 @@ export function MessageContextProvider(props) {
         if(_channelId!==null)
         {
           //console.warn("childListingId: " + _channelId);
-
-          if(_channelId==="parent")
+          if(doNotDisturbMode===false)
           {
-            //console.warn("focusParentListing");
-            focusParentListing();
+            if(_channelId==="parent")
+            {
+              //console.warn("focusParentListing");
+              focusParentListing();
+            }
+            else
+            {
+              //console.warn("setChildIndexByChannelId");
+              setChildIndexByChannelId(_channelId);
+            }
           }
           else
           {
-            //console.warn("setChildIndexByChannelId");
-            setChildIndexByChannelId(_channelId);
+            // What do we do in this case?
+            // let's save the last channelId and move it to the channel when the mode is changed
+            setChannelWithLatestMessage(_channelId);
           }
-
         }
         else
         {
@@ -651,7 +670,7 @@ export function MessageContextProvider(props) {
 
           chatChannels.push(chatInfo);
         }
-      } else if (chattingContextType == 2) {
+      } else if (chattingContextType == 2) { 
       // console.log("childIndex = " + childIndex);
 
         // console.log("currentListing=" + JSON.stringify(currentListing));
@@ -809,7 +828,7 @@ export function MessageContextProvider(props) {
 
   // loading chatting database from backend
   async function loadChattingDatabase() {
-    // console.log("loadChattingDatabase");
+    console.log("loadChattingDatabase");
 
     if (currentUser == undefined) {
       // console.log("currentUser is not set yet");
@@ -823,12 +842,7 @@ export function MessageContextProvider(props) {
     setNewMsgArrivedListingChannel(false);
 
     // note: it will be good time to register the user again?
-    try {
-        chatSocket.send(`CSC:Register:${currentUser.username}`);
-    } catch (error) {
-        console.error(error);
-    } 
-
+    
     // ISEO-TBD: need to load group chatting as well.
     const chatChannel = getListOfChatChannels();
 
@@ -855,16 +869,38 @@ export function MessageContextProvider(props) {
             // console.log("result = " + result);
 
             // console.log("not a newly created channel");
-            // ISEO-TBD: channelData is not being used at all.
-            const channelData = {
-              channel_id: result.data.channel.channel_id,
-              channel_type: result.data.channel.channel_type,
-              last_read_index: getLastReadIndex(result.data.channel.channel_id)
-            };
+            // <note> channel could be null if it's a duplicate case.
+            if(result.data.channel!==null)
+            {
+              const channelData = {
+                channel_id: result.data.channel.channel_id,
+                channel_type: result.data.channel.channel_type,
+                last_read_index: getLastReadIndex(result.data.channel.channel_id)
+              };
 
-            loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+
+              // ISEO-TBD-1227
+              // CSC:Register will be needed even if it's existing channel
+              try {
+                //console.warn("CSC: register for username + " + currentUser.username);
+
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              } catch (error) {
+                console.error(error);
+              } 
+            }
           } else {
             loadChatHistory(chatChannel[i].channel_id, []);
+
+            // <note> registration should work after chattting channel is created first.
+            try {
+              //console.warn("CSC: register for username + " + currentUser.username);
+
+              chatSocket.send(`CSC:Register:${currentUser.username}`);
+            } catch (error) {
+              console.error(error);
+            } 
           }
         })
         .catch(err => console.warn(err));
@@ -902,16 +938,50 @@ export function MessageContextProvider(props) {
   }
 
   useEffect(() => {
+    //console.log("currChannelInfo updated");
     //console.warn('ISEO: Loading chatting database... ');
+    //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
+    setTimeout(()=> loadChattingDatabase(), 1000);
+  }, [currChannelInfo]);
 
-    loadChattingDatabase();
-  }, [currChannelInfo, channelContextLength]);
+
+  useEffect(() => {
+    console.log("channelContextLength updated");
+    //console.warn('ISEO: Loading chatting database... ');
+    //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
+    //setTimeout(()=> loadChattingDatabase(), 4000);
+  }, [channelContextLength]);
+
 
   useEffect(() => {
 
-    //console.warn("MessageContext: default useEffect");
+    if(doNotDisturbMode===false && channelWithLatestMessagae!==null )
+    {
+      if(channelWithLatestMessagae==="parent")
+      {
+        //console.warn("focusParentListing");
+        focusParentListing();
+      }
+      else
+      {
+        //console.warn("setChildIndexByChannelId");
+        setChildIndexByChannelId(channelWithLatestMessagae);
+      }
+    }
 
-  });
+  }, [doNotDisturbMode]);
+
+  /*useEffect(() => {
+    //console.warn('ISEO: Loading chatting database... ');
+    loadChattingDatabase();
+  }, [currChannelInfo, channelContextLength]);*/
+
+  // loadChattingDatabase should be called by currentListing first.
+  // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
+  useEffect(() => {
+    //console.log("CurrentListing is just updated");
+    setTimeout(()=> loadChattingDatabase(), 500);
+  }, [currentListing]);
 
   webSocketConnect();
 
@@ -947,7 +1017,10 @@ export function MessageContextProvider(props) {
       postSelectedContactList,
       reset,
       msgCounter,
-      refreshUserDataFromMessageContext
+      refreshUserDataFromMessageContext,
+      reloadChattingDbWithCurrentListing,
+      deregisterSocket,
+      setDoNotDisturbMode
     }}
     >
       {props.children}

@@ -167,7 +167,7 @@ function TenantListingDashBoard(props) {
           <CssBaseline />
           <Box className="App" component="div" display="flex" flexDirection="column">
             <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
-            <Grid container alignContent="stretch">
+            <Grid container alignContent="stretch" >
               <Grid item xs={6}>
                 <FilterView />
                 <Grid item xs={12}>
@@ -181,7 +181,7 @@ function TenantListingDashBoard(props) {
                       <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                     </SimpleModal>
 
-                    <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{ height: '100vh', width: '100vh' }} />
+                    <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
                   </React.Fragment>
                 ) : (
                   (showMessage)

@@ -51,6 +51,7 @@ async function registerSocketToChannels(currentSocket, user_name) {
 
   // ISEO-TBD: we should register listing related channels as well
   channels.dm_channels.forEach((channel) => {
+    // console.warn(`adding user=${user_name} to channel=${channel.name}`);
     addSocketToChannel(channel.name, currentSocket);
   });
 }
@@ -71,12 +72,13 @@ function updateUserSocketMap(currentSocket, user_name) {
     });
   }
 
-  if (bDuplicate == true) return;
+  if (bDuplicate === false) {
+    console.log(`Updating socketToUserMap for user = ${user_name}`);
 
-  // console.log("Updating socketToUserMap for user = " + user_name);
-  userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
+    userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
-  socketToUserMap[currentSocket.id] = user_name;
+    socketToUserMap[currentSocket.id] = user_name;
+  }
 
   // <TBD> When is the right point to do this?
   // We may consult DB here and get the list of channels for this user and update it.
@@ -107,28 +109,35 @@ function addUserToChannel(channelId, user) {
   addSocketToChannel(channelId, userToSocketMap[user]);
 }
 
+
 function addSocketToChannel(channelId, socket_) {
+  let bDuplicate = false;
+
   if (channelIdToSocketList[channelId] == undefined) {
     channelIdToSocketList[channelId] = [socket_];
   } else {
     // check if there is any duplicate
+    // ISEO-TBD: why it's not handling duplicate.
     channelIdToSocketList[channelId].forEach((socket) => {
       if (socket.id == socket_.id) {
-        // console.log("duplciate sockets");
-
+        // console.log('duplciate sockets');
+        bDuplicate = true;
       }
     });
 
-    channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
-    // console.log("addSocketToChannel, channel = " + channelId);
-    // console.log("length = " + channelIdToSocketList[channelId].length);
+    if (bDuplicate === false) {
+      channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
+      // console.log(`addSocketToChannel, channel = ${channelId}`);
+    }
+
+    // console.log(`length = ${channelIdToSocketList[channelId].length}`);
   }
 
 
   // Update socketToChannelIdMap
   if (socketToChannelIdMap[socket_.id] == undefined) {
     socketToChannelIdMap[socket_.id] = [channelId];
-  } else {
+  } else if (bDuplicate === false) {
     socketToChannelIdMap[socket_.id] = [...socketToChannelIdMap[socket_.id], channelId];
   }
 }
@@ -214,27 +223,46 @@ function routeMessage(data, incomingSocket) {
 }
 
 function sendDashboardControlMessage(command, userNameList) {
+  try {
+    switch (command) {
+      case DASHBOARD_AUTO_REFRESH:
+        userNameList.forEach((name) => {
+          // console.log(`sending control message to user = ${name}`);
+          if (userToSocketMap[name] !== undefined) {
+            userToSocketMap[name].forEach((_socket) => {
+              // console.log('sending control message');
+              _socket.send('CSC:0');
+            });
+          }
+        });
+        break;
+      default: console.warn('Unknown command'); break;
+    }
+  } catch (error) {
+    console.warn(`sendDashboardControlMessage: error${error}`);
+  }
+}
+
+function sendDashboardControlMessageToSingleUser(command, userName) {
   switch (command) {
     case DASHBOARD_AUTO_REFRESH:
-      userNameList.forEach((name) => {
-        console.log(`sending control message to user = ${name}`);
-        if (userToSocketMap[name] !== undefined) {
-          userToSocketMap[name].forEach((_socket) => {
-            console.log('sending control message');
-            _socket.send('CSC:0');
-          });
-        }
-      });
+      if (userToSocketMap[userName] !== undefined) {
+        userToSocketMap[userName].forEach((_socket) => {
+          // console.log('sending control message');
+          _socket.send('CSC:0');
+        });
+      }
       break;
     default: console.warn('Unknown command'); break;
   }
 }
 
-
 // remove the socket from all the maps
 function removeSocket(socket_) {
   // 0. need to know the asscciated user information from socket
   const userName = socketToUserMap[socket_.id];
+
+  console.warn(`removeSocket: userName = ${userName}`);
 
   // 1. socketToUserMap
   delete socketToUserMap[socket_.id];
@@ -295,7 +323,7 @@ function removeChannelFromUserDb(name, channel_id) {
 }
 
 function chatServerMain(server) {
-  console.log(`chatServerMain: httpServer = ${JSON.stringify(server)}`);
+  // console.log(`chatServerMain: httpServer = ${JSON.stringify(server)}`);
 
   // ISEO-TBD: What the heck!!!! Java Script's so fucking strange...
   // I have so wrong assumption around it... dang... it's too flexible, and I've got to be extremely careful about it.
@@ -308,10 +336,10 @@ function chatServerMain(server) {
   wss.on('connection', (ws) => {
     ws.id = uuidv4();
 
-    console.log(`New connection: UUID = ${ws.id}`);
+    // console.log(`New connection: UUID = ${ws.id}`);
 
     ws.on('message', (data) => {
-      console.log(`Chat Server: received data = ${data}id = ${ws.id}`);
+      // console.log(`Chat Server: received data = ${data}id = ${ws.id}`);
       // It goes through all sockets registered to this server
       const result = handleCtrlMsg(data);
 
@@ -322,7 +350,10 @@ function chatServerMain(server) {
             // <note> we may need to keep 2 separate mapping then?
             // <note> how to handle the case when there are multiple sockets for the same users?
             updateUserSocketMap(ws, result[2]);
-            console.log('Yay, now I could register the socket');
+            // console.log('Yay, now I could register the socket');
+            break;
+          case 'DeRegister':
+            removeSocket(ws);
             break;
           default: break;
         }
@@ -342,5 +373,5 @@ function chatServerMain(server) {
 
 
 module.exports = {
-  chatServerMain, removeChannel, removeChannelFromUserDb, sendDashboardControlMessage, DASHBOARD_AUTO_REFRESH
+  chatServerMain, removeChannel, removeChannelFromUserDb, sendDashboardControlMessage, sendDashboardControlMessageToSingleUser, DASHBOARD_AUTO_REFRESH
 };

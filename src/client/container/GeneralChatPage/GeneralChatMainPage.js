@@ -39,7 +39,9 @@ export default class GeneralChatMainPage extends Component {
     return (
       <div
         className="GeneralChatMainWrapper bg-light"
-        style={{ '--leftPanelColumn': leftPanelColumn, '--rightPanelColumn': rightPanelColumn }}
+        style={{ '--leftPanelColumn': leftPanelColumn, 
+                 '--rightPanelColumn': rightPanelColumn,
+                 borderBottom: 'hidden' }}
       >
         <div className="MessageLeftPanel">
           <div className="MessageHeader_ls">
