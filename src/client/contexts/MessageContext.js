@@ -37,6 +37,8 @@ export function MessageContextProvider(props) {
   // ISEO-TBD: React doesn't catch the change in the hashmap
   // I introduced a context length instead.
   const [dmChannelContexts, setChannelContexts] = useState([]);
+  const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
+  const [channelWithLatestMessagae, setChannelWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
 
   // ISEO-TBD:
@@ -559,18 +561,25 @@ export function MessageContextProvider(props) {
         if(_channelId!==null)
         {
           //console.warn("childListingId: " + _channelId);
-
-          if(_channelId==="parent")
+          if(doNotDisturbMode===false)
           {
-            //console.warn("focusParentListing");
-            focusParentListing();
+            if(_channelId==="parent")
+            {
+              //console.warn("focusParentListing");
+              focusParentListing();
+            }
+            else
+            {
+              //console.warn("setChildIndexByChannelId");
+              setChildIndexByChannelId(_channelId);
+            }
           }
           else
           {
-            //console.warn("setChildIndexByChannelId");
-            setChildIndexByChannelId(_channelId);
+            // What do we do in this case?
+            // let's save the last channelId and move it to the channel when the mode is changed
+            setChannelWithLatestMessage(_channelId);
           }
-
         }
         else
         {
@@ -943,6 +952,25 @@ export function MessageContextProvider(props) {
     //setTimeout(()=> loadChattingDatabase(), 4000);
   }, [channelContextLength]);
 
+
+  useEffect(() => {
+
+    if(doNotDisturbMode===false && channelWithLatestMessagae!==null )
+    {
+      if(channelWithLatestMessagae==="parent")
+      {
+        //console.warn("focusParentListing");
+        focusParentListing();
+      }
+      else
+      {
+        //console.warn("setChildIndexByChannelId");
+        setChildIndexByChannelId(channelWithLatestMessagae);
+      }
+    }
+
+  }, [doNotDisturbMode]);
+
   /*useEffect(() => {
     //console.warn('ISEO: Loading chatting database... ');
     loadChattingDatabase();
@@ -991,7 +1019,8 @@ export function MessageContextProvider(props) {
       msgCounter,
       refreshUserDataFromMessageContext,
       reloadChattingDbWithCurrentListing,
-      deregisterSocket
+      deregisterSocket,
+      setDoNotDisturbMode
     }}
     >
       {props.children}

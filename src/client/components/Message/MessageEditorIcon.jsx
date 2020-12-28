@@ -38,7 +38,7 @@ function MessageEditorIcon(props) {
   const messageEditorCallerType = callerType;
 
   // general type doesn't need _childListing.
-  const _childListing = (messageEditorCallerType === 'listing_dashboard')
+  const _childListing = (messageEditorCallerType === 'listing_dashboard' && currentListing !== undefined)
     ? currentListing.child_listings[currentChildIndex]
     : [];
 
