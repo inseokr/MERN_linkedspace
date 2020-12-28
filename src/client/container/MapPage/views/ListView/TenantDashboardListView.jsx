@@ -11,7 +11,7 @@ function TenantDashboardListView(props) {
 
   return (
     <div>
-      <Paper style={{ maxHeight: '100vh', overflow: 'auto' }}>
+      <Paper style={{ maxHeight: '84.5vh', overflow: 'auto' }}>
         <List>
           <div>
             <Divider variant="middle" />

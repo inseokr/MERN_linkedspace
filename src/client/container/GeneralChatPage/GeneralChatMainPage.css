@@ -28,7 +28,7 @@
 	grid-column: var(--leftPanelColumn);
 	display: flex;
 	flex-flow: column;
-	height: 95vh;
+	height: 90vh;
 	border-style: solid;
 	border-color: #adb5bd;
 	border-width: thin;
@@ -40,7 +40,7 @@
 	grid-column: var(--rightPanelColumn);
 	display: flex;
 	flex-flow: column;
-	height: 95vh;
+	height: 90vh;
 	border-width: thin;
 	background-color: white;
 	border-style: solid;
