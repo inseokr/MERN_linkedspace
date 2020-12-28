@@ -143,11 +143,13 @@ const ChildListing = React.forwardRef(({
 
     function checkIfInLikedList(user_id)
     {
-      for(let user_index=0; user_index< _childListing.listOfLikedUser.length; user_index++)
-      {
-        if(_childListing.listOfLikedUser[user_index]===user_id)
+      if (Object.keys(_childListing).includes("listOfLikedUser")) {
+        for(let user_index=0; user_index< _childListing.listOfLikedUser.length; user_index++)
         {
-          return true;
+          if(_childListing.listOfLikedUser[user_index]===user_id)
+          {
+            return true;
+          }
         }
       }
       return false;

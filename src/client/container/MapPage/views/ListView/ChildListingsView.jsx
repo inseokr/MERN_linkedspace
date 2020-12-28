@@ -163,13 +163,14 @@ export default class ChildListingsView extends Component {
       // q1. we need current user information
       listLikedStates[index] = 0;
 
-
-      for(let user_index=0; user_index < (childListing.listOfLikedUser.length); user_index++)
-      {
-        if(childListing.listOfLikedUser[user_index]===this.context.getCurrentUser()._id)
+      if (Object.keys(childListing).includes("listOfLikedUser")) {
+        for(let user_index=0; user_index < (childListing.listOfLikedUser.length); user_index++)
         {
-          listLikedStates[index] = 1;
-          //console.warn("Setting liked state of index = " + index);
+          if(childListing.listOfLikedUser[user_index]===this.context.getCurrentUser()._id)
+          {
+            listLikedStates[index] = 1;
+            //console.warn("Setting liked state of index = " + index);
+          }
         }
       }
 
