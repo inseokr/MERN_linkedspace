@@ -143,7 +143,7 @@ function TenantListingDashBoard(props) {
         // googleMap.fitBounds(bounds);
       }
     }
-  }, [currentListing, rightPaneMode, currentChildIndex, mapParams, filterParams, friendsMap]);
+  }, [currentListing, rightPaneMode, currentChildIndex, mapParams, friendsMap]);
 
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, 'tenant');

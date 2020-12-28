@@ -1,7 +1,8 @@
 /* eslint-disable */
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { GlobalContext } from './GlobalContext';
-import { loadGoogleMapScript } from './helper/helper';
+import { getGeometryFromSearchString, loadGoogleMapScript } from './helper/helper';
+import { filter } from 'async';
 
 
 export const CurrentListingContext = createContext();
@@ -125,6 +126,13 @@ export function CurrentListingProvider(props) {
     }
   }
 
+  useEffect(() => { // Update center when search is updated.
+    const { search } = filterParams;
+    if (search.length > 0) {
+      updateCenter(search);
+    }
+  }, [filterParams]);
+
   useEffect(() => { // Initial useEffect to load google map.
     loadGoogleMapScript(() => {
       setMapLoaded(true);
@@ -138,6 +146,17 @@ export function CurrentListingProvider(props) {
   }, [currentListing]);
 
 
+  function updateCenter(address) {
+    getGeometryFromSearchString(address).then(response => {
+      const { results, status} = response;
+      if (status === "OK") {
+        const geometry = results[0].geometry;
+        const { location } = geometry;
+        setMapParams({ ...mapParams, center: location });
+      }
+    });
+  }
+
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
     const _prefix = (listing_type === 'landlord') ? '/listing/landlord/' : '/listing/tenant/';
@@ -150,6 +169,14 @@ export function CurrentListingProvider(props) {
         console.log(`listing = ${JSON.stringify(listing)}`);
         setCurrentListing(listing);
         successful = 1;
+
+        const { location } = listing;
+        if (location) {
+          const { city, state, zipcode } = location;
+          const address = `${city}, ${state}, ${zipcode}`;
+          setFilterParams({ ...filterParams, search: address });
+          updateCenter(address);
+        }
 
         // build mapping table between child listing ID and child index
         //buildChildListingMappingTable();
