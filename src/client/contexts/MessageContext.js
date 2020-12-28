@@ -913,7 +913,7 @@ export function MessageContextProvider(props) {
     //console.log("currChannelInfo updated");
     //console.warn('ISEO: Loading chatting database... ');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
-    setTimeout(()=> loadChattingDatabase(), 500);
+    setTimeout(()=> loadChattingDatabase(), 4000);
   }, [currChannelInfo, channelContextLength]);
 
   /*useEffect(() => {
@@ -925,7 +925,7 @@ export function MessageContextProvider(props) {
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
     //console.log("CurrentListing is just updated");
-    setTimeout(()=> loadChattingDatabase(), 100);
+    setTimeout(()=> loadChattingDatabase(), 2000);
   }, [currentListing]);
 
   webSocketConnect();
