@@ -359,6 +359,15 @@ export function MessageContextProvider(props) {
     }
   }
 
+  function deregisterSocket() {
+    try {
+      chatSocket.send(`CSC:DeRegister:${currentUser.username}`);
+    } catch(error)
+    {
+      console.warn("deregisterSocket: error = " + error);
+    }
+  }
+
   function updateLastReadIndex(data) {
     for (let i = 0; i < currentUser.chatting_channels.dm_channels.length; i++) {
       if (currentUser.chatting_channels.dm_channels[i].name == data.channel_id) {
@@ -981,7 +990,8 @@ export function MessageContextProvider(props) {
       reset,
       msgCounter,
       refreshUserDataFromMessageContext,
-      reloadChattingDbWithCurrentListing
+      reloadChattingDbWithCurrentListing,
+      deregisterSocket
     }}
     >
       {props.children}

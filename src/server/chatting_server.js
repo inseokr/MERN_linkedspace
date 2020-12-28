@@ -73,7 +73,8 @@ function updateUserSocketMap(currentSocket, user_name) {
   }
 
   if (bDuplicate === false) {
-    // console.log("Updating socketToUserMap for user = " + user_name);
+    console.log(`Updating socketToUserMap for user = ${user_name}`);
+
     userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
 
     socketToUserMap[currentSocket.id] = user_name;
@@ -110,6 +111,8 @@ function addUserToChannel(channelId, user) {
 
 
 function addSocketToChannel(channelId, socket_) {
+  let bDuplicate = false;
+
   if (channelIdToSocketList[channelId] == undefined) {
     channelIdToSocketList[channelId] = [socket_];
   } else {
@@ -117,20 +120,24 @@ function addSocketToChannel(channelId, socket_) {
     // ISEO-TBD: why it's not handling duplicate.
     channelIdToSocketList[channelId].forEach((socket) => {
       if (socket.id == socket_.id) {
-        // console.log("duplciate sockets");
+        // console.log('duplciate sockets');
+        bDuplicate = true;
       }
     });
 
-    channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
-    // console.log("addSocketToChannel, channel = " + channelId);
-    // console.log("length = " + channelIdToSocketList[channelId].length);
+    if (bDuplicate === false) {
+      channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
+      // console.log(`addSocketToChannel, channel = ${channelId}`);
+    }
+
+    // console.log(`length = ${channelIdToSocketList[channelId].length}`);
   }
 
 
   // Update socketToChannelIdMap
   if (socketToChannelIdMap[socket_.id] == undefined) {
     socketToChannelIdMap[socket_.id] = [channelId];
-  } else {
+  } else if (bDuplicate === false) {
     socketToChannelIdMap[socket_.id] = [...socketToChannelIdMap[socket_.id], channelId];
   }
 }
@@ -255,6 +262,8 @@ function removeSocket(socket_) {
   // 0. need to know the asscciated user information from socket
   const userName = socketToUserMap[socket_.id];
 
+  console.warn(`removeSocket: userName = ${userName}`);
+
   // 1. socketToUserMap
   delete socketToUserMap[socket_.id];
 
@@ -342,6 +351,9 @@ function chatServerMain(server) {
             // <note> how to handle the case when there are multiple sockets for the same users?
             updateUserSocketMap(ws, result[2]);
             // console.log('Yay, now I could register the socket');
+            break;
+          case 'DeRegister':
+            removeSocket(ws);
             break;
           default: break;
         }
