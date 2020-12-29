@@ -5,17 +5,13 @@ import React, {
 import '../../../app.css';
 import {FILE_SERVER_URL} from '../../../globalConstants';
 import '../common/listing_style.css';
-import { ListingsContext } from '../../../contexts/ListingsContext';
+import { initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel } from '../../../contexts/helper/helper';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 function LocationInfo() {
-  const {
-    mapLoaded, initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel
-  } = useContext(ListingsContext);
+  const { mapLoaded, currentListing } = useContext(CurrentListingContext);
   const googleMapRef = useRef(null);
   let googleMap = null;
-
-  const { currentListing } = useContext(CurrentListingContext);
 
   useEffect(() => {
     if (mapLoaded) {

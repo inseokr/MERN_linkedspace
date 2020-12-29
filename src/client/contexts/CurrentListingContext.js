@@ -1,18 +1,34 @@
 /* eslint-disable */
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 import { GlobalContext } from './GlobalContext';
+import { getGeometryFromSearchString, loadGoogleMapScript } from './helper/helper';
+import { filter } from 'async';
 
 
 export const CurrentListingContext = createContext();
 
 export function CurrentListingProvider(props) {
+  const [mapElementID, setMapElementID] = useState('');
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [listing_info, setListingInfo] = useState();
   const [currentListing, setCurrentListing] = useState();
   const [ListingInfoType, setListingInfoType] = useState('');
   const [currentChildIndex, setCurrentChildIndex] = useState(-1);
   const [childListingId2ChildIndexMap, setChildListingId2ChildIndexMap] = useState([]);
   const [parentRef, setParentRef] = useState(null);
+
+  const [mapParams, setMapParams] = useState({
+    bounds: null,
+    center: { lat: 37.338207, lng: -121.886330 },
+    zoom: 9
+  });
+
+  const [filterParams, setFilterParams] = useState({
+    search: '',
+    places: { Entire: true, Private: true, Shared: true },
+    price: [1, 1000],
+    date: ''
+  });
 
   const {currentUser} = useContext(GlobalContext);
 
@@ -47,7 +63,7 @@ export function CurrentListingProvider(props) {
     {
       console.warn("buildChildListingMappingTable: child listing it not available??");
       return;
-    } 
+    }
     //console.log(`currentListing = ${currentListing}`);
     for(let index=0; index< currentListing.child_listings.length; index++)
     {
@@ -110,8 +126,18 @@ export function CurrentListingProvider(props) {
     }
   }
 
-  useEffect(() => {
-  }, [currentChildIndex]);
+  useEffect(() => { // Update center when search is updated.
+    const { search } = filterParams;
+    if (search.length > 0) {
+      updateCenter(search);
+    }
+  }, [filterParams]);
+
+  useEffect(() => { // Initial useEffect to load google map.
+    loadGoogleMapScript(() => {
+      setMapLoaded(true);
+    });
+  }, [mapElementID]);
 
 
   useEffect(() => {
@@ -119,6 +145,17 @@ export function CurrentListingProvider(props) {
     // <note> how to trigger loadChattingDatabase from here?
   }, [currentListing]);
 
+
+  function updateCenter(address) {
+    getGeometryFromSearchString(address).then(response => {
+      const { results, status} = response;
+      if (status === "OK") {
+        const geometry = results[0].geometry;
+        const { location } = geometry;
+        setMapParams({ ...mapParams, center: location });
+      }
+    });
+  }
 
   async function fetchCurrentListing(id, listing_type) {
     console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
@@ -133,6 +170,14 @@ export function CurrentListingProvider(props) {
         setCurrentListing(listing);
         successful = 1;
 
+        const { location } = listing;
+        if (location) {
+          const { city, state, zipcode } = location;
+          const address = `${city}, ${state}, ${zipcode}`;
+          setFilterParams({ ...filterParams, search: address });
+          updateCenter(address);
+        }
+
         // build mapping table between child listing ID and child index
         //buildChildListingMappingTable();
       });
@@ -142,11 +187,26 @@ export function CurrentListingProvider(props) {
 
   return (
     <CurrentListingContext.Provider value={{
-      listing_info, currentListing, fetchCurrentListing, fetchListingInfo, 
-      cleanupListingInfoType, currentChildIndex, setCurrentChildIndex,
-      getChildIndexByListingId,setChildIndexByChannelId, 
-      setParentRef, parentRef,
-      focusParentListing, getCurrentUser
+      mapElementID,
+      setMapElementID,
+      mapLoaded,
+      listing_info,
+      currentListing,
+      fetchCurrentListing,
+      fetchListingInfo,
+      cleanupListingInfoType,
+      currentChildIndex,
+      setCurrentChildIndex,
+      getChildIndexByListingId,
+      setChildIndexByChannelId,
+      setParentRef,
+      parentRef,
+      focusParentListing,
+      getCurrentUser,
+      mapParams,
+      setMapParams,
+      filterParams,
+      setFilterParams
     }}
     >
       {props.children}

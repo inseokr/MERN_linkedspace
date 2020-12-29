@@ -49,7 +49,7 @@ const ChildListing = React.forwardRef(({
     setChildIndex, childIndex,
     loadChattingDatabase
   } = useContext(MessageContext);
-  const { setCurrentChildIndex, currentListing, currentChildIndex } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, currentChildIndex, filterParams } 	= useContext(CurrentListingContext);
   const { getProfilePicture } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
@@ -110,7 +110,7 @@ const ChildListing = React.forwardRef(({
   function removeListingHandler(e) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     removeHandler(childListing);
   }
 
@@ -160,12 +160,14 @@ const ChildListing = React.forwardRef(({
 
     function checkIfInLikedList(user_id)
     {
-      for(let user_index=0; user_index< _childListing.listOfLikedUser.length; user_index++)
-      {
-        if(_childListing.listOfLikedUser[user_index]===user_id)
+      if (Object.keys(_childListing).includes("listOfLikedUser")) {
+        for(let user_index=0; user_index< _childListing.listOfLikedUser.length; user_index++)
         {
-          return true;
-        }  
+          if(_childListing.listOfLikedUser[user_index]===user_id)
+          {
+            return true;
+          }
+        }
       }
       return false;
     }
@@ -193,61 +195,69 @@ const ChildListing = React.forwardRef(({
   let _backGroundColor = (clickState==1)? "#b0becc": "none";
   let heartStyle = (likedState===1)? "fa-heart": "fa-heart-o";
 
-  return (
-    <ListItem>
-      <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
-        <Grid item xs={4}>
-          <Carousel interval={null} slide activeIndex={0} onSelect={handleSelect} className="carousel">
-            <Carousel.Item>
-              {linkToListing}
-            </Carousel.Item>
-          </Carousel>
-          <div className="likedListing d-flex flex-row">
-            <button class="btn btn-less-margin" id={`${index}`} onClick={_likeClickHandler}>
-              <i className={`fa ${heartStyle} heartColor`} aria-hidden="true"></i>
-            </button>
-            {getListOfLikedFriends()}
-          </div>
-        </Grid>
-
-        <Grid item xs={8}>
-          <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
-            <Typography className="description__title" color="textSecondary" gutterBottom>
-              {listingTitle}
-            </Typography>
-            <Typography className="description__summary">
-              {childListingSummary.listingSummary}
-            </Typography>
-            <Typography>
-              {' '}
-              Price: $
-              {childListingSummary.rentalPrice}
-            </Typography>
-            <Typography>
-              {' '}
-              City:
-              {childListingSummary.location}
-            </Typography>
-            <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '40px' }}>
-              <div className="flex-container" style={{ justifyContent: 'flex-start' }}>
-                <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
-                <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
-                  {' '}
-                  Hosted by 
-                  {' '}
-                  {childListing.requester.username}
-                </Typography>
-              </div>
-              <button className="btn btn-danger" onClick={removeListingHandler}>
-                Remove
+  const { price } = filterParams;
+  const min = price[0];
+  const max = price[1];
+  const rentalPrice = childListing.rentalPrice;
+  if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
+    return (
+      <ListItem>
+        <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
+          <Grid item xs={4}>
+            <Carousel interval={null} slide activeIndex={0} onSelect={handleSelect} className="carousel">
+              <Carousel.Item>
+                {linkToListing}
+              </Carousel.Item>
+            </Carousel>
+            <div className="likedListing d-flex flex-row">
+              <button class="btn btn-less-margin" id={`${index}`} onClick={_likeClickHandler}>
+                <i className={`fa ${heartStyle} heartColor`} aria-hidden="true"></i>
               </button>
+              {getListOfLikedFriends()}
             </div>
+          </Grid>
 
-          </Paper>
+          <Grid item xs={8}>
+            <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
+              <Typography className="description__title" color="textSecondary" gutterBottom>
+                {listingTitle}
+              </Typography>
+              <Typography className="description__summary">
+                {childListingSummary.listingSummary}
+              </Typography>
+              <Typography>
+                {' '}
+                Price: $
+                {childListingSummary.rentalPrice}
+              </Typography>
+              <Typography>
+                {' '}
+                City:
+                {childListingSummary.location}
+              </Typography>
+              <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '40px' }}>
+                <div className="flex-container" style={{ justifyContent: 'flex-start' }}>
+                  <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
+                  <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
+                    {' '}
+                    Hosted by
+                    {' '}
+                    {childListing.requester.username}
+                  </Typography>
+                </div>
+                <button className="btn btn-danger" onClick={removeListingHandler}>
+                  Remove
+                </button>
+              </div>
+
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
-    </ListItem>
-  );
+      </ListItem>
+    );
+  } else {
+    return (<></>);
+  }
 });
 
 export default ChildListing;

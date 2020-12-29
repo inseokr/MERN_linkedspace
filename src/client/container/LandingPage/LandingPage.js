@@ -21,66 +21,66 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 // in your app.
 
 export default class LandingPage extends Component {
-	// <note> can we have multiple contexts?
-	static contextType = GlobalContext;
+  // <note> can we have multiple contexts?
+  static contextType = GlobalContext;
 
-	state = {
-	  lastMenu: '',
-	  fetchedMenu: false,
-	  loggedIn: 'yes'
-	};
+  state = {
+    lastMenu: '',
+    fetchedMenu: false,
+    loggedIn: 'yes'
+  };
 
-	 constructor(props) {
-	  	super(props);
-	 }
+  constructor(props) {
+    super(props);
+  }
 
-	componentWillMount() {
-	  fetch('/LS_API/getLastMenu')
-	    .then(res => res.json())
-	    .then((menuFromExpress) => {
-	      console.log('menuFromExpress:', menuFromExpress);
-	      this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
-	    });
-	}
+  componentWillMount() {
+    fetch('/LS_API/getLastMenu')
+      .then(res => res.json())
+      .then((menuFromExpress) => {
+        console.log('menuFromExpress:', menuFromExpress);
+        this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
+      });
+  }
 
-	componentDidMount() {
-	  const { refreshUserData } = this.context;
-	  //console.log(`LandingPage is loaded. search = ${search}`);
-	  refreshUserData();
-	}
+  componentDidMount() {
+    const { refreshUserData } = this.context;
+    //console.log(`LandingPage is loaded. search = ${search}`);
+    refreshUserData();
+  }
 
-	render() {
-	  const { lastMenu } = this.state;
+  render() {
+    const { lastMenu } = this.state;
 
-	  let pageToRender = <div />;
-	  if (lastMenu === 'map') {
-	    console.log('is this even being called', lastMenu);
-	    pageToRender = <Map />;
-	  } else {
-	    pageToRender = (
-		  <div>
-		    <link
-		      rel="stylesheet"
-		      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
-		    />
-		    <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"} />
-		    <div className="container landingPage">
+    let pageToRender = <div />;
+    if (lastMenu === 'map') {
+      console.log('is this even being called', lastMenu);
+      pageToRender = <Map />;
+    } else {
+      pageToRender = (
+        <div>
+          <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+          />
+          <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"} />
+          <div className="container landingPage">
 
-		      <div className="row landingPage">
-		        <div className="col-lg-12">
-		          <div className="content">
-		            <h1> LinkedSpaces</h1>
-		            <h3> Make your next move through a trusted network. </h3>
-		            <Search />
-		          </div>
-		        </div>
-		      </div>
-		    </div>
-		  </div>
-	    );
-	  }
-	  return (
-	    pageToRender
-	  );
-	}
+            <div className="row landingPage">
+              <div className="col-lg-12">
+                <div className="content">
+                  <h1> LinkedSpaces</h1>
+                  <h3> Make your next move through a trusted network. </h3>
+                  <Search />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      pageToRender
+    );
+  }
 }
