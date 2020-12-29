@@ -187,7 +187,7 @@ function TenantListingDashBoard(props) {
                     <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
                       <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                     </SimpleModal>
-                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '100vh', width: '100vh' }} />
+                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
                   </React.Fragment>
                 ) : (
                   (showMessage)
