@@ -1,51 +1,71 @@
-/* eslint-disable */
 import React, { useContext, useEffect, useRef } from 'react';
 import { ListingsContext } from '../../../../contexts/ListingsContext';
-import {FILE_SERVER_URL} from '../../../../globalConstants';
+import {
+  constructBounds,
+  centerCoordinates,
+  createMarker,
+  initGoogleMap
+} from '../../../../contexts/helper/helper';
+import { FILE_SERVER_URL } from '../../../../globalConstants';
 import './Map.css';
-
 
 function Map() {
   const {
-    filteredListings, filterListingsByBounds, center, zoom, initGoogleMap, createMarker, constructBounds, centerCoordinates
+    mapElementID,
+    setMapElementID,
+    listingsByBounds,
+    mapParams,
+    setMapParams
   } = useContext(ListingsContext);
+  const { center, zoom } = mapParams;
+
+  const bounds = new window.google.maps.LatLngBounds();
   const googleMapRef = useRef(null);
   let googleMap = null;
 
   useEffect(() => {
-    console.log('useEffect', center, zoom, filteredListings);
+    setMapElementID('mapView');
+  }, []);
+
+  useEffect(() => {
     googleMap = initGoogleMap(googleMapRef, zoom, center);
 
     googleMap.addListener('dragend', () => {
       const idleListener = googleMap.addListener('idle', () => {
         window.google.maps.event.removeListener(idleListener);
-        filterListingsByBounds(constructBounds(googleMap.getBounds()), centerCoordinates(googleMap.getCenter()), zoom);
+        setMapParams({
+          bounds: constructBounds(googleMap.getBounds()),
+          center: centerCoordinates(googleMap.getCenter()),
+          zoom: googleMap.getZoom()
+        });
       });
     });
 
     googleMap.addListener('zoom_changed', () => {
       const idleListener = googleMap.addListener('idle', () => {
         window.google.maps.event.removeListener(idleListener);
-        filterListingsByBounds(constructBounds(googleMap.getBounds()), centerCoordinates(googleMap.getCenter()), googleMap.getZoom());
+        setMapParams({
+          bounds: constructBounds(googleMap.getBounds()),
+          center: centerCoordinates(googleMap.getCenter()),
+          zoom: googleMap.getZoom()
+        });
       });
     });
 
-    if (filteredListings.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      filteredListings.map((listing) => {
-        const { coordinates } = listing.rental_property_information;
-        const imgSource = listing.requester.profile_picture.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+listing.requester.profile_picture.length;
-   
-        const marker = createMarker(googleMap, coordinates, '/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg');
-        marker.addListener('click', () => {
-          alert('Clicked!');
-        });
-        bounds.extend(coordinates);
+    listingsByBounds.forEach((listing) => {
+      const { coordinates } = listing.rental_property_information;
+      const image = listing.pictures.length > 0
+        ? `${FILE_SERVER_URL}${listing.pictures[0].path}`
+        : `${FILE_SERVER_URL}/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg`;
+      const marker = createMarker(googleMap, coordinates, image);
+      marker.addListener('click', () => {
+        alert('Clicked!');
       });
-    }
-  }, [filteredListings]);
+      bounds.extend(coordinates);
+    });
+  }, [listingsByBounds]);
 
-  return <div id="mapView" ref={googleMapRef} style={{ height: '100vh', width: '100vh' }} />;
+  return <div id={mapElementID || 'mapView'} ref={googleMapRef} style={{ height: '100vh' }} />;
 }
 
 export default Map;

@@ -34,220 +34,222 @@ import axios from 'axios';
 
 // how to make an action when it detects any change in the context?
 export default class ChildListingsView extends Component {
-	static contextType = CurrentListingContext;
+  static contextType = CurrentListingContext;
 
 
-	// ISEO-TBD: this function can't be called inside useEffect as it's calling another hook.
-	buildChildListingViewsByHandleClick() {
-	  const _childListingViews = [];
+  // ISEO-TBD: this function can't be called inside useEffect as it's calling another hook.
+  buildChildListingViewsByHandleClick() {
+    const _childListingViews = [];
 
-	  this.context.currentListing.child_listings.map(function (childListing, index) {
-	    // console.log("childListingsViews: index="+index);
-	    // console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
-	    // console.log("childListingsViews: refs="+this.state.refs[index]);
-
-
-	    _childListingViews.push(
-	    	<div key={shortid.generate()}>
-			  <ChildListing
-			  	clickState={this.state.clickStates[index]}
-			    likedState={this.state.likedStates[index]}
-			    clickHandler={this.handleClickState}
-			    likeClickHandler={this.handleLikedState}
-			    handleSelect={this.props.handleSelect}
-			    listing={childListing}
-			    index={index}
-			    messageClickHandler={this.props.messageClickHandler}
-			    removeHandler={this.props.removeHandler}
-			    ref={this.state.refs[index]}
-			  />
-            </div>);
-	  	}, this);
-
-	  this.setState({ childListingsViews: _childListingViews });
-	}
-
-	handleClickState(index) {
-	  // update clickStates where the index is referring to
-	  const listClickStates = [...this.state.clickStates];
-
-	  // reset all others
-	  for (let i = 0; i < listClickStates.length; i++) {
-	    listClickStates[i] = 0;
-	  }
-
-	  listClickStates[index] = 1;
-
-	  this.setState({ clickStates: listClickStates, currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
-	}
+    this.context.currentListing.child_listings.map(function (childListing, index) {
+      // console.log("childListingsViews: index="+index);
+      // console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
+      // console.log("childListingsViews: refs="+this.state.refs[index]);
 
 
-	async handleLikedState(index) {
+      _childListingViews.push(
+        <div key={shortid.generate()}>
+          <ChildListing
+            clickState={this.state.clickStates[index]}
+            likedState={this.state.likedStates[index]}
+            clickHandler={this.handleClickState}
+            likeClickHandler={this.handleLikedState}
+            handleSelect={this.props.handleSelect}
+            listing={childListing}
+            index={index}
+            messageClickHandler={this.props.messageClickHandler}
+            removeHandler={this.props.removeHandler}
+            ref={this.state.refs[index]}
+          />
+        </div>);
+    }, this);
 
-		const listLikedStates = [...this.state.likedStates];
-		// toggling the licked
-		let command = 'add';
+    this.setState({ childListingsViews: _childListingViews });
+  }
 
-		if(listLikedStates[index]===0)
-		{
-			//console.warn("setLikeClicked to 1");
-			listLikedStates[index] = 1;
-			command = 'add';
-		}
-		else
-		{
-			//console.warn("setLikeClicked to 0");
-			listLikedStates[index] = 0;
-			command = 'remove'
-		}
+  handleClickState(index) {
+    // update clickStates where the index is referring to
+    const listClickStates = [...this.state.clickStates];
 
-		this.setState({ likedStates: listLikedStates}, this.buildChildListingViewsByHandleClick);
+    // reset all others
+    for (let i = 0; i < listClickStates.length; i++) {
+      listClickStates[i] = 0;
+    }
 
-		const post_url = `/LS_API/listing/${this.context.currentListing.listingType}/${this.context.currentListing._id}/${this.context.currentListing.child_listings[index].listing_id._id}/liked/${command}`;
-		// empty data for now
-		const data = {
-		};
+    listClickStates[index] = 1;
 
-		const result = await axios.post(post_url, data)
-		.then((result) => {
-		// ID of chatting channel will be returned.
-		// update dmChannelContexts
-			console.log("add to liked list: result = " + result);
-			//window.location.reload();
-			this.context.fetchCurrentListing(this.context.currentListing._id, "tenant");
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-	}
+    this.setState({ clickStates: listClickStates, currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
+  }
 
-	handleClickFromMap(index) {
-	  //console.warn("handleClickFromMap: index="+index);
-	  //console.warn("currentActiveIndex="+this.state.currentActiveIndex);
 
-	  if (index != this.state.currentActiveIndex) {
-	  	// Parent listing is clicked
-	  	if(index===-1)
-	  	{
-	  		this.setState({ currentActiveIndex: index});
-	  	}
-	  	else
-	  	{
-		    if (this.state.refs != null) {
-		 			if (this.state.refs[index] != null) {
-		 				if (this.state.refs[index].current != null) {
-		 					// console.log("ISEO-TBD:calling focus!!");
-		 				 	this.state.refs[index].current.click();
-		 				 	this.state.refs[index].current.scrollIntoView();
-		 				 	this.setState({ currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
-		 				}
-		 			}
-		 		}
-		  	}
-	  	}
-	}
+  async handleLikedState(index) {
 
-	buildChildListingViews() {
-	  //console.warn("buildChildListingViews");
-	  // build it only if there is any change in the number of child listing
-	  const refArray = [];
-	  const _childListingViews = [];
-	  const listClickStates = [...this.state.clickStates];
-	  const listLikedStates = [...this.state.likedStates];
-	  const initialLength = listClickStates.length;
+    const listLikedStates = [...this.state.likedStates];
+    // toggling the licked
+    let command = 'add';
 
-	  this.context.currentListing.child_listings.map(function (childListing, index) {
+    if(listLikedStates[index]===0)
+    {
+      //console.warn("setLikeClicked to 1");
+      listLikedStates[index] = 1;
+      command = 'add';
+    }
+    else
+    {
+      //console.warn("setLikeClicked to 0");
+      listLikedStates[index] = 0;
+      command = 'remove'
+    }
 
-	    listClickStates[index] = 0;
-	    // check if current user is in the liked list
-	    // q1. we need current user information
-	    listLikedStates[index] = 0;
+    this.setState({ likedStates: listLikedStates}, this.buildChildListingViewsByHandleClick);
 
-		for(let user_index=0; user_index< childListing.listOfLikedUser.length; user_index++)
-		{
-			if(childListing.listOfLikedUser[user_index]===this.context.getCurrentUser()._id)
-			{
-				listLikedStates[index] = 1;
-				//console.warn("Setting liked state of index = " + index);
-			}  
-		}
+    const post_url = `/LS_API/listing/${this.context.currentListing.listingType}/${this.context.currentListing._id}/${this.context.currentListing.child_listings[index].listing_id._id}/liked/${command}`;
+    // empty data for now
+    const data = {
+    };
 
-	    const curRef = React.createRef();
-	    refArray.push(curRef);
+    const result = await axios.post(post_url, data)
+      .then((result) => {
+        // ID of chatting channel will be returned.
+        // update dmChannelContexts
+        console.log("add to liked list: result = " + result);
+        //window.location.reload();
+        this.context.fetchCurrentListing(this.context.currentListing._id, "tenant");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
-	    //console.warn(`likedState[${index}]=${listLikedStates[index]}`);
+  handleClickFromMap(index) {
+    //console.warn("handleClickFromMap: index="+index);
+    //console.warn("currentActiveIndex="+this.state.currentActiveIndex);
 
-	    _childListingViews.push(
-	    	<div key={shortid.generate()}>
-			  <ChildListing
-			    clickState={listClickStates[index]}
-			    likedState={listLikedStates[index]}
-			    clickHandler={this.handleClickState}
-			    likeClickHandler={this.handleLikedState}
-			    handleSelect={this.props.handleSelect}
-			    listing={childListing}
-			    index={index}
-			    messageClickHandler={this.props.messageClickHandler}
-			    removeHandler={this.props.removeHandler}
-			    ref={curRef}
-			  />
-            </div>);
-	  	}, this);
+    if (index != this.state.currentActiveIndex) {
+      // Parent listing is clicked
+      if(index===-1)
+      {
+        this.setState({ currentActiveIndex: index});
+      }
+      else
+      {
+        if (this.state.refs != null) {
+          if (this.state.refs[index] != null) {
+            if (this.state.refs[index].current != null) {
+              // console.log("ISEO-TBD:calling focus!!");
+              this.state.refs[index].current.click();
+              this.state.refs[index].current.scrollIntoView();
+              this.setState({ currentActiveIndex: index }, this.buildChildListingViewsByHandleClick);
+            }
+          }
+        }
+      }
+    }
+  }
 
-	  	this.setState({
-		    childListingsViews: _childListingViews,
-		  	clickStates: listClickStates,
-		  	likedStates: listLikedStates,
-		  	refs: refArray
-	  });
-	}
+  buildChildListingViews() {
+    //console.warn("buildChildListingViews");
+    // build it only if there is any change in the number of child listing
+    const refArray = [];
+    const _childListingViews = [];
+    const listClickStates = [...this.state.clickStates];
+    const listLikedStates = [...this.state.likedStates];
+    const initialLength = listClickStates.length;
 
-	constructor(props) {
-	  super(props);
+    this.context.currentListing.child_listings.map(function (childListing, index) {
 
-	  this.state = {
-		clickStates: [],
-		likedStates: [],
-		currentActiveIndex: -1,
-		refs: [],
-		childListingsViews: []
-	  };
+      listClickStates[index] = 0;
+      // check if current user is in the liked list
+      // q1. we need current user information
+      listLikedStates[index] = 0;
 
-	  this.handleClickState = this.handleClickState.bind(this);
-	  this.handleLikedState = this.handleLikedState.bind(this);
-	  this.buildChildListingViews = this.buildChildListingViews.bind(this);
-	  this.buildChildListingViewsByHandleClick = this.buildChildListingViewsByHandleClick.bind(this);
-	  this.handleClickFromMap = this.handleClickFromMap.bind(this);
-	}
+      if (Object.keys(childListing).includes("listOfLikedUser")) {
+        for(let user_index=0; user_index < (childListing.listOfLikedUser.length); user_index++)
+        {
+          if(childListing.listOfLikedUser[user_index]===this.context.getCurrentUser()._id)
+          {
+            listLikedStates[index] = 1;
+            //console.warn("Setting liked state of index = " + index);
+          }
+        }
+      }
 
-	componentDidMount() {
-	  this.buildChildListingViews();
-	}
+      const curRef = React.createRef();
+      refArray.push(curRef);
 
-	getSnapshotBeforeUpdate(prevProps, prevState) {
-	  return { oldValue: prevState.value };
-	}
+      //console.warn(`likedState[${index}]=${listLikedStates[index]}`);
 
-	componentDidUpdate(previousProps, previousState, snapshot) {
-	  // console.warn("componentDidUpdate="+JSON.stringify(this.props));
-	  this.handleClickFromMap(this.context.currentChildIndex);
+      _childListingViews.push(
+        <div key={shortid.generate()}>
+          <ChildListing
+            clickState={listClickStates[index]}
+            likedState={listLikedStates[index]}
+            clickHandler={this.handleClickState}
+            likeClickHandler={this.handleLikedState}
+            handleSelect={this.props.handleSelect}
+            listing={childListing}
+            index={index}
+            messageClickHandler={this.props.messageClickHandler}
+            removeHandler={this.props.removeHandler}
+            ref={curRef}
+          />
+        </div>);
+    }, this);
 
-	  if (this.context.currentListing.child_listings.length != this.state.childListingsViews.length) {
-	    this.buildChildListingViews();
-	  }
+    this.setState({
+      childListingsViews: _childListingViews,
+      clickStates: listClickStates,
+      likedStates: listLikedStates,
+      refs: refArray
+    });
+  }
 
-	  // clear click states if the chatting context is changed
-	  if ((this.props.chattingContextType != previousProps.chattingContextType)
-			&& 			(this.props.chattingContextType != MSG_CHANNEL_TYPE_LISTING_CHILD)) {
-	    this.buildChildListingViews();
-	  }
-	}
+  constructor(props) {
+    super(props);
 
-	render() {
-	  return (
-		  <React.Fragment>
-		    {this.state.childListingsViews}
-		  </React.Fragment>
-	  );
-	}
+    this.state = {
+      clickStates: [],
+      likedStates: [],
+      currentActiveIndex: -1,
+      refs: [],
+      childListingsViews: []
+    };
+
+    this.handleClickState = this.handleClickState.bind(this);
+    this.handleLikedState = this.handleLikedState.bind(this);
+    this.buildChildListingViews = this.buildChildListingViews.bind(this);
+    this.buildChildListingViewsByHandleClick = this.buildChildListingViewsByHandleClick.bind(this);
+    this.handleClickFromMap = this.handleClickFromMap.bind(this);
+  }
+
+  componentDidMount() {
+    this.buildChildListingViews();
+  }
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return { oldValue: prevState.value };
+  }
+
+  componentDidUpdate(previousProps, previousState, snapshot) {
+    // console.warn("componentDidUpdate="+JSON.stringify(this.props));
+    this.handleClickFromMap(this.context.currentChildIndex);
+
+    if (this.context.currentListing.child_listings.length != this.state.childListingsViews.length) {
+      this.buildChildListingViews();
+    }
+
+    // clear click states if the chatting context is changed
+    if ((this.props.chattingContextType != previousProps.chattingContextType)
+      && 			(this.props.chattingContextType != MSG_CHANNEL_TYPE_LISTING_CHILD)) {
+      this.buildChildListingViews();
+    }
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        {this.state.childListingsViews}
+      </React.Fragment>
+    );
+  }
 }

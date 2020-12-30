@@ -2,6 +2,7 @@
 import React, {
   useState, useContext, useRef, useEffect
 } from 'react';
+
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
@@ -14,29 +15,28 @@ import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
 import SimpleModal from '../../../components/Modal/SimpleModal';
 
-import { ListingsContext } from '../../../contexts/ListingsContext';
+import {
+  initGoogleMap,
+  createMarker,
+  getGeometryFromSearchString
+} from '../../../contexts/helper/helper';
+
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
-
+import { preprocessUrlRequest } from '../../../utils/route_helper';
 
 function TenantListingDashBoard(props) {
   const [modalShow, setModalShow] = useState(false);
+  const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
+  const {loginClickHandler, hideLoginModal} = props;
 
-  const {
-    mapLoaded, initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel
-  } = useContext(ListingsContext);
-  const {friendsMap} = useContext(GlobalContext);
   const googleMapRef = useRef(null);
   let googleMap = null;
 
-  const {
-    currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing
-  } = useContext(CurrentListingContext);
+  const { mapElementID, setMapElementID, mapLoaded, currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams } = useContext(CurrentListingContext);
 
-  const [center, setCenter] = useState({ lat: 37.338207, lng: -121.886330 });
-  const [zoom, setZoom] = useState(9);
-  const [rightPaneMode, setRightPaneMode] = useState('Map');
+  const [rightPaneMode, setRightPaneMode] = useState('Map');``
   const [showMessage, setShowMessage] = useState(true);
 
   const showModal = () => {
@@ -48,10 +48,15 @@ function TenantListingDashBoard(props) {
   };
 
   useEffect(() => {
-    if (rightPaneMode === 'Map' && mapLoaded) {
-      const bounds = new window.google.maps.LatLngBounds();
-      googleMap = initGoogleMap(googleMapRef, zoom, center);
+    setMapElementID('tenantListingDashboardMapView');
+  }, []);
 
+  useEffect(() => {
+    const { center, zoom } = mapParams;
+    if (rightPaneMode === 'Map' && mapLoaded) {
+      googleMap = initGoogleMap(googleMapRef, zoom, center);
+      const bounds = new window.google.maps.LatLngBounds();
+      bounds.extend(center);
       if (currentListing) {
         const address = `${currentListing.location.street} ${
           currentListing.location.city} ${
@@ -64,11 +69,8 @@ function TenantListingDashBoard(props) {
           (response) => {
             if (response.status === 'OK') {
               const { geometry } = response.results[0];
-              if (document.getElementById('tenantListingDashboardMapView')) { // Continue if element exists.
-                const mapViewProperties = document.getElementById('tenantListingDashboardMapView').getBoundingClientRect();
+              if (document.getElementById(mapElementID)) { // Continue if element exists.
                 const { location } = geometry;
-                setCenter(location);
-                setZoom(getBoundsZoomLevel(geometry.viewport, { height: mapViewProperties.height, width: mapViewProperties.width }));
                 // Location of where the tenant would prefer to stay.
                 const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
                 const marker = createMarker(googleMap, location, imgSource);
@@ -95,47 +97,54 @@ function TenantListingDashBoard(props) {
                 location.state} ${
                 location.zipcode} ${
                 location.country}`;
+              const rentalPrice = listing.listing_id.rentalPrice;
+              if (!Number.isNaN(Number(rentalPrice))) { // True if value is a number.
+                const { price } = filterParams;
+                const min = price[0];
+                const max = price[1];
+                if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
+                  getGeometryFromSearchString(address).then(
+                    (response) => {
+                      if (response.status === 'OK') {
+                        const { geometry } = response.results[0];
+                        const { location } = geometry;
+                        try {
+                          console.log(`listing = ${JSON.stringify(listing)}`);
 
-              getGeometryFromSearchString(address).then(
-                (response) => {
-                  if (response.status === 'OK') {
-                    const { geometry } = response.results[0];
-                    const { location } = geometry;
-                    try {
-                      console.log(`listing = ${JSON.stringify(listing)}`);
+                          let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
 
-                      let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
+                          if (listing.listing_type === 'LandlordRequest') {
+                            if (listing.listing_id.pictures.length > 0) {
+                              imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
+                            }
+                          } else {
+                            imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
+                          }
 
-                      if (listing.listing_type === 'LandlordRequest') {
-                        if (listing.listing_id.pictures.length > 0) {
-                          imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
+                          const marker = createMarker(googleMap, location, imgSource, (index === currentChildIndex));
+
+                          marker.addListener('click', (clickedIndex = index) => {
+                            if (clickedIndex !== currentChildIndex) { // update currentChildIndex if it's different
+                              setCurrentChildIndex(clickedIndex);
+                            }
+                          });
+                          bounds.extend(location);
+                          googleMap.fitBounds(bounds);
+                        } catch (err) {
+                          console.warn(`adding marker failed. error = ${err}`);
                         }
-                      } else {
-                        imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                       }
-
-                      const marker = createMarker(googleMap, location, imgSource, (index === currentChildIndex));
-
-                      marker.addListener('click', (clickedIndex = index) => {
-                        if (clickedIndex !== currentChildIndex) { // update currentChildIndex if it's different
-                          setCurrentChildIndex(clickedIndex);
-                        }
-                      });
-                      bounds.extend(location);
-                      googleMap.fitBounds(bounds);
-                    } catch (err) {
-                      console.warn(`adding marker failed. error = ${err}`);
                     }
-                  }
+                  );
                 }
-              );
+              }
             });
           }
         }
         // googleMap.fitBounds(bounds);
       }
     }
-  }, [currentListing, zoom, rightPaneMode, currentChildIndex], friendsMap);
+  }, [currentListing, rightPaneMode, currentChildIndex, mapParams, friendsMap]);
 
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, 'tenant');
@@ -160,7 +169,9 @@ function TenantListingDashBoard(props) {
     }
   };
 
+
   return (
+    (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
     <div>
       {mapLoaded ? (
         <Grid component="main">
@@ -169,7 +180,7 @@ function TenantListingDashBoard(props) {
             <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
             <Grid container alignContent="stretch" >
               <Grid item xs={6}>
-                <FilterView />
+                <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
                 <Grid item xs={12}>
                   <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
                 </Grid>
@@ -180,8 +191,7 @@ function TenantListingDashBoard(props) {
                     <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
                       <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                     </SimpleModal>
-
-                    <div id="tenantListingDashboardMapView" ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
+                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
                   </React.Fragment>
                 ) : (
                   (showMessage)

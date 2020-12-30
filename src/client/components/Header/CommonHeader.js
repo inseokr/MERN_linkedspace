@@ -6,6 +6,7 @@ import NoLoginMenu from '../Login/NoLoginMenu';
 import LoginMenu from '../Login/LoginMenu';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
+import { preprocessUrlRequest } from '../../utils/route_helper';
 
 function CommonHeader(props) {
   const {
@@ -14,6 +15,8 @@ function CommonHeader(props) {
   const { switchChattingChannel, getDmChannelId } = useContext(MessageContext);
 
   function getLoginStatus() {
+    preprocessUrlRequest(currentUser!==null, props.loginClickHandler, props.hideLoginModal);
+
     // This should be called only once when no current user is set
     if (currentUser == null) {
       console.log("getLoginStatus");
@@ -23,6 +26,8 @@ function CommonHeader(props) {
           console.log(` received user = ${user}`);
           setCurrentUser(user);
           props.updateLoginStatus(user != null);
+
+          //preprocessUrlRequest(user!==null, props.loginClickHandler);
         });
     }
   }

@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import '../../app.css';
 import { STYLESHEET_URL } from '../../globalConstants';
 import Home from '../HomePage/Home';
@@ -21,66 +22,91 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 // in your app.
 
 export default class LandingPage extends Component {
-	// <note> can we have multiple contexts?
-	static contextType = GlobalContext;
+  // <note> can we have multiple contexts?
+  static contextType = GlobalContext;
 
-	state = {
-	  lastMenu: '',
-	  fetchedMenu: false,
-	  loggedIn: 'yes'
-	};
+  state = {
+    lastMenu: null,
+    fetchedMenu: false,
+    loggedIn: 'yes'
+  };
 
-	 constructor(props) {
-	  	super(props);
-	 }
+  constructor(props) {
+    super(props);
+  }
 
-	componentWillMount() {
-	  fetch('/LS_API/getLastMenu')
-	    .then(res => res.json())
-	    .then((menuFromExpress) => {
-	      console.log('menuFromExpress:', menuFromExpress);
-	      this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
-	    });
-	}
+  componentWillMount() {
+/*
+    fetch('/LS_API/getLastMenu')
+      .then(res => res.json())
+      .then((menuFromExpress) => {
+        console.log('menuFromExpress:', menuFromExpress);
+        this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
+      });*/
+  }
 
-	componentDidMount() {
-	  const { refreshUserData } = this.context;
-	  //console.log(`LandingPage is loaded. search = ${search}`);
-	  refreshUserData();
-	}
+  componentDidMount() {
+    const { refreshUserData } = this.context;
+    refreshUserData();
 
-	render() {
-	  const { lastMenu } = this.state;
+/*
+    let tempUrl = localStorage.getItem('redirectUrlAfterLogin');
+    console.log("tempUrl = " + tempUrl);
 
-	  let pageToRender = <div />;
-	  if (lastMenu === 'map') {
-	    console.log('is this even being called', lastMenu);
-	    pageToRender = <Map />;
-	  } else {
-	    pageToRender = (
-		  <div>
-		    <link
-		      rel="stylesheet"
-		      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
-		    />
-		    <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"} />
-		    <div className="container landingPage">
+    if(tempUrl!=='')
+    {
+      localStorage.setItem('redirectUrlAfterLogin', '');
+      setTimeout((tempUrl)=> this.props.history.push(tempUrl), 1000);
+  		//this.props.history.push(tempUrl);
+    }
 
-		      <div className="row landingPage">
-		        <div className="col-lg-12">
-		          <div className="content">
-		            <h1> LinkedSpaces</h1>
-		            <h3> Make your next move through a trusted network. </h3>
-		            <Search />
-		          </div>
-		        </div>
-		      </div>
-		    </div>
-		  </div>
-	    );
-	  }
-	  return (
-	    pageToRender
-	  );
-	}
+   if(tempUrl!==null)
+    {
+      this.setState({ lastMenu: tempUrl, fetchedMenu: true });
+      localStorage.setItem('redirectUrlAfterLogin', '');
+      //return <Redirect to={tempUrl} />
+    }*/
+
+  }
+
+  render() {
+    const redirectUrl = sessionStorage.getItem('redirectUrlAfterLogin');
+
+    console.warn("redirectUrl = " + redirectUrl);
+
+    let pageToRender = <div />;
+
+    if (redirectUrl !== null && this.context.isUserLoggedIn()===false) {
+      console.log('is this even being called', redirectUrl);
+      pageToRender = <Redirect to={redirectUrl} />;
+      sessionStorage.removeItem('redirectUrlAfterLogin');
+      console.log('after removal = '+ sessionStorage.getItem('redirectUrlAfterLogin'));
+
+    } else {
+      pageToRender = (
+        <div>
+          <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+          />
+          <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"} />
+          <div className="container landingPage">
+
+            <div className="row landingPage">
+              <div className="col-lg-12">
+                <div className="content">
+                  <h1> LinkedSpaces</h1>
+                  <h3> Make your next move through a trusted network. </h3>
+                  <Search />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      pageToRender
+    );
+  }
 }

@@ -7,19 +7,25 @@ import { ListingsContext } from '../../../../contexts/ListingsContext';
 import ListingComponent from './ListingComponent';
 
 function ListView(props) {
-  const { filteredListings } = useContext(ListingsContext);
+  const { listingsByBounds } = useContext(ListingsContext);
   const { toggle, mode } = props;
 
   return (
     <div>
       <Paper style={{ maxHeight: '100vh', overflow: 'auto' }}>
         <List>
-          {filteredListings.map(listing => (
-            <div key={listing._id}>
-              <Divider variant="middle" />
-              <ListingComponent listing={listing} toggle={toggle} mode={mode} childSupported="false" />
+          {listingsByBounds.length > 0 ? (
+            <div>
+              {listingsByBounds.map(function (listing) {
+                return (
+                  <div key={listing._id}>
+                    <Divider variant={"middle"}/>
+                    <ListingComponent listing={listing} toggle={toggle} mode={mode} childSupported="false"/>
+                  </div>
+                )
+              })}
             </div>
-          ))}
+          ) : (<div>No Listing(s) Found.</div>)}
         </List>
       </Paper>
     </div>

@@ -210,7 +210,7 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          // console.log("forwarding the packet");
+          console.log("forwarding the packet");
           target.send(data);
         } else {
           // console.log("Same socket");
