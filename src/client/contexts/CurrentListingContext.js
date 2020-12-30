@@ -166,16 +166,19 @@ export function CurrentListingProvider(props) {
     await fetch(`/LS_API/${_prefix + id}/fetch`)
       .then(res => res.json())
       .then((listing) => {
-        console.log(`listing = ${JSON.stringify(listing)}`);
-        setCurrentListing(listing);
-        successful = 1;
+        if(listing!==null)
+        {
+          console.log(`listing = ${JSON.stringify(listing)}`);
+          setCurrentListing(listing);
+          successful = 1;
 
-        const { location } = listing;
-        if (location) {
-          const { city, state, zipcode } = location;
-          const address = `${city}, ${state}, ${zipcode}`;
-          setFilterParams({ ...filterParams, search: address });
-          updateCenter(address);
+          const { location } = listing;
+          if (location) {
+            const { city, state, zipcode } = location;
+            const address = `${city}, ${state}, ${zipcode}`;
+            setFilterParams({ ...filterParams, search: address });
+            updateCenter(address);
+          }
         }
 
         // build mapping table between child listing ID and child index

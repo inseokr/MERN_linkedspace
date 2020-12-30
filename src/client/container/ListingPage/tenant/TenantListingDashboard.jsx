@@ -24,7 +24,7 @@ import {
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
-
+import { preprocessUrlRequest } from '../../../utils/route_helper';
 
 function TenantListingDashBoard(props) {
   const [modalShow, setModalShow] = useState(false);
@@ -169,56 +169,42 @@ function TenantListingDashBoard(props) {
     }
   };
 
-  if(isUserLoggedIn()===false)
-  {
-    console.log("current URL = " + window.location.pathname);
-    if(sessionStorage.getItem('redirectUrlAfterLogin')===null)
-    {
-      console.warn("Setting redirectURL");
-      sessionStorage.setItem('redirectUrlAfterLogin', window.location.pathname);
-      loginClickHandler();
-    }
-    return <div> </div>;
-  }
-  else
-  {
-    hideLoginModal();
-    sessionStorage.removeItem('redirectUrlAfterLogin');
-    return (
-      <div>
-        {mapLoaded ? (
-          <Grid component="main">
-            <CssBaseline />
-            <Box className="App" component="div" display="flex" flexDirection="column">
-              <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
-              <Grid container alignContent="stretch" >
-                <Grid item xs={6}>
-                  <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
-                  <Grid item xs={12}>
-                    <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
-                  </Grid>
-                </Grid>
-                <Grid className="map" item xs={6}>
-                  {rightPaneMode === 'Map' ? (
-                    <React.Fragment>
-                      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
-                        <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
-                      </SimpleModal>
-                      <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
-                    </React.Fragment>
-                  ) : (
-                    (showMessage)
-                      ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
-                  )
-                  }
+
+  return (
+    (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
+    <div>
+      {mapLoaded ? (
+        <Grid component="main">
+          <CssBaseline />
+          <Box className="App" component="div" display="flex" flexDirection="column">
+            <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
+            <Grid container alignContent="stretch" >
+              <Grid item xs={6}>
+                <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
+                <Grid item xs={12}>
+                  <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
                 </Grid>
               </Grid>
-            </Box>
-          </Grid>
-        ) : (<div>Loading...</div>)}
-      </div>
-    );
-  }
+              <Grid className="map" item xs={6}>
+                {rightPaneMode === 'Map' ? (
+                  <React.Fragment>
+                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                      <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
+                    </SimpleModal>
+                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
+                  </React.Fragment>
+                ) : (
+                  (showMessage)
+                    ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
+                )
+                }
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+      ) : (<div>Loading...</div>)}
+    </div>
+  );
 }
 
 export default TenantListingDashBoard;

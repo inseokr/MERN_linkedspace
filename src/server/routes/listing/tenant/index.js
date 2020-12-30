@@ -254,6 +254,11 @@ module.exports = function (app) {
 
 
   router.get('/:list_id/fetch', (req, res) => {
+    if (req.user === undefined) {
+      console.log("fetch's not allowed when user is not logged in");
+      res.json(null);
+      return;
+    }
     // console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
     // TenantRequest.findById(req.params.list_id).populate({path: 'child_listings.listing_id', model: '_3rdPartyListing'}).exec(function(err, foundListing){

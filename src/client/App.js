@@ -100,6 +100,7 @@ export default class App extends Component {
                 <CommonHeader
                   loginClickHandler={this.clickHandler}
                   signupClickHandler={this.signupClickHandler}
+                  hideLoginModal={this.hideLoginModal}
                   updateLoginStatus={this.updateLoginStatus}
                 />
                 <ModalLoginForm display={showLoginModal} forgotPasswordHandler={this.forgotPasswordClickHandler}/>

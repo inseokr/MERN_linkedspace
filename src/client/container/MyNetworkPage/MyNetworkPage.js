@@ -24,6 +24,7 @@ export default class MyNetworkPage extends Component {
 
   render() {
     return (
+      (this.context.isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
       <div className="row">
         <div className="col-lg-3">
           <MyNetworkLeftPane />
