@@ -13,6 +13,7 @@ const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
 const chatDbHandler = require('../../../db_utilities/chatting_db/access_chat_db');
 const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
 const { addUserToList, removeUserFromList } = require('../../../utilities/array_utilities');
+const { sendEmailNotification } = require('../../../utilities/notification_utilities');
 
 const chatServer = require('../../../chatting_server');
 
@@ -490,6 +491,26 @@ module.exports = function (app) {
     });
   });
 
+
+  router.post('/:list_id/dashboard/invite', (req, res) => {
+    TenantRequest.findById(req.params.list_id).populate('shared_user_group', 'username email').exec((err, foundListing) => {
+      if (err) {
+        console.log('Listing not found');
+        return;
+      }
+
+      // invite friends in the shared_group
+      foundListing.shared_user_group.map((user, userIndex) => {
+        // send e-mail notification
+        const notificationBody = `${req.user.username} is inviting you to a dashboard.\n\n`
+            + 'Please click the following link to get to the dashboard page.\n\n'
+            + `${process.env.REACT_SERVER_URL}/listing/tenant/${req.params.list_id}/dashboard\n`;
+        sendEmailNotification(user.email, `${req.user.username} is inviting to a dashboard`, notificationBody);
+      });
+
+      res.json('Friends are invited to the current dashboard');
+    });
+  });
 
   router.delete('/:list_id', (req, res) => {
     // Clean all resources such as pictures.

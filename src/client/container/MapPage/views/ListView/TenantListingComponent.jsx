@@ -101,6 +101,21 @@ function TenantListingComponent(props) {
     setModalShow(true);
   };
 
+  const inviteFriends = async () => {
+    // send e-mail notifications.
+     // post to DB as well
+    const data = {
+      parent_listing_id: listing._id,
+    };
+
+    const result = await axios.post(`/LS_API/listing/tenant/${listing._id}/dashboard/invite`, data)
+      .then(async (result) => {
+        alert("Friends invited to the current dashboard");
+      })
+      .catch(err => console.log(err));
+
+  };
+
   const handleClose = () => {
     setModalShow(false);
   };
@@ -123,13 +138,17 @@ function TenantListingComponent(props) {
 
   const listingControl = { add: addChildListing, remove: removeChildListing };
 
-
   function addChildListingControl() {
     return (
-      <div className="flex-container" style={{ justifyContent: 'flex-end' }}>
+      <div className="flex-container" style={{ justifyContent: 'space-between' }}>
         <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="CLOSE">
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
         </SimpleModal>
+
+        <button className="btn btn-info" onClick={inviteFriends}>
+          Invite Friends
+        </button>
+
         <button className="btn btn-info" onClick={showModal}>
           Add Listing
         </button>

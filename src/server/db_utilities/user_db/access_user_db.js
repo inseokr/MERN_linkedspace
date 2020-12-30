@@ -2,6 +2,7 @@ const async = require('async');
 const User = require('../../models/user');
 const TenantRequest = require('../../models/listing/tenant_request');
 const LandlordRequest = require('../../models/listing/landlord_request');
+const { sendEmailNotification } = require('../../utilities/notification_utilities');
 // ISEO-TBD: WOW it's really interesting problem.
 // <note> functions defined in this module may not work well, not a function error, if chatting_server is included.
 // This is crazy problem...
@@ -280,6 +281,11 @@ function handleListingForward(req, res, type) {
           } else {
             foundFriend.incoming_landlord_listing.push(listing_info);
           }
+
+          const notificationBody = `A new tenant listing has been shared by ${req.user.username}.\n\n`
+            + 'Please click the following link to get to the listing page.\n\n'
+            + `${process.env.REACT_SERVER_URL}/listing/tenant/${req.params.list_id}/get\n`;
+          sendEmailNotification(foundFriend.email, `new listing shared by ${req.user.username}`, notificationBody);
 
           foundFriend.save();
           return 2;
