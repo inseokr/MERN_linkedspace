@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import '../../app.css';
 import { STYLESHEET_URL } from '../../globalConstants';
 import Home from '../HomePage/Home';
@@ -25,7 +26,7 @@ export default class LandingPage extends Component {
   static contextType = GlobalContext;
 
   state = {
-    lastMenu: '',
+    lastMenu: null,
     fetchedMenu: false,
     loggedIn: 'yes'
   };
@@ -35,27 +36,52 @@ export default class LandingPage extends Component {
   }
 
   componentWillMount() {
+/*
     fetch('/LS_API/getLastMenu')
       .then(res => res.json())
       .then((menuFromExpress) => {
         console.log('menuFromExpress:', menuFromExpress);
         this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
-      });
+      });*/
   }
 
   componentDidMount() {
     const { refreshUserData } = this.context;
-    //console.log(`LandingPage is loaded. search = ${search}`);
     refreshUserData();
+
+/*
+    let tempUrl = localStorage.getItem('redirectUrlAfterLogin');
+    console.log("tempUrl = " + tempUrl);
+
+    if(tempUrl!=='')
+    {
+      localStorage.setItem('redirectUrlAfterLogin', '');
+      setTimeout((tempUrl)=> this.props.history.push(tempUrl), 1000);
+  		//this.props.history.push(tempUrl);
+    }
+
+   if(tempUrl!==null)
+    {
+      this.setState({ lastMenu: tempUrl, fetchedMenu: true });
+      localStorage.setItem('redirectUrlAfterLogin', '');
+      //return <Redirect to={tempUrl} />
+    }*/
+
   }
 
   render() {
-    const { lastMenu } = this.state;
+    const redirectUrl = sessionStorage.getItem('redirectUrlAfterLogin');
+
+    console.warn("redirectUrl = " + redirectUrl);
 
     let pageToRender = <div />;
-    if (lastMenu === 'map') {
-      console.log('is this even being called', lastMenu);
-      pageToRender = <Map />;
+
+    if (redirectUrl !== null && this.context.isUserLoggedIn()===false) {
+      console.log('is this even being called', redirectUrl);
+      pageToRender = <Redirect to={redirectUrl} />;
+      sessionStorage.removeItem('redirectUrlAfterLogin');
+      console.log('after removal = '+ sessionStorage.getItem('redirectUrlAfterLogin'));
+
     } else {
       pageToRender = (
         <div>

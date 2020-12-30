@@ -2,6 +2,7 @@
 import React, {
   useState, useContext, useRef, useEffect
 } from 'react';
+
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
@@ -27,14 +28,15 @@ import { FILE_SERVER_URL } from '../../../globalConstants';
 
 function TenantListingDashBoard(props) {
   const [modalShow, setModalShow] = useState(false);
-  const {friendsMap} = useContext(GlobalContext);
+  const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
+  const {loginClickHandler, hideLoginModal} = props;
 
   const googleMapRef = useRef(null);
   let googleMap = null;
 
   const { mapElementID, setMapElementID, mapLoaded, currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams } = useContext(CurrentListingContext);
 
-  const [rightPaneMode, setRightPaneMode] = useState('Map');
+  const [rightPaneMode, setRightPaneMode] = useState('Map');``
   const [showMessage, setShowMessage] = useState(true);
 
   const showModal = () => {
@@ -167,40 +169,56 @@ function TenantListingDashBoard(props) {
     }
   };
 
-  return (
-    <div>
-      {mapLoaded ? (
-        <Grid component="main">
-          <CssBaseline />
-          <Box className="App" component="div" display="flex" flexDirection="column">
-            <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
-            <Grid container alignContent="stretch" >
-              <Grid item xs={6}>
-                <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
-                <Grid item xs={12}>
-                  <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
+  if(isUserLoggedIn()===false)
+  {
+    console.log("current URL = " + window.location.pathname);
+    if(sessionStorage.getItem('redirectUrlAfterLogin')===null)
+    {
+      console.warn("Setting redirectURL");
+      sessionStorage.setItem('redirectUrlAfterLogin', window.location.pathname);
+      loginClickHandler();
+    }
+    return <div> </div>;
+  }
+  else
+  {
+    hideLoginModal();
+    sessionStorage.removeItem('redirectUrlAfterLogin');
+    return (
+      <div>
+        {mapLoaded ? (
+          <Grid component="main">
+            <CssBaseline />
+            <Box className="App" component="div" display="flex" flexDirection="column">
+              <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
+              <Grid container alignContent="stretch" >
+                <Grid item xs={6}>
+                  <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
+                  <Grid item xs={12}>
+                    <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
+                  </Grid>
+                </Grid>
+                <Grid className="map" item xs={6}>
+                  {rightPaneMode === 'Map' ? (
+                    <React.Fragment>
+                      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                        <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
+                      </SimpleModal>
+                      <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
+                    </React.Fragment>
+                  ) : (
+                    (showMessage)
+                      ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
+                  )
+                  }
                 </Grid>
               </Grid>
-              <Grid className="map" item xs={6}>
-                {rightPaneMode === 'Map' ? (
-                  <React.Fragment>
-                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
-                      <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
-                    </SimpleModal>
-                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
-                  </React.Fragment>
-                ) : (
-                  (showMessage)
-                    ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
-                )
-                }
-              </Grid>
-            </Grid>
-          </Box>
-        </Grid>
-      ) : (<div>Loading...</div>)}
-    </div>
-  );
+            </Box>
+          </Grid>
+        ) : (<div>Loading...</div>)}
+      </div>
+    );
+  }
 }
 
 export default TenantListingDashBoard;

@@ -46,6 +46,7 @@ export default class App extends Component {
     this.signupClickHandler = this.signupClickHandler.bind(this);
     this.forgotPasswordClickHandler = this.forgotPasswordClickHandler.bind(this);
     this.updateLoginStatus = this.updateLoginStatus.bind(this);
+    this.hideLoginModal = this.hideLoginModal.bind(this);
   }
 
   componentDidMount() {
@@ -54,7 +55,20 @@ export default class App extends Component {
 
   clickHandler() {
     console.log('loginClickHander called');
-    this.setState({ showLoginModal: true });
+
+    //this.setState({ showLoginModal: true });
+
+    if(this.state.showLoginModal===false)
+    {
+      this.setState({ showLoginModal: true });
+    }
+  }
+
+  hideLoginModal() {
+    if(this.state.showLoginModal===true)
+    {
+      this.setState({ showLoginModal: false });
+    }
   }
 
   signupClickHandler() {
@@ -115,9 +129,7 @@ export default class App extends Component {
                     <EditProfileMain />
                   </Route>
 
-                  <Route exact path="/">
-                    <LandingPage />
-                  </Route>
+                  <Route exact path="/" render={props => <LandingPage {...props} />} />
 
                   <Route path="/facebooklogin/:id/login" render={props => <FacebookLogin {...props} updateLoginStatus={this.updateLoginStatus} />} />
 
@@ -139,9 +151,9 @@ export default class App extends Component {
                   <Route
                     path="/listing/tenant/:id/dashboard"
                     render={({
-                      match
+                      match, props
                     }) => (
-                      <TenantListingDashboard match={match} />
+                      <TenantListingDashboard {...props} match={match} loginClickHandler={this.clickHandler} hideLoginModal={this.hideLoginModal}/>
                     )}
                   />
                 </Switch>
