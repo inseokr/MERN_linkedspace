@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
+// import useAddressPredictions from '../../hooks/useAddressPredictions'
 import { InputGroup, FormControl } from 'react-bootstrap';
 import shortid from 'shortid';
 import $ from 'jquery';
@@ -7,8 +8,8 @@ import $ from 'jquery';
 
 function CollectLocationInfo(props) {
   const listOfStates = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
-
   const [location, setLocation] = useState(null);
+  // const [test, setTest] = useAddressPredictions('Fremont, CA');
 
   function loadDefaultValue(location) {
     if (location == null) return;
@@ -19,7 +20,7 @@ function CollectLocationInfo(props) {
     $('#country').val(location.country);
   }
 
-  if (props != undefined && props.location != undefined) {
+  if (props !== undefined && props.location !== undefined) {
     if (location == null) {
       setLocation(props.location);
     }
@@ -28,7 +29,7 @@ function CollectLocationInfo(props) {
   useEffect(() => {
     console.log('useEffect called');
     loadDefaultValue(location);
-  	}, location);
+  }, [location]);
 
 
   return (
@@ -53,7 +54,7 @@ function CollectLocationInfo(props) {
 
       <div className="flex-container">
         <div className="form-group" style={{ width: '25%' }}>
-          <label className="control-label">Zipcode</label>
+          <label className="control-label">ZipCode</label>
           <input className="form-control" style={{ width: '80%' }} required="required" name="location[zipcode]" id="zipcode" placeholder="Zipcode" />
         </div>
         <div className="form-group" style={{ width: '30%' }}>
