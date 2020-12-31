@@ -2,14 +2,12 @@ const nodemailer = require('nodemailer');
 
 function sendEmailNotification(toEmailAddress, subject, body) {
   const smtpTransport = nodemailer.createTransport({
-    service: 'Gmail',
+    service: 'gmail',
+    secure: true,
     auth: {
       user: 'linkedspaces.seo@gmail.com',
       pass: '!taylormade0320'
     },
-    tls: {
-      rejectUnauthorized: false
-    }
   });
 
   const mailOptions = {
