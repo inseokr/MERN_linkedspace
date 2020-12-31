@@ -46,6 +46,8 @@
     "dotenv": "^8.2.0",
     "ejs": "^2.7.4",
     "ejs-lint": "^0.3.0",
+    "emailjs": "^3.4.0",
+    "emailjs-com": "^2.6.4",
     "eslint": "^7.13.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.22.1",
