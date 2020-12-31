@@ -21,7 +21,6 @@ function sendEmailNotification(toEmailAddress, subject, body) {
 
   smtpTransport.sendMail(mailOptions, (err) => {
     console.log(`mail sent to ${toEmailAddress}`);
-    req.flash('success', `An e-mail has been sent to ${toEmailAddress} with further instructions.`);
     done(err, 'done');
   });
 }
