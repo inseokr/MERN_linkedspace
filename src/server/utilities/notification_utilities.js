@@ -20,8 +20,11 @@ function sendEmailNotification(toEmailAddress, subject, body) {
   };
 
   smtpTransport.sendMail(mailOptions, (err) => {
-    console.log(`mail sent to ${toEmailAddress}`);
-    done(err, 'done');
+    if (err) {
+      console.warn(`sendMail error = ${err}`);
+    } else {
+      console.log(`mail sent to ${toEmailAddress}`);
+    }
   });
 }
 
