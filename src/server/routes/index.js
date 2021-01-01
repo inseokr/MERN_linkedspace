@@ -207,6 +207,7 @@ module.exports = function (app) {
         });
       },
       function (token, user, done) {
+        /*
         const smtpTransport = nodemailer.createTransport({
           service: 'Gmail',
           auth: {
@@ -230,7 +231,8 @@ module.exports = function (app) {
           console.log(`mail sent to ${user.email}`);
           req.flash('success', `An e-mail has been sent to ${user.email} with further instructions.`);
           done(err, 'done');
-        });
+        }); */
+        res.json({ token, username: user.username });
       }
     ], (err) => {
       if (err) return next(err);

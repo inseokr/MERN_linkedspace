@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { useState, useContext, useEffect } from 'react';
+import emailjs from "emailjs-com";
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
 import { Paper, Grid, Typography } from '@material-ui/core';
@@ -110,10 +111,42 @@ function TenantListingComponent(props) {
 
     const result = await axios.post(`/LS_API/listing/tenant/${listing._id}/dashboard/invite`, data)
       .then(async (result) => {
+
         alert("Friends invited to the current dashboard");
+
+        if(result.data!==null)
+        {
+          let bSendEmail = false;
+
+          result.data.forEach((user, index)=>{
+            if(user.username!==currentUser.username)
+            {
+              // send test email from ReactJs
+              var templateParams = {
+                to_email: user.email,
+                from_name: 'LikedSpaces',
+                to_name: user.username,
+                message: user.message
+              };
+
+              if(bSendEmail===true)
+              {
+                emailjs.send('service_0ie0oe5', 'template_r2bn5e6', templateParams, 'user_dvV4OqqT5zASBx61ZIPdf')
+                .then(function(response) {
+                   console.log('SUCCESS!', response.status, response.text);
+                }, function(error) {
+                   console.log('FAILED...', error);
+                });
+              }
+              else
+              {
+                console.warn("Sending notification to " + JSON.stringify(user));
+              }
+            }
+          })
+        }
       })
       .catch(err => console.log(err));
-
   };
 
   const handleClose = () => {
