@@ -111,25 +111,42 @@ function TenantListingComponent(props) {
 
     const result = await axios.post(`/LS_API/listing/tenant/${listing._id}/dashboard/invite`, data)
       .then(async (result) => {
+
         alert("Friends invited to the current dashboard");
+
+        if(result.data!==null)
+        {
+          let bSendEmail = false;
+
+          result.data.forEach((user, index)=>{
+            if(user.username!==currentUser.username)
+            {
+              // send test email from ReactJs
+              var templateParams = {
+                to_email: user.email,
+                from_name: 'LikedSpaces',
+                to_name: user.username,
+                message: user.message
+              };
+
+              if(bSendEmail===true)
+              {
+                emailjs.send('service_0ie0oe5', 'template_r2bn5e6', templateParams, 'user_dvV4OqqT5zASBx61ZIPdf')
+                .then(function(response) {
+                   console.log('SUCCESS!', response.status, response.text);
+                }, function(error) {
+                   console.log('FAILED...', error);
+                });
+              }
+              else
+              {
+                console.warn("Sending notification to " + JSON.stringify(user));
+              }
+            }
+          })
+        }
       })
       .catch(err => console.log(err));
-
-    // send test email from ReactJs
-    var templateParams = {
-      to_email: 'inseo.kr@gmail.com',
-      from_name: 'In Seo',
-      to_name: 'In Seo',
-      message: 'Invitation to a dashboard'
-    };
-
-    emailjs.send('service_0ie0oe5', 'template_faod4g8', templateParams, 'user_dvV4OqqT5zASBx61ZIPdf')
-    .then(function(response) {
-       console.log('SUCCESS!', response.status, response.text);
-    }, function(error) {
-       console.log('FAILED...', error);
-    });
-
   };
 
   const handleClose = () => {
