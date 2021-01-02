@@ -717,7 +717,7 @@ export function MessageContextProvider(props) {
 
     if (chattingContextType != 0) {
       dmChannelNamePrefix = currentListing._id + ((chattingContextType == 1) ? '-parent-'
-        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
+        : `-child-${currentListing.child_listings[childIndex].listing_id._id}-`);
     }
 
     // console.log("getDmChannelId: current child index = " + _childIndex);
