@@ -62,6 +62,8 @@ async function addChannelToUser(chat_channel) {
   const numOfMembers = chat_channel.members.length;
   const userNameList = [];
 
+  // console.warn(`chat_channel: = ${JSON.stringify(chat_channel)}`);
+
   return new Promise((resolve) => {
     if (numOfMembers === 0) resolve(null);
 
@@ -84,6 +86,7 @@ async function addChannelToUser(chat_channel) {
           if (bDuplicate === false) {
             const dm_channel = { id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0 };
             foundUser.chatting_channels.dm_channels.push(dm_channel);
+            console.warn(`adding ${chat_channel.channel_id} to user: ${foundUser.username}`);
             foundUser.save();
           }
         }

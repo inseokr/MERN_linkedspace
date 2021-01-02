@@ -22,6 +22,7 @@ import {
 } from '../../../contexts/helper/helper';
 
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
+import { MessageContext } from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
@@ -29,6 +30,7 @@ import { preprocessUrlRequest } from '../../../utils/route_helper';
 function TenantListingDashBoard(props) {
   const [modalShow, setModalShow] = useState(false);
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
+  const {doNotDisturbMode, setDoNotDisturbMode} = useContext(MessageContext);
   const {loginClickHandler, hideLoginModal} = props;
 
   const googleMapRef = useRef(null);
@@ -45,6 +47,11 @@ function TenantListingDashBoard(props) {
 
   const handleClose = () => {
     setModalShow(false);
+  };
+
+  const handleClickDoNotDisturbMode = () => {
+    // toggle the value
+    setDoNotDisturbMode(!doNotDisturbMode);
   };
 
   useEffect(() => {
@@ -170,6 +177,9 @@ function TenantListingDashBoard(props) {
   };
 
 
+  let banAdditionalStyle = 
+      (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
+
   return (
     (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
     <div>
@@ -178,6 +188,7 @@ function TenantListingDashBoard(props) {
           <CssBaseline />
           <Box className="App" component="div" display="flex" flexDirection="column">
             <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
+            <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}></i>
             <Grid container alignContent="stretch" >
               <Grid item xs={6}>
                 <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />

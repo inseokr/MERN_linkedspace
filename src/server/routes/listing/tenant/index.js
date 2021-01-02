@@ -446,7 +446,6 @@ module.exports = function (app) {
 
     	// console.log("friend = " + JSON.stringify(friend));
     	// console.log("userDbHandler = " + JSON.stringify(userDbHandler));
-
     	userDbHandler.getUserByName(friend.username).then((_friend) => {
     		if (_friend == null) {
     			console.log('Friend not found');
@@ -462,16 +461,37 @@ module.exports = function (app) {
 	    				res.json({ result: 'Duplicate found' });
 	    				return;
 	    			}
+
 	    			foundListing.shared_user_group.push(_friend._id);
+
+            // let's add the current user if it's not the shared_user_group yet.
+            if (checkDuplicate(foundListing.shared_user_group, req.user._id) === false) {
+              foundListing.shared_user_group.push(req.user._id);
+            }
+
 	    			break;
 	    		case 2:
+
+            if (foundListing.child_listings[childInfo.index] === undefined) {
+              console.warn('Child listing not created yet');
+              res.json({ result: 'Child listing not created yet' });
+              return;
+            }
+
 	    			if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend._id) == true) {
-	    				console.log('Duplicate found');
+	    				// console.log('Duplicate found');
 	    				res.json({ result: 'Duplicate found' });
 	    				return;
 	    			}
-            console.log(`Pushing friend = ${_friend.username}`);
+            // console.log(`Pushing friend = ${_friend.username}`);
+
     				foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
+
+            // let's add the current user if it's not the shared_user_group yet.
+            if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, req.user._id) === false) {
+              foundListing.child_listings[childInfo.index].shared_user_group.push(req.user._id);
+            }
+
 	    			break;
 	    		default:
 	    			console.log('Unknown chattingType');
@@ -486,6 +506,13 @@ module.exports = function (app) {
 	    		}
 	    		// console.log("ISEO: user added successfully");
 		    	res.json({ result: 'Added successfully' });
+
+          let notificationUserList = (chattingType === 1) ? foundListing.shared_user_group : foundListing.child_listings[childInfo.index].shared_user_group;
+          notificationUserList = notificationUserList.filter(user => !user.equals(req.user._id));
+
+          // we should notify to other people in the group.
+          // console.log(`notificationUserList = ${JSON.stringify(notificationUserList)}`);
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, notificationUserList);
 	    	});
 	    });
     });

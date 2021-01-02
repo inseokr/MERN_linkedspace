@@ -91,10 +91,81 @@ export function MessageContextProvider(props) {
 
 
   const [selectedChatList, setSelectedChatList] = useState([]);
-  // console.log("chattingContextType="+chattingContextType);
-  // console.log("childType="+childType);
-  // console.log("childIndex="+childIndex);
-  // console.log("MessageContext: currChannelInfo.channelName = "+currChannelInfo.channelName);
+
+  function MC_removeCurrentUserFromList(_list) {
+    if (_list == null) return null;
+
+    return _list.filter(_item => _item.username !== currentUser.username);
+  }
+
+  function MC_buildContactList(chatting_type, _childIndex)
+  {
+    switch(chatting_type)
+    {
+      case MSG_CHANNEL_TYPE_GENERAL:
+        return ((friendsList == undefined) ? null : friendsList);
+      case MSG_CHANNEL_TYPE_LISTING_PARENT:
+        return currentListing.shared_user_group;
+      case MSG_CHANNEL_TYPE_LISTING_CHILD:
+        return ((currentListing.child_listings[_childIndex] == undefined)
+          ? null : currentListing.child_listings[_childIndex].shared_user_group);
+      default: return null;
+    }
+  }
+
+  function checkAnyUnreadMessages(chatting_type, _childIndex)
+  {
+    //console.warn("checkAnyUnreadMessages: _childIndex = " + _childIndex);
+
+    let _contactList = MC_buildContactList(chatting_type, _childIndex);
+    if(_contactList===null) return false;
+
+    let bAnyNewMessage = false;
+
+    // 1. check DM channels first
+    for(let index=0; index<_contactList.length; index++)
+    {
+      let channelName = getDmChannelIdWithChildIndex(_contactList[index].username, _childIndex);
+
+      if(channelName!=='' && (dmChannelContexts[channelName]!==undefined))
+      {
+        if(dmChannelContexts[channelName].flag_new_msg===true)
+        {
+          //console.warn("Current ChannelName = " + channelName);
+          bAnyNewMessage = true;
+          break;
+        } 
+      }
+    }
+
+    // 2. check group chatting channels
+    if(bAnyNewMessage===false && chatting_type>=MSG_CHANNEL_TYPE_LISTING_PARENT)
+    {
+      const list_of_group_chats = (chatting_type === MSG_CHANNEL_TYPE_LISTING_PARENT)?
+       currentListing.list_of_group_chats
+       : (currentListing.child_listings[_childIndex] != undefined)? 
+        currentListing.child_listings[_childIndex].list_of_group_chats : [];
+
+        for (let i = 0; i < list_of_group_chats.length; i++) { 
+          let groupChannelName = dmChannelContexts[list_of_group_chats[i]].channel_id;
+
+          if(groupChannelName!=='' && (dmChannelContexts[channelName]!==undefined))
+          {
+            if(dmChannelContexts[groupChannelName].flag_new_msg===true)
+            {
+              //console.warn("Current ChannelName = " + channelName);
+              bAnyNewMessage = true;
+              break;
+            }
+          }
+        }
+    }
+
+    //console.warn(`checkAnyUnreadMessages: child=${_childIndex}, result=${bAnyNewMessage}`);
+
+    return bAnyNewMessage;
+
+  }
 
   function parseChattingChannelName(channel_name)
   {
@@ -218,26 +289,31 @@ export function MessageContextProvider(props) {
   }
 
   async function addContactList(_friend) {
-    // 1. update database through API
-    // + update shared_user_group
-    const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
 
-    const data = {
-      friend: { id: _friend.id, username: _friend.username },
-      chattingType: chattingContextType,
-      childInfo: { type: childType, index: childIndex }
-    };
+    return new Promise(async (resolve) => {
+      // 1. update database through API
+      // + update shared_user_group
+      const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
 
-    const result = await axios.post(post_url, data)
-      .then((result) => {
-        // ID of chatting channel will be returned.
-        // update dmChannelContexts
-        // console.log("addContactList: result = " + result);
-        reloadChattingDbWithCurrentListing();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      const data = {
+        friend: { id: _friend.id, username: _friend.username },
+        chattingType: chattingContextType,
+        childInfo: { type: childType, index: childIndex }
+      };
+
+      const result = await axios.post(post_url, data)
+        .then((result) => {
+          // ID of chatting channel will be returned.
+          // update dmChannelContexts
+          // console.log("addContactList: result = " + result);
+          reloadChattingDbWithCurrentListing();
+          resolve(result);
+        })
+        .catch((err) => {
+          console.log(err);
+          resolve(err);
+        });
+    });
   }
 
   async function postSelectedContactList() {
@@ -453,6 +529,7 @@ export function MessageContextProvider(props) {
 
     if (dmChannelContexts[channelName] == undefined) {
       console.warn("current channel doesn't have any context created yet");
+      loadChatHistory(channelName, []);
       return;
     }
 
@@ -595,15 +672,39 @@ export function MessageContextProvider(props) {
         if(doNotDisturbMode===false)
         {
           focusParentListing();
-          reloadChattingDbWithCurrentListing();
         }
         else
         {
           setChannelWithLatestMessage(null);
         }
+        // ISEO-TBD: we shouldn't load the listing prematurely?
+        //reloadChattingDbWithCurrentListing();
+        setTimeout(()=> reloadChattingDbWithCurrentListing(), 2000);
       }
     }
   }
+
+
+  function getDmChannelIdWithChildIndex(friend_name, _childIndex) {
+    if (currentUser == null) return '';
+
+    const dmChannelNameSuffix = (currentUser.username > friend_name)
+      ? `${friend_name}-dm-${currentUser.username}`
+      : `${currentUser.username}-dm-${friend_name}`;
+
+    let dmChannelNamePrefix = '';
+
+    if (chattingContextType != 0) {
+      dmChannelNamePrefix = currentListing._id + ((chattingContextType == 1) ? '-parent-'
+        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
+    }
+
+    //console.warn("getDmChannelId: current child index = " + _childIndex);
+    //console.warn("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
+
+    return (dmChannelNamePrefix + dmChannelNameSuffix);
+  }
+
 
   function getDmChannelId(friend_name) {
     if (currentUser == null) return '';
@@ -619,7 +720,7 @@ export function MessageContextProvider(props) {
         : `-child-${currentListing.child_listings[childIndex].listing_id._id}-`);
     }
 
-    // console.log("getDmChannelId: current child index = " + childIndex);
+    // console.log("getDmChannelId: current child index = " + _childIndex);
     // console.log("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
 
     return (dmChannelNamePrefix + dmChannelNameSuffix);
@@ -866,7 +967,7 @@ export function MessageContextProvider(props) {
         members: chatChannel[i].members
       };
 
-      // console.log("creating channels = " + chatChannel[i].channel_id);
+      //console.log("creating channels: members = " + JSON.stringify(chatChannel[i].members));
 
       // note: problem in handling the result!!
       const result = await axios.post('/LS_API/chatting/new', data)
@@ -906,7 +1007,13 @@ export function MessageContextProvider(props) {
             try {
               //console.warn("CSC: register for username + " + currentUser.username);
 
-              chatSocket.send(`CSC:Register:${currentUser.username}`);
+              
+              // make it sure current user is in the shared_user_group.
+              addContactList({id: currentUser._id, username: currentUser.username}).then((result) => 
+              {
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              });
+
             } catch (error) {
               console.error(error);
             } 
@@ -1036,7 +1143,9 @@ export function MessageContextProvider(props) {
       refreshUserDataFromMessageContext,
       reloadChattingDbWithCurrentListing,
       deregisterSocket,
-      setDoNotDisturbMode
+      doNotDisturbMode,
+      setDoNotDisturbMode,
+      checkAnyUnreadMessages
     }}
     >
       {props.children}
