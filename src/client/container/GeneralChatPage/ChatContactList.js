@@ -189,7 +189,7 @@ function ChatContactList() {
 
       if (bFoundDefaultContact == false) {
         // let's make the last item active if there is no previous active channel
-        // ISEO-TBD
+        // ISEO-TBD-1227
         //loadChattingDatabase();
       }
 
@@ -276,7 +276,7 @@ function ChatContactList() {
     if(_contactStates.length!==0) {
       setContactStates(_contactStates);
     }
-  }, [chattingContextType, currentListing, friendsList]);
+  }, [chattingContextType, currentListing, friendsList, currentChildIndex]);
 
   useEffect(() => {
     let _contactStates = buildContactStates();

@@ -79,6 +79,16 @@ span.newMsgSignature {
     justify-content: space-around;
     position: fixed;
     top: 38px;
+    right: 50px;
+    z-index: 2000;
+}
+
+
+.DashboardModeControl {
+    display: flex;
+    justify-content: space-around;
+    position: fixed;
+    top: 35px;
     right: 10px;
     z-index: 2000;
 }

@@ -7,7 +7,7 @@ import { Paper, Grid, Typography } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel';
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
-import { MessageContext } from '../../../../contexts/MessageContext';
+import { MessageContext, MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../../contexts/MessageContext';
 import { GlobalContext } from '../../../../contexts/GlobalContext';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import { FILE_SERVER_URL } from '../../../../globalConstants';
@@ -47,8 +47,11 @@ const ChildListing = React.forwardRef(({
     setChattingContextType,
     setChildType, childType,
     setChildIndex, childIndex,
-    loadChattingDatabase
+    loadChattingDatabase,
+    checkAnyUnreadMessages,
+
   } = useContext(MessageContext);
+
   const { setCurrentChildIndex, currentListing, currentChildIndex, filterParams } 	= useContext(CurrentListingContext);
   const { getProfilePicture } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
@@ -62,6 +65,10 @@ const ChildListing = React.forwardRef(({
   const borderStyle = (clickState == 1) ? {
     borderLeftStyle: 'solid',
     borderLeftColor: '#115399',
+    borderLeftWidth: '5px'
+  } : (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_CHILD, index) === true)? {
+    borderLeftStyle: 'solid',
+    borderLeftColor: 'red',
     borderLeftWidth: '5px'
   } : {};
 

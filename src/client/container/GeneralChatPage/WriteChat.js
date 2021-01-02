@@ -5,8 +5,9 @@ import '../../app.css';
 import './GeneralChatMainPage.css';
 
 function WriteChat() {
-  const { updateChatHistory, setDoNotDisturbMode } = useContext(MessageContext);
+  const { updateChatHistory, doNotDisturbMode, setDoNotDisturbMode } = useContext(MessageContext);
   const [chatMessage, setChatMessage] = useState('Write message...');
+  const [modeChanged, setModeChanged] = useState(false);
 
   const handleKeyPress = (e) => {
     if (e.which === 13 && !e.shiftKey) {
@@ -25,11 +26,20 @@ function WriteChat() {
   };
 
   const handleFocusIn = (event) => {
-    setDoNotDisturbMode(true);
+    if(doNotDisturbMode===false)
+    {
+      setModeChanged(true);
+      setDoNotDisturbMode(true);
+    }
   };
 
   const handleFocusOut = (event) => {
-    setDoNotDisturbMode(false);
+    if(modeChanged===true)
+    {
+      // let's clear the mode
+      setModeChanged(false);
+      setDoNotDisturbMode(false);
+    }
   };
 
 

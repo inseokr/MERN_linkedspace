@@ -62,8 +62,6 @@ module.exports = function (app) {
   router.post('/new', (req, res) => {
     // What if we're getting the new channel request even before it's saved in the database?
 	  	chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
-	  		// console.log("New channel: channel ID = " + req.body.channel_id);
-
 		    if (channel != null) {
 		      const result = { bNewlyCreated: false, channel };
 
@@ -75,6 +73,7 @@ module.exports = function (app) {
 
 		    const newChannel = new ChatChannel();
 
+     		// console.warn(`New channel: channel ID = ${req.body.channel_id}`);
 		    newChannel.channel_id = req.body.channel_id;
 		    newChannel.channel_type = req.body.channel_type;
 
