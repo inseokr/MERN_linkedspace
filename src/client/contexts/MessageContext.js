@@ -146,18 +146,24 @@ export function MessageContextProvider(props) {
        : (currentListing.child_listings[_childIndex] != undefined)? 
         currentListing.child_listings[_childIndex].list_of_group_chats : [];
 
-        for (let i = 0; i < list_of_group_chats.length; i++) { 
-          let groupChannelName = dmChannelContexts[list_of_group_chats[i]].channel_id;
+        try{
+          for (let i = 0; i < list_of_group_chats.length; i++) { 
+            let groupChannelName = dmChannelContexts[list_of_group_chats[i]].channel_id;
 
-          if(groupChannelName!=='' && (dmChannelContexts[channelName]!==undefined))
-          {
-            if(dmChannelContexts[groupChannelName].flag_new_msg===true)
+            if(groupChannelName!=='' && (dmChannelContexts[channelName]!==undefined))
             {
-              //console.warn("Current ChannelName = " + channelName);
-              bAnyNewMessage = true;
-              break;
+              if(dmChannelContexts[groupChannelName].flag_new_msg===true)
+              {
+                //console.warn("Current ChannelName = " + channelName);
+                bAnyNewMessage = true;
+                break;
+              }
             }
           }
+        }
+        catch (error)
+        {
+          //console.warn("checkAnyUnreadMessages: error="+error);
         }
     }
 

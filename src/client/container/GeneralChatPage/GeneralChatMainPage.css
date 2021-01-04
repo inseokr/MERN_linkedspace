@@ -14,7 +14,7 @@
 	border-style: solid hidden;
 	margin-top: 2px;
 	border-color: #adb5bd;
-	height: 100%
+	height: var(--chatMainHeight);
 }
 
 .GeneralChatMainWrapper > div {
@@ -28,7 +28,7 @@
 	grid-column: var(--leftPanelColumn);
 	display: flex;
 	flex-flow: column;
-	height: 90vh;
+	height: var(--chatLeftPanelHeight);
 	border-style: solid;
 	border-color: #adb5bd;
 	border-width: thin;
@@ -40,7 +40,7 @@
 	grid-column: var(--rightPanelColumn);
 	display: flex;
 	flex-flow: column;
-	height: 90vh;
+	height: var(--chatRightPanelHeight);
 	border-width: thin;
 	background-color: white;
 	border-style: solid;
