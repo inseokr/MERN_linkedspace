@@ -4,11 +4,11 @@
   console.log("ISEO: tenant_load_page1 is called");
 
   // ISEO: Wow... preprocessor is executing every single line includes <%... bummer....
-  $('#street').val("<%=listing_info.listing.location.street;%>");
-  $('#city').val("<%=listing_info.listing.location.city%>");
-  $('#state').val("<%=listing_info.listing.location.state%>");
-  $('#country').val("<%=listing_info.listing.location.country%>");
-  $('#zipcode').val("<%=listing_info.listing.location.zipcode%>");
+  $('#street').val("<%=listing_info.listing.Location.street;%>");
+  $('#city').val("<%=listing_info.listing.Location.city%>");
+  $('#state').val("<%=listing_info.listing.Location.state%>");
+  $('#country').val("<%=listing_info.listing.Location.country%>");
+  $('#zipcode').val("<%=listing_info.listing.Location.zipcode%>");
 
   // Distance range allowed
   $('#maximum_range_in_miles').val("<%=listing_info.listing.maximum_range_in_miles%>");
@@ -25,4 +25,3 @@
   $('#year').val("<%=listing_info.listing.move_in_date.year%>");
 
    console.log("ISEO: tenant_load_page1 is called1");
-  

@@ -9,7 +9,7 @@ import { InputGroup, FormControl } from 'react-bootstrap';
 import $ from 'jquery';
 
 import { GlobalContext } from '../../contexts/GlobalContext';
-import CollectLocationInfo from '../../components/location/CollectLocationInfo';
+import CollectLocationInfo from '../../components/Location/CollectLocationInfo';
 import {API_SERVER_URL, FILE_SERVER_URL} from '../../globalConstants';
 
 

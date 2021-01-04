@@ -64,7 +64,7 @@ function TenantListingDashBoard(props) {
           currentListing.location.zipcode} ${
           currentListing.location.country}`;
 
-        // Get location of parent listing and set zoom and center.
+        // Get Location of parent listing and set zoom and center.
         getGeometryFromSearchString(address).then(
           (response) => {
             if (response.status === 'OK') {
@@ -85,7 +85,7 @@ function TenantListingDashBoard(props) {
           }
         );
 
-        // Get location of any child listings if they exist.
+        // Get Location of any child listings if they exist.
         if (currentListing.child_listings) { // Proceed if child listings exist.
           const childListings = currentListing.child_listings;
 

@@ -3,7 +3,7 @@
 function preprocessUrlRequest(loginStatus, loginClickHandler, hideLoginModal)
 {
   //console.warn("preprocessUrlRequest is called. LoginStatus = " + loginStatus);
-  //console.warn("window.location.pathname = " + window.location.pathname);
+  //console.warn("window.Location.pathname = " + window.Location.pathname);
   if(loginStatus === false)
   {
     if(sessionStorage.getItem('redirectUrlAfterLogin')===null && window.location.pathname!=="/")

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Redirect, useHistory } from 'react-router-dom';
 import '../../app.css';
 
-
+// https://github.com/inseokr/MERN_linkedspace/issues/360
 function PostListingPage(props) {
   const history = useHistory();
 

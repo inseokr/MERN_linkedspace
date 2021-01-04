@@ -54,7 +54,7 @@ const LandlordRequestSchema = new mongoose.Schema({
   rental_property_information: {
     room_type: String,
     unit_type: String,
-    // rental location
+    // rental Location
     location: {
       street: String,
       city: String,

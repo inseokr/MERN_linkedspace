@@ -113,7 +113,7 @@ export default class ChildListingsView extends Component {
         // ID of chatting channel will be returned.
         // update dmChannelContexts
         console.log("add to liked list: result = " + result);
-        //window.location.reload();
+        //window.Location.reload();
         this.context.fetchCurrentListing(this.context.currentListing._id, "tenant");
       })
       .catch((err) => {

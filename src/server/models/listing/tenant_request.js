@@ -136,7 +136,7 @@ const TenantRequestSchema = new mongoose.Schema({
     }
   ],
 
-  	// rental location
+  	// rental Location
   	location: {
   		street: String,
   		city: String,
@@ -157,7 +157,7 @@ const TenantRequestSchema = new mongoose.Schema({
   	// rental duration in months
   	rental_duration: Number,
 
-  // maximum range from the desired location
+  // maximum range from the desired Location
   	maximum_range_in_miles: Number,
 
   // maximum possible rental per month in dollars.

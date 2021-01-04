@@ -1,18 +1,18 @@
 <% include ../../partials/header %>
 
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>                                                                                              
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
 <link rel="stylesheet" href="<%=locals.serverUrl+'/stylesheets/step_wizard.css'%>">
 
 <div class="container" style="text-align: center; margin-bottom: 10px">
-  <h3>Listing room/house</h3>  
+  <h3>Listing room/house</h3>
 </div>
 
 <div class="container">
 	<!-- totalSteps and curr_step should be provided -->
-	<%var curr_step=1; 
+	<%var curr_step=1;
 	  var totalSteps=6;
-	  var title = "What kind of place do you have?"%> 
+	  var title = "What kind of place do you have?"%>
 	<% include ../../partials/stepwizard_v2 %>
 
 	<%if(listing_info.listing==null) {%>
@@ -48,9 +48,9 @@
 					</div>
 
 					<!-- locations information -->
-					<hr>   
-					<% include ../../partials/location %>
-					<hr>    
+					<hr>
+					<% include ../../partials/Location %>
+					<hr>
 				    <div style="margin-top: 40px">
 						<button class="btn btn-success btn-lg float-left" type="submit" name="submit" value="exit">Exit</button>
 						<button class="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="next">Next</button>

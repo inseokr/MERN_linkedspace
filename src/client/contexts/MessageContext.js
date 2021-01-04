@@ -140,7 +140,7 @@ export function MessageContextProvider(props) {
     // 2.2 child listing
     // : listing_id-child-listing_id
     let result = channel_name.match(/(.*)-child-([^-]*)-(.*)/);
-  
+
     if(result===null)
     {
       // check if it's parent chatting channel
@@ -321,7 +321,7 @@ export function MessageContextProvider(props) {
       if (process.env.REACT_APP_WS_ENV === 'development') {
         ws = new WebSocket(`ws://${window.location.hostname}:3030`);
       } else {
-        //const HOST = window.location.origin.replace(/^http/, 'ws');
+        //const HOST = window.Location.origin.replace(/^http/, 'ws');
         //console.log(`env = ${JSON.stringify(process.env)}`);
         ws = new WebSocket(process.env.REACT_APP_WS_SERVER);
       }
@@ -679,7 +679,7 @@ export function MessageContextProvider(props) {
 
           chatChannels.push(chatInfo);
         }
-      } else if (chattingContextType == 2) { 
+      } else if (chattingContextType == 2) {
       // console.log("childIndex = " + childIndex);
 
         // console.log("currentListing=" + JSON.stringify(currentListing));
@@ -851,7 +851,7 @@ export function MessageContextProvider(props) {
     setNewMsgArrivedListingChannel(false);
 
     // note: it will be good time to register the user again?
-    
+
     // ISEO-TBD: need to load group chatting as well.
     const chatChannel = getListOfChatChannels();
 
@@ -897,7 +897,7 @@ export function MessageContextProvider(props) {
                 chatSocket.send(`CSC:Register:${currentUser.username}`);
               } catch (error) {
                 console.error(error);
-              } 
+              }
             }
           } else {
             loadChatHistory(chatChannel[i].channel_id, []);
@@ -909,7 +909,7 @@ export function MessageContextProvider(props) {
               chatSocket.send(`CSC:Register:${currentUser.username}`);
             } catch (error) {
               console.error(error);
-            } 
+            }
           }
         })
         .catch(err => console.warn(err));

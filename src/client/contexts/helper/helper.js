@@ -8,7 +8,7 @@ function loadGoogleMapScript(callback) {
     callback();
   } else {
     const googleMapScript = document.createElement('script');
-    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAP_API_KEY}`;
+    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAP_API_KEY}&libraries=places`;
     window.document.body.appendChild(googleMapScript);
     googleMapScript.addEventListener('load', callback);
   }
