@@ -9,6 +9,10 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
 function PickChattingParty(props) {
+
+  try
+  {
+
   const _group = props.group;
   const _listingId = props.listing_id;
 
@@ -97,6 +101,13 @@ function PickChattingParty(props) {
       {getListOfFriends()}
     </div>
   );
+}
+catch(error)
+{
+  console.warn("error = " + error);
+  return (<React.Fragment></React.Fragment>)
+}
+
 }
 
 export default PickChattingParty;

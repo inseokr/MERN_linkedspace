@@ -42,12 +42,16 @@ function MessageEditorIcon(props) {
     ? currentListing.child_listings[currentChildIndex]
     : [];
 
-  if (messageEditorCallerType === 'listing_dashboard') {
-    console.log(`currentChildIndex=${currentChildIndex}`);
-    if (currentListing.child_listings.length > 0
-        && currentListing.child_listings[currentChildIndex] !== undefined) {
-      console.log(`listing =${JSON.stringify(currentListing.child_listings[currentChildIndex].listing_id)}`);
+  try {
+    if (messageEditorCallerType === 'listing_dashboard') {
+      // console.log(`currentChildIndex=${currentChildIndex}`);
+      if (currentListing.child_listings.length > 0
+          && currentListing.child_listings[currentChildIndex] !== undefined) {
+        console.log(`listing =${JSON.stringify(currentListing.child_listings[currentChildIndex].listing_id)}`);
+      }
     }
+  } catch (error) {
+    console.warn(`error=${error}`);
   }
 
   const showModal = () => {

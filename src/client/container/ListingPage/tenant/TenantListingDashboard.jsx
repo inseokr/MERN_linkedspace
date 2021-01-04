@@ -197,18 +197,15 @@ function TenantListingDashBoard(props) {
                 </Grid>
               </Grid>
               <Grid className="map" item xs={6}>
-                {rightPaneMode === 'Map' ? (
-                  <React.Fragment>
-                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
-                      <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
-                    </SimpleModal>
-                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
-                  </React.Fragment>
-                ) : (
-                  (showMessage)
-                    ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
-                )
-                }
+                <React.Fragment>
+                  <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                    <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
+                  </SimpleModal>
+                  <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '50%', width: '99vh' }} />
+                </React.Fragment>
+                <React.Fragment>
+                  <GeneralChatMainPage compact="true" />
+                </React.Fragment>
               </Grid>
             </Grid>
           </Box>

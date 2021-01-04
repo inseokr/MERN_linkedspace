@@ -163,7 +163,7 @@ export function MessageContextProvider(props) {
         }
         catch (error)
         {
-          console.warn("checkAnyUnreadMessages: error="+error);
+          //console.warn("checkAnyUnreadMessages: error="+error);
         }
     }
 

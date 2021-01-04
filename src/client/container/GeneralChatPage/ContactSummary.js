@@ -17,7 +17,7 @@ function ContactSummary(props) {
   }
 
   function getContactSummaryClassName() {
-    console.log(`getContactSummaryClassName: props = ${JSON.stringify(props)}`);
+    //console.log(`getContactSummaryClassName: props = ${JSON.stringify(props)}`);
     let listOfClass = (props.clickState === 0 ? 'ContactSummary' : 'ContactSummaryClicked');
 
     if (props.contactIndex == 0) {
@@ -27,6 +27,9 @@ function ContactSummary(props) {
     listOfClass = (props.summary.flag_new_msg) ? `${listOfClass} NewMessageIndicator` : listOfClass;
     return listOfClass;
   }
+
+
+  //console.warn("ContactSummary: summary = " + props.summary.msg_summary);
 
   return (
     <div className={getContactSummaryClassName()} onClick={handleClick}>

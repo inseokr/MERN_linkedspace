@@ -32,16 +32,21 @@ export default class GeneralChatMainPage extends Component {
   }
 
 
+
   render() {
     const leftPanelColumn = (this.props.compact === 'true') ? '1/4' : '4/6';
     const rightPanelColumn = (this.props.compact === 'true') ? '4/13' : '6/10';
+    const viewHeight = (this.props.compact === 'true') ? '46vh' : '90vh';
     
     return (
       <div
         className="GeneralChatMainWrapper bg-light"
         style={{ '--leftPanelColumn': leftPanelColumn, 
                  '--rightPanelColumn': rightPanelColumn,
-                 borderBottom: 'hidden' }}
+                 '--chatMainHeight': viewHeight,
+                 '--chatLeftPanelHeight': viewHeight,
+                 '--chatRightPanelHeight': viewHeight,
+                 borderBottom: 'hidden'}}
       >
         <div className="MessageLeftPanel">
           <div className="MessageHeader_ls">

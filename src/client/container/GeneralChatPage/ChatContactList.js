@@ -12,14 +12,13 @@ import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 function ChatContactList() {
   const { currentUser, friendsList } = useContext(GlobalContext);
-  const { currentListing } = useContext(CurrentListingContext);
+  const { currentListing, currentChildIndex } = useContext(CurrentListingContext);
   const {
     switchChattingChannel,
     currChannelInfo,
     dmChannelContexts,
     setCurrChannelInfo,
     childIndex,
-    currentChildIndex,
     loadChattingDatabase,
     chattingContextType,
     getDmChannelId,
@@ -222,7 +221,8 @@ function ChatContactList() {
 
   // array of the following structure
   // {active: [1|0], type: [dm|group], channelName, userList, channelInfo}
-  // <note> buildContactStates won't be called even if GeneralChatMainpage is being rendered.
+  // <note> buildContactStates won't be called even if GeneralChatMainpage is being rendered?
+  // It's called, but not used to update contactStates
   const [contactStates, setContactStates] = useState(buildContactStates());
 
   async function handleClickState(index) {
@@ -248,18 +248,23 @@ function ChatContactList() {
   }
 
   useEffect(() => {
+
     // check if there is no active channel
     let bFoundDefaultContact = false;
 
     for (let i = 0; i < contactStates.length; i++) {
       if (contactStates[i].active == 1) {
         bFoundDefaultContact = true;
+        //handleClickState(i);
       }
     }
 
     if (bFoundDefaultContact == false) {
       // let's click the last item.
-      handleClickState(contactStates.length - 1);
+      if(contactStates.length>0)
+      {
+        handleClickState(contactStates.length - 1);
+      }
     }
 
     // <note> this will ensure the clean up of chatting history.
@@ -276,7 +281,16 @@ function ChatContactList() {
     if(_contactStates.length!==0) {
       setContactStates(_contactStates);
     }
-  }, [chattingContextType, currentListing, friendsList, currentChildIndex]);
+  }, [chattingContextType, currentListing, friendsList]);
+
+  useEffect(() => {
+    // need to re-build the states if chattingContextType is changed.
+    let _contactStates = buildContactStates();
+    if(_contactStates.length!==0) {
+      setContactStates(_contactStates);
+    }
+  }, [currentChildIndex]);
+
 
   useEffect(() => {
     let _contactStates = buildContactStates();
@@ -284,6 +298,7 @@ function ChatContactList() {
       setContactStates(_contactStates);
     }
   }, [dmChannelContexts, msgCounter]);
+
 
   function buildContactList() {
     const contacts = [];
