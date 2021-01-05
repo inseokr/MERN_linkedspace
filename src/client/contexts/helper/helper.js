@@ -1,9 +1,15 @@
+import axios from 'axios';
 import createHTMLMapMarker from './createHTMLMapMarker';
 
-const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
+// const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
+const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY_LINKEDSPACES;
+const HERE_API_KEY = process.env.REACT_APP_HERE_API_KEY;
 
 // Load the google map script.
 function loadGoogleMapScript(callback) {
+  console.warn(`GOOGLE_MAP_API_KEY=${GOOGLE_MAP_API_KEY}`);
+  // console.warn(`GOOGLE_MAP_API_KEY1=${GOOGLE_MAP_API_KEY1}`);
+
   if (typeof window.google === 'object' && typeof window.google.maps === 'object') {
     callback();
   } else {
@@ -24,7 +30,18 @@ function initGoogleMap(googleMapRef, zoom, center) { // Initialize the google ma
 }
 
 // Get geometry from google API.
-function getGeometryFromSearchString(search) {
+async function getGeometryFromSearchString(search) {
+  if (0) {
+    await axios.get(`https://geocoder.ls.hereapi.com/6.2/geocode.json?apiKey=${HERE_API_KEY}&searchtext=${search}`).then((result) => {
+    // data.Response.View[0].Result[0].Location.DisplayPosition;
+      console.warn(`result = ${JSON.stringify(result.data.Response.View[0].Result[0].Location.DisplayPosition)}`);
+      alert(`Result = ${JSON.stringify(result)}`);
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   return fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${search}&key=${GOOGLE_MAP_API_KEY}`).then(response => response.json());
 }
 

@@ -112,6 +112,7 @@ function TenantListingDashBoard(props) {
                 if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
                   getGeometryFromSearchString(address).then(
                     (response) => {
+                      console.warn("response="+JSON.stringify(response));
                       if (response.status === 'OK') {
                         const { geometry } = response.results[0];
                         const { location } = geometry;
