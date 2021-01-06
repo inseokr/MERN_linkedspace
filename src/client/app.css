@@ -149,3 +149,8 @@ span.newMsgSignature {
         border-bottom-color: gray;
     }
 }
+
+.leaflet-div-icon {
+    background: transparent !important;
+    border: none !important;
+}

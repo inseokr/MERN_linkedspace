@@ -1,4 +1,6 @@
 import createHTMLMapMarker from './createHTMLMapMarker';
+import { FILE_SERVER_URL } from '../../globalConstants';
+import { divIcon } from 'leaflet';
 
 const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
 
@@ -29,15 +31,25 @@ function getGeometryFromSearchString(search) {
 }
 
 // Construct a marker using createHTMLMapMarker
-function createMarker(googleMap, coordinates, imgSource, markerSelected) {
-  const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
+// function createMarker(googleMap, coordinates, imgSource, markerSelected) {
+//   const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
+//   const htmlObject = (markerSelected === true) ? `<img id="marker_selected" class="bounce" src="${imgSource}" alt="Selected Marker">` : `<img id="marker_default" class="bounce" src="${imgSource}" alt="Default Marker">`;
+//   return createHTMLMapMarker({
+//     latlng: latLng,
+//     map: googleMap,
+//     html: htmlObject
+//   });
+// }
+function createMarker(imgSource, markerSelected) {
   const htmlObject = (markerSelected === true) ? `<img id="marker_selected" class="bounce" src="${imgSource}" alt="Selected Marker">` : `<img id="marker_default" class="bounce" src="${imgSource}" alt="Default Marker">`;
-  return createHTMLMapMarker({
-    latlng: latLng,
-    map: googleMap,
-    html: htmlObject
+  return divIcon({
+    html: htmlObject,
+    iconSize: [25, 41],
+    iconAnchor: [12.5, 41],
+    popupAnchor: [0, -41]
   });
 }
+
 
 // Get the zoom for a given bound.
 function getBoundsZoomLevel(bounds, mapDim) {

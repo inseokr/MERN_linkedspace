@@ -26,18 +26,19 @@ import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
 
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+
 function TenantListingDashBoard(props) {
   const [modalShow, setModalShow] = useState(false);
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
   const {loginClickHandler, hideLoginModal} = props;
 
-  const googleMapRef = useRef(null);
-  let googleMap = null;
+  const { currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams } = useContext(CurrentListingContext);
 
-  const { mapElementID, setMapElementID, mapLoaded, currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams } = useContext(CurrentListingContext);
-
-  const [rightPaneMode, setRightPaneMode] = useState('Map');``
+  const [rightPaneMode, setRightPaneMode] = useState('Map');
   const [showMessage, setShowMessage] = useState(true);
+  const [markers, setMarkers] = useState([]);
 
   const showModal = () => {
     setModalShow(true);
@@ -48,15 +49,7 @@ function TenantListingDashBoard(props) {
   };
 
   useEffect(() => {
-    setMapElementID('tenantListingDashboardMapView');
-  }, []);
-
-  useEffect(() => {
-    const { center, zoom } = mapParams;
-    if (rightPaneMode === 'Map' && mapLoaded) {
-      googleMap = initGoogleMap(googleMapRef, zoom, center);
-      const bounds = new window.google.maps.LatLngBounds();
-      bounds.extend(center);
+    if (rightPaneMode === 'Map') {
       if (currentListing) {
         const address = `${currentListing.location.street} ${
           currentListing.location.city} ${
@@ -69,18 +62,10 @@ function TenantListingDashBoard(props) {
           (response) => {
             if (response.status === 'OK') {
               const { geometry } = response.results[0];
-              if (document.getElementById(mapElementID)) { // Continue if element exists.
-                const { location } = geometry;
-                // Location of where the tenant would prefer to stay.
-                const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
-                const marker = createMarker(googleMap, location, imgSource);
-                marker.addListener('click', () => {
-                  // ISEO-TBD: let's open a modal
-                  // showModal();
-                });
-                bounds.extend(location);
-                googleMap.fitBounds(bounds);
-              }
+              const { location } = geometry;
+              const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
+              const icon = createMarker(imgSource);
+              setMarkers([ ...markers, { position: location, icon: icon }]);
             }
           }
         );
@@ -88,7 +73,6 @@ function TenantListingDashBoard(props) {
         // Get Location of any child listings if they exist.
         if (currentListing.child_listings) { // Proceed if child listings exist.
           const childListings = currentListing.child_listings;
-
           if (childListings.length > 0) {
             childListings.map((listing, index) => {
               const location = (listing.listing_type === 'LandlordRequest') ? listing.listing_id.rental_property_information.location : listing.listing_id.location;
@@ -108,31 +92,22 @@ function TenantListingDashBoard(props) {
                       if (response.status === 'OK') {
                         const { geometry } = response.results[0];
                         const { location } = geometry;
-                        try {
-                          console.log(`listing = ${JSON.stringify(listing)}`);
-
-                          let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
-
-                          if (listing.listing_type === 'LandlordRequest') {
-                            if (listing.listing_id.pictures.length > 0) {
-                              imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
-                            }
-                          } else {
-                            imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
+                        let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
+                        if (listing.listing_type === 'LandlordRequest') {
+                          if (listing.listing_id.pictures.length > 0) {
+                            imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
                           }
-
-                          const marker = createMarker(googleMap, location, imgSource, (index === currentChildIndex));
-
-                          marker.addListener('click', (clickedIndex = index) => {
-                            if (clickedIndex !== currentChildIndex) { // update currentChildIndex if it's different
-                              setCurrentChildIndex(clickedIndex);
-                            }
-                          });
-                          bounds.extend(location);
-                          googleMap.fitBounds(bounds);
-                        } catch (err) {
-                          console.warn(`adding marker failed. error = ${err}`);
+                        } else {
+                          imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                         }
+                        const icon = createMarker(imgSource, (index === currentChildIndex));
+                        setMarkers([ ...markers, { position: location, icon: icon }]);
+                        // const marker = createMarker(googleMap, location, imgSource, (index === currentChildIndex));
+                        // marker.addListener('click', (clickedIndex = index) => {
+                        //   if (clickedIndex !== currentChildIndex) { // update currentChildIndex if it's different
+                        //     setCurrentChildIndex(clickedIndex);
+                        //   }
+                        // });
                       }
                     }
                   );
@@ -141,7 +116,6 @@ function TenantListingDashBoard(props) {
             });
           }
         }
-        // googleMap.fitBounds(bounds);
       }
     }
   }, [currentListing, rightPaneMode, currentChildIndex, mapParams, friendsMap]);
@@ -169,41 +143,47 @@ function TenantListingDashBoard(props) {
     }
   };
 
+  const { center, zoom } = mapParams;
 
   return (
     (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
-    <div>
-      {mapLoaded ? (
-        <Grid component="main">
-          <CssBaseline />
-          <Box className="App" component="div" display="flex" flexDirection="column">
-            <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
-            <Grid container alignContent="stretch" >
-              <Grid item xs={6}>
-                <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
-                <Grid item xs={12}>
-                  <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
-                </Grid>
-              </Grid>
-              <Grid className="map" item xs={6}>
-                {rightPaneMode === 'Map' ? (
-                  <React.Fragment>
-                    <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
-                      <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
-                    </SimpleModal>
-                    <div id={mapElementID || 'tenantListingDashboardMapView'} ref={googleMapRef} style={{ height: '90vh', width: '99vh' }} />
-                  </React.Fragment>
-                ) : (
-                  (showMessage)
-                    ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
-                )
-                }
+      <Grid component="main">
+        <CssBaseline />
+        <Box className="App" component="div" display="flex" flexDirection="column">
+          <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
+          <Grid container alignContent="stretch" >
+            <Grid item xs={6}>
+              <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
+              <Grid item xs={12}>
+                <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
               </Grid>
             </Grid>
-          </Box>
-        </Grid>
-      ) : (<div>Loading...</div>)}
-    </div>
+            <Grid className="map" item xs={6}>
+              {rightPaneMode === 'Map' ? (
+                <React.Fragment>
+                  <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="close" _width="20%">
+                    <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
+                  </SimpleModal>
+                  <MapContainer style={{ height: '90vh', width: '99vh' }} center={center} zoom={zoom} scrollWheelZoom={true}>
+                    <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {markers.map((marker, index) =>
+                      <Marker key={`marker-${index}`} position={marker.position} icon={marker.icon} >
+                        <Popup>
+                          A pretty CSS3 popup. <br /> Easily customizable.
+                        </Popup>
+                      </Marker>
+                    )}
+                  </MapContainer>
+                </React.Fragment>
+              ) : (
+                (showMessage)
+                  ? (<GeneralChatMainPage compact="true" />) : (<div> </div>)
+              )
+              }
+            </Grid>
+          </Grid>
+        </Box>
+      </Grid>
   );
 }
 
