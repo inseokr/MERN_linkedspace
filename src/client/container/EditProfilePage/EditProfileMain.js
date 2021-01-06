@@ -329,12 +329,21 @@ function EditProfileMain() {
                 <hr />
                 <label className="radio-inline">
                   <input type="radio" name="gender" value="M" id="male" />
-                  Male
+                  <span style={{marginLeft: '3px' }}> Male </span>
+                </label>
+                <label className="radio-inline" style={{ marginLeft: '30px'}}>
+                  <input type="radio" name="gender" value="F" id="female" />
+                  <span style={{marginLeft: '3px' }}> Female </span>
                 </label>
                 <label className="radio-inline" style={{ marginLeft: '30px' }}>
-                  <input type="radio" name="gender" value="F" id="female" />
-                  Female
+                  <input type="radio" name="gender" value="O" id="other" />
+                  <span style={{marginLeft: '3px' }}> Other </span>
                 </label>
+                <label className="radio-inline" style={{ marginLeft: '30px' }}>
+                  <input type="radio" name="gender" value="N" id="nodisclosure" />
+                  <span style={{marginLeft: '3px' }}> Prefer not to say </span>
+                </label>
+
                 <hr />
 
                 <div className="d-flex justify-content-between form-group">
