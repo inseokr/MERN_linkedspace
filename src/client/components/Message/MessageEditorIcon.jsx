@@ -69,6 +69,10 @@ function MessageEditorIcon(props) {
     }
   };
 
+  const handleCancel = () => {
+    setModalShow(false);
+  };
+
   function messageEditorOnClick(evt) {
     evt.stopPropagation();
     showModal();
@@ -91,7 +95,7 @@ function MessageEditorIcon(props) {
 
   return (
     <div>
-      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
+      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" handleCancel={handleCancel} _width="20%">
         <PickChattingParty group={userGroup} />
       </SimpleModal>
       <div role="button" tabIndex={0} className="MessageEditIcon" onClick={messageEditorOnClick} onKeyDown={messageEditorOnClick}>

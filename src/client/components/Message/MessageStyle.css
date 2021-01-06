@@ -233,6 +233,7 @@
 .boldHeader {
     font-weight: bold;
     margin-top:10px;
+    text-align: center;
 }
 
 .onlineWrapper {
