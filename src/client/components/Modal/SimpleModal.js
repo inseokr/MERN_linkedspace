@@ -9,14 +9,15 @@ function SimpleModal(props) {
   const additionalStyle = (props._width != undefined)
     ? { width: props._width, height: "auto" } : {};
 
+
   return (
     <div className={showHideClassName}>
       <section className="simpleModalMain" style={additionalStyle}>
         {props.children}
         <div className="flex-container" style={{ justifyContent: 'space-around' }}>
-          <button className="btn btn-info" onClick={props.handleClose} style={{ marginBottom: '5px' }}>{props.captionCloseButton}</button>
-          {(props.handleCancel!==undefined)? 
-            <button className="btn btn-warning" onClick={props.handleCancel} style={{ marginBottom: '5px' }}>Cancel</button>
+          <button className="btn btn-info" onClick={props.handle1} style={{ marginBottom: '5px' }}>{props.caption1!==undefined? props.caption1: "Close"}</button>
+          {(props.handle2!==undefined)? 
+            <button className="btn btn-warning" onClick={props.handle2} style={{ marginBottom: '5px' }}>{props.caption2!==undefined? props.caption2: "Cancel"}</button>
             : ""}
         </div>
       </section>

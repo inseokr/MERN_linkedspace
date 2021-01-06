@@ -174,7 +174,7 @@ function TenantListingComponent(props) {
   function addChildListingControl() {
     return (
       <div className="flex-container" style={{ justifyContent: 'space-between' }}>
-        <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="CLOSE">
+        <SimpleModal show={modalShow} handle1={handleClose} caption1="Close">
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
         </SimpleModal>
 

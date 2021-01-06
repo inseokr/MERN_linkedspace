@@ -7,6 +7,7 @@ import { Paper, Grid, Typography } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel';
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
+import SimpleModal from '../../../../components/Modal/SimpleModal';
 import { MessageContext, MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../../contexts/MessageContext';
 import { GlobalContext } from '../../../../contexts/GlobalContext';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
@@ -51,6 +52,8 @@ const ChildListing = React.forwardRef(({
     checkAnyUnreadMessages,
 
   } = useContext(MessageContext);
+
+  const [modalShow, setModalShow] = useState(false);
 
   const { setCurrentChildIndex, currentListing, currentChildIndex, filterParams } 	= useContext(CurrentListingContext);
   const { getProfilePicture } = useContext(GlobalContext);
@@ -119,6 +122,21 @@ const ChildListing = React.forwardRef(({
     e.stopPropagation();
 
     removeHandler(childListing);
+    setModalShow(false);
+  }
+
+  function handleRemoveButton(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setModalShow(true);
+  }
+
+  function handleCancel(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setModalShow(false); 
   }
 
   const scrollToBottom = () => {
@@ -252,7 +270,10 @@ const ChildListing = React.forwardRef(({
                     {childListing.requester.username}
                   </Typography>
                 </div>
-                <button className="btn btn-danger" onClick={removeListingHandler}>
+                 <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" _width="20%">
+                    <div style={{textAlign: "center", marginTop: "10px", marginBottom: "10px", fontSize: "120%", color: "#981407"}}> Are you sure to remove this listing?</div>
+                </SimpleModal>
+                <button className="btn btn-danger" onClick={handleRemoveButton}>
                   Remove
                 </button>
               </div>
