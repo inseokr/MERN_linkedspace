@@ -15,7 +15,9 @@ function SimpleModal(props) {
         {props.children}
         <div className="flex-container" style={{ justifyContent: 'space-around' }}>
           <button className="btn btn-info" onClick={props.handleClose} style={{ marginBottom: '5px' }}>{props.captionCloseButton}</button>
-          <button className="btn btn-warning" onClick={props.handleCancel} style={{ marginBottom: '5px' }}>Cancel</button>
+          {(props.handleCancel!==undefined)? 
+            <button className="btn btn-warning" onClick={props.handleCancel} style={{ marginBottom: '5px' }}>Cancel</button>
+            : ""}
         </div>
       </section>
     </div>
