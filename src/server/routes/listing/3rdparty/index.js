@@ -58,6 +58,7 @@ module.exports = function (app) {
 
     // set location information
     newListing.location = req.body.location;
+    newListing.coordinates = req.body.coordinates;
 
     // let's create a database
     // rename the file with listing_id
@@ -102,6 +103,7 @@ module.exports = function (app) {
 	    foundListing.listingSummary = req.body.rentalSummary;
 	    foundListing.rentalPrice = req.body.rentalPrice.replace(/\$|,/g, '');
 	    foundListing.location = req.body.location;
+      foundListing.coordinates = req.body.coordinates;
 
       if (filename != '') {
   	    const original_path = serverPath + picturePath + filename;

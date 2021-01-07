@@ -24,7 +24,7 @@ function TenantListingComponent(props) {
   const { currentUser } = useContext(GlobalContext);
   const {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
-    parentRef, setParentRef, setCurrentChildIndex
+    parentRef, setParentRef, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
@@ -47,7 +47,7 @@ function TenantListingComponent(props) {
     toggle(true);
   }
 
-  const borderStyle = (chattingContextType === MSG_CHANNEL_TYPE_LISTING_PARENT) ? {
+  const borderStyle = (currentListing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',
     borderLeftColor: '#115399',
     borderLeftWidth: '5px'
@@ -165,7 +165,7 @@ function TenantListingComponent(props) {
       setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
       toggle(true);
     }
-    setCurrentChildIndex(-1);
+    setMarkerParams({ ...markerParams, selectedMarkerID: currentListing._id});
     // need to reload the message window...
   };
 

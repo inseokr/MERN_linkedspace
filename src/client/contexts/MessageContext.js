@@ -74,7 +74,7 @@ export function MessageContextProvider(props) {
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing, setCurrentChildIndex, setChildIndexByChannelId, focusParentListing } = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setChildIndexByChannelId, focusParentListing } = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -134,7 +134,7 @@ export function MessageContextProvider(props) {
           //console.warn("Current ChannelName = " + channelName);
           bAnyNewMessage = true;
           break;
-        } 
+        }
       }
     }
 
@@ -143,11 +143,11 @@ export function MessageContextProvider(props) {
     {
       const list_of_group_chats = (chatting_type === MSG_CHANNEL_TYPE_LISTING_PARENT)?
        currentListing.list_of_group_chats
-       : (currentListing.child_listings[_childIndex] != undefined)? 
+       : (currentListing.child_listings[_childIndex] != undefined)?
         currentListing.child_listings[_childIndex].list_of_group_chats : [];
 
         try{
-          for (let i = 0; i < list_of_group_chats.length; i++) { 
+          for (let i = 0; i < list_of_group_chats.length; i++) {
             let groupChannelName = dmChannelContexts[list_of_group_chats[i]].channel_id;
 
             if(groupChannelName!=='' && (dmChannelContexts[channelName]!==undefined))
@@ -217,7 +217,7 @@ export function MessageContextProvider(props) {
     // 2.2 child listing
     // : listing_id-child-listing_id
     let result = channel_name.match(/(.*)-child-([^-]*)-(.*)/);
-  
+
     if(result===null)
     {
       // check if it's parent chatting channel
@@ -429,7 +429,6 @@ export function MessageContextProvider(props) {
         console.warn("Got message!!");
         const message = evt.data;
         updateChatHistory(message, false);
-        //setCurrentChildIndex(0);
         setWaitMessage(false);
       };
 
@@ -786,7 +785,7 @@ export function MessageContextProvider(props) {
 
           chatChannels.push(chatInfo);
         }
-      } else if (chattingContextType == 2) { 
+      } else if (chattingContextType == 2) {
       // console.log("childIndex = " + childIndex);
 
         // console.log("currentListing=" + JSON.stringify(currentListing));
@@ -958,7 +957,7 @@ export function MessageContextProvider(props) {
     setNewMsgArrivedListingChannel(false);
 
     // note: it will be good time to register the user again?
-    
+
     // ISEO-TBD: need to load group chatting as well.
     const chatChannel = getListOfChatChannels();
 
@@ -1004,7 +1003,7 @@ export function MessageContextProvider(props) {
                 chatSocket.send(`CSC:Register:${currentUser.username}`);
               } catch (error) {
                 console.error(error);
-              } 
+              }
             }
           } else {
             loadChatHistory(chatChannel[i].channel_id, []);
@@ -1013,16 +1012,16 @@ export function MessageContextProvider(props) {
             try {
               //console.warn("CSC: register for username + " + currentUser.username);
 
-              
+
               // make it sure current user is in the shared_user_group.
-              addContactList({id: currentUser._id, username: currentUser.username}).then((result) => 
+              addContactList({id: currentUser._id, username: currentUser.username}).then((result) =>
               {
                 chatSocket.send(`CSC:Register:${currentUser.username}`);
               });
 
             } catch (error) {
               console.error(error);
-            } 
+            }
           }
         })
         .catch(err => console.warn(err));

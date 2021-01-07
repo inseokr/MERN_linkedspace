@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import './app.css';
+import 'leaflet/dist/leaflet.css';
 import {
   BrowserRouter as Router,
   Switch
