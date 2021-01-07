@@ -9,7 +9,7 @@ import '../common/file_upload.css';
 import { InputGroup, FormControl } from 'react-bootstrap';
 import $ from 'jquery';
 
-import CollectLocationInfo from '../../../components/location/CollectLocationInfo';
+import CollectLocationInfo from '../../../components/Location/CollectLocationInfo';
 
 import {FILE_SERVER_URL} from '../../../globalConstants';
 
@@ -204,6 +204,7 @@ function Post3rdPartyListing(props) {
   const history = useHistory();
   const [currentListing, setCurrentListing] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [currentCoordinates, setCurrentCoordinates] = useState(null);
   const [listingId, setListingId] = useState('');
   // ISEO-TBD
   // : It should be replaced with contexts
@@ -264,6 +265,7 @@ function Post3rdPartyListing(props) {
     if (currentListing == null) {
       setCurrentListing(props.location.listing_db);
       setCurrentLocation(props.location.listing_db.location);
+      setCurrentCoordinates(props.location.listing_db.coordinates);
       setListingId(`${props.location.listing_db.id}/`);
     }
   }
@@ -271,12 +273,12 @@ function Post3rdPartyListing(props) {
   useEffect(() => {
     console.log('useEffect called');
     loadListingData(currentListing);
-  	}, currentListing);
+  	}, [currentListing]);
 
   return (
     <div>
       <div className="container" style={{ textAlign: 'center', marginBottom: '10px' }}>
-        <h3>Posting 3rd party listing</h3>
+        <h3>Posting 3rd Party Listing</h3>
       </div>
 
       <div className="container">
@@ -329,7 +331,10 @@ function Post3rdPartyListing(props) {
                     <h5> Location </h5>
                   </div>
                   <hr />
-                  <CollectLocationInfo location={currentLocation} />
+                  <CollectLocationInfo
+                    location={currentLocation}
+                    coordinates={currentCoordinates}
+                  />
                 </div>
 
                 <hr />

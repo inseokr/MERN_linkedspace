@@ -24,7 +24,7 @@ function TenantListingComponent(props) {
   const { currentUser } = useContext(GlobalContext);
   const {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
-    parentRef, setParentRef, setCurrentChildIndex
+    parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
@@ -42,12 +42,12 @@ function TenantListingComponent(props) {
 
 
   if (chattingContextType === MSG_CHANNEL_TYPE_GENERAL) {
-    //This will be called only if chatting conext is changed from general to dashboard
+    //This will be called only if chatting context is changed from general to dashboard
     setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
     toggle(true);
   }
 
-  const borderStyle = (chattingContextType === MSG_CHANNEL_TYPE_LISTING_PARENT) ? {
+  const borderStyle = (currentListing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',
     borderLeftColor: '#115399',
     borderLeftWidth: '5px'
@@ -165,6 +165,7 @@ function TenantListingComponent(props) {
       setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
       toggle(true);
     }
+    setMarkerParams({ ...markerParams, selectedMarkerID: currentListing._id});
     setCurrentChildIndex(-1);
     // need to reload the message window...
   };

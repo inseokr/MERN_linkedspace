@@ -17,7 +17,7 @@ import axios from 'axios';
 function getChildListingSummary(childListing) {
   console.log(`getChildListingSummary, listingType = ${childListing.listingType}`);
 
-  if (childListing.listingType == '_3rdparty') {
+  if (childListing.listingType === '_3rdparty') {
     return {
       id: childListing._id,
       listingType: childListing.listingType,
@@ -55,17 +55,17 @@ const ChildListing = React.forwardRef(({
 
   const [modalShow, setModalShow] = useState(false);
 
-  const { setCurrentChildIndex, currentListing, currentChildIndex, filterParams } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams } 	= useContext(CurrentListingContext);
   const { getProfilePicture } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
 
-  const listingTitle = (listing.listing_type == '_3rdPartyListing') ? listing.listing_id.listingSource : 'LinkedSpaces';
+  const listingTitle = (listing.listing_type === '_3rdPartyListing') ? listing.listing_id.listingSource : 'LinkedSpaces';
 
   const childListing = listing.listing_id;
   const childListingSummary = getChildListingSummary(childListing);
 
-  const borderStyle = (clickState == 1) ? {
+  const borderStyle = (listing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',
     borderLeftColor: '#115399',
     borderLeftWidth: '5px'
@@ -75,12 +75,12 @@ const ChildListing = React.forwardRef(({
     borderLeftWidth: '5px'
   } : {};
 
-  if (clicked != clickState) {
+  if (clicked !== clickState) {
     console.log('ChildListing: click state changed');
     setClicked(clickState);
   }
 
-  if (ref != reference) {
+  if (ref !== reference) {
     console.log('setReference is called');
     setReference(ref);
   }
@@ -93,7 +93,7 @@ const ChildListing = React.forwardRef(({
     // need to know the type of listing
     // ISEO-TBD: It's another bad example... let's use constanct instead.
     // what if the DB model name got changed??
-    setChildType((listing.listing_type == '_3rdPartyListing') ? 0 : 1);
+    setChildType((listing.listing_type === '_3rdPartyListing') ? 0 : 1);
 
     setChildIndex(index);
     messageClickHandler(true);
@@ -103,9 +103,9 @@ const ChildListing = React.forwardRef(({
     e.stopPropagation();
     // e.preventDefault();
     clickHandler(index);
-
+    console.log('listingClickHandler', listing);
+    setMarkerParams({ ...markerParams, selectedMarkerID: listing._id});
     setCurrentChildIndex(index);
-
     // update the message context
     updateMessageContext();
   }
@@ -136,7 +136,7 @@ const ChildListing = React.forwardRef(({
     e.preventDefault();
     e.stopPropagation();
 
-    setModalShow(false); 
+    setModalShow(false);
   }
 
   const scrollToBottom = () => {
@@ -153,12 +153,12 @@ const ChildListing = React.forwardRef(({
     setTimeout(() => {
     scrollToBottom();
     }, 100);
-  }    
+  }
 
   useEffect(() => {
     if (reference != null) {
       console.log(`ChildListing: useEffect: ref.current=${reference.current}`);
-      if (clicked == 1) {
+      if (clicked === 1) {
         console.log('clicking from useEffect');
         // reference.current.click();
         triggerScroll();
@@ -166,7 +166,7 @@ const ChildListing = React.forwardRef(({
     } else console.log('ref is null');
   }, [clicked, reference]);
 
-  const linkToListing = (childListingSummary.listingType == '_3rdparty')
+  const linkToListing = (childListingSummary.listingType === '_3rdparty')
     ? (
       <a href={childListingSummary.listingUrl} target="_blank">
         <img src={FILE_SERVER_URL+childListingSummary.coverPhoto} alt="Listing Picture" className="carouselImage" />
@@ -179,7 +179,7 @@ const ChildListing = React.forwardRef(({
     );
 
   function getListOfLikedFriends() {
-    if(index==-1 || currentListing.child_listings[index]===undefined) return "";
+    if(index===-1 || currentListing.child_listings[index]===undefined) return "";
 
     let _childListing = currentListing.child_listings[index];
 
@@ -217,7 +217,7 @@ const ChildListing = React.forwardRef(({
     );
   }
 
-  let _backGroundColor = (clickState==1)? "#b0becc": "none";
+  let _backGroundColor = (listing._id === markerParams.selectedMarkerID)? "#b0becc": "none";
   let heartStyle = (likedState===1)? "fa-heart": "fa-heart-o";
 
   const { price } = filterParams;
@@ -235,8 +235,8 @@ const ChildListing = React.forwardRef(({
               </Carousel.Item>
             </Carousel>
             <div className="likedListing d-flex flex-row">
-              <button class="btn btn-less-margin" id={`${index}`} onClick={_likeClickHandler}>
-                <i className={`fa ${heartStyle} heartColor`} aria-hidden="true"></i>
+              <button className="btn btn-less-margin" id={`${index}`} onClick={_likeClickHandler}>
+                <i className={`fa ${heartStyle} heartColor`} aria-hidden="true"/>
               </button>
               {getListOfLikedFriends()}
             </div>

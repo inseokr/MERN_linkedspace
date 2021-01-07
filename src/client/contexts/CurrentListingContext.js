@@ -30,6 +30,12 @@ export function CurrentListingProvider(props) {
     date: ''
   });
 
+  const [markerParams, setMarkerParams] = useState({
+    refresh: false,
+    selectedMarkerID: null,
+    markers: []
+  });
+
   const {currentUser} = useContext(GlobalContext);
 
   function getCurrentUser()
@@ -98,9 +104,6 @@ export function CurrentListingProvider(props) {
   function setChildIndexByChannelId(_listingId)
   {
     let _childIndex = getChildIndexByListingId(_listingId);
-
-    //console.warn(`setChildIndexByChannelId: setCurrentChildIndex=${currentChildIndex}, new index = ${_childIndex}`);
-
     setCurrentChildIndex(_childIndex);
   }
 
@@ -209,7 +212,9 @@ export function CurrentListingProvider(props) {
       mapParams,
       setMapParams,
       filterParams,
-      setFilterParams
+      setFilterParams,
+      markerParams,
+      setMarkerParams
     }}
     >
       {props.children}
