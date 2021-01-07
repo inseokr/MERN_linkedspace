@@ -102,6 +102,7 @@ export default class LandingPage extends Component {
               </div>
             </div>
           </div>
+          <iframe src="https://www.daum.net/" sandbox="allow-scripts allow-same-origin allow-top-novigation-by-user-activation" reeferrerPolicy="no-referrer" seamless />
         </div>
       );
     }
