@@ -125,7 +125,7 @@ export function MessageContextProvider(props) {
     // 1. check DM channels first
     for(let index=0; index<_contactList.length; index++)
     {
-      let channelName = getDmChannelIdWithChildIndex(_contactList[index].username, _childIndex);
+      let channelName = getDmChannelIdWithChildIndexChattingType(_contactList[index].username, _childIndex, chatting_type);
 
       if(channelName!=='' && (dmChannelContexts[channelName]!==undefined))
       {
@@ -426,7 +426,7 @@ export function MessageContextProvider(props) {
       };
 
       chatSocket.onmessage = (evt) => {
-        console.warn("Got message!!");
+        //console.warn("Got message!!");
         const message = evt.data;
         updateChatHistory(message, false);
         setWaitMessage(false);
@@ -514,11 +514,14 @@ export function MessageContextProvider(props) {
   }
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
-    // save some of information back to database
-    //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
-    pushCurrentChannelToDB(channelInfo).then((result) => {
-      setCurrChannelInfo(channelInfo);
-    });
+
+    if(currChannelInfo.channelName !== channelInfo.channelName)
+    {
+      //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
+      pushCurrentChannelToDB(channelInfo).then((result) => {
+        setCurrChannelInfo(channelInfo);
+      });
+    }
   }
 
   // direction:
@@ -709,6 +712,29 @@ export function MessageContextProvider(props) {
 
     return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
+
+function getDmChannelIdWithChildIndexChattingType(friend_name, _childIndex, chattingType) {
+    if (currentUser == null) return '';
+
+    const dmChannelNameSuffix = (currentUser.username > friend_name)
+      ? `${friend_name}-dm-${currentUser.username}`
+      : `${currentUser.username}-dm-${friend_name}`;
+
+    let dmChannelNamePrefix = '';
+
+    if (chattingType != MSG_CHANNEL_TYPE_GENERAL) {
+      dmChannelNamePrefix = currentListing._id + ((chattingType == MSG_CHANNEL_TYPE_LISTING_PARENT) ? '-parent-'
+        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
+    }
+
+    //console.warn("getDmChannelId: current child index = " + _childIndex);
+    //console.warn("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
+
+    return (dmChannelNamePrefix + dmChannelNameSuffix);
+  }
+
+
+
 
 
   function getDmChannelId(friend_name) {
@@ -1060,9 +1086,9 @@ export function MessageContextProvider(props) {
 
   useEffect(() => {
     //console.log("currChannelInfo updated");
-    //console.warn('ISEO: Loading chatting database... ');
+    console.warn('currChannelInfo updated');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
-    setTimeout(()=> loadChattingDatabase(), 1000);
+    setTimeout(()=> loadChattingDatabase(), 4000);
   }, [currChannelInfo]);
 
 
@@ -1107,8 +1133,8 @@ export function MessageContextProvider(props) {
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    //console.log("CurrentListing is just updated");
-    setTimeout(()=> loadChattingDatabase(), 500);
+    console.warn("CurrentListing is just updated");
+    setTimeout(()=> loadChattingDatabase(), 2000);
   }, [currentListing]);
 
   webSocketConnect();
