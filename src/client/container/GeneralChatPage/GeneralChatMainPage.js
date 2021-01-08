@@ -36,7 +36,7 @@ export default class GeneralChatMainPage extends Component {
   render() {
     const leftPanelColumn = (this.props.compact === 'true') ? '1/4' : '4/6';
     const rightPanelColumn = (this.props.compact === 'true') ? '4/13' : '6/10';
-    const viewHeight = (this.props.compact === 'true') ? '46vh' : '90vh';
+    const viewHeight = (this.props.compact === 'true') ? '67vh' : '90vh';
     
     return (
       <div

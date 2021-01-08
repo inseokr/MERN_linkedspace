@@ -166,11 +166,12 @@ function TenantListingDashBoard(props) {
               </Grid>
             </Grid>
             <Grid className="map" item xs={6}>
+              
               <React.Fragment>
                 <SimpleModal show={modalShow} handle1={handleClose} caption1="close" _width="20%">
                   <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                 </SimpleModal>
-                <MapContainer style={{ height: '50%', width: '99vh' }} center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
+                <MapContainer style={{ height: '25vh', width: '99vh', zIndex: '0' }} center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
                   <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <FeatureGroup ref={groupRef}>
                     {markers.map((marker, index) =>
@@ -183,6 +184,7 @@ function TenantListingDashBoard(props) {
                   </FeatureGroup>
                 </MapContainer>
               </React.Fragment>
+
               <React.Fragment>
                 <GeneralChatMainPage compact="true" />
               </React.Fragment>
