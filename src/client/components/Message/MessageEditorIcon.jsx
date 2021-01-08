@@ -69,6 +69,10 @@ function MessageEditorIcon(props) {
     }
   };
 
+  const handleCancel = () => {
+    setModalShow(false);
+  };
+
   function messageEditorOnClick(evt) {
     evt.stopPropagation();
     showModal();
@@ -82,16 +86,11 @@ function MessageEditorIcon(props) {
   }
 
   useEffect(() => {
-    // DB will be loaded only after chattingContextType is updated properly
-    // console.log("MessageEditorIcon: loadChattingDatabase");
-    // ISEO-TBD: loadChattingDatabase is called multiple times
-    // loadChattingDatabase();
-    // }, [chattingContextType, modalShow]);
   }, [modalShow]);
 
   return (
     <div>
-      <SimpleModal show={modalShow} handleClose={handleClose} captionCloseButton="Start Conversation" _width="20%">
+      <SimpleModal show={modalShow} handle1={handleClose} caption1="Start Conversation" handle2={handleCancel} caption2="Cancel" _width="20%">
         <PickChattingParty group={userGroup} />
       </SimpleModal>
       <div role="button" tabIndex={0} className="MessageEditIcon" onClick={messageEditorOnClick} onKeyDown={messageEditorOnClick}>

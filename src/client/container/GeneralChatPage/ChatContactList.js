@@ -186,12 +186,6 @@ function ChatContactList() {
         }
       }
 
-      if (bFoundDefaultContact == false) {
-        // let's make the last item active if there is no previous active channel
-        // ISEO-TBD-1227
-        //loadChattingDatabase();
-      }
-
       // check if any new chattig channel added
       // we will active the newly added chatting channel if so.
       if (contactStates != undefined && _contactStates.length != contactStates.length) {
@@ -241,7 +235,6 @@ function ChatContactList() {
       // We need to make it sure that loadChattingDatabase should be called in sequence.
       // second parameter tells if loadChattingDatabase is needed
       switchChattingChannel(_newContactStates[index].channelInfo, true);
-      // loadChattingDatabase();
     } catch (err) {
       console.warn(`handleClickState: error = ${err}`);
     }

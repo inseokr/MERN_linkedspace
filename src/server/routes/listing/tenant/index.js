@@ -264,7 +264,7 @@ module.exports = function (app) {
 
     // TenantRequest.findById(req.params.list_id).populate({path: 'child_listings.listing_id', model: '_3rdPartyListing'}).exec(function(err, foundListing){
     TenantRequest.findById(req.params.list_id, async (err, foundListing) => {
-      if (err) {
+      if (err || foundListing === null) {
         console.warn('Listing not found');
         console.warn(`err=${err}`);
         res.redirect('/');

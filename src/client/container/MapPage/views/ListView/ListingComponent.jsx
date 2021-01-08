@@ -65,7 +65,7 @@ function ListingComponent(props) {
           {/* ISEO-TBD:  Let's add messaging icon */}
           <MessageEditorIcon clickHandler={toggle} callerType="parent" parent_listing={listing} />
 
-          <SimpleModal show={modalShow} handleClose={hideModal}>
+          <SimpleModal show={modalShow} handle1={hideModal} caption1="Close">
             <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
           </SimpleModal>
           <button className="btn btn-info" onClick={showModal}>

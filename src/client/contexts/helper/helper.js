@@ -1,4 +1,4 @@
-import createHTMLMapMarker from './createHTMLMapMarker';
+import { divIcon } from 'leaflet';
 
 const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
 
@@ -8,7 +8,7 @@ function loadGoogleMapScript(callback) {
     callback();
   } else {
     const googleMapScript = document.createElement('script');
-    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAP_API_KEY}`;
+    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAP_API_KEY}&libraries=places`;
     window.document.body.appendChild(googleMapScript);
     googleMapScript.addEventListener('load', callback);
   }
@@ -28,15 +28,22 @@ function getGeometryFromSearchString(search) {
   return fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${search}&key=${GOOGLE_MAP_API_KEY}`).then(response => response.json());
 }
 
-// Construct a marker using createHTMLMapMarker
-function createMarker(googleMap, coordinates, imgSource, markerSelected) {
-  const latLng = new window.google.maps.LatLng(coordinates.lat, coordinates.lng);
-  const htmlObject = (markerSelected === true) ? `<img id="marker_selected" class="bounce" src="${imgSource}" alt="Selected Marker">` : `<img id="marker_default" class="bounce" src="${imgSource}" alt="Default Marker">`;
-  return createHTMLMapMarker({
-    latlng: latLng,
-    map: googleMap,
-    html: htmlObject
+function createMarker(imgSource, markerSelected) {
+  const htmlObject = markerSelected ? `<img id="marker_selected" class="bounce" src="${imgSource}" alt="Selected Marker">` : `<img id="marker_default" class="bounce" src="${imgSource}" alt="Default Marker">`;
+  return divIcon({
+    html: htmlObject,
+    iconSize: [25, 41],
+    iconAnchor: [12.5, 41],
+    popupAnchor: [0, -41]
   });
+}
+
+// Validate coordinate
+function validCoordinates(coordinates) {
+  if (coordinates === undefined) return false;
+
+  const { lat, lng } = coordinates;
+  return !(lat === 0 && lng === 0); // Return true if not (0, 0)
 }
 
 // Get the zoom for a given bound.
@@ -194,6 +201,7 @@ export {
   initGoogleMap,
   getGeometryFromSearchString,
   createMarker,
+  validCoordinates,
   getBoundsZoomLevel,
   centerCoordinates,
   constructBounds,
