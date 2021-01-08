@@ -125,7 +125,7 @@ export function MessageContextProvider(props) {
     // 1. check DM channels first
     for(let index=0; index<_contactList.length; index++)
     {
-      let channelName = getDmChannelIdWithChildIndexChattingType(_contactList[index].username, _childIndex, chatting_type);
+      let channelName = getDmChannelIdWithChildIndex(_contactList[index].username, _childIndex, chatting_type);
 
       if(channelName!=='' && (dmChannelContexts[channelName]!==undefined))
       {
@@ -693,27 +693,7 @@ export function MessageContextProvider(props) {
   }
 
 
-  function getDmChannelIdWithChildIndex(friend_name, _childIndex) {
-    if (currentUser == null) return '';
-
-    const dmChannelNameSuffix = (currentUser.username > friend_name)
-      ? `${friend_name}-dm-${currentUser.username}`
-      : `${currentUser.username}-dm-${friend_name}`;
-
-    let dmChannelNamePrefix = '';
-
-    if (chattingContextType != 0) {
-      dmChannelNamePrefix = currentListing._id + ((chattingContextType == 1) ? '-parent-'
-        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
-    }
-
-    //console.warn("getDmChannelId: current child index = " + _childIndex);
-    //console.warn("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
-
-    return (dmChannelNamePrefix + dmChannelNameSuffix);
-  }
-
-function getDmChannelIdWithChildIndexChattingType(friend_name, _childIndex, chattingType) {
+  function getDmChannelIdWithChildIndex(friend_name, _childIndex, chattingType = chattingContextType) {
     if (currentUser == null) return '';
 
     const dmChannelNameSuffix = (currentUser.username > friend_name)
@@ -732,10 +712,6 @@ function getDmChannelIdWithChildIndexChattingType(friend_name, _childIndex, chat
 
     return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
-
-
-
-
 
   function getDmChannelId(friend_name) {
     if (currentUser == null) return '';
