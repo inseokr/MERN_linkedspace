@@ -53,6 +53,8 @@ function TenantListingComponent(props) {
     borderLeftWidth: '5px'
   } : {};
 
+  const _backGroundColor = (currentListing._id === markerParams.selectedMarkerID)? "#b0becc": "white";
+
 
   async function addChildListing(childListing) {
     // console.log("addChildListing with childListing =" + JSON.stringify(childListing));
@@ -212,7 +214,7 @@ function TenantListingComponent(props) {
             </Carousel>
           </Grid>
           <Grid item xs={8}>
-            <Paper className="description" onClick={handleParentOnClick}>
+            <Paper className="description" onClick={handleParentOnClick} style={{background: _backGroundColor}}>
               <Typography className="description__address" color="textSecondary" gutterBottom>
                 Preferred location:
                 {' '}
