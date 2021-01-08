@@ -917,8 +917,28 @@ export function MessageContextProvider(props) {
 
     if (dmChannel.chattingHistory.length) {
       dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
-      dmChannel.msg_summary = `${dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].message.slice(0, 25)}...`;
-      dmChannel.datestamp = dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].datestamp;
+
+      let indexOfLastReceivedMessage = -1;
+
+      // need to find the last received message. not the last messgae.
+      for(let index=dmChannel.chattingHistory.length - 1; index>=0; index--)
+      {
+        if(dmChannel.chattingHistory[index].writer!==currentUser.username)
+        {
+          indexOfLastReceivedMessage = index;
+        }
+      }
+
+      if(indexOfLastReceivedMessage!==-1)
+      {
+        dmChannel.msg_summary = `${dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].message.slice(0, 25)}...`;
+        dmChannel.datestamp = dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].datestamp;
+      }
+      else
+      {
+        dmChannel.msg_summary = '';
+        dmChannel.datestamp = '';
+      }
 
       if (dmChannel.flag_new_msg == true) {
         if(processChattingChannelName(channel_id).type==="general")
