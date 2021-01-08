@@ -515,6 +515,8 @@ export function MessageContextProvider(props) {
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
 
+    console.warn("currChannelInfo.channelName="+currChannelInfo.channelName);
+    console.warn("channelInfo.channelName="+channelInfo.channelName);
     if(currChannelInfo.channelName !== channelInfo.channelName)
     {
       //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
@@ -1064,15 +1066,17 @@ export function MessageContextProvider(props) {
     //console.log("currChannelInfo updated");
     console.warn('currChannelInfo updated');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
-    setTimeout(()=> loadChattingDatabase(), 4000);
+    // It was 4 seconds previously
+    loadChattingDatabase();
+    //setTimeout(()=> loadChattingDatabase(), 500);
   }, [currChannelInfo]);
 
 
   useEffect(() => {
-    console.log("channelContextLength updated");
+    console.warn("channelContextLength updated");
     //console.warn('ISEO: Loading chatting database... ');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
-    //setTimeout(()=> loadChattingDatabase(), 4000);
+    setTimeout(()=> loadChattingDatabase(), 2000);
   }, [channelContextLength]);
 
 
@@ -1110,7 +1114,7 @@ export function MessageContextProvider(props) {
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
     console.warn("CurrentListing is just updated");
-    setTimeout(()=> loadChattingDatabase(), 2000);
+    setTimeout(()=> loadChattingDatabase(), 1500);
   }, [currentListing]);
 
   webSocketConnect();

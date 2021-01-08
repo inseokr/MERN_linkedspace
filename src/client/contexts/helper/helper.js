@@ -40,6 +40,8 @@ function createMarker(imgSource, markerSelected) {
 
 // Validate coordinate
 function validCoordinates(coordinates) {
+  if (coordinates === undefined) return false;
+
   const { lat, lng } = coordinates;
   return !(lat === 0 && lng === 0); // Return true if not (0, 0)
 }
