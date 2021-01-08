@@ -562,8 +562,12 @@ export function MessageContextProvider(props) {
     const lastReadIndex = getLastReadIndex(channelName);
 
     channelContexts[channelName].flag_new_msg = checkIfAnyNewMsg(lastReadIndex, channelContexts[channelName].chattingHistory);
-    channelContexts[channelName].msg_summary = `${msg.slice(0, 25)}...`;
-    channelContexts[channelName].datestamp = now.toDateString();
+    
+    if(direction===1)
+    {
+      channelContexts[channelName].msg_summary = `${msg.slice(0, 25)}...`;
+      channelContexts[channelName].datestamp = now.toDateString();
+    }
 
 
     // console.log("Send Chat Message: current channel name= " + channelName);
