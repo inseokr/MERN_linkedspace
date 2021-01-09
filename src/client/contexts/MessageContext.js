@@ -923,16 +923,17 @@ export function MessageContextProvider(props) {
       // need to find the last received message. not the last messgae.
       for(let index=dmChannel.chattingHistory.length - 1; index>=0; index--)
       {
-        if(dmChannel.chattingHistory[index].writer!==currentUser.username)
+        if(dmChannel.chattingHistory[index].username!==currentUser.username)
         {
           indexOfLastReceivedMessage = index;
+          break;
         }
       }
 
       if(indexOfLastReceivedMessage!==-1)
       {
-        dmChannel.msg_summary = `${dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].message.slice(0, 25)}...`;
-        dmChannel.datestamp = dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].datestamp;
+        dmChannel.msg_summary = `${dmChannel.chattingHistory[indexOfLastReceivedMessage].message.slice(0, 25)}...`;
+        dmChannel.datestamp = dmChannel.chattingHistory[indexOfLastReceivedMessage].datestamp;
       }
       else
       {
