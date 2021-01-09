@@ -13,16 +13,16 @@ function ChattingMessageBox(props) {
 
   if (props.msg_direction == '0') {
     return (
-      <div className="ChattingMessageBoxWrapper AlignToLeft">
-        <div className="ProfilePicture">
-          <img className="center rounded-circle imgLeftMsgBox" src={FILE_SERVER_URL+props.profile_picture} alt="myFriend" />
+      <div className="ChattingMessageBoxWrapperNoPicture">
+        <div>
+          <img className="center rounded-circle imgInMsgBox" style={{display:'none'}} src={FILE_SERVER_URL+props.profile_picture} alt="myFriend" />
         </div>
 
         <div className="speech-bubble-left marginTop marginBottom">
           <div className="MessageContents">
-            {props.message}
+            <p className="ChattingMessageStyle"> {props.message} </p>
           </div>
-          <div className="MessageTimeStamp">
+          <div className="MessageTimeStampLeft">
             {props.timestamp}
           </div>
         </div>
@@ -33,15 +33,14 @@ function ChattingMessageBox(props) {
   return (
     <React.Fragment>
       {newMsgMarker}
-      <div className="ChattingMessageBoxWrapper AlignToRight">
-
-        <div className="ProfilePicture">
-          <img className="center rounded-circle imgRightMsgBox" src={FILE_SERVER_URL+props.profile_picture} alt="myFriend" />
+      <div className="ChattingMessageBoxWrapper">
+        <div className="ProfilePictureInMessageBox">
+          <img className="center rounded-circle imgInMsgBox" src={FILE_SERVER_URL+props.profile_picture} alt="myFriend" />
         </div>
 
         <div className="speech-bubble-right marginTop marginBottom">
           <div className="MessageContents">
-            {props.message}
+            <p className="ChattingMessageStyle"> {props.message} </p>
           </div>
           <div className="MessageTimeStamp">
             {props.timestamp}
