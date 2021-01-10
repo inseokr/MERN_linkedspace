@@ -33,7 +33,7 @@ function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
-  const {doNotDisturbMode, setDoNotDisturbMode} = useContext(MessageContext);
+  const {doNotDisturbMode, setChildIndex, setDoNotDisturbMode} = useContext(MessageContext);
   const { currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
@@ -69,7 +69,8 @@ function TenantListingDashBoard(props) {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
         setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
-        setCurrentChildIndex(index + 1);
+        setCurrentChildIndex(index);
+        setChildIndex(index);
       }
     });
   };

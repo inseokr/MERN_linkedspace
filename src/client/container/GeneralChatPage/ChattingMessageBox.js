@@ -22,7 +22,7 @@ function ChattingMessageBox(props) {
           <div className="MessageContents">
             <p className="ChattingMessageStyle"> {props.message} </p>
           </div>
-          <div className="MessageTimeStampLeft">
+          <div className="MessageTimeStamp">
             {props.timestamp}
           </div>
         </div>
