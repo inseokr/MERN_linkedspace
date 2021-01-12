@@ -21,6 +21,7 @@ import {FILE_SERVER_URL} from '../../../../globalConstants';
 function TenantListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
+  const [overlappedComponents, setOverlappedComponets] = useState(null);
   const { currentUser } = useContext(GlobalContext);
   const {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
@@ -101,6 +102,13 @@ function TenantListingComponent(props) {
   }
 
   const showModal = () => {
+    // <note> it's a permanet change, and we should recover it.
+    let chattingPanelId = document.getElementById('chattingPanel');
+
+    setOverlappedComponets({id: chattingPanelId, indexValue: chattingPanelId.style.zIndex});
+    
+    chattingPanelId.style.zIndex = '0';
+
     setModalShow(true);
   };
 
@@ -153,6 +161,7 @@ function TenantListingComponent(props) {
 
   const handleClose = () => {
     setModalShow(false);
+    overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
   };
 
   const handleSelect = (e) => {
@@ -201,7 +210,7 @@ function TenantListingComponent(props) {
 
   return (
     <div>
-      <div ref={parentRef} onClick={handleParentOnClick} style={{ position: 'sticky', top: '0', zIndex: '100', background: 'white'}}>
+      <div ref={parentRef} onClick={handleParentOnClick} id='tenantParentListing' style={{ position: 'sticky', top: '0', zIndex: '1', background: 'white'}}>
       <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>

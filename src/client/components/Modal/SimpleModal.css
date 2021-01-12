@@ -5,7 +5,7 @@
   width:100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 100000;
+  z-index: 100;
 }
 
 .simpleModalMain {
@@ -19,6 +19,7 @@
   left: 50%;
   transform: translate(-50%,-50%);
   border-radius: 15px;
+  z-index: inherit;
 }
 
 .display-block {

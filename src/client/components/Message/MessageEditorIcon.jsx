@@ -17,6 +17,7 @@ function defaultClickHandler() {
 // ChildListingsView seems to be reloaded again when the message editor is clicked again.
 function MessageEditorIcon(props) {
   const [modalShow, setModalShow] = useState(false);
+  const [overlappedComponents, setOverlappedComponets] = useState(null);
   const {
     postSelectedContactList,
     selectedChatList,
@@ -55,13 +56,25 @@ function MessageEditorIcon(props) {
   }
 
   const showModal = () => {
+    const tenantParentListingId = document.getElementById('tenantParentListing');
+
+    setOverlappedComponets(
+      {
+        id: tenantParentListingId,
+        indexValue: tenantParentListingId.style.zIndex
+      }
+    );
+
+    tenantParentListingId.style.zIndex = '0';
+
     setModalShow(true);
   };
 
   const handleClose = async () => {
     setModalShow(false);
 
-    console.log(`selectedChatList length = ${selectedChatList.length}`);
+    overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+
     if (selectedChatList !== undefined && selectedChatList.length >= 1) {
       postSelectedContactList().then(() => { resetChatList(); });
       // need to make it sure that the selected chatting party is shown in the contact list.
@@ -71,6 +84,7 @@ function MessageEditorIcon(props) {
 
   const handleCancel = () => {
     setModalShow(false);
+    overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
   };
 
   function messageEditorOnClick(evt) {
