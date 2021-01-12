@@ -8,6 +8,7 @@
 
 .GeneralChatMainWrapper {
 	display: grid;
+	position: fixed;
 	grid-template-columns: repeat(12,1fr);
 	grid-gap: 0.1em;
 	border-width: 0.1px;
@@ -15,6 +16,11 @@
 	margin-top: 2px;
 	border-color: #adb5bd;
 	height: var(--chatMainHeight);
+	bottom: 0px;
+}
+
+.GeneralChatMainWrapper:hover {
+	height: 80vh;
 }
 
 .GeneralChatMainWrapper > div {
@@ -28,7 +34,7 @@
 	grid-column: var(--leftPanelColumn);
 	display: flex;
 	flex-flow: column;
-	height: var(--chatLeftPanelHeight);
+	height: inherit;
 	border-style: solid;
 	border-color: #adb5bd;
 	border-width: thin;
@@ -40,7 +46,7 @@
 	grid-column: var(--rightPanelColumn);
 	display: flex;
 	flex-flow: column;
-	height: var(--chatRightPanelHeight);
+	height: inherit;
 	border-width: thin;
 	background-color: white;
 	border-style: solid;

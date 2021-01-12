@@ -88,10 +88,21 @@ span.newMsgSignature {
     display: flex;
     justify-content: space-around;
     position: fixed;
-    top: 35px;
+    top: 15px;
     right: 10px;
     z-index: 2000;
 }
+
+.DashboardModeControlCaption {
+    display: flex;
+    justify-content: space-around;
+    position: fixed;
+    top: 17px;
+    right: 42px;
+    z-index: 2000;
+    color: #652143;
+}
+
 
 .ToggleCaption {
   color: rgba(0, 0, 0, 0.54);
