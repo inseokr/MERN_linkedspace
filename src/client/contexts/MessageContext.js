@@ -297,6 +297,10 @@ export function MessageContextProvider(props) {
   async function addContactList(_friend) {
 
     return new Promise(async (resolve) => {
+
+      if(currentListing===undefined) {
+        resolve(null);
+      }
       // 1. update database through API
       // + update shared_user_group
       const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
