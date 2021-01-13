@@ -301,28 +301,31 @@ export function MessageContextProvider(props) {
       if(currentListing===undefined) {
         resolve(null);
       }
-      // 1. update database through API
-      // + update shared_user_group
-      const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
+      else
+      {
+        // 1. update database through API
+        // + update shared_user_group
+        const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
 
-      const data = {
-        friend: { id: _friend.id, username: _friend.username },
-        chattingType: chattingContextType,
-        childInfo: { type: childType, index: childIndex }
-      };
+        const data = {
+          friend: { id: _friend.id, username: _friend.username },
+          chattingType: chattingContextType,
+          childInfo: { type: childType, index: childIndex }
+        };
 
-      const result = await axios.post(post_url, data)
-        .then((result) => {
-          // ID of chatting channel will be returned.
-          // update dmChannelContexts
-          // console.log("addContactList: result = " + result);
-          reloadChattingDbWithCurrentListing();
-          resolve(result);
-        })
-        .catch((err) => {
-          console.log(err);
-          resolve(err);
-        });
+        const result = await axios.post(post_url, data)
+          .then((result) => {
+            // ID of chatting channel will be returned.
+            // update dmChannelContexts
+            // console.log("addContactList: result = " + result);
+            reloadChattingDbWithCurrentListing();
+            resolve(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            resolve(err);
+          });
+      }
     });
   }
 
