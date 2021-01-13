@@ -19,7 +19,7 @@
 	bottom: 0px;
 }
 
-.GeneralChatMainWrapper:hover {
+section > .GeneralChatMainWrapper:hover {
 	height: 80vh;
 }
 

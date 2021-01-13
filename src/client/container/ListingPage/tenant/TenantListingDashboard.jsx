@@ -187,7 +187,9 @@ function TenantListingDashBoard(props) {
                 </MapContainer>
                 </div>
               </React.Fragment>
-                <GeneralChatMainPage compact="true" />
+                <section>
+                  <GeneralChatMainPage id="compactChattingPage" compact="true" />
+                </section>
             </Grid>
           </Grid>
         </Box>
