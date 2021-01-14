@@ -58,14 +58,16 @@ function MessageEditorIcon(props) {
   const showModal = () => {
     const tenantParentListingId = document.getElementById('tenantParentListing');
 
-    setOverlappedComponets(
-      {
-        id: tenantParentListingId,
-        indexValue: tenantParentListingId.style.zIndex
-      }
-    );
+    if (tenantParentListingId !== null) {
+      setOverlappedComponets(
+        {
+          id: tenantParentListingId,
+          indexValue: tenantParentListingId.style.zIndex
+        }
+      );
 
-    tenantParentListingId.style.zIndex = '0';
+      tenantParentListingId.style.zIndex = '0';
+    }
 
     setModalShow(true);
   };
@@ -84,7 +86,9 @@ function MessageEditorIcon(props) {
 
   const handleCancel = () => {
     setModalShow(false);
-    overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+    if (overlappedComponents !== null && overlappedComponents.id !== null) {
+      overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+    }
   };
 
   function messageEditorOnClick(evt) {
