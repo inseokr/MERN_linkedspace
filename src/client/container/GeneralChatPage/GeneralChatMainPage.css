@@ -16,8 +16,11 @@
 	margin-top: 2px;
 	border-color: #adb5bd;
 	height: var(--chatMainHeight);
-	width: 50%;
 	bottom: 0px;
+}
+
+section > .GeneralChatMainWrapper {
+	width: 50%;
 }
 
 section > .GeneralChatMainWrapper:hover {
