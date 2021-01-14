@@ -17,7 +17,7 @@ function SimpleModal(props) {
         <div className="flex-container" style={{ justifyContent: 'space-around' }}>
           <button className="btn btn-info" onClick={props.handle1} style={{ marginBottom: '5px' }}>{props.caption1!==undefined? props.caption1: "Close"}</button>
           {(props.handle2!==undefined)? 
-            <button className="btn btn-warning" onClick={props.handle2} style={{ marginBottom: '5px' }}>{props.caption2!==undefined? props.caption2: "Cancel"}</button>
+            <button className="btn btn-danger" onClick={props.handle2} style={{ marginBottom: '5px' }}>{props.caption2!==undefined? props.caption2: "Cancel"}</button>
             : ""}
         </div>
       </section>

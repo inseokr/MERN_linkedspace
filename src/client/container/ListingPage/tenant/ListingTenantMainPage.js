@@ -5,6 +5,8 @@ import '../../../app.css';
 import '../common/listing_style.css';
 import axios from 'axios';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
+import SimpleModal from '../../../components/Modal/SimpleModal';
+import SelectionFromDirectFriends from '../../../components/Selection/SelectionFromDirectFriends'
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import GetRatingDeco from '../../../components/decos/GetRatingDeco';
 import FormatListItems from '../../../components/decos/FormatListItems';
@@ -12,8 +14,21 @@ import FormatListItems from '../../../components/decos/FormatListItems';
 function ListingTenantMainPage(props) {
   const { match, isLoggedIn } = props;
   const { fetchCurrentListing, currentListing } = useContext(CurrentListingContext);
-
   const [currentListingFetched, setCurrentListingFetched] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
+
+  function handleAddUser(userId) {
+    let _selectedUsers = selectedUsers;
+    _selectedUsers.push(userId);
+    setSelectedUsers(_selectedUsers);
+  }
+
+  function handleRemoveUser(userId) {
+    let _selectedUsers = selectedUsers.filter(_id => userId!==_id);
+    setSelectedUsers(_selectedUsers);
+  }
 
   useEffect(() => {
     if (match) {
@@ -161,23 +176,40 @@ function ListingTenantMainPage(props) {
     }
 
     async function forward2friend() {
+
+      const data = {
+        userList: selectedUsers     
+      }
+
       const post_url = `/LS_API/listing/tenant/${match.params.id}/forward`;
-      await axios.post(post_url).then((result) => {
+      await axios.post(post_url, data).then((result) => {
         console.log(`result = ${result.data.result}`);
         alert(`Result = ${result.data.result}`);
+        setModalShow(false);
       })
         .catch((err) => {
           console.log(err);
+          setModalShow(false);
         });
+    }
+
+    function showForwardWindow() {
+      setModalShow(true);
+    }
+
+    function handleCancel() {
+      setModalShow(false);
     }
 
     return (
       <div style={{ marginTop: '30px' }}>
+        <SimpleModal show={modalShow} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" _width="20%">
+          <SelectionFromDirectFriends filter={currentListing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
+        </SimpleModal>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         <div className="d-flex justify-content-start">
           <button className="btn btn-outline-dark" onClick={() => copyCurrentUrl}>Copy link of this posting</button>
-
-          <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => forward2friend()}>Send listing to friends</button>
+          <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => showForwardWindow()}>Send listing to friends</button>
           <Link to={`/listing/tenant/${match.params.id}/dashboard`}>
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
           </Link>

@@ -226,7 +226,11 @@ function handleListingForward(req, res, type) {
         listing_info.cover_picture = listing.pictures[0].path;
       }
 
-      foundUser.direct_friends.forEach((friend) => {
+      const { userList } = req.body;
+
+      const numOfUserList = userList.length;
+
+      userList.forEach((friend) => {
         // Need to find the friend object and then update it.
         const result = User.findById(friend, (err, foundFriend) => {
           if (err) {
@@ -287,7 +291,9 @@ function handleListingForward(req, res, type) {
             + `${process.env.REACT_SERVER_URL}/listing/tenant/${req.params.list_id}/get\n`;
           sendNotificationEmail(foundFriend.email, `new listing shared by ${req.user.username}`, notificationBody);
 
+          listing.shared_user_group.push(foundFriend._id);
           foundFriend.save();
+          listing.save();
           return 2;
         });
 
