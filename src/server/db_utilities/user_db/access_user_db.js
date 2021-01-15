@@ -219,30 +219,30 @@ function handleListingForward(req, res, type) {
       received_date: Date.now()
     };
 
-    let forwardCount = 0;
+    const { userList } = req.body;
 
-    getListingById(req.params.list_id, type).then((listing) => {
+    let forwardCount = 0;
+    const numOfProcessedUser = 0;
+    let foundListing = null;
+    const numOfUserList = userList.length;
+
+    getListingById(req.params.list_id, type).then(async (listing) => {
       if (type == 'landlord') {
         listing_info.cover_picture = listing.pictures[0].path;
       }
 
-      const { userList } = req.body;
+      foundListing = listing;
 
-      const numOfUserList = userList.length;
-
-      userList.forEach((friend) => {
-        // Need to find the friend object and then update it.
-        const result = User.findById(friend, (err, foundFriend) => {
-          if (err) {
-            console.log('No friend found with given ID');
-            return 0;
-          }
-
+      for (let index = 0; index < userList.length; index++) {
+        const friend = userList[index];
+        // <note> this line won't wait till the callback function is completed though
+        const foundFriend = await User.findById(friend);
+        if (foundFriend) {
           // let's check duplicate records
           if (checkDuplicate((type == 'tenant')
             ? foundFriend.incoming_tenant_listing : foundFriend.incoming_landlord_listing, listing_info.id) == true
              || foundFriend._id.equals(listing.requester)) {
-            return 1;
+            console.warn('Duplicate');
           }
 
           // build list_of_referring_friends
@@ -253,12 +253,12 @@ function handleListingForward(req, res, type) {
             const creator = {
               profile_picture: foundUser.profile_picture,
               friend_id: req.user._id,
-              friend_name: foundUser.username
+              username: foundUser.username
             };
             const forwardee = {
               profile_picture: foundFriend.profile_picture,
               friend_id: foundFriend._id,
-              friend_name: foundFriend.username
+              username: foundFriend.username
             };
 
             referringFriends.push(creator);
@@ -272,7 +272,7 @@ function handleListingForward(req, res, type) {
             const forwardee = {
               profile_picture: foundFriend.profile_picture,
               friend_id: foundFriend._id,
-              friend_name: foundFriend.username
+              username: foundFriend.username
             };
 
             referringFriends.push(forwardee); // just append itself to the list.
@@ -291,21 +291,19 @@ function handleListingForward(req, res, type) {
             + `${process.env.REACT_SERVER_URL}/listing/tenant/${req.params.list_id}/get\n`;
           sendNotificationEmail(foundFriend.email, `new listing shared by ${req.user.username}`, notificationBody);
 
-          listing.shared_user_group.push(foundFriend._id);
           foundFriend.save();
-          listing.save();
-          return 2;
-        });
+          const _wait = await listing.shared_user_group.push(foundFriend._id);
+          forwardCount++;
+        }
+      }
 
-        if (result == 2) forwardCount++;
-      });
+      if (forwardCount >= 1) {
+        res.json({ result: 'Listing Forwarded Successfully' });
+        foundListing.save();
+      } else {
+        res.json({ result: 'No listing forwarded' });
+      }
     });
-
-    if (forwardCount >= 0) {
-      res.json({ result: 'Listing Forwarded Successfully' });
-    } else {
-      res.json({ result: 'No listing forwarded' });
-    }
   });
 }
 

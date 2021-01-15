@@ -153,7 +153,7 @@ const LandlordRequestSchema = new mongoose.Schema({
         ref: 'User'
       },
 
-      friend_name: String,
+      username: String,
     }]
 
 });

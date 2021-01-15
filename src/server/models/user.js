@@ -194,7 +194,7 @@ const UserSchema = new mongoose.Schema({
 			     		ref: 'User'
 			    },
 
-			    friend_name: String,
+			    username: String,
         }],
 
   			received_date: Date,
@@ -222,7 +222,7 @@ const UserSchema = new mongoose.Schema({
 			     		ref: 'User'
 			    },
 
-			    friend_name: String,
+			    username: String,
         }],
 
   			received_date: Date,

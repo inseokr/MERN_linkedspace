@@ -5,6 +5,7 @@ import '../../../app.css';
 import '../common/listing_style.css';
 import axios from 'axios';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
+import { GlobalContext } from '../../../contexts/GlobalContext';
 import SimpleModal from '../../../components/Modal/SimpleModal';
 import SelectionFromDirectFriends from '../../../components/Selection/SelectionFromDirectFriends'
 import { FILE_SERVER_URL } from '../../../globalConstants';
@@ -14,9 +15,22 @@ import FormatListItems from '../../../components/decos/FormatListItems';
 function ListingTenantMainPage(props) {
   const { match, isLoggedIn } = props;
   const { fetchCurrentListing, currentListing } = useContext(CurrentListingContext);
+  const { currentUser, refreshUserData } = useContext(GlobalContext);
   const [currentListingFetched, setCurrentListingFetched] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
+
+  function checkIfOwner() {
+    if(currentListing===undefined){
+      return false;
+    } 
+    else
+    {
+      return (currentListing.requester==currentUser._id);
+    }
+  }
+
+  const [isOwner, setIsOwner] = useState(checkIfOwner());
 
 
   function handleAddUser(userId) {
@@ -39,6 +53,10 @@ function ListingTenantMainPage(props) {
       });
     }
   }, [match]);
+
+  useEffect(() => {
+    setIsOwner(checkIfOwner());
+  }, [currentListing]);
 
   function getNumOfRoomMates() {
     if (currentListing.num_of_requested_roommates > 0) {
@@ -114,24 +132,42 @@ function ListingTenantMainPage(props) {
     );
   }
 
-  function getReferringFriends() {
-    console.log('getReferringFriends', currentListing);
+  function getFriends() {
+
+    let friendList = [];
+
+    if(isOwner===true)
+    {
+      // remove itself from the shared_user_group
+      let adjustedFriendList = []
+      for(let index=0; index<currentListing.shared_user_group.length ; index++)
+      {
+        if(currentListing.shared_user_group[index]._id!=currentUser._id)
+        {
+          adjustedFriendList.push(currentListing.shared_user_group[index]);
+        }
+      }
+      friendList = adjustedFriendList;
+    }
+    else
+    {
+      friendList = currentListing.list_of_referring_friends;
+    }
+
     return (
       <div className="row">
-        {currentListing.list_of_referring_friends.map((friend, index) => (
-          <div className="col-3" key={friend.friend_name}>
+        {friendList.map((friend, index) => (
+          <div className="col-3" key={friend.username}>
             <div className=" thumbnail">
               <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+friend.profile_picture} alt="friendProfilePicture" />
-              <span className="_so3dpm2" style={{ marginLeft: '40px' }}>{friend.friend_name}</span>
-              <div style={{ marginLeft: '60px' }}>
-                {GetRatingDeco(index)}
-              </div>
+              <span className="_so3dpm2" style={{ marginLeft: '50px' }}>{friend.username}</span>
             </div>
           </div>
         ))}
       </div>
     );
   }
+
 
   function getContactInformation() {
     return (
@@ -182,10 +218,14 @@ function ListingTenantMainPage(props) {
       }
 
       const post_url = `/LS_API/listing/tenant/${match.params.id}/forward`;
-      await axios.post(post_url, data).then((result) => {
+      await axios.post(post_url, data).then(async (result) => {
         console.log(`result = ${result.data.result}`);
         alert(`Result = ${result.data.result}`);
+        // ISEO-TBD:
+        // let's check why SelectionFromDirectFriends is not refreshed yet.
+        let res = fetchCurrentListing(currentListing._id, 'tenant');
         setModalShow(false);
+
       })
         .catch((err) => {
           console.log(err);
@@ -204,7 +244,7 @@ function ListingTenantMainPage(props) {
     return (
       <div style={{ marginTop: '30px' }}>
         <SimpleModal show={modalShow} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" _width="20%">
-          <SelectionFromDirectFriends filter={currentListing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
+          <SelectionFromDirectFriends show={modalShow} filter={currentListing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
         </SimpleModal>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         <div className="d-flex justify-content-start">
@@ -222,6 +262,7 @@ function ListingTenantMainPage(props) {
   let rentalUnitType = '';
   let profile_picture = '';
   let profile_caption = '';
+  let captionListOfFriends = (isOwner===true)? 'Shared Friends' : 'Referring Friends';
 
   if (currentListingFetched) {
     rentalUnitType = (currentListing.rental_preferences.rent_whole_unit === 'off') ? `${currentListing.rental_preferences.num_of_rooms} Bedroom(s)` : 'Whole Unit';
@@ -342,12 +383,12 @@ function ListingTenantMainPage(props) {
               <hr />
 
               <div className="_1xzp5ma3" style={{ marginTop: '40px', marginLeft: '20px' }}>
-                Referring Mutual Friends
+                {captionListOfFriends}
               </div>
 
               <div className="row" style={{ marginTop: '30px' }}>
                 <div className="col-7 wooden_background border rounded-top rounded-bottom">
-                  {getReferringFriends()}
+                  {getFriends()}
                 </div>
 
                 <div className="col-lg-4 sub_title wooden_background border rounded-top rounded-bottom" style={{ maxHeight: '102px', textAlign: 'center', marginLeft: '80px ' }}>

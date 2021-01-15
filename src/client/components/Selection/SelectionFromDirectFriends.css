@@ -4,6 +4,7 @@
     grid-auto-rows: 80px;
     justify-items: start;
     align-items: center;
+    border-bottom: 1px solid gray;
 }
 
 .friendWrapperClicked {
@@ -25,4 +26,5 @@
 .imgCover {
     object-fit: cover !important;
     width: 60px;
+    margin-left: 10px;
 }

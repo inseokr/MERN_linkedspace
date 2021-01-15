@@ -749,8 +749,7 @@ export function MessageContextProvider(props) {
   function getDmChannel(friend_name) {
     // console.log(`getDmChannel: friend_name = ${friend_name}`);
     const dmChannel = {
-      channel_id:
-                     getDmChannelId(friend_name),
+      channel_id: getDmChannelId(friend_name),
       members: []
     };
 

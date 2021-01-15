@@ -9,7 +9,7 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 function SelectionFromDirectFriends(props) {
   try
   {
-    const {filter, handleAddUser, handleRemoveUser, title} = props;
+    const {show, filter, handleAddUser, handleRemoveUser, title} = props;
 
     // <note> friendsList doesn't include current user.
     const { friendsList, getProfilePicture } = useContext(GlobalContext);
@@ -87,7 +87,6 @@ function SelectionFromDirectFriends(props) {
               </h5>
             </div>
           </div>
-          <hr />
         </div>
       );
     }
@@ -138,7 +137,10 @@ function SelectionFromDirectFriends(props) {
     }
 
     useEffect(() => {
-    });
+      if(show===true) {
+        setAdjustedFriendList(buildAdjustedFriendList());
+      }
+    }, [show]);
 
     return (
       <div className="container">
