@@ -48,6 +48,7 @@ export default class App extends Component {
     this.forgotPasswordClickHandler = this.forgotPasswordClickHandler.bind(this);
     this.updateLoginStatus = this.updateLoginStatus.bind(this);
     this.hideLoginModal = this.hideLoginModal.bind(this);
+    this.hideSignupModal = this.hideSignupModal.bind(this);
     this.hideForgotPasswordModal = this.hideForgotPasswordModal.bind(this);
   }
 
@@ -76,6 +77,13 @@ export default class App extends Component {
   signupClickHandler() {
     console.log('signupClickHandler called');
     this.setState({ showSignupModal: true });
+  }
+
+  hideSignupModal() {
+    if(this.state.showSignupModal===true)
+    {
+      this.setState({ showSignupModal: false });
+    }
   }
 
   forgotPasswordClickHandler() {
@@ -112,8 +120,8 @@ export default class App extends Component {
                   hideLoginModal={this.hideLoginModal}
                   updateLoginStatus={this.updateLoginStatus}
                 />
-                <ModalLoginForm display={showLoginModal} forgotPasswordHandler={this.forgotPasswordClickHandler}/>
-                <ModalSignupForm display={showSignupModal} />
+                <ModalLoginForm display={showLoginModal} forgotPasswordHandler={this.forgotPasswordClickHandler} closeHandler={this.hideLoginModal}/>
+                <ModalSignupForm display={showSignupModal} closeHandler={this.hideSignupModal}/>
                 <ModalForgotPasswordForm display={showForgotPasswordModal} clickHandler={this.hideForgotPasswordModal} />
                 <Switch>
                   <Route exact path="/Map">

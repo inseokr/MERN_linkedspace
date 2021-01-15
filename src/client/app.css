@@ -15,6 +15,20 @@ span.fa-comment {
   right: 5px !important;
 }
 
+span.fa-times {
+  position: absolute;
+  font-size: 1em;
+  top: 4px !important;
+  right: 3px !important;
+  color: darkblue;
+}
+
+
+span.fa-times:hover {
+  background: lightgray;
+  border-radius: 50%;
+}
+
 .fa {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
