@@ -250,6 +250,7 @@ const ChildListing = React.forwardRef(({
               <Typography className="description__summary">
                 {childListingSummary.listingSummary}
               </Typography>
+              <div style={{ display:'flex', flexFlow: 'row', justifyContent: 'space-between'}}>
               <Typography>
                 {' '}
                 Price: $
@@ -260,7 +261,9 @@ const ChildListing = React.forwardRef(({
                 City:
                 {childListingSummary.location}
               </Typography>
-              <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '40px' }}>
+              </div>
+
+              <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '5px' }}>
                 <div className="flex-container" style={{ justifyContent: 'flex-start' }}>
                   <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
                   <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>

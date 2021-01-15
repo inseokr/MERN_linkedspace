@@ -71,7 +71,6 @@ function PickChattingParty(props) {
           </div>
           <div className="friendName">
             <h5>
-              {' '}
               {_friend.username}
               {' '}
             </h5>

@@ -12,7 +12,7 @@ import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 function ChatContactList() {
   const { currentUser, friendsList } = useContext(GlobalContext);
-  const { currentListing, currentChildIndex } = useContext(CurrentListingContext);
+  const { currentListing,  currentChildIndex} = useContext(CurrentListingContext);
   const {
     switchChattingChannel,
     currChannelInfo,
@@ -271,18 +271,17 @@ function ChatContactList() {
   useEffect(() => {
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
-    if(_contactStates.length!==0) {
-      setContactStates(_contactStates);
-    }
+    setContactStates(_contactStates);
+    
   }, [chattingContextType, currentListing, friendsList]);
 
   useEffect(() => {
+
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
-    if(_contactStates.length!==0) {
-      setContactStates(_contactStates);
-    }
-  }, [currentChildIndex]);
+    setContactStates(_contactStates);
+
+  }, [childIndex, currentChildIndex]);
 
 
   useEffect(() => {

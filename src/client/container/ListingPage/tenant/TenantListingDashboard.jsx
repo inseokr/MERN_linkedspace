@@ -8,6 +8,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
 
 import '../../MapPage/index.css';
+import './TenantListingDashboard.css'
 
 import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboardListView';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
@@ -33,7 +34,7 @@ function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
-  const {doNotDisturbMode, setDoNotDisturbMode} = useContext(MessageContext);
+  const {doNotDisturbMode, setChildIndex, setDoNotDisturbMode} = useContext(MessageContext);
   const { currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
@@ -69,7 +70,8 @@ function TenantListingDashBoard(props) {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
         setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
-        setCurrentChildIndex(index + 1);
+        setCurrentChildIndex(index);
+        setChildIndex(index);
       }
     });
   };
@@ -145,7 +147,6 @@ function TenantListingDashBoard(props) {
     }
   };
 
-
   const banAdditionalStyle =
       (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
 
@@ -156,8 +157,8 @@ function TenantListingDashBoard(props) {
       <Grid component="main">
         <CssBaseline />
         <Box className="App" component="div" display="flex" flexDirection="column">
-          <ToggleSwitch leftCaption="Map" rightCaption="Message" clickHandler={updateRightPane} />
-          <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
+            <span className="DashboardModeControlCaption" > Do not disturb mode </span>
+            <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
           <Grid container alignContent="stretch" >
             <Grid item xs={6}>
               <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
@@ -171,7 +172,8 @@ function TenantListingDashBoard(props) {
                 <SimpleModal show={modalShow} handle1={handleClose} caption1="close" _width="20%">
                   <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                 </SimpleModal>
-                <MapContainer style={{ height: '25vh', width: '99vh', zIndex: '0' }} center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
+                <div>
+                <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
                   <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <FeatureGroup ref={groupRef}>
                     {markers.map((marker, index) =>
@@ -183,11 +185,11 @@ function TenantListingDashBoard(props) {
                     )}
                   </FeatureGroup>
                 </MapContainer>
+                </div>
               </React.Fragment>
-
-              <React.Fragment>
-                <GeneralChatMainPage compact="true" />
-              </React.Fragment>
+                <section>
+                  <GeneralChatMainPage id="compactChattingPage" compact="true" />
+                </section>
             </Grid>
           </Grid>
         </Box>

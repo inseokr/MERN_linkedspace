@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import '../../app.css';
 import { FILE_SERVER_URL } from '../../globalConstants';
@@ -42,7 +42,7 @@ export default class ModalLoginForm extends Component {
   }
 
   render() {
-    const { display, forgotPasswordHandler } = this.props;
+    const { display, forgotPasswordHandler, closeHandler } = this.props;
     // console.log("rendering ModalLoginForm. display = " + this.props.display);
     const displayStyle = (display === true) ? { display: 'block', opacity: '1' } : { display: 'none' };
 
@@ -60,8 +60,7 @@ export default class ModalLoginForm extends Component {
         <div className="modal-dialog" role="document">
 
           <div className="modal-content" style={modalContentStyle}>
-
-
+            <span className="fa fa-times" onClick={closeHandler} />
             <div className="modal-header text-center">
               <h4 className="modal-title w-100 ariweight-bold" font-ss="close" data-dismiss="modal" style={modalTitleStyle}>LinkedSpaces</h4>
             </div>

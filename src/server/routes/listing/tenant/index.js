@@ -573,6 +573,19 @@ module.exports = function (app) {
 	    // 2. remove the tenant listing from other users including creator
 	    userDbHandler.deleteListingFromUserDB(foundListing);
 
+      // 3. remove channels in the parent level
+      const channel_id_prefix = `${req.params.list_id}-`;
+      chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
+
+      foundListing.shared_user_group.map(async (user, userIndex) => {
+        const pathToPopulate = `shared_user_group.${userIndex}`;
+        await foundListing.populate(pathToPopulate, 'username').execPopulate();
+        foundListing.populated(pathToPopulate);
+
+        chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
+      });
+
+
       foundListing.remove();
 
     	req.flash('success', 'Listing Deleted Successfully');

@@ -297,28 +297,35 @@ export function MessageContextProvider(props) {
   async function addContactList(_friend) {
 
     return new Promise(async (resolve) => {
-      // 1. update database through API
-      // + update shared_user_group
-      const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
 
-      const data = {
-        friend: { id: _friend.id, username: _friend.username },
-        chattingType: chattingContextType,
-        childInfo: { type: childType, index: childIndex }
-      };
+      if(currentListing===undefined) {
+        resolve(null);
+      }
+      else
+      {
+        // 1. update database through API
+        // + update shared_user_group
+        const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
 
-      const result = await axios.post(post_url, data)
-        .then((result) => {
-          // ID of chatting channel will be returned.
-          // update dmChannelContexts
-          // console.log("addContactList: result = " + result);
-          reloadChattingDbWithCurrentListing();
-          resolve(result);
-        })
-        .catch((err) => {
-          console.log(err);
-          resolve(err);
-        });
+        const data = {
+          friend: { id: _friend.id, username: _friend.username },
+          chattingType: chattingContextType,
+          childInfo: { type: childType, index: childIndex }
+        };
+
+        const result = await axios.post(post_url, data)
+          .then((result) => {
+            // ID of chatting channel will be returned.
+            // update dmChannelContexts
+            // console.log("addContactList: result = " + result);
+            reloadChattingDbWithCurrentListing();
+            resolve(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            resolve(err);
+          });
+      }
     });
   }
 
@@ -742,8 +749,7 @@ export function MessageContextProvider(props) {
   function getDmChannel(friend_name) {
     // console.log(`getDmChannel: friend_name = ${friend_name}`);
     const dmChannel = {
-      channel_id:
-                     getDmChannelId(friend_name),
+      channel_id: getDmChannelId(friend_name),
       members: []
     };
 
@@ -917,8 +923,29 @@ export function MessageContextProvider(props) {
 
     if (dmChannel.chattingHistory.length) {
       dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
-      dmChannel.msg_summary = `${dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].message.slice(0, 25)}...`;
-      dmChannel.datestamp = dmChannel.chattingHistory[dmChannel.chattingHistory.length - 1].datestamp;
+
+      let indexOfLastReceivedMessage = -1;
+
+      // need to find the last received message. not the last messgae.
+      for(let index=dmChannel.chattingHistory.length - 1; index>=0; index--)
+      {
+        if(dmChannel.chattingHistory[index].username!==currentUser.username)
+        {
+          indexOfLastReceivedMessage = index;
+          break;
+        }
+      }
+
+      if(indexOfLastReceivedMessage!==-1)
+      {
+        dmChannel.msg_summary = `${dmChannel.chattingHistory[indexOfLastReceivedMessage].message.slice(0, 25)}...`;
+        dmChannel.datestamp = dmChannel.chattingHistory[indexOfLastReceivedMessage].datestamp;
+      }
+      else
+      {
+        dmChannel.msg_summary = '';
+        dmChannel.datestamp = '';
+      }
 
       if (dmChannel.flag_new_msg == true) {
         if(processChattingChannelName(channel_id).type==="general")
