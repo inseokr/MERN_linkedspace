@@ -40,9 +40,8 @@ function DirectFriends() {
           </div>
           <div className="friend_information">
 
-            <span className="bold_fonts">{network_info.direct_friends_list[i].name}</span>
+            <span className="bold_fonts">{network_info.direct_friends_list[i].username}</span>
             <br />
-            <span className="normal_fonts">{`${network_info.direct_friends_list[i].address.city},${network_info.direct_friends_list[i].address.state}`}</span>
           </div>
 
           <Link to="/Messages">

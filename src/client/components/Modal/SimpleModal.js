@@ -7,7 +7,7 @@ function SimpleModal(props) {
   const showHideClassName = props.show == true ? 'simpleModal display-block' : 'simpleModal display-none';
 
   const additionalStyle = (props._width != undefined)
-    ? { width: props._width, height: "auto" } : {};
+    ? { width: props._width} : {};
 
 
   return (
