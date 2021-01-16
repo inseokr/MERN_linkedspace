@@ -692,7 +692,8 @@ export function MessageContextProvider(props) {
         // This will be a rare occasion, and most likely it's ok to switch to the parent listing when there is a change in the child listing.
         if(doNotDisturbMode===false)
         {
-          focusParentListing();
+          //this will be very disturbing... let's not call this
+          //focusParentListing();
         }
         else
         {
