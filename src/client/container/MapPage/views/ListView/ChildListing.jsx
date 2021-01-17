@@ -273,7 +273,7 @@ const ChildListing = React.forwardRef(({
                     {childListing.requester.username}
                   </Typography>
                 </div>
-                 <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" _width="20%">
+                 <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" styles={{width: '20%', height: 'auto', overflowY: 'hidden'}}>
                     <div style={{textAlign: "center", marginTop: "10px", marginBottom: "10px", fontSize: "120%", color: "#981407"}}> Are you sure to remove this listing?</div>
                 </SimpleModal>
                 <button className="btn btn-danger" onClick={handleRemoveButton}>

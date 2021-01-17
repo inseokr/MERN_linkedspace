@@ -169,7 +169,7 @@ function TenantListingDashBoard(props) {
             <Grid className="map" item xs={6}>
               
               <React.Fragment>
-                <SimpleModal show={modalShow} handle1={handleClose} caption1="close" _width="20%">
+                <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
                   <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                 </SimpleModal>
                 <div>
