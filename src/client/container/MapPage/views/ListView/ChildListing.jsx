@@ -55,7 +55,7 @@ const ChildListing = React.forwardRef(({
 
   const [modalShow, setModalShow] = useState(false);
 
-  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup } 	= useContext(CurrentListingContext);
   const { getProfilePicture } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
@@ -205,7 +205,7 @@ const ChildListing = React.forwardRef(({
     _childListing.shared_user_group.forEach((user, _index) => {
       if(checkIfInLikedList(user._id)===true)
       {
-        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+getProfilePicture(user.username)} alt="Liked friend"  />);
+        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+getProfilePictureFromSharedGroup(user.username)} alt="Liked friend"  />);
       }
     });
 
