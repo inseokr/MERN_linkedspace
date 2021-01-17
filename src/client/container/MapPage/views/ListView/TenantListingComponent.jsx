@@ -210,7 +210,7 @@ function TenantListingComponent(props) {
 
   return (
     <div>
-      <div ref={parentRef} onClick={handleParentOnClick} id='tenantParentListing' style={{ position: 'sticky', top: '0', zIndex: '1', background: 'white'}}>
+      <div ref={parentRef} onClick={handleParentOnClick} id='tenantParentListing' style={{ position: 'sticky', top: '0', zIndex: '100', background: 'white'}}>
       <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>
