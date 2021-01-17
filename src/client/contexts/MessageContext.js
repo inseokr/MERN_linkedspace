@@ -290,6 +290,8 @@ export function MessageContextProvider(props) {
   async function reloadChattingDbWithCurrentListing() {
     // console.log("reloadChattingDbWithCurrentListing");
     //console.warn("reloadChattingDbWithCurrentListing");
+    if(currentListing===undefined) return;
+    
     let result = fetchCurrentListing(currentListing._id, 'tenant');
     // <note> loadChattingDatabase will be called when currentListing is updated.
   }
