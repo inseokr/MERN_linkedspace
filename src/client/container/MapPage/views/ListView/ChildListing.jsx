@@ -67,7 +67,7 @@ const ChildListing = React.forwardRef(({
 
   const borderStyle = (listing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',
-    borderLeftColor: '#115399',
+    borderLeftColor: (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_CHILD, index) === true)? 'red': '#115399',
     borderLeftWidth: '5px'
   } : (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_CHILD, index) === true)? {
     borderLeftStyle: 'solid',

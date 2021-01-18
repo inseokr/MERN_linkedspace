@@ -55,10 +55,6 @@ export function CurrentListingProvider(props) {
       parentRef.current.click();
       parentRef.current.scrollIntoView();
     }
-    else
-    {
-      console.warn("focusParentListing failure");
-    }
   }
 
 

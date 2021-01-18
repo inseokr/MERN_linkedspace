@@ -17,8 +17,8 @@ function PickChattingParty(props) {
   const _listingId = props.listing_id;
 
   // <note> friendsList doesn't include current user.
-  const { friendsList, getProfilePicture, currentUser, getUserLoginStatus } = useContext(GlobalContext);
-  const { loadChattingDatabase, removeFromChatList, addToChatList } = useContext(MessageContext);
+  const { friendsList, getProfilePicture, getUserLoginStatus } = useContext(GlobalContext);
+  const { removeFromChatList, addToChatList } = useContext(MessageContext);
 
   // this should be done just once
   const initClickStates = new Array(friendsList.length).fill(0);
