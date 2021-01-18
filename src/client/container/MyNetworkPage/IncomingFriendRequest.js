@@ -13,7 +13,8 @@ function IncomingFriendRequest() {
     const profile_style = {
       maxWidth: '100%',
       maxHeight: '100%',
-      marginTop: '10px'
+      marginTop: '10px',
+      width: '80%'
     };
 
     if (network_info == null) return friendRequests;
