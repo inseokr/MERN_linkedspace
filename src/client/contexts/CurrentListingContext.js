@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { GlobalContext } from './GlobalContext';
 import { getGeometryFromSearchString, loadGoogleMapScript } from './helper/helper';
 import { filter } from 'async';
-
+import sampleProfile from '../assets/images/Chinh - Vy.jpg';
 
 export const CurrentListingContext = createContext();
 
@@ -54,10 +54,6 @@ export function CurrentListingProvider(props) {
       //console.log("Focusing Parent Listing");
       parentRef.current.click();
       parentRef.current.scrollIntoView();
-    }
-    else
-    {
-      console.warn("focusParentListing failure");
     }
   }
 
@@ -191,6 +187,26 @@ export function CurrentListingProvider(props) {
     return successful;
   }
 
+
+  function getProfilePictureFromSharedGroup(user_name) {
+    if (user_name === undefined || currentUser === null) return sampleProfile;
+
+    if (user_name === currentUser.username) {
+      return currentUser.profile_picture;
+    }
+
+    let userList = currentListing.shared_user_group;
+
+    if(userList.length===0) return sampleProfile;
+
+    for(let index=0; index<userList.length; index++)
+    {
+      if(userList[index].username===user_name) return userList[index].profile_picture; 
+    }
+
+    console.warn("getProfilePictureFromSharedGroup: no user found with given user name = " + user_name);
+  }
+
   return (
     <CurrentListingContext.Provider value={{
       mapElementID,
@@ -214,7 +230,8 @@ export function CurrentListingProvider(props) {
       filterParams,
       setFilterParams,
       markerParams,
-      setMarkerParams
+      setMarkerParams,
+      getProfilePictureFromSharedGroup
     }}
     >
       {props.children}

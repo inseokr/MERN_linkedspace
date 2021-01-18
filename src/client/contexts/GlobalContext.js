@@ -11,8 +11,6 @@ export function GlobalProvider(props) {
   const [network_info, setNetwork_Info] = useState(null);
   const [redirectUrlAfterLogin, setRedirectUrlAfterLogin] = useState(null);
 
-  console.log(`GlobalProvider: currentUser = ${currentUser}`);
-
   function isUserLoggedIn() {
     return currentUser != null;
   }
@@ -95,6 +93,13 @@ export function GlobalProvider(props) {
     }
   }
 
+  async function loadFriendsListByUser(user) {
+    if(user!=undefined && user.direct_friends!=undefined)
+    {
+      setFriends(user.direct_friends, buildFriendsMap(user.direct_friends));
+    }
+  }
+
   async function loadSocialNetworkDb() {
     await fetch('/LS_API/mynetwork/networkinfo')
       .then(res => res.json())
@@ -104,15 +109,14 @@ export function GlobalProvider(props) {
   }
 
   function refreshUserData() {
-    console.log("ISEO: refreshUserData");
     
     fetch('/LS_API/refresh', { method: 'GET'})
     .then(res => res.json())
-    .then((user) => {
+    .then(async (user) => {
       if(user!==null)
       {
+        loadFriendsListByUser(user);
         setCurrentUser(user);
-        loadFriendList();
       }
     });
   }

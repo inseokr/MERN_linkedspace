@@ -273,7 +273,14 @@ function ChatContactList() {
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
     
-  }, [chattingContextType, currentListing, friendsList]);
+  }, [chattingContextType, currentListing]);
+
+
+  useEffect(()=> {
+    // rebuild states as new friends got added
+    let _contactStates = buildContactStates();
+    setContactStates(_contactStates);
+  }, [friendsList]);
 
   useEffect(() => {
 

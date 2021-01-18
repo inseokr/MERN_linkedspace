@@ -11,7 +11,8 @@ function FriendRecommendation() {
   const profile_style = {
     maxWidth: '100%',
     maxHeight: '100%',
-    marginTop: '10px'
+    marginTop: '10px',
+    width: '80%'
   };
 
   function getRecommendedFriends() {
@@ -29,12 +30,6 @@ function FriendRecommendation() {
           </div>
           <div className="friend_information">
             <span className="bold_fonts">{network_info.recommended_friends_list[i].name}</span>
-            <br />
-            <span className="normal_fonts">
-              {network_info.recommended_friends_list[i].address.city}
-              ,
-              {network_info.recommended_friends_list[i].address.state}
-            </span>
           </div>
 
           <form role="form" action={`/LS_API/mynetwork/${network_info.recommended_friends_list[i].id}/friend_request`} method="post">
@@ -54,8 +49,6 @@ function FriendRecommendation() {
 
     if (network_info == null) return friendRequests;
 
-    console.log(`getPendingFriendRequest length = ${network_info.pending_friends_request_list.length}`);
-
     for (let i = 0; i < network_info.pending_friends_request_list.length; i++) {
       friendRequests.push(
         <div className="network_board">
@@ -64,8 +57,6 @@ function FriendRecommendation() {
           </div>
           <div className="friend_information">
             <span className="bold_fonts">{network_info.pending_friends_request_list[i].name}</span>
-            <br />
-            <span className="normal_fonts">{`${network_info.pending_friends_request_list[i].address.city},${network_info.pending_friends_request_list[i].address.state}`}</span>
           </div>
 
           <form role="form" action={`/LS_API/mynetwork/${network_info.pending_friends_request_list[i].id}/friend_request`} method="post">

@@ -27,7 +27,7 @@ function TenantListingComponent(props) {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
     parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
-  const { setChattingContextType, chattingContextType } = useContext(MessageContext);
+  const { setChattingContextType, chattingContextType, checkAnyUnreadMessages } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
 
   if (listing === undefined) {
@@ -50,9 +50,14 @@ function TenantListingComponent(props) {
 
   const borderStyle = (currentListing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',
-    borderLeftColor: '#115399',
+    borderLeftColor: (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_PARENT, -1) === true)? 'red': '#115399',
+    borderLeftWidth: '5px'
+  } : (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_PARENT, -1) === true)? {
+    borderLeftStyle: 'solid',
+    borderLeftColor: 'red',
     borderLeftWidth: '5px'
   } : {};
+
 
   const _backGroundColor = (currentListing._id === markerParams.selectedMarkerID)? "#b0becc": "white";
 
@@ -210,7 +215,7 @@ function TenantListingComponent(props) {
 
   return (
     <div>
-      <div ref={parentRef} onClick={handleParentOnClick} id='tenantParentListing' style={{ position: 'sticky', top: '0', zIndex: '1', background: 'white'}}>
+      <div ref={parentRef} onClick={handleParentOnClick} id='tenantParentListing' style={{ position: 'sticky', top: '0', zIndex: '100', background: 'white'}}>
       <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>

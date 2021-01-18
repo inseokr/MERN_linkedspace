@@ -243,7 +243,7 @@ function ListingTenantMainPage(props) {
 
     return (
       <div style={{ marginTop: '30px' }}>
-        <SimpleModal show={modalShow} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" _width="20%">
+        <SimpleModal show={modalShow} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" styles={{width: '20%', height: 'auto'}}>
           <SelectionFromDirectFriends show={modalShow} filter={currentListing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
         </SimpleModal>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />

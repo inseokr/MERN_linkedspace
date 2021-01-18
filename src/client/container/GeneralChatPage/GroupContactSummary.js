@@ -6,13 +6,14 @@ import {FILE_SERVER_URL} from '../../globalConstants';
 import './GeneralChatMainPage.css';
 import { MessageContext } from '../../contexts/MessageContext';
 import { GlobalContext } from '../../contexts/GlobalContext';
+import { CurrentListingContext } from '../../contexts/CurrentListingContext';
 
 // import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
 
 const maxPicturesToShow = 3;
 
 function GroupContactSummary(props) {
-  const { setCurrentChatPartyPicture } = useContext(MessageContext);
+  const { setCurrentChatPartyPicture, getProfilePictureByChattingType } = useContext(MessageContext);
   const { getProfilePicture, currentUser } = useContext(GlobalContext);
 
   function handleClick(e) {
@@ -48,7 +49,7 @@ function GroupContactSummary(props) {
       };
 
       listOfPictures.push(
-        <img key={shortid.generate()} className="center rounded-circle" style={additional_style} src={FILE_SERVER_URL+getProfilePicture(props.user[i].username)} alt="myFriend" />
+        <img key={shortid.generate()} className="center rounded-circle" style={additional_style} src={FILE_SERVER_URL+getProfilePictureByChattingType(props.user[i].username)} alt="myFriend" />
       );
 
       numOfPictures++;

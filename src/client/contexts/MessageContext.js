@@ -69,12 +69,12 @@ export function MessageContextProvider(props) {
 
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
-  const { currentUser, setCurrentUser, friendsList , refreshUserData} = useContext(GlobalContext);
+  const { currentUser, setCurrentUser, friendsList , refreshUserData, getProfilePicture} = useContext(GlobalContext);
 
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing, setChildIndexByChannelId, focusParentListing } = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setChildIndexByChannelId, focusParentListing , getProfilePictureFromSharedGroup} = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -91,6 +91,18 @@ export function MessageContextProvider(props) {
 
 
   const [selectedChatList, setSelectedChatList] = useState([]);
+
+  function getProfilePictureByChattingType(user_name)
+  {
+    if(chattingContextType===MSG_CHANNEL_TYPE_GENERAL)
+    {
+      return getProfilePicture(user_name);
+    }
+    else
+    {
+      return getProfilePictureFromSharedGroup(user_name);
+    }
+  }
 
   function MC_removeCurrentUserFromList(_list) {
     if (_list == null) return null;
@@ -290,6 +302,8 @@ export function MessageContextProvider(props) {
   async function reloadChattingDbWithCurrentListing() {
     // console.log("reloadChattingDbWithCurrentListing");
     //console.warn("reloadChattingDbWithCurrentListing");
+    if(currentListing===undefined) return;
+    
     let result = fetchCurrentListing(currentListing._id, 'tenant');
     // <note> loadChattingDatabase will be called when currentListing is updated.
   }
@@ -463,7 +477,7 @@ export function MessageContextProvider(props) {
       if (currentUser.chatting_channels.dm_channels[i].name == data.channel_id) {
         const tempUser = currentUser;
         tempUser.chatting_channels.dm_channels[i].lastReadIndex = data.lastReadIndex;
-        console.log("updateLastReadIndex");
+        //console.warn(`updateLastReadIndex:channel=${data.channel_id}, length=${tempUser.chatting_channels.dm_channels[i].chattingHistory.length}, lastRead=${data.lastReadIndex} `);
         setCurrentUser(tempUser);
       }
     }
@@ -502,6 +516,12 @@ export function MessageContextProvider(props) {
           resolve('no history');
         }
 
+        // ISEO-TBD:
+        // why do we update the lastReadIndex here?
+        // I don't understand when we're supposed to update the lastReadIndex
+        // There is no clear logic on it.
+        // 1. sent response
+        // 2. clicked the chatting party manually?
         const data = {
           channel_id: channelInfo.channelName,
           lastReadIndex: dmChannelContexts[channelInfo.channelName].chattingHistory.length
@@ -527,7 +547,9 @@ export function MessageContextProvider(props) {
     if(currChannelInfo.channelName !== channelInfo.channelName)
     {
       //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
-      pushCurrentChannelToDB(channelInfo).then((result) => {
+      // ISEO-TBD: don't we need to update current channel instead of new channel?
+      // <note> I will update the current channel for now.
+      pushCurrentChannelToDB(currChannelInfo).then((result) => {
         setCurrChannelInfo(channelInfo);
       });
     }
@@ -640,7 +662,8 @@ export function MessageContextProvider(props) {
       // we have to copy things all the time??
       updateChatContext(msg, currChannelInfo.channelName, 0, 0, currentUser.username);
     } else {
-      alertSound.play();
+      //ISEO-TBD: It should be enabled optionally
+      //alertSound.play();
       const processedMsg = parseIncomingMessage(msg);
 
       if(processedMsg!==null)
@@ -692,7 +715,8 @@ export function MessageContextProvider(props) {
         // This will be a rare occasion, and most likely it's ok to switch to the parent listing when there is a change in the child listing.
         if(doNotDisturbMode===false)
         {
-          focusParentListing();
+          //this will be very disturbing... let's not call this
+          //focusParentListing();
         }
         else
         {
@@ -836,15 +860,13 @@ export function MessageContextProvider(props) {
 
   function getLastReadIndex(channel_id) {
     const channel_name = (channel_id != '' ? channel_id : currChannelInfo.channelName);
-
-    // console.log("channel_name = " + channel_name);
-
     // ISEO: let's consider introducing map instead?
     for (let i = 0; i < currentUser.chatting_channels.dm_channels.length; i++) {
       // console.log("current channel = " + currentUser.chatting_channels.dm_channels[i].name);
       if (currentUser.chatting_channels.dm_channels[i].name == channel_name) {
         // note: This value may contain old data.
         // let's use context information instead
+        //console.warn(`getLastReadIndex: channel=${channel_id}, lastReadIndex=${currentUser.chatting_channels.dm_channels[i].lastReadIndex}, history length=${JSON.stringify(currentUser.chatting_channels.dm_channels[i])}`);
         return currentUser.chatting_channels.dm_channels[i].lastReadIndex;
       }
     }
@@ -958,18 +980,9 @@ export function MessageContextProvider(props) {
         }
       }
     }
-
     // console.log("dmChannelContexts: length before = " + dmChannelContexts.length);
 
     const dmChannelContextArray = dmChannelContexts;
-
-/*
-    if (dmChannelContextArray[channel_id] != undefined) {
-      console.warn(`channel_id${channel_id} is already in the array `);
-    } else {
-      // console.log("channel_id" + channel_id +" is being added ");
-    }*/
-
     dmChannelContextArray[channel_id] = dmChannel;
 
     setChannelContexts(dmChannelContextArray);
@@ -1104,10 +1117,11 @@ export function MessageContextProvider(props) {
 
 
   useEffect(() => {
-    console.warn("channelContextLength updated");
+    //console.warn("channelContextLength updated");
     //console.warn('ISEO: Loading chatting database... ');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
-    setTimeout(()=> loadChattingDatabase(), 2000);
+    //this may lead to infinite loop?
+    //setTimeout(()=> loadChattingDatabase(), 2000);
   }, [channelContextLength]);
 
 
@@ -1187,7 +1201,8 @@ export function MessageContextProvider(props) {
       deregisterSocket,
       doNotDisturbMode,
       setDoNotDisturbMode,
-      checkAnyUnreadMessages
+      checkAnyUnreadMessages,
+      getProfilePictureByChattingType
     }}
     >
       {props.children}

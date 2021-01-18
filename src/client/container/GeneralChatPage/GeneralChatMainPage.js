@@ -19,11 +19,12 @@ export default class GeneralChatMainPage extends Component {
   }
 
   componentDidMount() {
-    //console.log('GeneralChatMainPage is being loaded');
+    this.context.refreshUserDataFromMessageContext();
   }
 
   componentWillMount() {
-
+    // ISEO-TBD: this could be depricated
+    this.context.refreshUserDataFromMessageContext();
     if (this.props.compact === 'false' && this.context.chattingContextType !== 0) {
       // ISEO-TBD: switching to "2" will be possible only within the dashboard??
       //console.log('ISEO: need to re-initialize the context: full mode');

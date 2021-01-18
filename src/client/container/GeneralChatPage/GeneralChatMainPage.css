@@ -19,6 +19,10 @@
 	bottom: 0px;
 }
 
+div > .GeneralChatMainWrapper {
+	width: 100%;
+}
+
 section > .GeneralChatMainWrapper {
 	width: 50%;
 }

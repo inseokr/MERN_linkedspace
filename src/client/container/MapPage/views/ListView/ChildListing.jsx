@@ -55,7 +55,7 @@ const ChildListing = React.forwardRef(({
 
   const [modalShow, setModalShow] = useState(false);
 
-  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup } 	= useContext(CurrentListingContext);
   const { getProfilePicture } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
@@ -67,7 +67,7 @@ const ChildListing = React.forwardRef(({
 
   const borderStyle = (listing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',
-    borderLeftColor: '#115399',
+    borderLeftColor: (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_CHILD, index) === true)? 'red': '#115399',
     borderLeftWidth: '5px'
   } : (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_CHILD, index) === true)? {
     borderLeftStyle: 'solid',
@@ -205,7 +205,7 @@ const ChildListing = React.forwardRef(({
     _childListing.shared_user_group.forEach((user, _index) => {
       if(checkIfInLikedList(user._id)===true)
       {
-        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+getProfilePicture(user.username)} alt="Liked friend"  />);
+        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+getProfilePictureFromSharedGroup(user.username)} alt="Liked friend"  />);
       }
     });
 
@@ -273,7 +273,7 @@ const ChildListing = React.forwardRef(({
                     {childListing.requester.username}
                   </Typography>
                 </div>
-                 <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" _width="20%">
+                 <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" styles={{width: '20%', height: 'auto', overflowY: 'hidden'}}>
                     <div style={{textAlign: "center", marginTop: "10px", marginBottom: "10px", fontSize: "120%", color: "#981407"}}> Are you sure to remove this listing?</div>
                 </SimpleModal>
                 <button className="btn btn-danger" onClick={handleRemoveButton}>

@@ -10,7 +10,7 @@
 
 .simpleModalMain {
   position: relative;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   background: white;
   top: 50%;
