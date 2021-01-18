@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import $ from 'jquery';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
-import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
+import defaultProfile from '../../assets/images/default_profile.jpg';
 
 // import { FILE_SERVER_URL } from '../../globalConstants';
 
@@ -40,7 +40,7 @@ function LoginMenu() {
     ) : '';
 
   function setDefaultImage() {
-    $('#editProfile').attr('src', sampleProfile);
+    $('#editProfile').attr('src', defaultProfile);
   }
 
   function editProfile() {
