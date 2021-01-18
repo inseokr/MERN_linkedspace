@@ -160,10 +160,16 @@ module.exports = function (app) {
 					   && (isDirectFriend(curr_user, user._id) == false)) {
             const friend = {
               profile_picture: user.profile_picture,
-              name: user.firstname + user.lastname,
+              name: `${user.firstname} ${user.lastname}`,
               address: { city: user.address.city, state: user.address.state },
               id: user._id
             };
+
+            // let's use username instead if name is empty
+            if (friend.name == ' ') {
+              friend.name = user.username;
+            }
+
             recommended_friends_list.push(friend);
           }
         });

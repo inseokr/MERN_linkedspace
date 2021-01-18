@@ -1,8 +1,11 @@
 import React, { useContext } from 'react';
 import '../../app.css';
 import { Link } from 'react-router-dom';
+import $ from 'jquery';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
+import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
+
 // import { FILE_SERVER_URL } from '../../globalConstants';
 
 function LoginMenu() {
@@ -36,17 +39,22 @@ function LoginMenu() {
       </React.Fragment>
     ) : '';
 
+  function setDefaultImage() {
+    $('#editProfile').attr('src', sampleProfile);
+  }
+
   function editProfile() {
     return (
       <img
         className="img-responsive center rounded-circle"
+        id="editProfile"
         style={{
           maxHeight: '70%',
           height: '30px'
-        }
-           }
+        }}
         src={`${process.env.REACT_APP_FILE_SERVER_URL}${currentUser.profile_picture}`}
-        alt="Edit Profile"
+        onError={setDefaultImage}
+        alt=""
       />
     );
   }
