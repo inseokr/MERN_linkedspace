@@ -160,9 +160,9 @@ export function MessageContextProvider(props) {
 
         try{
           for (let i = 0; i < list_of_group_chats.length; i++) {
-            let groupChannelName = dmChannelContexts[list_of_group_chats[i]].channel_id;
+            let groupChannelName = list_of_group_chats[i].channel_id;
 
-            if(groupChannelName!=='' && (dmChannelContexts[channelName]!==undefined))
+            if(groupChannelName!=='' && (dmChannelContexts[groupChannelName]!==undefined))
             {
               if(dmChannelContexts[groupChannelName].flag_new_msg===true)
               {
@@ -386,6 +386,15 @@ export function MessageContextProvider(props) {
       // need to myself as well
       friends.push({ id: currentUser._id, username: currentUser.username });
       concatenatedFriendsString = `${concatenatedFriendsString}-${currentUser.username}`;
+
+      // let's sort it
+      let userList = concatenatedFriendsString.split('-').sort();
+      concatenatedFriendsString = '';
+
+      for (let index = 0; index < userList.length; index++) {
+        const hypen = (index >= 1) ? '-' : '';
+        concatenatedFriendsString = concatenatedFriendsString + hypen + userList[index];
+      }
 
       const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addGroupChat`;
       const channel_id = (chattingContextType == 1)
