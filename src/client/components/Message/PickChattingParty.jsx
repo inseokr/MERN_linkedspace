@@ -9,12 +9,9 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 import { MessageContext } from '../../contexts/MessageContext';
 
 function PickChattingParty(props) {
-
   try
   {
-
-  const _group = props.group;
-  const _listingId = props.listing_id;
+  const {_group, _listingId, modalShow} = props;
 
   // <note> friendsList doesn't include current user.
   const { friendsList, getProfilePicture, getUserLoginStatus } = useContext(GlobalContext);
@@ -91,8 +88,14 @@ function PickChattingParty(props) {
 
 
   useEffect(() => {
-    console.log('PickChatParty: useEffect is called');
-  });
+    console.warn('PickChatParty: useEffect is called');
+    if(modalShow===false)
+    {
+      // clean-up click states
+      let initClickStates = new Array(friendsList.length).fill(0);
+      setClickStates(initClickStates);
+    }
+  }, [modalShow]);
 
   return (
     <div className="container">

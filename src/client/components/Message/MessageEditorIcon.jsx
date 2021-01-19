@@ -109,7 +109,7 @@ function MessageEditorIcon(props) {
   return (
     <div>
       <SimpleModal show={modalShow} handle1={handleClose} caption1="Start Conversation" handle2={handleCancel} caption2="Cancel" styles={{ width: '20%' }}>
-        <PickChattingParty group={userGroup} />
+        <PickChattingParty group={userGroup} modalShow={modalShow} />
       </SimpleModal>
       <div role="button" tabIndex={0} className="MessageEditIcon" onClick={messageEditorOnClick} onKeyDown={messageEditorOnClick}>
         <svg
