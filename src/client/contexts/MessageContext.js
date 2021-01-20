@@ -66,6 +66,7 @@ export function MessageContextProvider(props) {
   const [socketCreated, setSocketCreated] = useState(false);
   const [chatSocket, setWebSocket] = useState(null);
   const [alertSound, setAlertSound] = useState(null);
+  const [dashboardMode, setDashboardMode] = useState("normal");
 
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
@@ -500,6 +501,15 @@ export function MessageContextProvider(props) {
     return parsedString;
   }
 
+  // ISEO-TBD: we may combine it with parseIncomingMessage
+  function parseControlMessage(msg) {
+    // example: CSC:autoRefresh
+    const regex = /CSC:(.*)/g;
+    const parsedString = regex.exec(msg);
+
+    return parsedString;
+  }
+
   async function pushCurrentChannelToDB(channelInfo) {
     return new Promise(async (resolve) => {
       // we don't update initial value;
@@ -693,15 +703,18 @@ export function MessageContextProvider(props) {
           //console.warn("childListingId: " + _channelId);
           if(doNotDisturbMode===false)
           {
-            if(_channelId==="parent")
+            if(dashboardMode==='normal' || processedMsg[2]===(currentListing.requester.username))
             {
-              //console.warn("focusParentListing");
-              focusParentListing();
-            }
-            else
-            {
-              //console.warn("setChildIndexByChannelId");
-              setChildIndexByChannelId(_channelId);
+              if(_channelId==="parent")
+              {
+                //console.warn("focusParentListing");
+                focusParentListing();
+              }
+              else
+              {
+                //console.warn("setChildIndexByChannelId");
+                setChildIndexByChannelId(_channelId);
+              }
             }
           }
           else
@@ -719,21 +732,43 @@ export function MessageContextProvider(props) {
       }
       else
       {
-        // console.warn('Got control message');
-        // need to refresh the currentListing.
-        // This will be a rare occasion, and most likely it's ok to switch to the parent listing when there is a change in the child listing.
-        if(doNotDisturbMode===false)
+        //console.warn(`Got control message=${msg}`);
+
+        let processedControlMessage = parseControlMessage(msg);
+
+        //console.warn(`Got control message. code=${processedControlMessage[1]}`);
+
+        switch(processedControlMessage[1])
         {
-          //this will be very disturbing... let's not call this
-          //focusParentListing();
+          case 'setModeNomal':
+            setDashboardMode("Dashboard is back to normal");
+            alert("Dashboard is back to normal ");
+            break;
+          case 'setModeLocked':
+            setDashboardMode("locked");
+            alert(`Dashboard will be controlled by ${currentListing.requester.username}`);
+            break;
+          case 'autoRefresh':
+            // console.warn('Got control message');
+            // need to refresh the currentListing.
+            // This will be a rare occasion, and most likely it's ok to switch to the parent listing when there is a change in the child listing.
+            if(doNotDisturbMode===false)
+            {
+              //this will be very disturbing... let's not call this
+              //focusParentListing();
+            }
+            else
+            {
+              setChannelWithLatestMessage(null);
+            }
+            // ISEO-TBD: we shouldn't load the listing prematurely?
+            //reloadChattingDbWithCurrentListing();
+            setTimeout(()=> reloadChattingDbWithCurrentListing(), 2000);
+            break;
+
+          default: console.warn("Unknown control packet"); break;
         }
-        else
-        {
-          setChannelWithLatestMessage(null);
-        }
-        // ISEO-TBD: we shouldn't load the listing prematurely?
-        //reloadChattingDbWithCurrentListing();
-        setTimeout(()=> reloadChattingDbWithCurrentListing(), 2000);
+
       }
     }
   }
@@ -1115,9 +1150,24 @@ export function MessageContextProvider(props) {
     setSelectedChatList([]);
   }
 
+  // setting dashboard mode
+  // 'normal': teleporting allowed
+  // 'locked': teleporting will be triggered by the moderator or the owneter of the listing
+  async function broadcastDashboardMode(dashboardMode) {
+
+    const data = {
+      mode: dashboardMode
+    };
+
+    await axios.post(`/LS_API/listing/tenant/${currentListing._id}/setDashboardMode`, data)
+      .then(async (result) => {
+        console.log(`res = ${JSON.stringify(result)}`);
+      })
+      .catch(err => console.warn(err));
+  }
+
   useEffect(() => {
     //console.log("currChannelInfo updated");
-    console.warn('currChannelInfo updated');
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
     // It was 4 seconds previously
     loadChattingDatabase();
@@ -1211,7 +1261,8 @@ export function MessageContextProvider(props) {
       doNotDisturbMode,
       setDoNotDisturbMode,
       checkAnyUnreadMessages,
-      getProfilePictureByChattingType
+      getProfilePictureByChattingType,
+      broadcastDashboardMode
     }}
     >
       {props.children}

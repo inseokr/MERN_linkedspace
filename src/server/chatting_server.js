@@ -35,6 +35,10 @@ const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
 const userDbHandler = require('./db_utilities/user_db/access_user_db');
 
 const DASHBOARD_AUTO_REFRESH = 0;
+const DASHBOARD_CTRL_SET_MODE_NORMAL = 1;
+const DASHBOARD_CTRL_SET_MODE_LOCKED = 2;
+
+const controlCodeStrings = ['CSC:autoRefresh', 'CSC:setModeNomal', 'CSC:setModeLocked'];
 
 // const wss = new WebSocket.Server({ port: 3030});
 let wss = null;
@@ -210,7 +214,7 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          console.log("forwarding the packet");
+          // console.log('forwarding the packet');
           target.send(data);
         } else {
           // console.log("Same socket");
@@ -223,15 +227,18 @@ function routeMessage(data, incomingSocket) {
 }
 
 function sendDashboardControlMessage(command, userNameList) {
+  // console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
   try {
     switch (command) {
       case DASHBOARD_AUTO_REFRESH:
+      case DASHBOARD_CTRL_SET_MODE_LOCKED:
+      case DASHBOARD_CTRL_SET_MODE_NORMAL:
         userNameList.forEach((name) => {
           // console.log(`sending control message to user = ${name}`);
           if (userToSocketMap[name] !== undefined) {
             userToSocketMap[name].forEach((_socket) => {
               // console.log('sending control message');
-              _socket.send('CSC:0');
+              _socket.send(controlCodeStrings[command]);
             });
           }
         });
@@ -246,10 +253,12 @@ function sendDashboardControlMessage(command, userNameList) {
 function sendDashboardControlMessageToSingleUser(command, userName) {
   switch (command) {
     case DASHBOARD_AUTO_REFRESH:
+    case DASHBOARD_CTRL_SET_MODE_LOCKED:
+    case DASHBOARD_CTRL_SET_MODE_NORMAL:
       if (userToSocketMap[userName] !== undefined) {
         userToSocketMap[userName].forEach((_socket) => {
           // console.log('sending control message');
-          _socket.send('CSC:0');
+          _socket.send(controlCodeStrings[command]);
         });
       }
       break;
@@ -373,5 +382,12 @@ function chatServerMain(server) {
 
 
 module.exports = {
-  chatServerMain, removeChannel, removeChannelFromUserDb, sendDashboardControlMessage, sendDashboardControlMessageToSingleUser, DASHBOARD_AUTO_REFRESH
+  chatServerMain,
+  removeChannel,
+  removeChannelFromUserDb,
+  sendDashboardControlMessage,
+  sendDashboardControlMessageToSingleUser,
+  DASHBOARD_AUTO_REFRESH,
+  DASHBOARD_CTRL_SET_MODE_NORMAL,
+  DASHBOARD_CTRL_SET_MODE_LOCKED
 };
