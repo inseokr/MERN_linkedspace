@@ -33,8 +33,8 @@ import { MapContainer, TileLayer, Marker, Popup, FeatureGroup } from 'react-leaf
 function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
-  const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin} = useContext(GlobalContext);
-  const {doNotDisturbMode, setChildIndex, setDoNotDisturbMode} = useContext(MessageContext);
+  const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin, currentUser} = useContext(GlobalContext);
+  const {doNotDisturbMode, setChildIndex, setDoNotDisturbMode, broadcastDashboardMode} = useContext(MessageContext);
   const { currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
@@ -62,7 +62,14 @@ function TenantListingDashBoard(props) {
   };
 
   const handleClickDoNotDisturbMode = () => {
+
+    if(currentListing.requester.username === currentUser.username )
+    {
+      broadcastDashboardMode((doNotDisturbMode===false)? "locked": "normal");
+    }
+
     setDoNotDisturbMode(!doNotDisturbMode);
+
   };
 
   const onMarkerClick = (e, selectedMarkerID) => {

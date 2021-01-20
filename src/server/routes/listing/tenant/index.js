@@ -33,6 +33,17 @@ function sendDashboardAutoRefresh(currUserName, shared_user_group) {
   chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
 }
 
+function sendDashboardControlMessage(currUserName, shared_user_group, controlCode) {
+  const userNameList = [];
+  for (let index = 0; index < shared_user_group.length; index++) {
+    if (currUserName !== shared_user_group[index].username) {
+      userNameList.push(shared_user_group[index].username);
+    }
+  }
+  chatServer.sendDashboardControlMessage(controlCode, userNameList);
+}
+
+
 module.exports = function (app) {
   router.post('/new', (req, res) => {
     if (req.body.submit == 'exit') {
@@ -262,7 +273,6 @@ module.exports = function (app) {
     }
     // console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
 
-    // TenantRequest.findById(req.params.list_id).populate({path: 'child_listings.listing_id', model: '_3rdPartyListing'}).exec(function(err, foundListing){
     TenantRequest.findById(req.params.list_id, async (err, foundListing) => {
       if (err || foundListing === null) {
         console.warn('Listing not found');
@@ -270,6 +280,9 @@ module.exports = function (app) {
         res.redirect('/');
         return;
       }
+
+      /* await foundListing.populate('requester', 'username profile_picture loggedInTime').execPopulate();
+      foundListing.populated('requester'); */
 
       const populateChildren = new Promise(async (resolve, reject) => {
         await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
@@ -313,14 +326,17 @@ module.exports = function (app) {
           foundListing.list_of_referring_friends = referringFriends.filter((friend, index) => index <= (referringFriends.length - 2));
           // console.log("foundListing = " + JSON.stringify(foundListing));
 
+          await foundListing.populate('requester', 'username profile_picture loggedInTime').execPopulate();
+          foundListing.populated('requester');
+
+          // update status of listing ID from friends
+          // console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
+
           res.json(foundListing);
 
           // update recent visited listing
           foundUser.lastVistedListingId = req.params.list_id;
 
-          // update status of listing ID from friends
-          console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
-          console.log(`foundUser._id=${JSON.stringify(foundUser._id)}`);
           if (!foundListing.requester.equals(foundUser._id)) {
             userDbHandler.readListingFromFriends(foundUser, 'tenant', req.params.list_id);
           }
@@ -343,6 +359,19 @@ module.exports = function (app) {
     });
   });
 
+  router.post('/:list_id/setDashboardMode', (req, res) => {
+    // Get tenant listing.
+    TenantRequest.findById(req.params.list_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
+      if (err) {
+        console.log('Listing not found');
+        res.send('No listing found');
+        return;
+      }
+      sendDashboardControlMessage(req.user.username, foundListing.shared_user_group,
+        (req.body.mode === 'normal') ? chatServer.DASHBOARD_CTRL_SET_MODE_NORMAL : chatServer.DASHBOARD_CTRL_SET_MODE_LOCKED);
+      res.send('Dashboard mode is set');
+    });
+  });
 
   router.post('/:list_id/addGroupChat', (req, res) => {
     TenantRequest.findById(req.params.list_id, async (err, foundListing) => {
