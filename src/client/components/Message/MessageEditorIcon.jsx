@@ -75,7 +75,9 @@ function MessageEditorIcon(props) {
   const handleClose = async () => {
     setModalShow(false);
 
-    overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+    if (overlappedComponents !== null && overlappedComponents.id !== null) {
+      overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+    }
 
     if (selectedChatList !== undefined && selectedChatList.length >= 1) {
       postSelectedContactList().then(() => { resetChatList(); });
