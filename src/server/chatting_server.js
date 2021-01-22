@@ -103,7 +103,8 @@ function handleCtrlMsg(rxMsg) {
 }
 
 function parseChatMsgHeader(data) {
-  const regex = /CSD:(.*):(.*):(.*)/g;
+  // how to deal with a situations the message will contain n number of ":"?
+  const regex = /CSD:([^:]*):([^:]*):(.*)/g;
   const parsedString = regex.exec(data);
 
   return { channel_id: parsedString[1], sender: parsedString[2], msg: parsedString[3] };
@@ -214,7 +215,6 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          // console.log('forwarding the packet');
           target.send(data);
         } else {
           // console.log("Same socket");

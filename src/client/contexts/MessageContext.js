@@ -494,7 +494,7 @@ export function MessageContextProvider(props) {
   }
 
   function parseIncomingMessage(msg) {
-    const regex = /CSD:(.*):(.*):(.*)/g;
+    const regex = /CSD:([^:]*):([^:]*):(.*)/g;
     const parsedString = regex.exec(msg);
 
     // console.log("received mssg="+msg);
@@ -668,7 +668,7 @@ export function MessageContextProvider(props) {
       //
       // need to append header
       // @CSD:channel_id:sender_name:msg
-      // chatSocket.send(''.concat("CSD:{currChannelInfo.channelName}:", msg));
+      //chatSocket.send(''.concat("CSD:{currChannelInfo.channelName}:", msg));
       chatSocket.send(`CSD:${currChannelInfo.channelName}:${currentUser.username}:${msg}`);
       setWaitMessage(true);
       // it will echo locally added messages.
@@ -903,6 +903,8 @@ export function MessageContextProvider(props) {
   }
 
   function getLastReadIndex(channel_id) {
+    if(currentUser===null) return 0;
+    
     const channel_name = (channel_id != '' ? channel_id : currChannelInfo.channelName);
     // ISEO: let's consider introducing map instead?
     for (let i = 0; i < currentUser.chatting_channels.dm_channels.length; i++) {

@@ -29,7 +29,7 @@ function ChatPartySummary() {
   function getChatPartySummary() {
     const _chatPartySummary = [];
 
-    if (currChannelInfo.members == undefined) {
+    if (currChannelInfo.members == undefined || currentUser === null) {
       return '';
     }
 
