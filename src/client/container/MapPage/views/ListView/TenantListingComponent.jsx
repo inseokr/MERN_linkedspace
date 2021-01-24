@@ -35,9 +35,11 @@ function TenantListingComponent(props) {
     return <div> no listing available </div>;
   }
 
-  const userName = listing.requester.username;
+  const userName = listing.requester.firstname + " " + listing.requester.lastname;
+  if(userName==="") userName = listing.requester.username;
+
   const moveInDate = `${listing.move_in_date.month}/${listing.move_in_date.date}/${listing.move_in_date.year}`;
-  const rentDuration = `${listing.rental_duration}month(s)`;
+  const rentDuration = `${listing.rental_duration} month(s)`;
   const rentalBudget = `$${listing.rental_budget}`;
   const preferredLocation = `${listing.location.city},${listing.location.state},${listing.location.country}`;
 
@@ -229,46 +231,54 @@ function TenantListingComponent(props) {
           </Grid>
           <Grid item xs={8}>
             <Paper className="description" onClick={handleParentOnClick} style={{background: _backGroundColor}}>
-              <Typography className="description__address" color="textSecondary" gutterBottom>
-                Preferred location:
-                {' '}
-                {preferredLocation}
-              </Typography>
-              <Typography className="description__address">
-                Move-in date:
-                {' '}
-                {moveInDate}
-              </Typography>
-              <Typography className="description__address">
-                Rental duration:
-                {' '}
-                {rentDuration}
-              </Typography>
-              <Typography className="description__address">
-                Budget:
-                {' '}
-                {rentalBudget}
-                {' '}
-                per month
+              <Typography className="description__address" color="textSecondary" style={{marginBottom: '10px', textAlign: "center"}}>
+                Summary of rental request
               </Typography>
 
-              <div className="flex-container" style={{ justifyContent: 'space-between' }}>
-                <Typography className="description__address" color="textSecondary">
-                  Username:
+              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
+                <Typography className="description__address">
+                  Move-in date:
                   {' '}
-                  {userName}
+                  {moveInDate}
                 </Typography>
-                <Typography className="description__address" color="textSecondary">
+
+                <Typography className="description__address">
+                  Preferred location:
+                  {' '}
+                  {preferredLocation}
+                </Typography>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
+                <Typography className="description__address">
+                  Rental duration: 
+                  {' '}
+                  {rentDuration}
+                </Typography>
+                <Typography className="description__address">
+                  Budget:
+                  {' '}
+                  {rentalBudget}
+                  {' '}
+                  per month
+                </Typography>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
+                <Typography className="description__address">
                   Email:
                   {' '}
                   {listing.email}
                 </Typography>
+                <Typography className="description__address">
+                  phone:
+                  {' '}
+                  {listing.phone}
+                </Typography>
               </div>
-
-              <Typography className="description__address" color="textSecondary">
-                phone:
+              <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px'}}>
+                Posted by:
                 {' '}
-                {listing.phone}
+                {userName}
               </Typography>
 
               {addChildListingControl()}

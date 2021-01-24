@@ -204,12 +204,9 @@ function EditProfileMain() {
     }
   }
 
-  // load default value
-  loadDefaultValues();
-
   useEffect(() => {
     loadDefaultValues();
-  }, [currentUser]);
+  }, []);
 
   return (
     <div>
