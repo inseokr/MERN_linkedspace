@@ -224,7 +224,9 @@ function TenantListingComponent(props) {
             <Carousel interval={null} slide activeIndex={index} onSelect={handleSelect} className="carousel">
               {listing.profile_pictures.map(picture => (
                 <Carousel.Item key={picture._id}>
-                  <img src={FILE_SERVER_URL+picture.path} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                 <a href={`/listing/tenant/${listing._id}/get`} target="_blank">
+                  <img src={FILE_SERVER_URL+listing.requester.profile_picture} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                 </a>
                 </Carousel.Item>
               ))}
             </Carousel>
@@ -235,7 +237,6 @@ function TenantListingComponent(props) {
                 Summary of rental request
               </Typography>
 
-              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
                 <Typography className="description__address">
                   Move-in date:
                   {' '}
@@ -243,13 +244,12 @@ function TenantListingComponent(props) {
                 </Typography>
 
                 <Typography className="description__address">
-                  Preferred location:
+                  Location:
                   {' '}
                   {preferredLocation}
                 </Typography>
-              </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
+              <div style={{ display: 'grid', gridTemplateColumns: "7fr 5fr" }}>
                 <Typography className="description__address">
                   Rental duration: 
                   {' '}
@@ -259,20 +259,7 @@ function TenantListingComponent(props) {
                   Budget:
                   {' '}
                   {rentalBudget}
-                  {' '}
-                  per month
-                </Typography>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
-                <Typography className="description__address">
-                  Email:
-                  {' '}
-                  {listing.email}
-                </Typography>
-                <Typography className="description__address">
-                  phone:
-                  {' '}
-                  {listing.phone}
+                  /m
                 </Typography>
               </div>
               <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px'}}>
