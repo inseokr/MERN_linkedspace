@@ -326,7 +326,7 @@ module.exports = function (app) {
           foundListing.list_of_referring_friends = referringFriends.filter((friend, index) => index <= (referringFriends.length - 2));
           // console.log("foundListing = " + JSON.stringify(foundListing));
 
-          await foundListing.populate('requester', 'username profile_picture loggedInTime').execPopulate();
+          await foundListing.populate('requester', 'username lastname firstname profile_picture loggedInTime').execPopulate();
           foundListing.populated('requester');
 
           // update status of listing ID from friends
