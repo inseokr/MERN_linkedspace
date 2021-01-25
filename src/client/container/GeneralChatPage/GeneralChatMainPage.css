@@ -27,10 +27,6 @@ section > .GeneralChatMainWrapper {
 	width: 50%;
 }
 
-section > .GeneralChatMainWrapper:hover {
-	height: 80vh;
-}
-
 .GeneralChatMainWrapper > div {
 	padding: 0.2em;
 }

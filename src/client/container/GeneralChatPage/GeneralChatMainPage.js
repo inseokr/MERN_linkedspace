@@ -16,6 +16,22 @@ export default class GeneralChatMainPage extends Component {
 
   constructor(props) {
     super(props);
+     this.state = {
+      leftPanelColumn: (this.props.compact === 'true') ? '1/4' : '4/6',
+      rightPanelColumn: (this.props.compact === 'true') ? '4/13' : '6/10',
+      viewHeight: (this.props.compact === 'true') ? '25vh' : '90vh',
+      leftPanelStyle: (this.props.meeting === 'true')? {display: 'none'}: {},
+      rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
+      mainWidth: (this.props.meeting === 'true')? '20%': 'auto',
+      viewHeight: '90vh',
+      chattingWindowStyle: {},
+      writeChatStyle: {},
+      collapse: 'false',
+      contactCollapseState: 'true'
+    };
+
+    this.collapseHandler = this.collapseHandler.bind(this);
+    this.contactListCollapeHandler = this.contactListCollapeHandler.bind(this);
   }
 
   componentDidMount() {
@@ -32,24 +48,56 @@ export default class GeneralChatMainPage extends Component {
     }
   }
 
+  collapseHandler() {
+    if(this.state.collapse==='false')
+    {
+      this.setState({chattingWindowStyle: {display:'none'}, writeChatStyle: {display:'none'}, viewHeight: '5vh', collapse: 'true'});
+    }
+    else
+    {
+      this.setState({chattingWindowStyle: {display:'block'}, writeChatStyle: {display:'block'}, viewHeight: '90vh', collapse: 'false'}); 
+    }
+  }  
+
+  contactListCollapeHandler() {
+    if(this.state.contactCollapseState==='false')
+    {
+      this.setState({leftPanelStyle: {display: 'none'}, contactCollapseState: 'true'});
+    }
+    else
+    {
+      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-200%', width: '200%'}, contactCollapseState: 'false'}); 
+    }
+  }  
+
   render() {
-    const leftPanelColumn = (this.props.compact === 'true') ? '1/4' : '4/6';
-    const rightPanelColumn = (this.props.compact === 'true') ? '4/13' : '6/10';
-    const viewHeight = (this.props.compact === 'true') ? '25vh' : '90vh';
-    
+    //let viewHeight = (this.props.compact === 'true') ? '25vh' : '90vh';
+
+    //let leftPanelStyle = {};
+    //let rightPanelStyle = {};
+    //let mainWidth = 'inherit';
+
+    /*if(this.props.meeting === 'true')
+    {
+      leftPanelStyle = {display: 'none'};
+      rightPanelStyle = {width: '135%', marginLeft: '-33.5%'};
+      mainWidth = '20%';
+      viewHeight = '90vh';
+    }*/
     return (
       <div
         className="GeneralChatMainWrapper bg-light"
         id="chattingPanel"
-        style={{ '--leftPanelColumn': leftPanelColumn, 
-                 '--rightPanelColumn': rightPanelColumn,
-                 '--chatMainHeight': viewHeight,
-                 '--chatLeftPanelHeight': viewHeight,
-                 '--chatRightPanelHeight': viewHeight,
+        style={{ '--leftPanelColumn': this.state.leftPanelColumn, 
+                 '--rightPanelColumn': this.state.rightPanelColumn,
+                 '--chatMainHeight': this.state.viewHeight,
+                 '--chatLeftPanelHeight': this.state.viewHeight,
+                 '--chatRightPanelHeight': this.state.viewHeight,
                  borderBottom: 'hidden',
+                 width: this.state.mainWidth,
                  zIndex: '10'}}
       >
-        <div className="MessageLeftPanel">
+        <div className="MessageLeftPanel" style={this.state.leftPanelStyle}>
           <div className="MessageHeader_ls">
             <GeneralChatHeader compact={this.props.compact} />
           </div>
@@ -61,14 +109,16 @@ export default class GeneralChatMainPage extends Component {
           </div>
         </div>
 
-        <div className="MessageRightPanel">
+        <div className="MessageRightPanel" style={this.state.rightPanelStyle}>
           <div className="SenderProfileSummary">
-            <ChatPartySummary />
+            <ChatPartySummary 
+              collapseHandler={this.collapseHandler} collapseState={this.state.collapse} 
+              contactListCollapeHandler={this.contactListCollapeHandler} contactCollapseState={this.state.contactCollapseState} />
           </div>
-          <div className="ChattingWindow">
+          <div className="ChattingWindow" style={this.state.chattingWindowStyle}>
             <ChattingWindow />
           </div>
-          <div className="WriteMessageWindow">
+          <div className="WriteMessageWindow style={this.state.writeChatStyle}">
             <WriteChat />
           </div>
         </div>

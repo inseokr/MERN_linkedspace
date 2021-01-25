@@ -159,6 +159,10 @@ function TenantListingDashBoard(props) {
 
   const { center, zoom } = mapParams;
 
+  //let mapMessageContainerStyle = { display: 'grid', gridTemplateColumns: '4fr 8fr'};
+  let mapMessageContainerStyle = { };
+  let chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
+
   return (
     (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
       <Grid component="main">
@@ -167,14 +171,19 @@ function TenantListingDashBoard(props) {
             <span className="DashboardModeControlCaption" > Do not disturb mode </span>
             <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
           <Grid container alignContent="stretch" >
-            <Grid item xs={6}>
+            <Grid item xs={5}>
               <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
               <Grid item xs={12}>
                 <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
               </Grid>
             </Grid>
-            <Grid className="map" item xs={6}>
+            <Grid className="map" item xs={7}>
               
+              <div style={mapMessageContainerStyle}> 
+              <section style={chatContainerStyle}>
+                <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
+              </section>
+
               <React.Fragment>
                 <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
                   <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
@@ -194,9 +203,9 @@ function TenantListingDashBoard(props) {
                 </MapContainer>
                 </div>
               </React.Fragment>
-                <section>
-                  <GeneralChatMainPage id="compactChattingPage" compact="true" />
-                </section>
+
+              </div>
+
             </Grid>
           </Grid>
         </Box>
