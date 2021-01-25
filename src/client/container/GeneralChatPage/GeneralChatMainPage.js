@@ -20,14 +20,15 @@ export default class GeneralChatMainPage extends Component {
       leftPanelColumn: (this.props.compact === 'true') ? '1/4' : '4/6',
       rightPanelColumn: (this.props.compact === 'true') ? '4/13' : '6/10',
       viewHeight: (this.props.compact === 'true') ? '25vh' : '90vh',
-      leftPanelStyle: (this.props.meeting === 'true')? {display: 'none'}: {},
+      leftPanelStyle: (this.props.meeting === 'true')? 
+                      {display: 'block', position: 'absolute', left: '-300%', width: '300%'}: {},
       rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
       mainWidth: (this.props.meeting === 'true')? '20%': 'auto',
       viewHeight: '90vh',
       chattingWindowStyle: {},
       writeChatStyle: {},
       collapse: 'false',
-      contactCollapseState: 'true'
+      contactCollapseState: 'false'
     };
 
     this.collapseHandler = this.collapseHandler.bind(this);
