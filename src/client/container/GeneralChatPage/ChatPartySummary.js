@@ -68,10 +68,10 @@ function ChatPartySummary(props) {
 
   let contactListExpandIcon = (contactCollapseState==='true')? 
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16" fill="currentColor" class="mercado-match" width="16" height="16" focusable="false">
-      <path d="M8 6.59L6.59 8 3 4.41V7H1V1h6v2H4.41zM13 9v2.59L9.41 8 8 9.41 11.59 13H9v2h6V9z"></path>
+      <path d="M11 1L6.39 8 11 15H8.61L4 8l4.61-7z"></path>
     </svg>: 
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16" fill="currentColor" class="mercado-match" width="16" height="16" focusable="false">
-      <path d="M5 1h2v6H1V5h2.59L0 1.41 1.41 0 5 3.59zm7.41 10H15V9H9v6h2v-2.59L14.59 16 16 14.59z"></path>
+      <path d="M5 15l4.61-7L5 1h2.39L12 8l-4.61 7z"></path>
     </svg>
 
   return (

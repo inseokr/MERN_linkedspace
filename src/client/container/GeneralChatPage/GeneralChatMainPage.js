@@ -66,7 +66,7 @@ export default class GeneralChatMainPage extends Component {
     }
     else
     {
-      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-200%', width: '200%'}, contactCollapseState: 'false'}); 
+      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-300%', width: '300%'}, contactCollapseState: 'false'}); 
     }
   }  
 
