@@ -128,7 +128,7 @@ export default class App extends Component {
                     <Map />
                   </Route>
                   <Route exact path="/Messages">
-                    <GeneralChatMainPage compact="false" />
+                    <GeneralChatMainPage compact="false" meeting='false' />
                   </Route>
                   <Route exact path="/MyNetworks">
                     <MyNetworkPage />
