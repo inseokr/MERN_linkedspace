@@ -34,9 +34,12 @@ function ChatPartySummary(props) {
       return '';
     }
 
+    let numberOfProcessedMember = 0;
+
     for (let i = 0; i < currChannelInfo.members.length; i++) {
 
       if (currentUser.username == currChannelInfo.members[i]) continue;
+
 
       _chatPartySummary.push(
         <React.Fragment key={shortid.generate()}>
@@ -50,6 +53,9 @@ function ChatPartySummary(props) {
           {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? <OnlineStatus loginStatus={getUserLoginStatus(currChannelInfo.members[i])}/> : ''}
         </React.Fragment>
       );
+
+      if(++numberOfProcessedMember===1) break;
+
     }
 
     return _chatPartySummary;

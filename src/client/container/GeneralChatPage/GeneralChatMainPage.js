@@ -52,11 +52,11 @@ export default class GeneralChatMainPage extends Component {
   collapseHandler() {
     if(this.state.collapse==='false')
     {
-      this.setState({chattingWindowStyle: {display:'none'}, writeChatStyle: {display:'none'}, viewHeight: '5vh', collapse: 'true'});
+      this.setState({chattingWindowStyle: {display:'none'}, writeChatStyle: {display:'none !important'}, viewHeight: '5vh', collapse: 'true'});
     }
     else
     {
-      this.setState({chattingWindowStyle: {display:'block'}, writeChatStyle: {display:'block'}, viewHeight: '90vh', collapse: 'false'}); 
+      this.setState({chattingWindowStyle: {display:'block'}, writeChatStyle: {display:'flex !important'}, viewHeight: '90vh', collapse: 'false'}); 
     }
   }  
 
