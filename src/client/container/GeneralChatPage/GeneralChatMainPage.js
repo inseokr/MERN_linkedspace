@@ -19,12 +19,11 @@ export default class GeneralChatMainPage extends Component {
      this.state = {
       leftPanelColumn: (this.props.compact === 'true') ? '1/4' : '4/6',
       rightPanelColumn: (this.props.compact === 'true') ? '4/13' : '6/10',
-      viewHeight: (this.props.compact === 'true') ? '25vh' : '90vh',
+      viewHeight: (this.props.compact === 'true') ? '50vh' : '90vh',
       leftPanelStyle: (this.props.meeting === 'true')? 
                       {display: 'block', position: 'absolute', left: '-300%', width: '300%'}: {},
       rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
       mainWidth: (this.props.meeting === 'true')? '20%': 'auto',
-      viewHeight: '90vh',
       chattingWindowStyle: {},
       writeChatStyle: {},
       collapse: 'false',
@@ -56,7 +55,7 @@ export default class GeneralChatMainPage extends Component {
     }
     else
     {
-      this.setState({chattingWindowStyle: {display:'block'}, writeChatStyle: {display:'flex !important'}, viewHeight: '90vh', collapse: 'false'}); 
+      this.setState({chattingWindowStyle: {display:'block'}, writeChatStyle: {display:'flex !important'}, viewHeight: '50vh', collapse: 'false'}); 
     }
   }  
 

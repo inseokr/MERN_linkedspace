@@ -177,7 +177,6 @@
     color: #a52a2a;
 }
 
-
 .imgCover {
     object-fit: cover !important;
     width: 60px;
@@ -190,6 +189,7 @@
 .OnlineStatus {
     color: rgb(72, 72, 72) !important;
     margin-left: 5px;
+    font-size: 1rem;
 }
 
 .onlineDoughnut { 

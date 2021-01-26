@@ -243,30 +243,30 @@ const ChildListing = React.forwardRef(({
           </Grid>
 
           <Grid item xs={8}>
-            <Paper className="description flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
-              <Typography className="description__title" color="textSecondary" gutterBottom>
+            <div className="flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}> 
+              <Typography className="description__title" color="textSecondary" gutterBottom style={{fontSize: '.9rem', marginLeft: '5px'}}>
                 {listingTitle}
               </Typography>
-              <Typography className="description__summary">
+              <Typography className="description__summary" style={{fontSize: '.9rem', marginLeft: '5px'}}>
                 {childListingSummary.listingSummary}
               </Typography>
-              <div style={{ display:'flex', flexFlow: 'row', justifyContent: 'space-between'}}>
-              <Typography>
+              <div style={{ display:'flex', flexFlow: 'row', justifyContent: 'space-between', marginLeft: '5px'}}>
+              <Typography style={{fontSize: '.9rem'}}>
                 {' '}
                 Price: $
                 {childListingSummary.rentalPrice}
               </Typography>
-              <Typography>
+              <Typography style={{fontSize: '.9rem'}}>
                 {' '}
                 City:
                 {childListingSummary.location}
               </Typography>
               </div>
 
-              <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '5px' }}>
+              <div className="flex-container" style={{ justifyContent: 'space-between', marginTop: '10px'}}>
                 <div className="flex-container" style={{ justifyContent: 'flex-start' }}>
                   <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+childListing.requester.profile_picture} alt="Hosted By" style={{ maxHeight: '70%', height: '60px' }} />
-                  <Typography style={{ marginTop: '10px', marginLeft: '5px' }}>
+                  <Typography style={{ marginTop: '10px', marginLeft: '5px' , fontSize: '.9rem'}}>
                     {' '}
                     Shared by
                     {' '}
@@ -276,12 +276,12 @@ const ChildListing = React.forwardRef(({
                  <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" styles={{width: '20%', height: 'auto', overflowY: 'hidden'}}>
                     <div style={{textAlign: "center", marginTop: "10px", marginBottom: "10px", fontSize: "120%", color: "#981407"}}> Are you sure to remove this listing?</div>
                 </SimpleModal>
-                <button className="btn btn-danger" onClick={handleRemoveButton}>
+                <button className="btn btn-danger" onClick={handleRemoveButton} style={{fontSize: '.9rem', height: '45px'}}>
                   Remove
                 </button>
               </div>
 
-            </Paper>
+            </div>
           </Grid>
         </Grid>
       </ListItem>

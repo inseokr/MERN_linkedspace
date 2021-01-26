@@ -1,6 +1,6 @@
 .carouselImage {
-    width: 400px;
-    height: 200px;
+    width: 180px;
+    height: 120px;
     object-fit: cover;
 }
 
@@ -27,6 +27,7 @@
 
 .childListing {
 	margin-left: 5%;
+    height: auto;
 }
 
 .heartColor {

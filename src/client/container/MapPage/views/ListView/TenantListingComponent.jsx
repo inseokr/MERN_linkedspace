@@ -197,11 +197,11 @@ function TenantListingComponent(props) {
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
         </SimpleModal>
 
-        <button className="btn btn-info" onClick={inviteFriends}>
+        <button className="btn btn-info" onClick={inviteFriends} style={{fontSize: '1rem', height: '45px'}}>
           Invite Friends
         </button>
 
-        <button className="btn btn-info" onClick={showModal}>
+        <button className="btn btn-info" onClick={showModal} style={{fontSize: '1rem', height: '45px'}}>
           Add Listing
         </button>
       </div>
@@ -237,32 +237,32 @@ function TenantListingComponent(props) {
                 Summary of rental request
               </Typography>
 
-                <Typography className="description__address">
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Move-in date:
                   {' '}
                   {moveInDate}
                 </Typography>
 
-                <Typography className="description__address">
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Location:
                   {' '}
                   {preferredLocation}
                 </Typography>
 
-              <div style={{ display: 'grid', gridTemplateColumns: "7fr 5fr" }}>
-                <Typography className="description__address">
+              <div style={{ display: 'grid', gridTemplateColumns: "7fr 5fr"}}>
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Rental duration: 
                   {' '}
                   {rentDuration}
                 </Typography>
-                <Typography className="description__address">
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Budget:
                   {' '}
                   {rentalBudget}
                   /m
                 </Typography>
               </div>
-              <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px'}}>
+              <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px', fontSize: '.9rem'}}>
                 Posted by:
                 {' '}
                 {userName}
