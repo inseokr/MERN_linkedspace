@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import shortid from 'shortid';
 import '../../app.css';
 import './GeneralChatMainPage.css';
+import {FILE_SERVER_URL} from '../../globalConstants';
 import OnlineStatus from '../../components/Message/OnlineStatus';
 import { MessageContext } from '../../contexts/MessageContext';
 import { GlobalContext } from '../../contexts/GlobalContext';
@@ -13,22 +14,13 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 // We may consider adding more information
 // Group Chat should be considered
 function ChatPartySummary(props) {
-  const { currChannelInfo } = useContext(MessageContext);
+  const { currChannelInfo, getProfilePictureByChattingType } = useContext(MessageContext);
   const { currentUser, getUserLoginStatus} = useContext(GlobalContext);
   const { collapseHandler, collapseState, contactListCollapeHandler, contactCollapseState } = props;
 
-  function getSocialDistanceString(distance) {
-    switch (distance) {
-      case 1: return '1st';
-      case 2: return '2nd';
-      case 3: return '3rd';
-      case 4: return '4th';
-      default: return '';
-    }
-  }
-
   function getChatPartySummary() {
     const _chatPartySummary = [];
+    const listOfPictures = [];
 
     if (currChannelInfo.members == undefined || currentUser === null) {
       return '';
@@ -36,29 +28,38 @@ function ChatPartySummary(props) {
 
     let numberOfProcessedMember = 0;
 
+    let onlineStatus = '';
+
     for (let i = 0; i < currChannelInfo.members.length; i++) {
 
       if (currentUser.username == currChannelInfo.members[i]) continue;
 
+      const additional_style = {
+        position: 'relative',
+        width: '25px'
+      }
+      let onlineStatusStyle = { marginTop: '-20px', marginLeft: '32px' };
 
-      _chatPartySummary.push(
+      onlineStatus = (currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? 
+        <OnlineStatus loginStatus={getUserLoginStatus(currChannelInfo.members[i])} additionalStyle={onlineStatusStyle} /> : '';
+
+      listOfPictures.push(
         <React.Fragment key={shortid.generate()}>
-          <div className="ChatPartyName">
-            {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined)
-              ? currChannelInfo.members[i] : ''}
-          </div>
-          <div className="SocialDistance">
-            {getSocialDistanceString(1)}
-          </div>
-          {(currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? <OnlineStatus loginStatus={getUserLoginStatus(currChannelInfo.members[i])}/> : ''}
+            <img key={shortid.generate()} 
+                className="center rounded-circle" 
+                style={additional_style} 
+                src={FILE_SERVER_URL+getProfilePictureByChattingType(currChannelInfo.members[i])} 
+                alt="myFriend" />
         </React.Fragment>
       );
-
-      if(++numberOfProcessedMember===1) break;
-
     }
 
-    return _chatPartySummary;
+    if(currChannelInfo.members.length<=2)
+    {
+      listOfPictures.push(<React.Fragment>{onlineStatus}</React.Fragment>);
+    }
+
+    return listOfPictures;
   }
 
   let collapseIcon = (collapseState==='false')? 
@@ -83,8 +84,10 @@ function ChatPartySummary(props) {
       <section onClick={contactListCollapeHandler} style={{marginRight: '10px'}}>
         {contactListExpandIcon}
       </section>
-      { getChatPartySummary() }
-      <section onClick={collapseHandler}>
+      <section>
+        { getChatPartySummary() }
+      </section>
+      <section onClick={collapseHandler} style={{position: 'absolute', right: '0'}}>
         {collapseIcon}
       </section>
     </React.Fragment>
