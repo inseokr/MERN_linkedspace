@@ -24,6 +24,7 @@ export default class GeneralChatMainPage extends Component {
                       {display: 'block', position: 'absolute', left: '-300%', width: '300%'}: {},
       rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
       mainWidth: (this.props.meeting === 'true')? '20%': 'auto',
+      contactListStyle: (this.props.compact === 'true') ? {height: '78%'} : {},
       chattingWindowStyle: {},
       writeChatStyle: {},
       collapse: 'false',
@@ -104,7 +105,7 @@ export default class GeneralChatMainPage extends Component {
           <div className="SearchMessageBox">
             <SearchMessageBox />
           </div>
-          <div className="MessageContactList">
+          <div className="MessageContactList" style={this.state.contactListStyle}>
             <ChatContactList />
           </div>
         </div>
