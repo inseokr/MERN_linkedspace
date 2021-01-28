@@ -13,7 +13,7 @@ import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPageWrapper from '../../../ListingPage/ShowActiveListingPageWrapper';
 import ChildListingsView from './ChildListingsView';
 import { GlobalContext } from '../../../../contexts/GlobalContext';
-import { MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_GENERAL } from '../../../../contexts/MessageContext';
+import { MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../../contexts/MessageContext';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import {FILE_SERVER_URL} from '../../../../globalConstants';
 
@@ -50,7 +50,8 @@ function TenantListingComponent(props) {
     toggle(true);
   }
 
-  const borderStyle = (currentListing._id === markerParams.selectedMarkerID) ? {
+  // This is for parent border
+  const borderStyle = (chattingContextType===MSG_CHANNEL_TYPE_LISTING_PARENT) ? {
     borderLeftStyle: 'solid',
     borderLeftColor: (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_PARENT, -1) === true)? 'red': '#115399',
     borderLeftWidth: '5px'
@@ -61,8 +62,7 @@ function TenantListingComponent(props) {
   } : {};
 
 
-  const _backGroundColor = (currentListing._id === markerParams.selectedMarkerID)? "#b0becc": "white";
-
+  const _backGroundColor = (chattingContextType===MSG_CHANNEL_TYPE_LISTING_PARENT)? "#b0becc": "white";
 
   async function addChildListing(childListing) {
     // console.log("addChildListing with childListing =" + JSON.stringify(childListing));
