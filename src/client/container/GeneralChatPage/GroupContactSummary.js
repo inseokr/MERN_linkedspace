@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import shortid from 'shortid';
 import '../../app.css';
 import {FILE_SERVER_URL} from '../../globalConstants';
@@ -15,21 +15,38 @@ const maxPicturesToShow = 3;
 function GroupContactSummary(props) {
   const { setCurrentChatPartyPicture, getProfilePictureByChattingType } = useContext(MessageContext);
   const { getProfilePicture, currentUser } = useContext(GlobalContext);
+  const {clickState, contactIndex, user, summary} = props;
+  const [currentClickState, setCurrentClickState] = useState(false);
+
+  const contactRef = useRef(null);
+
+  useEffect(() => {
+    // this is called even though there is no value change
+    if(contactRef.current)
+    {
+      if(currentClickState!=clickState)
+      {
+        contactRef.current.scrollIntoView({ block: 'end', inline: 'nearest'});
+        setCurrentClickState(clickState);
+      }
+    }
+
+  }, [clickState]);
 
   function handleClick(e) {
     e.preventDefault();
-    props.clickHandler(props.contactIndex);
-    setCurrentChatPartyPicture(props.user.profile_picture);
+    props.clickHandler(contactIndex);
+    setCurrentChatPartyPicture(user.profile_picture);
   }
 
   function getContactSummaryClassName() {
-    let listOfClass = (props.clickState === 0 ? 'GroupContactSummary' : 'GroupContactSummaryClicked');
+    let listOfClass = (clickState === 0 ? 'GroupContactSummary' : 'GroupContactSummaryClicked');
 
-    if (props.contactIndex == 0) {
-      setCurrentChatPartyPicture(props.user.profile_picture);
+    if (contactIndex == 0) {
+      setCurrentChatPartyPicture(user.profile_picture);
     }
 
-    listOfClass = (props.summary.flag_new_msg) ? `${listOfClass} NewMessageIndicator` : listOfClass;
+    listOfClass = (summary.flag_new_msg) ? `${listOfClass} NewMessageIndicator` : listOfClass;
     return listOfClass;
   }
 
@@ -39,7 +56,7 @@ function GroupContactSummary(props) {
     const foundMyself = false;
     for (let i = 0; i < props.user.length && numOfPictures < maxPictures; i++) {
       // let's skip myself.
-      if (props.user[i].username == currentUser.username) {
+      if (user[i].username == currentUser.username) {
         continue;
       }
 
@@ -49,7 +66,11 @@ function GroupContactSummary(props) {
       };
 
       listOfPictures.push(
-        <img key={shortid.generate()} className="center rounded-circle" style={additional_style} src={FILE_SERVER_URL+getProfilePictureByChattingType(props.user[i].username)} alt="myFriend" />
+        <img key={shortid.generate()} 
+         className="center rounded-circle" 
+         style={additional_style} 
+         src={FILE_SERVER_URL+getProfilePictureByChattingType(user[i].username)} 
+         alt="myFriend" />
       );
 
       numOfPictures++;
@@ -63,10 +84,10 @@ function GroupContactSummary(props) {
 
   // the number of friends not shown in the picture
   // <note> we should exclude myself.
-  const numOfExtraFriends = ((props.user.length - 1) > maxPicturesToShow) ? `+${props.user.length - maxPicturesToShow - 1}` : '';
+  const numOfExtraFriends = ((user.length - 1) > maxPicturesToShow) ? `+${user.length - maxPicturesToShow - 1}` : '';
 
   return (
-    <div className={getContactSummaryClassName()} onClick={handleClick}>
+    <div className={getContactSummaryClassName()} ref={contactRef} onClick={handleClick}>
       <div className="ProfilePicture">
         {listOfPictures}
         {numOfExtraFriends}
@@ -76,7 +97,7 @@ function GroupContactSummary(props) {
         {props.summary.timestamp}
       </div>
       <div className="ChatSummary">
-        {props.summary.msg_summary}
+        {summary.msg_summary}
       </div>
     </div>
   );

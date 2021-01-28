@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import '../../app.css';
 import { FILE_SERVER_URL } from '../../globalConstants';
 import './GeneralChatMainPage.css';
@@ -9,6 +9,21 @@ import { MessageContext } from '../../contexts/MessageContext';
 
 function ContactSummary(props) {
   const { setCurrentChatPartyPicture } = useContext(MessageContext);
+  const [currentClickState, setCurrentClickState] = useState(false);
+
+  const contactRef = useRef(null);
+
+  useEffect(() => {
+    if(contactRef.current)
+    {
+      if(currentClickState!=props.clickState)
+      {
+        contactRef.current.scrollIntoView({ block: 'end', inline: 'nearest'});
+        setCurrentClickState(props.clickState);
+      }
+    }
+
+  }, [props.clickState]);
 
   function handleClick(e) {
     e.preventDefault();
@@ -32,7 +47,7 @@ function ContactSummary(props) {
   //console.warn("ContactSummary: summary = " + props.summary.msg_summary);
 
   return (
-    <div className={getContactSummaryClassName()} onClick={handleClick}>
+    <div className={getContactSummaryClassName()} ref={contactRef} onClick={handleClick}>
       <div className="ProfilePicture">
         <img className="center rounded-circle imgFitToGrid" src={FILE_SERVER_URL+props.user.profile_picture} alt="myFriend" />
       </div>

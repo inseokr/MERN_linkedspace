@@ -51,7 +51,7 @@ export function GlobalProvider(props) {
       return currentUser.profile_picture;
     }
 
-    if (friendsMap[user_name] == undefined) {
+    if (friendsMap === undefined || friendsMap[user_name] == undefined) {
       console.warn(`Current user: ${user_name} is no direct friend`);
       return sampleProfile;
     }
