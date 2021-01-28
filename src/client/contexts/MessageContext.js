@@ -128,8 +128,6 @@ export function MessageContextProvider(props) {
 
   function checkAnyUnreadMessages(chatting_type, _childIndex)
   {
-    //console.warn("checkAnyUnreadMessages: _childIndex = " + _childIndex);
-
     let _contactList = MC_buildContactList(chatting_type, _childIndex);
     if(_contactList===null) return false;
 
@@ -560,18 +558,32 @@ export function MessageContextProvider(props) {
   }
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
-
-    console.warn("currChannelInfo.channelName="+currChannelInfo.channelName);
-    console.warn("channelInfo.channelName="+channelInfo.channelName);
     if(currChannelInfo.channelName !== channelInfo.channelName)
     {
-      //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
-      // ISEO-TBD: don't we need to update current channel instead of new channel?
-      // <note> I will update the current channel for now.
-      pushCurrentChannelToDB(currChannelInfo).then((result) => {
-        setCurrChannelInfo(channelInfo);
-      });
+      setCurrChannelInfo(channelInfo);
     }
+  }
+
+
+  async function clearNewMessageIndicator() {
+    const data = {
+          channel_id: currChannelInfo.channelName,
+          lastReadIndex: dmChannelContexts[currChannelInfo.channelName].chattingHistory.length
+        };
+
+    const result = await axios.post('/LS_API/chatting/update', data)
+      .then((result) => {
+        try {
+          updateLastReadIndex(data);
+          // turn it off
+          const dmChannelContextArray = dmChannelContexts;
+          dmChannelContextArray[currChannelInfo.channelName].flag_new_msg = false;
+          setChannelContexts(dmChannelContextArray);
+        } catch(err) {
+          console.warn(`clearNewMessageIndicator: error = ${err}`);
+        }
+      })
+      .catch((err) => { console.log(err);});
   }
 
   // direction:
@@ -1264,7 +1276,8 @@ export function MessageContextProvider(props) {
       setDoNotDisturbMode,
       checkAnyUnreadMessages,
       getProfilePictureByChattingType,
-      broadcastDashboardMode
+      broadcastDashboardMode,
+      clearNewMessageIndicator
     }}
     >
       {props.children}

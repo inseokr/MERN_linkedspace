@@ -5,7 +5,7 @@ import '../../app.css';
 import './GeneralChatMainPage.css';
 
 function WriteChat() {
-  const { updateChatHistory, doNotDisturbMode, setDoNotDisturbMode } = useContext(MessageContext);
+  const { updateChatHistory, doNotDisturbMode, setDoNotDisturbMode, clearNewMessageIndicator } = useContext(MessageContext);
   const [chatMessage, setChatMessage] = useState('Write message...');
   const [modeChanged, setModeChanged] = useState(false);
 
@@ -30,6 +30,9 @@ function WriteChat() {
     {
       setModeChanged(true);
       setDoNotDisturbMode(true);
+      // let's clear the new mesasge flag
+      console.warn("clearNewMessageIndicator");
+      clearNewMessageIndicator();
     }
   };
 
