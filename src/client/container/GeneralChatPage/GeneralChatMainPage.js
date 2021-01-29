@@ -19,7 +19,6 @@ export default class GeneralChatMainPage extends Component {
      this.state = {
       leftPanelColumn: (this.props.compact === 'true') ? '1/4' : '4/6',
       rightPanelColumn: (this.props.compact === 'true') ? '4/13' : '6/10',
-      viewHeight: (this.props.compact === 'true') ? '50vh' : '90vh',
       leftPanelStyle: (this.props.meeting === 'true')? 
                       {display: 'block', position: 'absolute', left: '-300%', width: '300%'}: {},
       rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
@@ -27,7 +26,6 @@ export default class GeneralChatMainPage extends Component {
       contactListStyle: (this.props.compact === 'true') ? {height: '78%'} : {},
       chattingWindowStyle: {},
       writeChatStyle: {},
-      collapse: 'false',
       contactCollapseState: 'false'
     };
 
@@ -50,13 +48,13 @@ export default class GeneralChatMainPage extends Component {
   }
 
   collapseHandler() {
-    if(this.state.collapse==='false')
+    if(this.context.collapse==='false')
     {
-      this.setState({chattingWindowStyle: {display:'none'}, writeChatStyle: {display:'none !important'}, viewHeight: '5vh', collapse: 'true'});
+      this.context.setCollapse('true');
     }
     else
     {
-      this.setState({chattingWindowStyle: {display:'block'}, writeChatStyle: {display:'flex !important'}, viewHeight: '50vh', collapse: 'false'}); 
+      this.context.setCollapse('false');
     }
   }  
 
@@ -72,28 +70,31 @@ export default class GeneralChatMainPage extends Component {
   }  
 
   render() {
-    //let viewHeight = (this.props.compact === 'true') ? '25vh' : '90vh';
+    let chattingWindowStyle = (this.context.collapse==='true')?  {display:'none'} : {display:'block'};
+    let writeChatStyle = (this.context.collapse==='true')? {display:'none !important'} : {display:'flex !important'};
+    let viewHeight = '90vh';
 
-    //let leftPanelStyle = {};
-    //let rightPanelStyle = {};
-    //let mainWidth = 'inherit';
-
-    /*if(this.props.meeting === 'true')
+    if(this.props.compact ==='true')
     {
-      leftPanelStyle = {display: 'none'};
-      rightPanelStyle = {width: '135%', marginLeft: '-33.5%'};
-      mainWidth = '20%';
-      viewHeight = '90vh';
-    }*/
+      if(this.context.collapse==='true')
+      {
+        viewHeight = '5vh';
+      }
+      else
+      {
+        viewHeight = '50vh';
+      }
+    } 
+
     return (
       <div
         className="GeneralChatMainWrapper bg-light"
         id="chattingPanel"
         style={{ '--leftPanelColumn': this.state.leftPanelColumn, 
                  '--rightPanelColumn': this.state.rightPanelColumn,
-                 '--chatMainHeight': this.state.viewHeight,
-                 '--chatLeftPanelHeight': this.state.viewHeight,
-                 '--chatRightPanelHeight': this.state.viewHeight,
+                 '--chatMainHeight': viewHeight,
+                 '--chatLeftPanelHeight': viewHeight,
+                 '--chatRightPanelHeight': viewHeight,
                  borderBottom: 'hidden',
                  width: this.state.mainWidth,
                  zIndex: '10'}}
@@ -113,13 +114,13 @@ export default class GeneralChatMainPage extends Component {
         <div className="MessageRightPanel" style={this.state.rightPanelStyle}>
           <div className="SenderProfileSummary">
             <ChatPartySummary 
-              collapseHandler={this.collapseHandler} collapseState={this.state.collapse} 
+              collapseHandler={this.collapseHandler} collapseState={this.context.collapse} 
               contactListCollapeHandler={this.contactListCollapeHandler} contactCollapseState={this.state.contactCollapseState} />
           </div>
-          <div className="ChattingWindow" style={this.state.chattingWindowStyle}>
+          <div className="ChattingWindow" style={chattingWindowStyle}>
             <ChattingWindow />
           </div>
-          <div className="WriteMessageWindow style={this.state.writeChatStyle}">
+          <div className="WriteMessageWindow style={writeChatStyle}">
             <WriteChat />
           </div>
         </div>

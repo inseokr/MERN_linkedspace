@@ -40,6 +40,7 @@ export function MessageContextProvider(props) {
   const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
   const [channelWithLatestMessagae, setChannelWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
+  const [collapse, setCollapse] = useState('false');
 
   // ISEO-TBD:
   // Very annoying issue with React. ChattingWindow doesn't re-render even if dmChannelContexts are changes.
@@ -87,11 +88,22 @@ export function MessageContextProvider(props) {
   const [childType, setChildType] = useState(0);
   const [childIndex, setChildIndex] = useState(0);
 
-
   const [currentChatPartyPicture, setCurrentChatPartyPicture] = useState('../assets/images/Chinh - Vy.jpg');
 
-
   const [selectedChatList, setSelectedChatList] = useState([]);
+
+
+  function toggleCollapse()
+  {
+    if(collapse==='false')
+    {
+      setCollapse('true');
+    }
+    else
+    {
+      setCollapse('false');
+    }
+  }
 
   function getProfilePictureByChattingType(user_name)
   {
@@ -1277,7 +1289,10 @@ export function MessageContextProvider(props) {
       checkAnyUnreadMessages,
       getProfilePictureByChattingType,
       broadcastDashboardMode,
-      clearNewMessageIndicator
+      clearNewMessageIndicator,
+      collapse,
+      setCollapse,
+      toggleCollapse
     }}
     >
       {props.children}
