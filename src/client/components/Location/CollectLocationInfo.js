@@ -114,6 +114,7 @@ function CollectLocationInfo(props) {
           value={addressInput || ''}
           renderInput={params => (
             <TextField
+              required
               {...params}
               label="Address"
               variant="outlined"
