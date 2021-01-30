@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, {
-  useState, useContext, useRef, useEffect, useCallback
+  useState, useContext, useRef, useEffect
 } from 'react';
 
 import Grid from '@material-ui/core/Grid';
@@ -34,24 +34,27 @@ function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin, currentUser} = useContext(GlobalContext);
-  const {doNotDisturbMode, setChildIndex, setDoNotDisturbMode, broadcastDashboardMode, toggleCollapse} = useContext(MessageContext);
+  const {doNotDisturbMode, childIndex, setChildIndex, setDoNotDisturbMode, broadcastDashboardMode, toggleCollapse} = useContext(MessageContext);
   const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
   const [rightPaneMode, setRightPaneMode] = useState('Map');
   const [showMessage, setShowMessage] = useState(true);
-
   const { refresh, selectedMarkerID, markers } = markerParams;
   const [map, setMap] = useState(null);
 
-  const groupRef = useCallback(node => { // useCallback instead of useRef
+  const groupRef = (node) => {
     if (node !== null && map !== null) {
       const bounds = node.getBounds();
       if (Object.keys(bounds).length > 0) {
-        map.fitBounds(bounds);
+        //fitBounds will happen only if parent listing is selected.
+        if(currentChildIndex===-1)
+        {
+          map.fitBounds(bounds);
+        }
       }
     }
-  }, [map]);
+  };
 
   const showModal = () => {
     setModalShow(true);
