@@ -59,6 +59,7 @@ function PickChattingParty(props) {
 
   function getFriend(_friend, index) {
     const _style = (clickStates[index] == 1) ? 'friendWrapperClicked' : 'friendWrapper';
+    let onlineStyle = {marginLeft: 'auto'};
 
     return (
       <div key={shortid.generate()}>
@@ -73,7 +74,7 @@ function PickChattingParty(props) {
             </h5>
           </div>
           <div>
-            <OnlineStatus marginLeft="auto" loginStatus={getUserLoginStatus(_friend.username)}/>
+            <OnlineStatus additionalStyle={onlineStyle} loginStatus={getUserLoginStatus(_friend.username)}/>
           </div>
         </div>
         <hr />

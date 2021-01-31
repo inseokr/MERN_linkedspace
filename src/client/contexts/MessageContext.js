@@ -40,6 +40,7 @@ export function MessageContextProvider(props) {
   const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
   const [channelWithLatestMessagae, setChannelWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
+  const [collapse, setCollapse] = useState('false');
 
   // ISEO-TBD:
   // Very annoying issue with React. ChattingWindow doesn't re-render even if dmChannelContexts are changes.
@@ -87,11 +88,22 @@ export function MessageContextProvider(props) {
   const [childType, setChildType] = useState(0);
   const [childIndex, setChildIndex] = useState(0);
 
-
   const [currentChatPartyPicture, setCurrentChatPartyPicture] = useState('../assets/images/Chinh - Vy.jpg');
 
-
   const [selectedChatList, setSelectedChatList] = useState([]);
+
+
+  function toggleCollapse()
+  {
+    if(collapse==='false')
+    {
+      setCollapse('true');
+    }
+    else
+    {
+      setCollapse('false');
+    }
+  }
 
   function getProfilePictureByChattingType(user_name)
   {
@@ -128,8 +140,6 @@ export function MessageContextProvider(props) {
 
   function checkAnyUnreadMessages(chatting_type, _childIndex)
   {
-    //console.warn("checkAnyUnreadMessages: _childIndex = " + _childIndex);
-
     let _contactList = MC_buildContactList(chatting_type, _childIndex);
     if(_contactList===null) return false;
 
@@ -560,18 +570,32 @@ export function MessageContextProvider(props) {
   }
 
   async function switchChattingChannel(channelInfo, bNeedLoadChattingDatabase) {
-
-    console.warn("currChannelInfo.channelName="+currChannelInfo.channelName);
-    console.warn("channelInfo.channelName="+channelInfo.channelName);
     if(currChannelInfo.channelName !== channelInfo.channelName)
     {
-      //console.warn(`switchChattingChannel:${JSON.stringify(channelInfo)}`);
-      // ISEO-TBD: don't we need to update current channel instead of new channel?
-      // <note> I will update the current channel for now.
-      pushCurrentChannelToDB(currChannelInfo).then((result) => {
-        setCurrChannelInfo(channelInfo);
-      });
+      setCurrChannelInfo(channelInfo);
     }
+  }
+
+
+  async function clearNewMessageIndicator() {
+    const data = {
+          channel_id: currChannelInfo.channelName,
+          lastReadIndex: dmChannelContexts[currChannelInfo.channelName].chattingHistory.length
+        };
+
+    const result = await axios.post('/LS_API/chatting/update', data)
+      .then((result) => {
+        try {
+          updateLastReadIndex(data);
+          // turn it off
+          const dmChannelContextArray = dmChannelContexts;
+          dmChannelContextArray[currChannelInfo.channelName].flag_new_msg = false;
+          setChannelContexts(dmChannelContextArray);
+        } catch(err) {
+          console.warn(`clearNewMessageIndicator: error = ${err}`);
+        }
+      })
+      .catch((err) => { console.log(err);});
   }
 
   // direction:
@@ -1264,7 +1288,11 @@ export function MessageContextProvider(props) {
       setDoNotDisturbMode,
       checkAnyUnreadMessages,
       getProfilePictureByChattingType,
-      broadcastDashboardMode
+      broadcastDashboardMode,
+      clearNewMessageIndicator,
+      collapse,
+      setCollapse,
+      toggleCollapse
     }}
     >
       {props.children}

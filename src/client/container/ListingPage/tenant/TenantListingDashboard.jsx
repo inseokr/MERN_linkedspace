@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, {
-  useState, useContext, useRef, useEffect, useCallback
+  useState, useContext, useRef, useEffect
 } from 'react';
 
 import Grid from '@material-ui/core/Grid';
@@ -34,24 +34,27 @@ function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin, currentUser} = useContext(GlobalContext);
-  const {doNotDisturbMode, setChildIndex, setDoNotDisturbMode, broadcastDashboardMode} = useContext(MessageContext);
-  const { currentListing, currentChildIndex, setCurrentChildIndex, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
+  const {doNotDisturbMode, childIndex, setChildIndex, setDoNotDisturbMode, broadcastDashboardMode, toggleCollapse} = useContext(MessageContext);
+  const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
   const [rightPaneMode, setRightPaneMode] = useState('Map');
   const [showMessage, setShowMessage] = useState(true);
-
   const { refresh, selectedMarkerID, markers } = markerParams;
   const [map, setMap] = useState(null);
 
-  const groupRef = useCallback(node => { // useCallback instead of useRef
+  const groupRef = (node) => {
     if (node !== null && map !== null) {
       const bounds = node.getBounds();
       if (Object.keys(bounds).length > 0) {
-        map.fitBounds(bounds);
+        //fitBounds will happen only if parent listing is selected.
+        if(currentChildIndex===-1)
+        {
+          map.fitBounds(bounds);
+        }
       }
     }
-  }, [map]);
+  };
 
   const showModal = () => {
     setModalShow(true);
@@ -159,6 +162,10 @@ function TenantListingDashBoard(props) {
 
   const { center, zoom } = mapParams;
 
+  //let mapMessageContainerStyle = { display: 'grid', gridTemplateColumns: '4fr 8fr'};
+  let mapMessageContainerStyle = { };
+  let chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
+
   return (
     (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
       <Grid component="main">
@@ -167,14 +174,19 @@ function TenantListingDashBoard(props) {
             <span className="DashboardModeControlCaption" > Do not disturb mode </span>
             <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
           <Grid container alignContent="stretch" >
-            <Grid item xs={6}>
+            <Grid item xs={5}>
               <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
               <Grid item xs={12}>
                 <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
               </Grid>
             </Grid>
-            <Grid className="map" item xs={6}>
+            <Grid className="map" item xs={7}>
               
+              <div style={mapMessageContainerStyle}> 
+              <section style={chatContainerStyle}>
+                <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
+              </section>
+
               <React.Fragment>
                 <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
                   <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
@@ -186,7 +198,19 @@ function TenantListingDashBoard(props) {
                     {markers.map((marker, index) =>
                       <Marker key={`marker-${index}`} position={marker.position} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
                         <Popup>
-                          A pretty CSS3 popup. <br /> Easily customizable.
+                          <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
+                            <section style={{marginTop: '3px'}}> 
+                              <a href={getChildListingUrl()} target="_blank">
+                                <i class="fas fa-external-link-alt fa-lg"></i> 
+                              </a>
+                            </section>
+                            <section onClick={() => {toggleCollapse();} } style={{color: '#a52a2a'}}> 
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+                                <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
+                                </path>
+                              </svg>
+                            </section>
+                          </section>
                         </Popup>
                       </Marker>
                     )}
@@ -194,9 +218,9 @@ function TenantListingDashBoard(props) {
                 </MapContainer>
                 </div>
               </React.Fragment>
-                <section>
-                  <GeneralChatMainPage id="compactChattingPage" compact="true" />
-                </section>
+
+              </div>
+
             </Grid>
           </Grid>
         </Box>

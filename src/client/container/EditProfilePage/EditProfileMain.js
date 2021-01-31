@@ -269,10 +269,10 @@ function EditProfileMain() {
                 <hr />
                 <div className="flex-container">
                   <div style={{ width: '65%' }}>
-                    <input type="text" className="form-control" style={{ width: '95%' }} name="first_name" id="first_name" placeholder="First Name" />
+                    <input type="text" required className="form-control" style={{ width: '95%' }} name="first_name" id="first_name" placeholder="First Name" />
                   </div>
                   <div style={{ width: '50%' }}>
-                    <input type="text" className="form-control" style={{ width: '100%' }} name="last_name" id="last_name" placeholder="Last Name" />
+                    <input type="text" required className="form-control" style={{ width: '100%' }} name="last_name" id="last_name" placeholder="Last Name" />
                   </div>
                 </div>
                 <hr />

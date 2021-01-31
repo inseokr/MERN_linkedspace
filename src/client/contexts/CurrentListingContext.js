@@ -57,6 +57,16 @@ export function CurrentListingProvider(props) {
     }
   }
 
+  function getChildListingUrl() {
+    if(currentListing!==undefined && currentListing.child_listings[currentChildIndex])
+    {
+      return currentListing.child_listings[currentChildIndex].listing_id.listingUrl;
+    }
+    else
+    {
+      return ''
+    }
+  }
 
   function buildChildListingMappingTable() {
     let _tempMap = [];
@@ -231,7 +241,8 @@ export function CurrentListingProvider(props) {
       setFilterParams,
       markerParams,
       setMarkerParams,
-      getProfilePictureFromSharedGroup
+      getProfilePictureFromSharedGroup,
+      getChildListingUrl,
     }}
     >
       {props.children}

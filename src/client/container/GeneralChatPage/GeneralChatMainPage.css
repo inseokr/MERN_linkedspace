@@ -27,10 +27,6 @@ section > .GeneralChatMainWrapper {
 	width: 50%;
 }
 
-section > .GeneralChatMainWrapper:hover {
-	height: 80vh;
-}
-
 .GeneralChatMainWrapper > div {
 	padding: 0.2em;
 }
@@ -136,6 +132,7 @@ section > .GeneralChatMainWrapper:hover {
 	width: 90%;
 	padding: 2px 5px;
 	max-height: 45px;
+	font-size: .9rem;
 }
 
 .speech-bubble-right {
@@ -153,7 +150,7 @@ section > .GeneralChatMainWrapper:hover {
 
 .speech-bubble-left {
 	position: relative;
-	background: #cdd6e0;
+	background: #91b0d3;
 	border-radius: .4em;
 	width: 93%;
 	min-height: 50px;
@@ -168,7 +165,7 @@ section > .GeneralChatMainWrapper:hover {
 	bottom: 5px;
 	right:30px;
 	color: #8B0000 !important;
-	font-size: 75%;
+	font-size: .7rem !important;
 }
 
 .MessageTimeStampLeft {
@@ -176,13 +173,14 @@ section > .GeneralChatMainWrapper:hover {
 	bottom: 5px;
 	left:30px;
 	color: #8B0000 !important;
-	font-size: 75%;
+	font-size: .7rem !important;
 }
 
 .ChattingMessageStyle {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+  font-size: .8rem !important;
 }
 
 .MessageContents {
@@ -195,10 +193,10 @@ section > .GeneralChatMainWrapper:hover {
 }
 
 .MessageContactList{
-	overflow-y: scroll;
 	flex-grow: 1;
 	padding-top: 2px;
 	margin-left: -3px;
+	overflow-y: scroll;
 }
 
 .ProfilePicture {
@@ -215,7 +213,7 @@ section > .GeneralChatMainWrapper:hover {
 .ContactName {
 	grid-area: cn;
 	padding-left: 10px;
-
+	font-size: .9rem;
 }
 
 .ChatSummary {
@@ -223,6 +221,7 @@ section > .GeneralChatMainWrapper:hover {
 	font-style: italic;
 	padding-left: 10px;
 	padding-top: 10px;
+	font-size: .8rem;
 }
 
 .ChatTimeStamp {

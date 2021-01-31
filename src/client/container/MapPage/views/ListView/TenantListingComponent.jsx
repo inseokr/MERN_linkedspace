@@ -13,7 +13,7 @@ import SimpleModal from '../../../../components/Modal/SimpleModal';
 import ShowActiveListingPageWrapper from '../../../ListingPage/ShowActiveListingPageWrapper';
 import ChildListingsView from './ChildListingsView';
 import { GlobalContext } from '../../../../contexts/GlobalContext';
-import { MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_GENERAL } from '../../../../contexts/MessageContext';
+import { MessageContext, MSG_CHANNEL_TYPE_LISTING_PARENT, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../../contexts/MessageContext';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import {FILE_SERVER_URL} from '../../../../globalConstants';
 
@@ -27,7 +27,7 @@ function TenantListingComponent(props) {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
     parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
-  const { setChattingContextType, chattingContextType, checkAnyUnreadMessages } = useContext(MessageContext);
+  const { setChattingContextType, chattingContextType, checkAnyUnreadMessages,toggleCollapse } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
 
   if (listing === undefined) {
@@ -50,7 +50,8 @@ function TenantListingComponent(props) {
     toggle(true);
   }
 
-  const borderStyle = (currentListing._id === markerParams.selectedMarkerID) ? {
+  // This is for parent border
+  const borderStyle = (chattingContextType===MSG_CHANNEL_TYPE_LISTING_PARENT) ? {
     borderLeftStyle: 'solid',
     borderLeftColor: (checkAnyUnreadMessages(MSG_CHANNEL_TYPE_LISTING_PARENT, -1) === true)? 'red': '#115399',
     borderLeftWidth: '5px'
@@ -61,8 +62,7 @@ function TenantListingComponent(props) {
   } : {};
 
 
-  const _backGroundColor = (currentListing._id === markerParams.selectedMarkerID)? "#b0becc": "white";
-
+  const _backGroundColor = (chattingContextType===MSG_CHANNEL_TYPE_LISTING_PARENT)? "#b0becc": "white";
 
   async function addChildListing(childListing) {
     // console.log("addChildListing with childListing =" + JSON.stringify(childListing));
@@ -197,11 +197,11 @@ function TenantListingComponent(props) {
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
         </SimpleModal>
 
-        <button className="btn btn-info" onClick={inviteFriends}>
+        <button className="btn btn-info" onClick={inviteFriends} style={{fontSize: '1rem', height: '45px'}}>
           Invite Friends
         </button>
 
-        <button className="btn btn-info" onClick={showModal}>
+        <button className="btn btn-info" onClick={showModal} style={{fontSize: '1rem', height: '45px'}}>
           Add Listing
         </button>
       </div>
@@ -224,58 +224,54 @@ function TenantListingComponent(props) {
             <Carousel interval={null} slide activeIndex={index} onSelect={handleSelect} className="carousel">
               {listing.profile_pictures.map(picture => (
                 <Carousel.Item key={picture._id}>
-                  <img src={FILE_SERVER_URL+picture.path} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                 <a href={`/listing/tenant/${listing._id}/get`} target="_blank">
+                  <img src={FILE_SERVER_URL+listing.requester.profile_picture} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                 </a>
                 </Carousel.Item>
               ))}
             </Carousel>
           </Grid>
           <Grid item xs={8}>
             <Paper className="description" onClick={handleParentOnClick} style={{background: _backGroundColor}}>
-              <Typography className="description__address" color="textSecondary" style={{marginBottom: '10px', textAlign: "center"}}>
-                Summary of rental request
-              </Typography>
+              <div style={{ display:'flex', flexFlow: 'row', justifyContent: 'space-between', marginLeft: '5px'}}> 
+                <Typography className="description__address" color="textSecondary" style={{marginBottom: '10px', textAlign: "center"}}>
+                  Summary of rental request
+                </Typography>
 
-              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
-                <Typography className="description__address">
+                <section style={{color: 'rgb(165, 42, 42)'}} onClick={toggleCollapse}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+                    <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
+                    </path>
+                  </svg>
+                </section>
+              </div>
+
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Move-in date:
                   {' '}
                   {moveInDate}
                 </Typography>
 
-                <Typography className="description__address">
-                  Preferred location:
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
+                  Location:
                   {' '}
                   {preferredLocation}
                 </Typography>
-              </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
-                <Typography className="description__address">
+              <div style={{ display: 'grid', gridTemplateColumns: "7fr 5fr"}}>
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Rental duration: 
                   {' '}
                   {rentDuration}
                 </Typography>
-                <Typography className="description__address">
+                <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Budget:
                   {' '}
                   {rentalBudget}
-                  {' '}
-                  per month
+                  /m
                 </Typography>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: "5fr 7fr" }}>
-                <Typography className="description__address">
-                  Email:
-                  {' '}
-                  {listing.email}
-                </Typography>
-                <Typography className="description__address">
-                  phone:
-                  {' '}
-                  {listing.phone}
-                </Typography>
-              </div>
-              <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px'}}>
+              <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px', fontSize: '.9rem'}}>
                 Posted by:
                 {' '}
                 {userName}

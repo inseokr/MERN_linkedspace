@@ -1,9 +1,11 @@
+
 const express = require('express');
 
 const router = express.Router();
 const passport = require('passport');
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 // for password reset
 var async = require('async');
@@ -15,6 +17,7 @@ const User = require('../models/user');
 const TenantRequest = require('../models/listing/tenant_request');
 const LandlordRequest = require('../models/listing/landlord_request');
 
+const { jwtOptions } = require('../utilities/jwt_utilities');
 
 node.loop = node.runLoopOnce;
 
@@ -170,6 +173,37 @@ module.exports = function (app) {
       }
     });
   });
+
+  router.get('/test_jwt', passport.authenticate('jwt', { session: false }), (req, res) => {
+    console.warn(`user=${JSON.stringify(req.user)}`);
+    res.json({ message: 'Success! you can not see this without a token' });
+  });
+
+  router.post('/jwt_login', (req, res) => {
+    // it's not called
+    passport.authenticate('local')(req, res, (error) => {
+      if (error) {
+        console.warn('authentication failure');
+        res.status(401).json({ message: 'passwords did not match', token: null });
+        done();
+      } else {
+        console.warn('authentication success');
+        User.findOne({ username: req.body.username }).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, user) => {
+          user.loggedInTime = Date.now();
+          user.save();
+          if (err) { console.warn('User Not Found'); return; }
+          app.locals.currentUser[req.user.username] = user;
+          app.locals.profile_picture = user.profile_picture;
+
+          const payload = { id: user.id };
+          const token = jwt.sign(payload, jwtOptions.secretOrKey);
+
+          res.json({ message: 'ok', token });
+        });
+      }
+    });
+  });
+
 
   router.get('/homepage', (req, res) => {
     res.render('homepage');

@@ -12,13 +12,22 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const fileUpload = require('express-fileupload');
 const Axios = require('axios');
+
+// JSON Web-Token stuffs
+const _ = require('lodash');
+const passportJWT = require('passport-jwt');
+const jwt = require('jsonwebtoken');
 const User = require('./models/user');
 
+const { ExtractJwt } = passportJWT;
+const JwtStrategy = passportJWT.Strategy;
 
 require('express-namespace');
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('./aws_s3_api');
 
 const userDbHandler = require('./db_utilities/user_db/access_user_db');
+
+const { jwtOptions } = require('./utilities/jwt_utilities');
 
 const app = express();
 
@@ -158,10 +167,24 @@ app.namespace('/LS_API', () => {
   }));
 
 
+  const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
+    User.findById(jwt_payload.id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+      if (err) {
+        console.warn('User not found??');
+        next(null, false);
+      } else {
+        app.locals.currentUser[foundUser.username] = foundUser;
+        next(null, foundUser);
+      }
+    });
+  });
+
   // app.use(express.session({ secret: 'anything' }));
   app.use(passport.initialize());
   app.use(passport.session());
   passport.use(new LocalStrategy(User.authenticate())); // iseo: passport will use User's authenticate method which is passport-mongoose-local
+  passport.use(jwtStrategy);
+
   passport.serializeUser(User.serializeUser());
   passport.deserializeUser(User.deserializeUser());
 

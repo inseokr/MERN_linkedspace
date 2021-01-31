@@ -36,7 +36,6 @@ function readURL(event, picIndex) {
 	// Upload the file along with caption
     const myFormData = new FormData();
     myFormData.append('file_name', input.files[0]);
-    myFormData.append('caption', $('#imageCapture-1').val());
 
     console.log('Posting New Picture');
 
@@ -125,22 +124,23 @@ function getCoverPhoto() {
               onMouseOver={evt => handleOnMouseHooverImagePreview(evt, 1)}
               onMouseOut={evt => handleOnMouseOutImagePreview(evt, 1)}
             >
-              <input type="file" name="file_name" id="imageDefaultUpload-1" onChange={evt => readURL(evt, 1)} accept=".png, .jpg, .jpeg" />
+              <input type="file" 
+                required 
+                name="file_name" 
+                id="imageDefaultUpload-1" 
+                onChange={evt => readURL(evt, 1)} 
+                accept=".png, .jpg, .jpeg"
+                onInvalid={() => alert('Please add cover photo')}
+              />
               <label
                 className="pictureAddLabel"
                 id="previewLabel-1"
                 htmlFor="imageDefaultUpload-1"
-                style={{
-				  opacity: '1', left: '55px', bottom: '80px', fontSize: '3em'
-				}}
+                style={{opacity: '1', left: '55px', bottom: '80px', fontSize: '3em'}}
               >
                 Add Cover Photo
-			  </label>
+			        </label>
             </div>
-          </div>
-
-          <div className="caption">
-            <input type="text" name="caption_1" id="imageCapture-1" placeholder="Add Caption" />
           </div>
         </div>
       </div>
@@ -155,6 +155,7 @@ function getListingLink() {
       <label className="control-label">URL to the listing</label>
       <InputGroup>
         <FormControl
+          required
           placeholder="https://sfbay.craigslist.org/"
           aria-label="https://sfbay.craigslist.org/"
           aria-describedby="sourceUrl"
@@ -175,7 +176,7 @@ function getListingPrice() {
         <div className="input-group-prepend">
           <span className="input-group-text">$</span>
         </div>
-        <input type="text" className="form-control" id="rentalPrice" name="rentalPrice" placeholder="1000" />
+        <input type="text" required className="form-control" id="rentalPrice" name="rentalPrice" placeholder="1000" />
       </div>
     </div>
   );
@@ -188,6 +189,7 @@ function getListingSummary() {
       <label className="control-label">Brief Summary of rental</label>
       <InputGroup>
         <FormControl
+          required
           placeholder="You may copy the headline of listing."
           aria-label="rentalSummary"
           aria-describedby="rentalSummary"
