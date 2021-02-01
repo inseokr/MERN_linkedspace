@@ -70,8 +70,13 @@ export default class GeneralChatMainPage extends Component {
   }  
 
   render() {
-    let chattingWindowStyle = (this.context.collapse==='true')?  {display:'none'} : {display:'block'};
-    let writeChatStyle = (this.context.collapse==='true')? {display:'none !important'} : {display:'flex !important'};
+    let chattingWindowStyle = 
+      (this.context.collapse==='true' && this.props.compact ==='true')?  
+        {display:'none'} : {display:'block'};
+    let writeChatStyle = 
+      (this.context.collapse==='true' && this.props.compact ==='true')? 
+        {display:'none !important'} : {display:'flex !important'};
+
     let viewHeight = '90vh';
 
     if(this.props.compact ==='true')
@@ -114,6 +119,7 @@ export default class GeneralChatMainPage extends Component {
         <div className="MessageRightPanel" style={this.state.rightPanelStyle}>
           <div className="SenderProfileSummary">
             <ChatPartySummary 
+              compact={this.props.compact}
               collapseHandler={this.collapseHandler} collapseState={this.context.collapse} 
               contactListCollapeHandler={this.contactListCollapeHandler} contactCollapseState={this.state.contactCollapseState} />
           </div>

@@ -578,6 +578,12 @@ export function MessageContextProvider(props) {
 
 
   async function clearNewMessageIndicator() {
+    
+    if(dmChannelContexts[currChannelInfo.channelName]===undefined)
+    {
+      return;
+    }
+
     const data = {
           channel_id: currChannelInfo.channelName,
           lastReadIndex: dmChannelContexts[currChannelInfo.channelName].chattingHistory.length

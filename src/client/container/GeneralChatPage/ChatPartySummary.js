@@ -16,7 +16,7 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 function ChatPartySummary(props) {
   const { currChannelInfo, getProfilePictureByChattingType } = useContext(MessageContext);
   const { currentUser, getUserLoginStatus} = useContext(GlobalContext);
-  const { collapseHandler, collapseState, contactListCollapeHandler, contactCollapseState } = props;
+  const { compact, collapseHandler, collapseState, contactListCollapeHandler, contactCollapseState } = props;
 
   function getChatPartySummary() {
     const _chatPartySummary = [];
@@ -81,15 +81,17 @@ function ChatPartySummary(props) {
 
   return (
     <React.Fragment>
+      {(compact==='true') &&
       <section onClick={contactListCollapeHandler} style={{marginRight: '10px'}}>
         {contactListExpandIcon}
-      </section>
+      </section>}
       <section>
         { getChatPartySummary() }
       </section>
+      {(compact==='true') &&
       <section onClick={collapseHandler} style={{position: 'absolute', right: '0'}}>
         {collapseIcon}
-      </section>
+      </section>}
     </React.Fragment>
   );
 }
