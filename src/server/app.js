@@ -168,9 +168,10 @@ app.namespace('/LS_API', () => {
 
 
   const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
+    // It will be called only if the request contains the token.
     User.findById(jwt_payload.id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
       if (err) {
-        console.warn('User not found??');
+        console.warn('jwtStrategy failed');
         next(null, false);
       } else {
         app.locals.currentUser[foundUser.username] = foundUser;
@@ -233,7 +234,6 @@ app.namespace('/LS_API', () => {
 
   // iseo: It's kind of pre-processing or middleware for route handling
   app.use((req, res, next) => {
-    // console.log('middleware is called');
     if (req.user != undefined && req.user != null) {
       User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
         if (err) {
@@ -242,10 +242,24 @@ app.namespace('/LS_API', () => {
           app.locals.currentUser[foundUser.username] = foundUser;
         }
       });
+
+      res.locals.error = req.flash('error');
+      res.locals.success = req.flash('success');
+      next();
+    } else {
+      // let's check if it's JWT based.
+      if (req.headers.authorization !== undefined) {
+        // API will be called even before JWT authentication is completed.
+        passport.authenticate('jwt', { session: false })(req, res, (error) => {
+          if (error) {
+            console.warn('jwt auth failed');
+          }
+          next();
+        });
+      } else {
+        next();
+      }
     }
-    res.locals.error = req.flash('error');
-    res.locals.success = req.flash('success');
-    next();
   });
 
   app.use('/LS_API', indexRoutes);
