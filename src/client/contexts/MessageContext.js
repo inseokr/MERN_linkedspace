@@ -497,7 +497,6 @@ export function MessageContextProvider(props) {
       if (currentUser.chatting_channels.dm_channels[i].name == data.channel_id) {
         const tempUser = currentUser;
         tempUser.chatting_channels.dm_channels[i].lastReadIndex = data.lastReadIndex;
-        //console.warn(`updateLastReadIndex:channel=${data.channel_id}, length=${tempUser.chatting_channels.dm_channels[i].chattingHistory.length}, lastRead=${data.lastReadIndex} `);
         setCurrentUser(tempUser);
       }
     }
@@ -1237,6 +1236,7 @@ export function MessageContextProvider(props) {
         focusParentListing();
         reloadChattingDbWithCurrentListing();
       }
+      setChannelWithLatestMessage(null);
     }
 
   }, [doNotDisturbMode]);

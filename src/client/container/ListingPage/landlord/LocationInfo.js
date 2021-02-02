@@ -31,12 +31,14 @@ function LocationInfo() {
               const bounds = new window.google.maps.LatLngBounds();
               const imgSource = currentListing.listing ? FILE_SERVER_URL+currentListing.listing.pictures[0].path : FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
 
+              /* JUSTIN-TBD
               googleMap = initGoogleMap(googleMapRef, getBoundsZoomLevel(geometry.viewport, { height: mapViewProperties.height, width: mapViewProperties.width }), location);
               const marker = createMarker(googleMap, location, imgSource);
               marker.addListener('click', () => {
                 alert('Clicked!');
               });
               bounds.extend(location);
+              */
             }
           }
         );

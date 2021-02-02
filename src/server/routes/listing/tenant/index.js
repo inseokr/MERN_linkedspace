@@ -714,6 +714,11 @@ module.exports = function (app) {
   router.post('/addChild', (req, res) => {
     // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
 
+    if (req.user === undefined) {
+      console.warn('addChild failure as req.user is undefined');
+      res.send('addChild only allowed for authorized users');
+    }
+
     TenantRequest.findById(req.body.parent_listing_id).populate('requester').populate('shared_user_group', 'username').exec((err, foundListing) => {
       if (err) {
         console.log('listing not found');
