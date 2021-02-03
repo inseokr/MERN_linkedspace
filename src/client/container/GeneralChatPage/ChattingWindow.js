@@ -12,7 +12,12 @@ function ChattingWindow() {
   const messagesEndRef = useRef(null);
 
   const {
-    dmChannelContexts, getChattingHistory, getLastReadIndex, getProfilePictureByChattingType
+    dmChannelContexts, 
+    getChattingHistory, 
+    getLastReadIndex, 
+    getLastReadIndexFromContext,
+    getProfilePictureByChattingType,
+    currentHistoryLength
   } = useContext(MessageContext);
   
   const scrollToBottom = () => {
@@ -52,9 +57,8 @@ function ChattingWindow() {
 
   function getChatHistory() {
     const chatHistory = getChattingHistory();
-    const lastReadIndex = getLastReadIndex('');
+    const lastReadIndex = getLastReadIndexFromContext('');
     let output = [];
-    // console.log("getChatHistory: chatHistory.length = " + chatHistory.length + " lastReadIndex = " + lastReadIndex);
 
     let newMsgMarked = false;
 
@@ -78,15 +82,14 @@ function ChattingWindow() {
   }
 
   function loadChattingHistory() {
-    // //console.log("ISEO: loadChattingHistory!!!!!!!!!!!!!!!!!!!!!!");
     const history = getChatHistory();
-    // //console.log("ISEO: length of history = " + history.length);
     return (history);
   }
 
   useEffect(() => {
     scrollToBottom();
-  }, [dmChannelContexts]);
+  }, [dmChannelContexts, currentHistoryLength]);
+
 
   function triggerScroll() {
     // ISEO-TBD: It's very interesting bug, but I should re-schedule the scrollToBottom with some delay.

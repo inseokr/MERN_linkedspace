@@ -71,6 +71,8 @@ export function MessageContextProvider(props) {
 
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
+  const [ currentHistoryLength, setCurrentHistoryLength] = useState(0);
+
   const { currentUser, setCurrentUser, friendsList , refreshUserData, getProfilePicture} = useContext(GlobalContext);
 
   // messaging contexts related to posting
@@ -595,6 +597,7 @@ export function MessageContextProvider(props) {
           // turn it off
           const dmChannelContextArray = dmChannelContexts;
           dmChannelContextArray[currChannelInfo.channelName].flag_new_msg = false;
+          dmChannelContextArray[currChannelInfo.channelName].last_read_index = data.lastReadIndex;
           setChannelContexts(dmChannelContextArray);
         } catch(err) {
           console.warn(`clearNewMessageIndicator: error = ${err}`);
@@ -949,6 +952,16 @@ export function MessageContextProvider(props) {
     return 0;
   }
 
+
+  function getLastReadIndexFromContext(channel_id) {
+    if(currentUser===null || currChannelInfo==undefined) return 0;
+    const channel_name = (channel_id != '' ? channel_id : currChannelInfo.channelName);
+
+    if(dmChannelContexts[channel_name]===undefined) return 0;
+
+    return dmChannelContexts[channel_name].last_read_index;
+  }
+
   function buildHistoryFromDb(history) {
     let reactChatHistory = [];
 
@@ -1000,9 +1013,9 @@ export function MessageContextProvider(props) {
     return newMsgArrivedListingChannel;
   }
 
+  // <note> It's different from loadChattingHistory.
+  // It's called after "channel/new" API call.
   function loadChatHistory(channel_id, history) {
-    // console.log("loadChatHistory: currChannelInfo.channelName = " + currChannelInfo.channelName);
-
     // It's a special flag to indicate that the channel history is loaded.
     if (currChannelInfo.channelName == channel_id) {
       // console.log("setFlagNewlyLoaded!!!!!");
@@ -1011,6 +1024,7 @@ export function MessageContextProvider(props) {
 
     // update channel DB in react side
     const lastReadIndex = getLastReadIndex(channel_id);
+
     const dmChannel = {
       channel_id,
       channel_type: 0,
@@ -1062,6 +1076,8 @@ export function MessageContextProvider(props) {
 
     setChannelContexts(dmChannelContextArray);
     setChannelContextLength(Object.keys(dmChannelContextArray).length);
+
+    setCurrentHistoryLength(dmChannel.chattingHistory.length);
   }
 
   // loading chatting database from backend
@@ -1298,7 +1314,9 @@ export function MessageContextProvider(props) {
       clearNewMessageIndicator,
       collapse,
       setCollapse,
-      toggleCollapse
+      toggleCollapse,
+      getLastReadIndexFromContext,
+      currentHistoryLength
     }}
     >
       {props.children}

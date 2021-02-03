@@ -28,11 +28,11 @@ function WriteChat() {
   const handleFocusIn = (event) => {
     if(doNotDisturbMode===false)
     {
+      // let's clear the new mesasge flag
+      clearNewMessageIndicator();
+      
       setModeChanged(true);
       setDoNotDisturbMode(true);
-      // let's clear the new mesasge flag
-      console.warn("clearNewMessageIndicator");
-      clearNewMessageIndicator();
     }
   };
 

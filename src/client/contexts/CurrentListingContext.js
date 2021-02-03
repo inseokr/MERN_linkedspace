@@ -167,7 +167,6 @@ export function CurrentListingProvider(props) {
   }
 
   async function fetchCurrentListing(id, listing_type) {
-    console.log(`fetchCurrentListing is called with listing_id = ${id}, type = ${listing_type}`);
     const _prefix = (listing_type === 'landlord') ? '/listing/landlord/' : '/listing/tenant/';
 
     let successful = 0;
