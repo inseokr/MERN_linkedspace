@@ -10,6 +10,8 @@ import $ from 'jquery';
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
 import SimpleModal from '../../../../components/Modal/SimpleModal';
+import ForwardTenantListingModal from '../../../../components/Listing/ForwardTenantListingModal';
+import Invite2DashboardModal from '../../../../components/Listing/Invite2DashboardModal';
 import ShowActiveListingPageWrapper from '../../../ListingPage/ShowActiveListingPageWrapper';
 import ChildListingsView from './ChildListingsView';
 import { GlobalContext } from '../../../../contexts/GlobalContext';
@@ -22,6 +24,8 @@ function TenantListingComponent(props) {
   const [index, setIndex] = useState(0);
   const [modalShow, setModalShow] = useState(false);
   const [overlappedComponents, setOverlappedComponets] = useState(null);
+  const [showForwardListingModal, setShowForardListingModal] = useState(false);
+  const [showMeetingRequestModal, setShowMeetingRequestModal] = useState(false);
   const { currentUser } = useContext(GlobalContext);
   const {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
@@ -190,19 +194,24 @@ function TenantListingComponent(props) {
 
   const listingControl = { add: addChildListing, remove: removeChildListing };
 
-  function addChildListingControl() {
+  function DashboardControl() {
     return (
       <div className="flex-container" style={{ justifyContent: 'space-between' }}>
         <SimpleModal show={modalShow} handle1={handleClose} caption1="Close">
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
         </SimpleModal>
-
-        <button className="btn btn-info" onClick={inviteFriends} style={{fontSize: '1rem', height: '45px'}}>
-          Invite Friends
+        <ForwardTenantListingModal listing_id={currentListing._id} modalState={showForwardListingModal} setModalState={setShowForardListingModal}/>
+        <Invite2DashboardModal listing_id={currentListing._id} modalState={showMeetingRequestModal} setModalState={setShowMeetingRequestModal}/>
+        <button className="btn btn-info" onClick={() => {setShowMeetingRequestModal(true)}} style={{fontSize: '0.7rem', height: '45px'}}>
+          Meeting Request
         </button>
 
-        <button className="btn btn-info" onClick={showModal} style={{fontSize: '1rem', height: '45px'}}>
-          Add Listing
+        <button className="btn btn-info"  onClick={() => {setShowForardListingModal(true)}} style={{fontSize: '0.7rem', height: '45px'}}>
+          Forward Dashboard
+        </button>
+
+        <button className="btn btn-info" onClick={showModal} style={{fontSize: '0.7rem', height: '45px'}}>
+          Attach Listing
         </button>
       </div>
     );
@@ -277,7 +286,7 @@ function TenantListingComponent(props) {
                 {userName}
               </Typography>
 
-              {addChildListingControl()}
+              {DashboardControl()}
 
             </Paper>
           </Grid>

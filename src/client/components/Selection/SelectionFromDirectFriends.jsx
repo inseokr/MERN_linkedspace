@@ -94,7 +94,7 @@ function SelectionFromDirectFriends(props) {
     function getListOfFriends() {
       if(adjustedFriendList.length===0)
       {
-        return <div>Listing has been shared with all friends</div>
+        return <div style={{textAlign: 'center'}}>No additional selection available</div>
       }
       else
       {
