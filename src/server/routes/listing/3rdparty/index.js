@@ -43,7 +43,7 @@ module.exports = function (app) {
 
 
   router.post('/new', (req, res) => {
-    console.log(`3rd party listing = ${JSON.stringify(req.body)}`);
+    // console.log(`3rd party listing = ${JSON.stringify(req.body)}`);
 
     const filename = path.parse(req.body.file_name).base;
 
@@ -68,7 +68,6 @@ module.exports = function (app) {
       const new_path = `${serverPath + new_full_picture_path}`;
       fs.rename(original_path, new_path, (err) => {
         if (err) throw err;
-        console.log('File renamed successfully');
         fileUpload2Cloud(serverPath, new_full_picture_path);
       });
       // ISEO-TBD: The path should start from "/public/..."?
@@ -79,7 +78,7 @@ module.exports = function (app) {
       if (err) {
 	    	console.log('New Listing Save Failure');
 	    	console.log(`error = ${err}`);
-	    	res.redirect('/');
+        res.json({ result: 'New Listing Save Failure' });
 	    }
 
 	    User.findById(req.user._id, (err, foundUser) => {
@@ -88,7 +87,7 @@ module.exports = function (app) {
     	});
     });
 
-    res.redirect('/');
+    res.json({ result: 'successul creation of listing' });
   });
 
 

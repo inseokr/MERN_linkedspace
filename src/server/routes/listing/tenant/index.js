@@ -559,15 +559,23 @@ module.exports = function (app) {
       const lengthOfUserGroup = foundListing.shared_user_group.length;
       let numOfUsersProcessed = 0;
       const _userList = [];
+      const listOfInvitee = req.body.invitee;
 
       foundListing.shared_user_group.map((user, userIndex) => {
-        // send e-mail notification
-        const notificationBody = `${req.user.username} is inviting you to a dashboard.\n\n`
-            + 'Please click the following link to get to the dashboard page.\n\n'
-            + `${process.env.REACT_SERVER_URL}/listing/tenant/${req.params.list_id}/dashboard\n`;
-        // sendNotificationEmail(user.email, `${req.user.username} is inviting to a dashboard`, notificationBody);
+        // check if this user is in the invitee list
+        const foundUser = listOfInvitee.filter(_user => _user == user._id);
+
+        if (foundUser.length > 0) {
+          // send e-mail notification
+          const notificationBody = `${req.user.username} is inviting you to a dashboard.\n\n`
+              + 'Please click the following link to get to the dashboard page.\n\n'
+              + `${process.env.REACT_SERVER_URL}/listing/tenant/${req.params.list_id}/dashboard\n`;
+          // sendNotificationEmail(user.email, `${req.user.username} is inviting to a dashboard`, notificationBody);
+          _userList.push({ email: user.email, username: user.username, message: notificationBody });
+        }
+
         numOfUsersProcessed++;
-        _userList.push({ email: user.email, username: user.username, message: notificationBody });
+
         if (lengthOfUserGroup === numOfUsersProcessed) {
           res.json(_userList);
         }
@@ -713,6 +721,11 @@ module.exports = function (app) {
 
   router.post('/addChild', (req, res) => {
     // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
+
+    if (req.user === undefined) {
+      console.warn('addChild failure as req.user is undefined');
+      res.send('addChild only allowed for authorized users');
+    }
 
     TenantRequest.findById(req.body.parent_listing_id).populate('requester').populate('shared_user_group', 'username').exec((err, foundListing) => {
       if (err) {

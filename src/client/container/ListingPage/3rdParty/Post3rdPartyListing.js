@@ -1,5 +1,6 @@
 /* eslint-disable */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import shortid from 'shortid';
 
@@ -10,6 +11,8 @@ import { InputGroup, FormControl } from 'react-bootstrap';
 import $ from 'jquery';
 
 import CollectLocationInfo from '../../../components/Location/CollectLocationInfo';
+import {GlobalContext} from '../../../contexts/GlobalContext';
+import {CurrentListingContext} from '../../../contexts/CurrentListingContext';
 
 import {FILE_SERVER_URL} from '../../../globalConstants';
 
@@ -203,6 +206,8 @@ function getListingSummary() {
 
 
 function Post3rdPartyListing(props) {
+  const { currentDashboardUrl } = useContext(GlobalContext);
+  const { fetchListingInfo } = useContext(CurrentListingContext);
   const history = useHistory();
   const [currentListing, setCurrentListing] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -259,7 +264,36 @@ function Post3rdPartyListing(props) {
 
   function _exit(evt) {
     evt.preventDefault();
-    history.push('/');
+
+    if(currentDashboardUrl!==null) {
+      history.push(currentDashboardUrl);
+    }
+    else {
+      history.push('/');
+    }
+  }
+
+  async function handleFormClick(evt, listingId) {
+    evt.preventDefault();
+
+    const data = new FormData(evt.target);
+
+    const fileName = document.getElementById('imageDefaultUpload-1');
+    data.append("file_name", fileName.value);
+
+    const result = await axios.post(`/LS_API/listing/3rdparty/${listingId}/new`, data).then( async (result) => {
+
+      fetchListingInfo('own');
+
+      if(currentDashboardUrl!==null) {
+        history.push(currentDashboardUrl);
+      }
+      else
+      {
+       history.push('/ActiveListing');
+      }
+    });
+
   }
 
 
@@ -296,23 +330,23 @@ function Post3rdPartyListing(props) {
           </div>
         </div>
 
-        <form role="form" action={`/LS_API/listing/3rdparty/${listingId}/new`} method="POST">
+          <form role="form" id="listingForm" onSubmit={(evt) => handleFormClick(evt, listingId)} action={`/LS_API/listing/3rdparty/${listingId}/new`} method="POST">
 
-          <div className="row setup-content" id="step-1" style={{ marginTop: '30px' }}>
-            <div className="col-md-6 offset-md-3">
-              <div className="col-md-12">
+            <div className="row setup-content" id="step-1" style={{ marginTop: '30px' }}>
+              <div className="col-md-6 offset-md-3">
+                <div className="col-md-12">
 
-                <div style={{ textAlign: 'center' }}>
-                  <h5> Summary of listing </h5>
-                </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <h5> Summary of listing </h5>
+                  </div>
 
-                <hr />
+                  <hr />
 
-                {/* 1. Source: Craigslist, SF Korean, other
-				      			2. Link
-				      			2. Price
-				      		  	3. Location
-				      		  	4. Cover Photo
+                  {/* 1. Source: Craigslist, SF Korean, other
+  				      			2. Link
+  				      			2. Price
+  				      		  	3. Location
+  				      		  	4. Cover Photo
 				      		  	5. Link to the listing */}
 
                 {/* Source */}
@@ -350,12 +384,12 @@ function Post3rdPartyListing(props) {
 
                 <div style={{ marginTop: '40px' }}>
                   <button className="btn btn-success btn-lg float-left" onClick={_exit} value="Exit">Exit</button>
-                  <button className="btn btn-primary nextBtn btn-lg float-right" type="submit" name="submit" value="submit">Submit</button>
+                  <button className="btn btn-primary nextBtn btn-lg float-right" type="submit" value="submit">Submit</button>
                 </div>
               </div>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
       </div>
     </div>
   );

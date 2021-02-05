@@ -6,6 +6,7 @@ export const GlobalContext = createContext();
 
 export function GlobalProvider(props) {
   const [friendsList, setFriends] = useState();
+  const [currentDashboardUrl, setCurrentDashboardUrl] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [friendsMap, setFriendsMap] = useState();
   const [network_info, setNetwork_Info] = useState(null);
@@ -130,7 +131,8 @@ export function GlobalProvider(props) {
     <GlobalContext.Provider value={{
       currentUser, setCurrentUser, isUserLoggedIn, friendsList, loadFriendList, 
       loadSocialNetworkDb, network_info, getProfilePicture, getUserLoginStatus, 
-      refreshUserData, checkUnreadListing, redirectUrlAfterLogin, setRedirectUrlAfterLogin
+      refreshUserData, checkUnreadListing, redirectUrlAfterLogin, setRedirectUrlAfterLogin,
+      currentDashboardUrl, setCurrentDashboardUrl
     }}
     >
       {props.children}
