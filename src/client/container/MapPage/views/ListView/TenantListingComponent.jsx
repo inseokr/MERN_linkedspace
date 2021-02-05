@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { useState, useContext, useEffect } from 'react';
+import {useHistory} from 'react-router-dom';
 import emailjs from "emailjs-com";
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
@@ -21,12 +22,13 @@ import {FILE_SERVER_URL} from '../../../../globalConstants';
 
 
 function TenantListingComponent(props) {
+  const history = useHistory();
+  const { currentUser, currentDashboardUrl, setCurrentDashboardUrl } = useContext(GlobalContext);
   const [index, setIndex] = useState(0);
-  const [modalShow, setModalShow] = useState(false);
+  const [modalShow, setModalShow] = useState((currentDashboardUrl!==null)? true: false);
   const [overlappedComponents, setOverlappedComponets] = useState(null);
   const [showForwardListingModal, setShowForardListingModal] = useState(false);
   const [showMeetingRequestModal, setShowMeetingRequestModal] = useState(false);
-  const { currentUser } = useContext(GlobalContext);
   const {
     currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
     parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
@@ -172,11 +174,28 @@ function TenantListingComponent(props) {
 
   const handleClose = () => {
     setModalShow(false);
-    overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+    // let's clear the URL
+    setCurrentDashboardUrl(null);
+    if(overlappedComponents!==null)
+    {
+      overlappedComponents.id.style.zIndex = overlappedComponents.indexValue;
+    }
   };
 
   const handleSelect = (e) => {
     setIndex(e);
+  };
+
+  const redirectTo3rdparty = () => {
+    // 1. store current dashboard URL
+    const _dashboardUrl = `/listing/tenant/${currentListing._id}/dashboard`;
+    setCurrentDashboardUrl(_dashboardUrl);
+
+    // 2. close the current modal
+    setModalShow(false);
+
+    // 3. move to creation of 3rd party listing
+    history.push(`/3rdParty`);
   };
 
   // ISEO-TBD: dang... this may cause a problem during reloading of the page.
@@ -197,7 +216,7 @@ function TenantListingComponent(props) {
   function DashboardControl() {
     return (
       <div className="flex-container" style={{ justifyContent: 'space-between' }}>
-        <SimpleModal show={modalShow} handle1={handleClose} caption1="Close">
+        <SimpleModal show={modalShow} handle1={redirectTo3rdparty} caption1="New" handle2={handleClose} caption2="Exit">
           <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
         </SimpleModal>
         <ForwardTenantListingModal listing_id={currentListing._id} modalState={showForwardListingModal} setModalState={setShowForardListingModal}/>
