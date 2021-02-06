@@ -67,7 +67,7 @@ function handleOnClickDeletePic(evt, picIndex) {
 
   $.ajax({
 	  enctype: 'multipart/form-data',
-	  url: '/listing/3rdparty/file_delete',
+	  url: '/LS_API/listing/3rdparty/file_delete',
 	  type: 'POST',
 	  processData: false, // important
 	  contentType: false, // important
