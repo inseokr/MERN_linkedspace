@@ -217,7 +217,7 @@ function TenantListingComponent(props) {
     return (
       <div className="flex-container" style={{ justifyContent: 'space-between' }}>
         <SimpleModal show={modalShow} handle1={redirectTo3rdparty} caption1="New" handle2={handleClose} caption2="Exit">
-          <ShowActiveListingPageWrapper type="child" listingControl={listingControl} />
+          <ShowActiveListingPageWrapper type="child" modal="true" listingControl={listingControl} />
         </SimpleModal>
         <ForwardTenantListingModal listing_id={currentListing._id} modalState={showForwardListingModal} setModalState={setShowForardListingModal}/>
         <Invite2DashboardModal listing_id={currentListing._id} modalState={showMeetingRequestModal} setModalState={setShowMeetingRequestModal}/>

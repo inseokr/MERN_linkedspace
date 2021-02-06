@@ -52,8 +52,14 @@ module.exports = function (app) {
     newListing.rentalPrice = req.body.rentalPrice.replace(/\$|,/g, '');
 
     // set location information
-    newListing.location = req.body.location;
-    newListing.coordinates = req.body.coordinates;
+    newListing.location.street = req.body['location[street]'];
+    newListing.location.city = req.body['location[city]'];
+    newListing.location.state = req.body['location[state]'];
+    newListing.location.country = req.body['location[country]'];
+    newListing.location.zipcode = req.body['location[zipcode]'];
+
+    newListing.coordinates.lat = req.body['coordinates[lat]'];
+    newListing.coordinates.lng = req.body['coordinates[lng]'];
 
     // let's create a database
     // rename the file with listing_id
