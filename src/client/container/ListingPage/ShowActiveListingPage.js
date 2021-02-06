@@ -104,10 +104,10 @@ function getListingContents(currentUser, listingDB, listing_prefix, type, child_
       );
     } if (type === 'child') {
       return (
-        <React.Fragment>
+        <div style={{display: "table-cell", verticalAlign: "middle"}}>
           <input type="checkbox" onClick={handleOnClick} value="" />
-          <label style={{ marginLeft: '10px', color: '#6b2525' }}>Check to add</label>
-        </React.Fragment>
+          <label style={{ marginLeft: '10px', color: '#6b2525', fontSize: '0.8rem' }}>Click checkbox to add</label>
+        </div>
       );
     }
     // 1. listing creator
@@ -170,6 +170,9 @@ function getListingContents(currentUser, listingDB, listing_prefix, type, child_
 function ShowActiveListingPage(props) {
   const { listing_info, currentListing } = useContext(CurrentListingContext);
   const { currentUser } = useContext(GlobalContext);
+  let modal = (props.modal===undefined)? 'false': props.modal;
+
+  console.warn(`modal=${props.modal}`);
 
   if (props.type === 'child' && currentListing == undefined) {
     console.warn('No listing available');
@@ -201,12 +204,13 @@ function ShowActiveListingPage(props) {
     )
     : null;
 
+  let mainClassName = (modal==='true')? 'col-lg-12': 'col-lg-6';
+
   return (
     <div>
       <div className="row">
-        <div className="col-lg-3" />
-
-        <div className="col-lg-6">
+        {(modal==='false') && <div className="col-lg-3" />}
+        <div className={mainClassName}>
           <div className="bottom-shadow">
             <span style={{ textAlign: 'center' }}><h3> Listing from linkedspaces </h3></span>
             <hr />
@@ -229,8 +233,7 @@ function ShowActiveListingPage(props) {
             </div>
           </div>
         </div>
-
-        <div className="col-lg-3" />
+        {(modal==='false') && <div className="col-lg-3" />}
       </div>
       {footer}
     </div>

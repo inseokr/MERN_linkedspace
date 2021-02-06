@@ -21,7 +21,7 @@ function getChildListingSummary(childListing) {
     return {
       id: childListing._id,
       listingType: childListing.listingType,
-      location: childListing.location.city,
+      location: (childListing.location===undefined )? "": childListing.location.city,
       listingUrl: childListing.listingUrl,
       coverPhoto: childListing.coverPhoto.path,
       rentalPrice: childListing.rentalPrice,
