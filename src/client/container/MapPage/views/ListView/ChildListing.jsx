@@ -15,8 +15,6 @@ import { FILE_SERVER_URL } from '../../../../globalConstants';
 import axios from 'axios';
 
 function getChildListingSummary(childListing) {
-  console.log(`getChildListingSummary, listingType = ${childListing.listingType}`);
-
   if (childListing.listingType === '_3rdparty') {
     return {
       id: childListing._id,
