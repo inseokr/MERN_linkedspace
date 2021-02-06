@@ -45,10 +45,12 @@ module.exports = function (app) {
   router.post('/new', (req, res) => {
     // console.log(`3rd party listing = ${JSON.stringify(req.body)}`);
 
-    console.warn(`original filename=${req.body.file_name}`);
+    // console.warn(`original filename=${req.body.file_name}`);
     // const filename = path.parse(req.body.file_name).base;
-    const filename = path.basename(req.body.file_name);
-    console.warn(`after conversion=${filename}`);
+    // const filename = path.basename(req.body.file_name);
+    // console.warn(`after conversion=${filename}`);
+    const filename = req.body.file_name.replace(/^.*[\\\/]/, '');
+    console.warn(`filename = ${filename}`);
 
 
     const newListing = new _3rdPartyListing();
