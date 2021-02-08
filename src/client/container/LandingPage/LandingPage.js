@@ -48,25 +48,6 @@ export default class LandingPage extends Component {
   componentDidMount() {
     const { refreshUserData } = this.context;
     refreshUserData();
-
-/*
-    let tempUrl = localStorage.getItem('redirectUrlAfterLogin');
-    console.log("tempUrl = " + tempUrl);
-
-    if(tempUrl!=='')
-    {
-      localStorage.setItem('redirectUrlAfterLogin', '');
-      setTimeout((tempUrl)=> this.props.history.push(tempUrl), 1000);
-  		//this.props.history.push(tempUrl);
-    }
-
-   if(tempUrl!==null)
-    {
-      this.setState({ lastMenu: tempUrl, fetchedMenu: true });
-      localStorage.setItem('redirectUrlAfterLogin', '');
-      //return <Redirect to={tempUrl} />
-    }*/
-
   }
 
   render() {

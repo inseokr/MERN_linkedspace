@@ -1,0 +1,9 @@
+.pictureAddLabel {
+    opacity: 1;
+    font-size: 10em;
+    color: lightgrey;
+    position: absolute;
+    left: 52px;
+    bottom: 4px;
+    z-index: 1;
+}

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import '../../../app.css';
 import '../common/listing_style.css';
 import axios from 'axios';
@@ -248,7 +248,7 @@ function ListingTenantMainPage(props) {
         </SimpleModal>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         <div className="d-flex justify-content-start">
-          <button className="btn btn-outline-dark" onClick={() => copyCurrentUrl}>Copy link of this posting</button>
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')}>My Listings Home</button>
           <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => showForwardWindow()}>Send listing to friends</button>
           <Link to={`/listing/tenant/${match.params.id}/dashboard`}>
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
@@ -263,6 +263,7 @@ function ListingTenantMainPage(props) {
   let profile_picture = '';
   let profile_caption = '';
   let captionListOfFriends = (isOwner===true)? 'Shared Friends' : 'Referring Friends';
+  const history = useHistory();
 
   if (currentListingFetched) {
     rentalUnitType = (currentListing.rental_preferences.rent_whole_unit === 'off') ? `${currentListing.rental_preferences.num_of_rooms} Bedroom(s)` : 'Whole Unit';

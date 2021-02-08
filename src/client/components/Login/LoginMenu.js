@@ -90,17 +90,14 @@ function LoginMenu() {
                 Messages
                 {newMsgMarker}
               </Link>
-              <Link className="nav-link" to="/PostListing">
-                Post listing
-              </Link>
               <li className="nav-item">
                 <Link className="nav-link" to="/ActiveListing">
-                  My Active Listing
+                  My Listings
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/ShowListingFromFriends">
-                  Listing From Friends
+                  Listings From Friends
                   {newListingMarker}
                 </Link>
               </li>
