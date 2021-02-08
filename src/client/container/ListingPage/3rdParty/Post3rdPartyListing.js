@@ -207,16 +207,13 @@ function getListingSummary() {
 
 function Post3rdPartyListing(props) {
   const { currentDashboardUrl } = useContext(GlobalContext);
-  const { fetchListingInfo } = useContext(CurrentListingContext);
+  const { fetchListingInfo, listing_info } = useContext(CurrentListingContext);
   const history = useHistory();
   const [currentListing, setCurrentListing] = useState(null);
+  const [fetchListingInfoRequested, setFetchListingInfoRequested] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [currentCoordinates, setCurrentCoordinates] = useState(null);
   const [listingId, setListingId] = useState('');
-  // ISEO-TBD
-  // : It should be replaced with contexts
-  const listing_info = { listing_id: 0 };
-
 
   function loadListingData(listing) {
     if (listing == null) return;
@@ -282,16 +279,8 @@ function Post3rdPartyListing(props) {
     data.append("file_name", fileName.value);
 
     const result = await axios.post(`/LS_API/listing/3rdparty/${listingId}/new`, data).then( async (result) => {
-
       fetchListingInfo('own');
-
-      if(currentDashboardUrl!==null) {
-        history.push(currentDashboardUrl);
-      }
-      else
-      {
-       history.push('/ActiveListing');
-      }
+      setFetchListingInfoRequested(true);
     });
 
   }
@@ -311,6 +300,21 @@ function Post3rdPartyListing(props) {
     loadListingData(currentListing);
   	}, [currentListing]);
 
+
+  useEffect(() => {
+    if(fetchListingInfoRequested===true)
+    {
+      if(currentDashboardUrl!==null) {
+        history.push(currentDashboardUrl);
+      }
+      else
+      {
+       history.push('/ActiveListing');
+      }
+      setFetchListingInfoRequested(false);
+    }
+  }, [listing_info])
+
   return (
     <div>
       <div className="container" style={{ textAlign: 'center', marginBottom: '10px' }}>
@@ -322,10 +326,10 @@ function Post3rdPartyListing(props) {
         <div className="stepwizard offset-md-3">
           <div className="stepwizard-row setup-panel">
             <div className="stepwizard-step">
-              <a className="btn-circle btn btn-primary" href={`/LS_API/listing/3rdparty/${listing_info.listing_id}/step1`} type="button">1</a>
+              <a className="btn-circle btn btn-primary" href={`/LS_API/listing/3rdparty/${listingId}/step1`} type="button">1</a>
             </div>
             <div className="stepwizard-step">
-              <a disabled="disabled" className="btn-circle btn btn-outline-secondary" href={`/listing/3rdparty/${listing_info.listing_id}/step2`} type="button">2</a>
+              <a disabled="disabled" className="btn-circle btn btn-outline-secondary" href={`/listing/3rdparty/${listingId}/step2`} type="button">2</a>
             </div>
           </div>
         </div>

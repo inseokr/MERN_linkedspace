@@ -5,6 +5,7 @@
     grid-auto-rows: 60px;
     backgroundImage: url("https://images.app.goo.gl/LGuMYxv91qKGeEAG7") !important;
     opacity: 1;
+    min-height: 250px;
 }
 
 .bottom_highlight {
