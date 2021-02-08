@@ -85,7 +85,9 @@ export function CurrentListingProvider(props) {
       }
       else
       {
-        _tempMap[currentListing.child_listings[index].listing_id._id] = index;
+        if(currentListing.child_listings[index].listing_id!==null) {
+         _tempMap[currentListing.child_listings[index].listing_id._id] = index;
+        }
       }
     }
     setChildListingId2ChildIndexMap(_tempMap);

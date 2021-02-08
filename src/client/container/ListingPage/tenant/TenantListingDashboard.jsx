@@ -101,6 +101,8 @@ function TenantListingDashBoard(props) {
         const childListings = currentListing.child_listings;
         if (childListings.length > 0) {
           childListings.map((listing) => {
+            if(listing===null || listing.listing_id===null) return;
+
             const rentalPrice = listing.listing_id.rentalPrice;
             if (!Number.isNaN(Number(rentalPrice))) { // True if value is a number.
               const { price } = filterParams;

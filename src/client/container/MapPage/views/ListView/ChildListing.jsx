@@ -15,6 +15,9 @@ import { FILE_SERVER_URL } from '../../../../globalConstants';
 import axios from 'axios';
 
 function getChildListingSummary(childListing) {
+
+  if(childListing===null) return null;
+
   if (childListing.listingType === '_3rdparty') {
     return {
       id: childListing._id,
@@ -62,6 +65,8 @@ const ChildListing = React.forwardRef(({
 
   const childListing = listing.listing_id;
   const childListingSummary = getChildListingSummary(childListing);
+
+  if(childListingSummary===null) return <React.Fragment> </React.Fragment>
 
   const borderStyle = (listing._id === markerParams.selectedMarkerID) ? {
     borderLeftStyle: 'solid',

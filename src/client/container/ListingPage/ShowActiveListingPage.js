@@ -29,7 +29,7 @@ function ShowActiveListingPage(props) {
     if (child_listings.length === 0) return false;
   
     for (let index = 0; index < child_listings.length; index++) {
-      if (child_listings[index].listing_id._id === id_) return true;
+      if (child_listings[index].listing_id !==null && child_listings[index].listing_id._id === id_) return true;
     }
   
     return false;
