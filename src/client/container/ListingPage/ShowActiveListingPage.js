@@ -226,26 +226,17 @@ function ShowActiveListingPage(props) {
 
   let mainClassName = (modal==='true')? 'col-lg-12': 'col-lg-6';
 
-  
+  const _titleHousing = {"own": "Housing inventory - LinkedSpaces", "friend": "Looking for tenant(s)"};
+
   return (
     <div>
       <div className="row">
         {(modal==='false') && <div className="col-lg-3" />}
         <div className={mainClassName}>
-          <div className="bottom-shadow">
-            <span style={{ textAlign: 'center' }}><h3> Listing from linkedspaces </h3></span>
-            <hr />
-            <div className="d-flex justify-content-between flex-wrap">
-              {getListingContents(currentUser, listing_info.landlord_listing,
-                'landlord', props.type, child_listings,
-                props.listingControl)}
-            </div>
-          </div>
-
           {tenantListing}
-
-          <div className="bottom-shadow">
-            <span style={{ textAlign: 'center' }}><h3> Listing from 3rd party  </h3></span>
+          { (props.type === 'own') &&
+          <div className="bottom-shadow" style={{marginTop: '20px'}}>
+            <span style={{ textAlign: 'center' }}><h3> Housing inventory - 3rd party  </h3></span>
             <hr />
             <div className="d-flex justify-content-between flex-wrap">
               {getListingContents(currentUser, listing_info._3rdparty_listing,
@@ -253,6 +244,16 @@ function ShowActiveListingPage(props) {
                 props.listingControl)}
             </div>
           </div>
+          }   
+          <div className="bottom-shadow" style={{marginTop: '20px'}}>
+            <span style={{ textAlign: 'center' }}><h3> {_titleHousing[props.type]} </h3></span>
+            <hr />
+            <div className="d-flex justify-content-between flex-wrap">
+              {getListingContents(currentUser, listing_info.landlord_listing,
+                'landlord', props.type, child_listings,
+                props.listingControl)}
+            </div>
+          </div>        
         </div>
         {(modal==='false') && <div className="col-lg-3" />}
       </div>

@@ -92,12 +92,12 @@ function LoginMenu() {
               </Link>
               <li className="nav-item">
                 <Link className="nav-link" to="/ActiveListing">
-                  My Listings
+                  My Postings
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/ShowListingFromFriends">
-                  Listings From Friends
+                  Postings From Friends
                   {newListingMarker}
                 </Link>
               </li>

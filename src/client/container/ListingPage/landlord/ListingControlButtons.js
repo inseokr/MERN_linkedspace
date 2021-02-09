@@ -52,8 +52,8 @@ function ListingControlButtons() {
         <input type="text" value="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         {/* The button used to copy the text */}
         <div className="d-flex justify-content-around">
-          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')} value={currentListing.list_id}>My Listings Home</button>
-          <button className="btn btn-outline-dark" onClick={forward2friend} style={{ marginLeft: '70px !important' }}>Send Listing To Friends</button>
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')} value={currentListing.list_id}>My Postings</button>
+          <button className="btn btn-outline-dark" onClick={forward2friend} style={{ marginLeft: '70px !important' }}>Forward it to Friends</button>
           <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Check Status</button>
         </div>
       </div>

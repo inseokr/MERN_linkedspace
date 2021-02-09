@@ -248,8 +248,8 @@ function ListingTenantMainPage(props) {
         </SimpleModal>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         <div className="d-flex justify-content-start">
-          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')}>My Listings Home</button>
-          <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => showForwardWindow()}>Send listing to friends</button>
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')}>My Postings</button>
+          <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => showForwardWindow()}>Forward it to friends</button>
           <Link to={`/listing/tenant/${match.params.id}/dashboard`}>
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
           </Link>
