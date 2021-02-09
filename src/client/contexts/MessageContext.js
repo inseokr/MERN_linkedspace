@@ -38,7 +38,7 @@ export function MessageContextProvider(props) {
   // I introduced a context length instead.
   const [dmChannelContexts, setChannelContexts] = useState([]);
   const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
-  const [channelWithLatestMessagae, setChannelWithLatestMessage] = useState(null);
+  const [listingIdWithLatestMessagae, setListingIdWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
   const [collapse, setCollapse] = useState('false');
 
@@ -78,7 +78,7 @@ export function MessageContextProvider(props) {
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing, setChildIndexByChannelId, focusParentListing , getProfilePictureFromSharedGroup} = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setChildIndexByListingId, focusParentListing , getProfilePictureFromSharedGroup} = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -372,6 +372,7 @@ export function MessageContextProvider(props) {
           // update dmChannelContexts
           // console.log("addContactList: result = " + result);
           reloadChattingDbWithCurrentListing();
+          //setChildIndexByChannelId(getDmChannelId(selectedChatList[0].username));
         })
         .catch((err) => {
           console.log(err);
@@ -728,24 +729,23 @@ export function MessageContextProvider(props) {
         // const newHistory = [...chattingHistory, processedMsg[2]];
         // addMsgToChatHistory(newHistory);
         //console.warn("message"+processedMsg[3]);
-        let _channelId = parseChattingChannelName(processedMsg[1]);
+        let _listingId = parseChattingChannelName(processedMsg[1]);
 
-        if(_channelId!==null)
+        if(_listingId!==null)
         {
-          //console.warn("childListingId: " + _channelId);
+          //console.warn("childListingId: " + _listingId);
           if(doNotDisturbMode===false)
           {
             if(dashboardMode==='normal' || processedMsg[2]===(currentListing.requester.username))
             {
-              if(_channelId==="parent")
+              if(_listingId==="parent")
               {
                 //console.warn("focusParentListing");
                 focusParentListing();
               }
               else
               {
-                //console.warn("setChildIndexByChannelId");
-                setChildIndexByChannelId(_channelId);
+                setChildIndexByListingId(_listingId);
               }
             }
           }
@@ -753,7 +753,7 @@ export function MessageContextProvider(props) {
           {
             // What do we do in this case?
             // let's save the last channelId and move it to the channel when the mode is changed
-            setChannelWithLatestMessage(_channelId);
+            setListingIdWithLatestMessage(_listingId);
           }
         }
         else
@@ -791,7 +791,7 @@ export function MessageContextProvider(props) {
             }
             else
             {
-              setChannelWithLatestMessage(null);
+              setListingIdWithLatestMessage(null);
             }
             // ISEO-TBD: we shouldn't load the listing prematurely?
             //reloadChattingDbWithCurrentListing();
@@ -1213,6 +1213,16 @@ export function MessageContextProvider(props) {
       .catch(err => console.warn(err));
   }
 
+
+  function checkIfAnyChatHistory(channel_id)
+  {
+    if(dmChannelContexts[channel_id]!==undefined)
+    {
+      if(dmChannelContexts[channel_id].chattingHistory.length>0) return true;
+    }
+    return false;
+  }
+
   useEffect(() => {
     //console.log("currChannelInfo updated");
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
@@ -1233,10 +1243,10 @@ export function MessageContextProvider(props) {
 
   useEffect(() => {
 
-    if(doNotDisturbMode===false && channelWithLatestMessagae!==null )
+    if(doNotDisturbMode===false && listingIdWithLatestMessagae!==null )
     {
-      if(channelWithLatestMessagae!==null){
-        if(channelWithLatestMessagae==="parent")
+      if(listingIdWithLatestMessagae!==null){
+        if(listingIdWithLatestMessagae==="parent")
         {
           //console.warn("focusParentListing");
           focusParentListing();
@@ -1244,7 +1254,7 @@ export function MessageContextProvider(props) {
         else
         {
           //console.warn("setChildIndexByChannelId");
-          setChildIndexByChannelId(channelWithLatestMessagae);
+          setChildIndexByListingId(listingIdWithLatestMessagae);
         }
       }
       else
@@ -1252,7 +1262,7 @@ export function MessageContextProvider(props) {
         focusParentListing();
         reloadChattingDbWithCurrentListing();
       }
-      setChannelWithLatestMessage(null);
+      setListingIdWithLatestMessage(null);
     }
 
   }, [doNotDisturbMode]);
@@ -1316,7 +1326,8 @@ export function MessageContextProvider(props) {
       setCollapse,
       toggleCollapse,
       getLastReadIndexFromContext,
-      currentHistoryLength
+      currentHistoryLength,
+      checkIfAnyChatHistory,
     }}
     >
       {props.children}

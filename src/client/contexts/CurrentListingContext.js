@@ -95,8 +95,6 @@ export function CurrentListingProvider(props) {
 
   function getChildIndexByListingId(_listingId)
   {
-    //console.log("getChildIndexByListingId = " + childListingId2ChildIndexMap[_listingId]);
-
     if(childListingId2ChildIndexMap[_listingId]!==null && childListingId2ChildIndexMap[_listingId]!==undefined)
     {
       //console.log("getChildIndexByListingId: return index = " + childListingId2ChildIndexMap[_listingId]);
@@ -109,7 +107,7 @@ export function CurrentListingProvider(props) {
     }
   }
 
-  function setChildIndexByChannelId(_listingId)
+  function setChildIndexByListingId(_listingId)
   {
     let _childIndex = getChildIndexByListingId(_listingId);
     setCurrentChildIndex(_childIndex);
@@ -231,7 +229,7 @@ export function CurrentListingProvider(props) {
       currentChildIndex,
       setCurrentChildIndex,
       getChildIndexByListingId,
-      setChildIndexByChannelId,
+      setChildIndexByListingId,
       setParentRef,
       parentRef,
       focusParentListing,

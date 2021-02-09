@@ -22,7 +22,8 @@ function ChatContactList() {
     loadChattingDatabase,
     chattingContextType,
     getDmChannelId,
-    msgCounter
+    msgCounter,
+    checkIfAnyChatHistory
   } = useContext(MessageContext);
 
 
@@ -309,10 +310,17 @@ function ChatContactList() {
         msg_summary: _context != undefined ? _context.msg_summary : ''
       };
 
+      /*
+      const additionalStyle = 
+        (checkIfAnyChatHistory(contactStates[i].channelInfo.channelName)===false)
+          && (contactStates[i].active === 0)
+          ? {display: 'none'}: {};*/
+      const additionalStyle = {};
+
       // DM case
       if (contactStates[i].type == 'dm') {
         contacts.push(
-          <div key={shortid.generate()}>
+          <div key={shortid.generate()} style={additionalStyle}>
             <ContactSummary
               contactIndex={i}
               clickState={contactStates[i].active}
@@ -326,7 +334,7 @@ function ChatContactList() {
       // Group Chatting case
       else {
         contacts.push(
-          <div key={shortid.generate()}>
+          <div key={shortid.generate()} style={additionalStyle}>
             <GroupContactSummary
               contactIndex={i}
               clickState={contactStates[i].active}
