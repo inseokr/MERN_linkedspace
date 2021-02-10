@@ -860,7 +860,7 @@ export function MessageContextProvider(props) {
   }
 
   function getListOfChatChannels() {
-    // console.log("getListOfChatChannels");
+        // console.log("getListOfChatChannels");
     // ISEO-TBD: child_listings available only for tenant listing now.
     const _listArray = [friendsList,
       (currentListing != undefined)
@@ -881,23 +881,29 @@ export function MessageContextProvider(props) {
       }
 
       // group channels
+      // <note> we should filter it out based on your name
       // 1. parent level
       if (chattingContextType == 1) {
         for (let lindex = 0;
           lindex < currentListing.list_of_group_chats.length;
           lindex++) {
-          const chatInfo = {
-            channel_id: currentListing.list_of_group_chats[lindex].channel_id,
-            members: []
-          };
+          
+          let channelId = currentListing.list_of_group_chats[lindex].channel_id;
+          if(channelId.includes(currentUser.username)===true)
+          {
+            const chatInfo = {
+              channel_id: channelId,
+              members: []
+            };
 
-          for (let findex = 0;
-            findex < currentListing.list_of_group_chats[lindex].friend_list.length;
-            findex++) {
-            chatInfo.members.push(currentListing.list_of_group_chats[lindex].friend_list[findex].username);
+            for (let findex = 0;
+              findex < currentListing.list_of_group_chats[lindex].friend_list.length;
+              findex++) {
+              chatInfo.members.push(currentListing.list_of_group_chats[lindex].friend_list[findex].username);
+            }
+
+            chatChannels.push(chatInfo);
           }
-
-          chatChannels.push(chatInfo);
         }
       } else if (chattingContextType == 2) {
       // console.log("childIndex = " + childIndex);
@@ -909,20 +915,26 @@ export function MessageContextProvider(props) {
         for (let lindex = 0;
           lindex < currentListing.child_listings[childIndex].list_of_group_chats.length;
           lindex++) {
-          const chatInfo = {
-            channel_id: currentListing.child_listings[childIndex].list_of_group_chats[lindex].channel_id,
-            members: []
-          };
 
-          // console.log("friend_list.length = " + currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length);
+          let channelId = currentListing.child_listings[childIndex].list_of_group_chats[lindex].channel_id;
 
-          for (let findex = 0;
-            findex < currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length;
-            findex++) {
-            chatInfo.members.push(currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+          if(channelId.includes(currentUser.username)===true)
+          {
+            const chatInfo = {
+              channel_id: channelId,
+              members: []
+            };
+
+            // console.log("friend_list.length = " + currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length);
+
+            for (let findex = 0;
+              findex < currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length;
+              findex++) {
+              chatInfo.members.push(currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+            }
+
+            chatChannels.push(chatInfo);
           }
-
-          chatChannels.push(chatInfo);
         }
       }
     } catch (err) {
