@@ -1094,8 +1094,6 @@ export function MessageContextProvider(props) {
 
   // loading chatting database from backend
   async function loadChattingDatabase() {
-    console.log("loadChattingDatabase");
-
     if (currentUser == undefined) {
       // console.log("currentUser is not set yet");
       return;
@@ -1278,11 +1276,6 @@ export function MessageContextProvider(props) {
     }
 
   }, [doNotDisturbMode]);
-
-  /*useEffect(() => {
-    //console.warn('ISEO: Loading chatting database... ');
-    loadChattingDatabase();
-  }, [currChannelInfo, channelContextLength]);*/
 
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.

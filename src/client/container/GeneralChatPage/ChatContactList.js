@@ -23,18 +23,9 @@ function ChatContactList() {
     chattingContextType,
     getDmChannelId,
     msgCounter,
-    checkIfAnyChatHistory
+    checkIfAnyChatHistory,
+    channelContextLength
   } = useContext(MessageContext);
-
-
-  function getActiveIndex(_states) {
-    for(let index=0; index<_states.length; index++)
-    {
-      if(_states[index].active===1) return index;
-    }
-
-    return 0;
-  }
 
   function removeCurrentUserFromList(_list) {
     if (_list == null || currentUser == null) return null;
@@ -242,14 +233,21 @@ function ChatContactList() {
   }
 
   useEffect(() => {
-
     // check if there is no active channel
     let bFoundDefaultContact = false;
+    let indexOfChatpartyWithHistory = -1;
 
     for (let i = 0; i < contactStates.length; i++) {
       if (contactStates[i].active == 1) {
         bFoundDefaultContact = true;
         //handleClickState(i);
+      }
+
+      if((indexOfChatpartyWithHistory===-1) && 
+         (contactStates[i].channelInfo !==undefined) && 
+         (checkIfAnyChatHistory(contactStates[i].channelInfo.channelName) === true))
+      {
+        indexOfChatpartyWithHistory = i;
       }
     }
 
@@ -257,7 +255,18 @@ function ChatContactList() {
       // let's click the last item.
       if(contactStates.length>0)
       {
-        handleClickState(contactStates.length - 1);
+        if(dmChannelContexts[contactStates[0].channelInfo.channelName]===undefined)
+        {
+          // need loading of database
+          loadChattingDatabase();
+        }
+        else
+        {
+          if(indexOfChatpartyWithHistory!==-1)
+          {
+            handleClickState(indexOfChatpartyWithHistory);
+          }
+        }
       }
     }
 
@@ -294,10 +303,21 @@ function ChatContactList() {
 
   useEffect(() => {
     let _contactStates = buildContactStates();
-    if(_contactStates.length!==0 && (getActiveIndex(_contactStates)!==getActiveIndex(contactStates))) {
-      setContactStates(_contactStates);
+    if(_contactStates.length!==0) {
+        setContactStates(_contactStates);
     }
   }, [dmChannelContexts, msgCounter]);
+
+  useEffect(() => {
+    loadChattingDatabase();
+  }, [chattingContextType]);
+
+  useEffect(()=> {
+    let _contactStates = buildContactStates();
+    if(_contactStates.length!==0) {
+        setContactStates(_contactStates);
+    }
+  }, [channelContextLength])
 
 
   function buildContactList() {
@@ -310,13 +330,12 @@ function ChatContactList() {
         msg_summary: _context != undefined ? _context.msg_summary : ''
       };
 
-      /*
-      const additionalStyle = 
+      // hide it if there is no chatting history and not active
+      let additionalStyle = 
         (checkIfAnyChatHistory(contactStates[i].channelInfo.channelName)===false)
           && (contactStates[i].active === 0)
-          ? {display: 'none'}: {};*/
-      const additionalStyle = {};
-
+          ? {display: 'none'}: {};
+      
       // DM case
       if (contactStates[i].type == 'dm') {
         contacts.push(
