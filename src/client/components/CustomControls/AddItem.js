@@ -8,7 +8,7 @@ export default function AddItem(props) {
     fontSize: '10em',
     color: '#7e3f3f',
     position: 'relative',
-    left: '35px',
+    left: '30px',
     top: '-30px',
     zIndex: '1',
     border: 'none',
