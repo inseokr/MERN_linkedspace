@@ -93,7 +93,7 @@ export function MessageContextProvider(props) {
   const [currentChatPartyPicture, setCurrentChatPartyPicture] = useState('../assets/images/Chinh - Vy.jpg');
 
   const [selectedChatList, setSelectedChatList] = useState([]);
-
+  const [newContactSelected, setNewContactSelected] = useState(false);
 
   function toggleCollapse()
   {
@@ -356,7 +356,52 @@ export function MessageContextProvider(props) {
     });
   }
 
+  function getSelectedGroupChannelId() {
+    let concatenatedFriendsString = '';
+    // 1. go through friends list
+    for (let index = 0; index < selectedChatList.length; index++) {
+      const hypen = (index >= 1) ? '-' : '';
+      concatenatedFriendsString = concatenatedFriendsString + hypen + selectedChatList[index].username;
+    }
+    // need to myself as well
+    concatenatedFriendsString = `${concatenatedFriendsString}-${currentUser.username}`;
+
+    // let's sort it
+    let userList = concatenatedFriendsString.split('-').sort();
+    concatenatedFriendsString = '';
+
+    for (let index = 0; index < userList.length; index++) {
+      const hypen = (index >= 1) ? '-' : '';
+      concatenatedFriendsString = concatenatedFriendsString + hypen + userList[index];
+    }
+
+    const channel_id = (chattingContextType == 1)
+      ? `${currentListing._id}-parent-${concatenatedFriendsString}`
+      : `${currentListing._id}-child-${currentListing.child_listings[childIndex].listing_id._id}-${concatenatedFriendsString}`;
+
+    return channel_id;
+  }
+
+  function getSelectedChannelId() {
+    if(selectedChatList.length>0)
+    {
+      if(selectedChatList.length===1)
+      {
+        return (getDmChannelId(selectedChatList[0].username));
+      }
+      else {
+        return getSelectedGroupChannelId();
+      }
+    }
+    else 
+    {
+      return null;
+    }
+  }
+
   async function postSelectedContactList() {
+    setNewContactSelected(true);
+
     // DM case
     if (selectedChatList.length == 1) {
       const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
@@ -1081,14 +1126,12 @@ export function MessageContextProvider(props) {
         }
       }
     }
-    // console.log("dmChannelContexts: length before = " + dmChannelContexts.length);
 
     const dmChannelContextArray = dmChannelContexts;
     dmChannelContextArray[channel_id] = dmChannel;
 
     setChannelContexts(dmChannelContextArray);
     setChannelContextLength(Object.keys(dmChannelContextArray).length);
-
     setCurrentHistoryLength(dmChannel.chattingHistory.length);
   }
 
@@ -1333,6 +1376,9 @@ export function MessageContextProvider(props) {
       getLastReadIndexFromContext,
       currentHistoryLength,
       checkIfAnyChatHistory,
+      getSelectedChannelId,
+      newContactSelected, 
+      setNewContactSelected
     }}
     >
       {props.children}

@@ -24,7 +24,12 @@ function ChatContactList() {
     getDmChannelId,
     msgCounter,
     checkIfAnyChatHistory,
-    channelContextLength
+    channelContextLength,
+    selectedChatList,
+    resetChatList,
+    getSelectedChannelId,
+    newContactSelected, 
+    setNewContactSelected
   } = useContext(MessageContext);
 
   function removeCurrentUserFromList(_list) {
@@ -210,6 +215,29 @@ function ChatContactList() {
   // <note> buildContactStates won't be called even if GeneralChatMainpage is being rendered?
   // It's called, but not used to update contactStates
   const [contactStates, setContactStates] = useState(buildContactStates());
+  let channelId2IndexMap = [];
+
+
+  function handleDelayedPickChatParty() {
+    if(newContactSelected===true)
+    {
+      // MessageContext will get the channel ID from the selectedChatList
+      let channelId = getSelectedChannelId();
+      // get the index by channelId
+      let index = channelId2IndexMap[channelId];
+
+      if(index===undefined) 
+      {
+        loadChattingDatabase();
+      }
+      else
+      {
+        handleClickState(index);
+        setNewContactSelected(false);
+        resetChatList();
+      }
+    }
+  }
 
   async function handleClickState(index) {
     try {
@@ -233,13 +261,37 @@ function ChatContactList() {
   }
 
   useEffect(() => {
+    if(newContactSelected===true)
+    {
+      // MessageContext will get the channel ID from the selectedChatList
+      let channelId = getSelectedChannelId();
+
+      // get the index by channelId
+      let index = channelId2IndexMap[channelId];
+
+      if(index===undefined) 
+      {
+        loadChattingDatabase();
+      }
+      else
+      {
+        handleClickState(index);
+        setNewContactSelected(false);
+        resetChatList();
+      }
+    }
+  }, [newContactSelected]);
+
+  useEffect(() => {
     // check if there is no active channel
     let bFoundDefaultContact = false;
     let indexOfChatpartyWithHistory = -1;
+    let indexOfActiveChannel = -1;
 
     for (let i = 0; i < contactStates.length; i++) {
       if (contactStates[i].active == 1) {
         bFoundDefaultContact = true;
+        indexOfActiveChannel = i;
         //handleClickState(i);
       }
 
@@ -248,11 +300,11 @@ function ChatContactList() {
          (checkIfAnyChatHistory(contactStates[i].channelInfo.channelName) === true))
       {
         indexOfChatpartyWithHistory = i;
+        indexOfActiveChannel = i;
       }
     }
 
-    if (bFoundDefaultContact == false) {
-      // let's click the last item.
+    if (bFoundDefaultContact == false || newContactSelected===true ) {
       if(contactStates.length>0)
       {
         if(dmChannelContexts[contactStates[0].channelInfo.channelName]===undefined)
@@ -262,9 +314,12 @@ function ChatContactList() {
         }
         else
         {
-          if(indexOfChatpartyWithHistory!==-1)
+          if(indexOfChatpartyWithHistory!==-1 && newContactSelected===false)
           {
             handleClickState(indexOfChatpartyWithHistory);
+          }
+          else {
+            handleDelayedPickChatParty();
           }
         }
       }
@@ -322,7 +377,11 @@ function ChatContactList() {
 
   function buildContactList() {
     const contacts = [];
+
     for (let i = 0; i < contactStates.length; i++) {
+
+      channelId2IndexMap[contactStates[i].channelInfo.channelName] = i;
+
       const _context = dmChannelContexts[contactStates[i].channelInfo.channelName];
       const channelSummary = {
         flag_new_msg: _context != undefined ? _context.flag_new_msg : false,
@@ -365,7 +424,6 @@ function ChatContactList() {
         );
       }
     }
-
     return contacts;
   }
 
