@@ -226,15 +226,14 @@ function ShowActiveListingPage(props) {
 
   let mainClassName = (modal==='true')? 'col-lg-12': 'col-lg-6';
 
-  const _titleHousing = {"own": "Housing inventory - LinkedSpaces", "friend": "Looking for tenant(s)"};
+  const _titleHousing = {"own": "Housing inventory - LinkedSpaces", "friend": "Looking for tenant(s)", "child": "Housing inventory - LinkedSpaces"};
 
   return (
     <div>
       <div className="row">
         {(modal==='false') && <div className="col-lg-3" />}
         <div className={mainClassName}>
-          {tenantListing}
-          { (props.type === 'own') &&
+          {(props.type === 'own') && tenantListing}
           <div className="bottom-shadow" style={{marginTop: '20px'}}>
             <span style={{ textAlign: 'center' }}><h3> Housing inventory - 3rd party  </h3></span>
             <hr />
@@ -244,7 +243,6 @@ function ShowActiveListingPage(props) {
                 props.listingControl)}
             </div>
           </div>
-          }   
           <div className="bottom-shadow" style={{marginTop: '20px'}}>
             <span style={{ textAlign: 'center' }}><h3> {_titleHousing[props.type]} </h3></span>
             <hr />
