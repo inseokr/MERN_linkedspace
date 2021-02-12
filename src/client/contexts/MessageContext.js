@@ -401,7 +401,6 @@ export function MessageContextProvider(props) {
 
   async function postSelectedContactList() {
     setNewContactSelected(true);
-
     // DM case
     if (selectedChatList.length == 1) {
       const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
@@ -1065,7 +1064,6 @@ export function MessageContextProvider(props) {
     return newMsgArrived;
   }
 
-
   function checkIfAnyNewMsgArrivedListingChannel() {
     return newMsgArrivedListingChannel;
   }
@@ -1074,10 +1072,7 @@ export function MessageContextProvider(props) {
   // It's called after "channel/new" API call.
   function loadChatHistory(channel_id, history) {
     // It's a special flag to indicate that the channel history is loaded.
-    if (currChannelInfo.channelName == channel_id) {
-      // console.log("setFlagNewlyLoaded!!!!!");
-      setFlagNewlyLoaded(true);
-    }
+    setFlagNewlyLoaded(true);
 
     // update channel DB in react side
     const lastReadIndex = getLastReadIndex(channel_id);
@@ -1378,7 +1373,9 @@ export function MessageContextProvider(props) {
       checkIfAnyChatHistory,
       getSelectedChannelId,
       newContactSelected, 
-      setNewContactSelected
+      setNewContactSelected,
+      flagNewlyLoaded, 
+      setFlagNewlyLoaded
     }}
     >
       {props.children}

@@ -29,7 +29,9 @@ function ChatContactList() {
     resetChatList,
     getSelectedChannelId,
     newContactSelected, 
-    setNewContactSelected
+    setNewContactSelected,
+    flagNewlyLoaded,
+    setFlagNewlyLoaded
   } = useContext(MessageContext);
 
   function removeCurrentUserFromList(_list) {
@@ -292,7 +294,6 @@ function ChatContactList() {
       if (contactStates[i].active == 1) {
         bFoundDefaultContact = true;
         indexOfActiveChannel = i;
-        //handleClickState(i);
       }
 
       if((indexOfChatpartyWithHistory===-1) && 
@@ -374,6 +375,17 @@ function ChatContactList() {
     }
   }, [channelContextLength])
 
+  
+  useEffect(()=> {
+    if(flagNewlyLoaded===true)
+    {
+      let _contactStates = buildContactStates();
+      if(_contactStates.length!==0) {
+          setContactStates(_contactStates);
+      }
+      setFlagNewlyLoaded(false);
+    }
+  }, [flagNewlyLoaded]);
 
   function buildContactList() {
     const contacts = [];
