@@ -291,10 +291,14 @@ function ChatContactList() {
         indexOfActiveChannel = i;
       }
 
+      //console.warn(`contactStates=${JSON.stringify(contactStates[0])}`);
+      //console.warn(`checkIfAnyChatHistory=${checkIfAnyChatHistory(contactStates[0].channelInfo.channelName)}`);
+
       if((indexOfChatpartyWithHistory===-1) && 
          (contactStates[i].channelInfo !==undefined) && 
          (checkIfAnyChatHistory(contactStates[i].channelInfo.channelName) === true))
       {
+        //console.warn(`found contact with history`);
         indexOfChatpartyWithHistory = i;
         indexOfActiveChannel = i;
       }
@@ -306,6 +310,7 @@ function ChatContactList() {
         if(dmChannelContexts[contactStates[0].channelInfo.channelName]===undefined)
         {
           // need loading of database
+          //console.warn(`Noooo... still no context created yet`);
           loadChattingDatabase();
           indexOfActiveChannel = -1;
         }
@@ -313,10 +318,12 @@ function ChatContactList() {
         {
           if(indexOfChatpartyWithHistory!==-1 && newContactSelected===false)
           {
+            //console.warn(`handleClickState`);
             handleClickState(indexOfChatpartyWithHistory);
             indexOfActiveChannel = indexOfChatpartyWithHistory;
           }
           else {
+            //console.warn(`handleDelayedPickChatParty`);
             handleDelayedPickChatParty();
             indexOfActiveChannel = -1;
           }

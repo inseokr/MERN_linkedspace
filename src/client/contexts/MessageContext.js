@@ -871,7 +871,7 @@ export function MessageContextProvider(props) {
     return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
 
-  function getDmChannelId(friend_name) {
+  function getDmChannelId(friend_name, _childIndex=childIndex, _contextType=chattingContextType) {
     if (currentUser == null) return '';
 
     const dmChannelNameSuffix = (currentUser.username > friend_name)
@@ -880,9 +880,11 @@ export function MessageContextProvider(props) {
 
     let dmChannelNamePrefix = '';
 
-    if (chattingContextType != 0) {
-      dmChannelNamePrefix = currentListing._id + ((chattingContextType == 1) ? '-parent-'
-        : `-child-${currentListing.child_listings[childIndex].listing_id._id}-`);
+    if (_contextType != MSG_CHANNEL_TYPE_GENERAL) {
+      dmChannelNamePrefix = 
+        currentListing._id + 
+        ((_contextType == MSG_CHANNEL_TYPE_LISTING_PARENT) ? '-parent-'
+        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
     }
 
     // console.log("getDmChannelId: current child index = " + _childIndex);
@@ -891,10 +893,10 @@ export function MessageContextProvider(props) {
     return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
 
-  function getDmChannel(friend_name) {
+  function getDmChannel(friend_name, _childIndex=childIndex, _contextType=chattingContextType) {
     // console.log(`getDmChannel: friend_name = ${friend_name}`);
     const dmChannel = {
-      channel_id: getDmChannelId(friend_name),
+      channel_id: getDmChannelId(friend_name, _childIndex, _contextType),
       members: []
     };
 
@@ -999,7 +1001,7 @@ export function MessageContextProvider(props) {
         for (let i = 0; i < currentListing.child_listings[_childIndex].shared_user_group.length; i++) {
           const _currUser = currentListing.child_listings[_childIndex].shared_user_group[i];
           if (_currUser.username != currentUser.username) {
-            chatChannels.push(getDmChannel(_currUser.username));
+            chatChannels.push(getDmChannel(_currUser.username, _childIndex, MSG_CHANNEL_TYPE_LISTING_CHILD));
           }
         }
 
@@ -1182,6 +1184,8 @@ export function MessageContextProvider(props) {
     }
 
     let chatChannel = getListOfAllChildChatChannels();
+
+    //console.warn(`loadChildChattingDatabase:chatChannel: ${JSON.stringify(chatChannel)}`);
 
     // go through each channel and load chatting history if any.
     // we need to create the channel if it doesn't exist yet.
