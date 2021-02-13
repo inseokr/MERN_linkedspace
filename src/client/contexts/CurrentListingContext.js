@@ -73,7 +73,6 @@ export function CurrentListingProvider(props) {
 
     if(currentListing===undefined || currentListing.child_listings===undefined)
     {
-      console.warn("buildChildListingMappingTable: child listing it not available??");
       return;
     }
     //console.log(`currentListing = ${currentListing}`);

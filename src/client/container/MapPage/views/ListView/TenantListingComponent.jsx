@@ -37,7 +37,6 @@ function TenantListingComponent(props) {
   const { listing, toggle, mode } = props;
 
   if (listing === undefined) {
-    console.warn('No listing available');
     return <div> no listing available </div>;
   }
 

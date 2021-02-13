@@ -983,13 +983,56 @@ export function MessageContextProvider(props) {
         }
       }
     } catch (err) {
-      console.warn(err);
+      console.log(err);
     }
-
-    console.log(`chatChannels = ${JSON.stringify(chatChannels)}`);
 
     return chatChannels;
   }
+
+
+  function getListOfAllChildChatChannels() {
+    let chatChannels = [];
+    try {
+      for (let _childIndex=0; _childIndex < currentListing.child_listings.length; _childIndex++)
+      {
+        // DM channels
+        for (let i = 0; i < currentListing.child_listings[_childIndex].shared_user_group.length; i++) {
+          const _currUser = currentListing.child_listings[_childIndex].shared_user_group[i];
+          if (_currUser.username != currentUser.username) {
+            chatChannels.push(getDmChannel(_currUser.username));
+          }
+        }
+
+        for (let lindex = 0;
+          lindex < currentListing.child_listings[_childIndex].list_of_group_chats.length;
+          lindex++) {
+
+          let channelId = currentListing.child_listings[_childIndex].list_of_group_chats[lindex].channel_id;
+
+          if(channelId.includes(currentUser.username)===true)
+          {
+            const chatInfo = {
+              channel_id: channelId,
+              members: []
+            };
+            for (let findex = 0;
+              findex < currentListing.child_listings[_childIndex].list_of_group_chats[lindex].friend_list.length;
+              findex++) {
+              chatInfo.members.push(currentListing.child_listings[_childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+            }
+            chatChannels.push(chatInfo);
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log(`chatChannels = ${JSON.stringify(chatChannels)}`);
+    return chatChannels;
+  }
+
+
 
   function getLastReadIndex(channel_id) {
     if(currentUser===null) return 0;
@@ -1129,6 +1172,69 @@ export function MessageContextProvider(props) {
     setChannelContexts(dmChannelContextArray);
     setChannelContextLength(Object.keys(dmChannelContextArray).length);
     setCurrentHistoryLength(dmChannel.chattingHistory.length);
+  }
+
+  // loading chatting database from backend
+  async function loadChildChattingDatabase() {
+
+    if (currentUser == undefined) {
+      return;
+    }
+
+    let chatChannel = getListOfAllChildChatChannels();
+
+    // go through each channel and load chatting history if any.
+    // we need to create the channel if it doesn't exist yet.
+    for (let i = 0; i < chatChannel.length; i++) {
+      const data = {
+        channel_id: chatChannel[i].channel_id,
+        channel_type: 0,
+        members: chatChannel[i].members
+      };
+
+      //console.log("creating channels: members = " + JSON.stringify(chatChannel[i].members));
+
+      // note: problem in handling the result!!
+      const result = await axios.post('/LS_API/chatting/new', data)
+        .then((result) => {
+          if (result.data.bNewlyCreated == false) {
+            // update channel DB using the history data
+            // <note> channel could be null if it's a duplicate case.
+            if(result.data.channel!==null)
+            {
+              const channelData = {
+                channel_id: result.data.channel.channel_id,
+                channel_type: result.data.channel.channel_type,
+                last_read_index: getLastReadIndex(result.data.channel.channel_id)
+              };
+
+              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+
+              // ISEO-TBD-1227
+              // CSC:Register will be needed even if it's existing channel
+              try {
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          } else {
+            loadChatHistory(chatChannel[i].channel_id, []);
+            // <note> registration should work after chattting channel is created first.
+            try {
+              // make it sure current user is in the shared_user_group.
+              addContactList({id: currentUser._id, username: currentUser.username}).then((result) =>
+              {
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              });
+
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        })
+        .catch(err => console.warn(err));
+    }
   }
 
   // loading chatting database from backend
@@ -1336,8 +1442,8 @@ export function MessageContextProvider(props) {
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    console.warn("CurrentListing is just updated");
     setTimeout(()=> loadChattingDatabase(), 1500);
+    setTimeout(()=> loadChildChattingDatabase(), 2000);
   }, [currentListing]);
 
   webSocketConnect();
@@ -1393,7 +1499,8 @@ export function MessageContextProvider(props) {
       newContactSelected, 
       setNewContactSelected,
       flagNewlyLoaded, 
-      setFlagNewlyLoaded
+      setFlagNewlyLoaded,
+      getListOfAllChildChatChannels
     }}
     >
       {props.children}

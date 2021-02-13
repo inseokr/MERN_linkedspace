@@ -89,7 +89,6 @@ function PickChattingParty(props) {
 
 
   useEffect(() => {
-    console.warn('PickChatParty: useEffect is called');
     if(modalShow===false)
     {
       // clean-up click states
@@ -107,7 +106,7 @@ function PickChattingParty(props) {
 }
 catch(error)
 {
-  console.warn("error = " + error);
+  console.log("error = " + error);
   return (<React.Fragment></React.Fragment>)
 }
 

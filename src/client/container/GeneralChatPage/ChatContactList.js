@@ -204,11 +204,6 @@ function ChatContactList() {
       //console.warn(`buildContactStates: error = ${err}`);
     }
 
-    if(_contactStates.length===0)
-    {
-      console.warn("contactStates NULL!!");
-    }
-
     return _contactStates;
   }
 

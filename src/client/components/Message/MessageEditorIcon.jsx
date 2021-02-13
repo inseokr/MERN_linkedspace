@@ -51,7 +51,7 @@ function MessageEditorIcon(props) {
       }
     }
   } catch (error) {
-    console.warn(`error=${error}`);
+    console.log(`error=${error}`);
   }
 
   const showModal = () => {
