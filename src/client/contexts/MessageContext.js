@@ -1244,7 +1244,8 @@ export function MessageContextProvider(props) {
   // loading chatting database from backend
   async function loadChattingDatabase(requestedChannel=null) {
 
-    if (currentUser == undefined || databaseLoadingInProgressFlag===true) {
+    if (currentUser == undefined || databaseLoadingInProgressFlag===true)
+    {
       return;
     }
 
@@ -1252,6 +1253,8 @@ export function MessageContextProvider(props) {
     {
       // some of request may come while this state is actually updated.
       // what do we do?
+      //console.warn(`loadChattingDatabase: current context type=${chattingContextType}`);
+      //console.warn(`starting loading`);
       setDatabaseLoadingInProgressFlag(true);
     }
 
@@ -1276,10 +1279,12 @@ export function MessageContextProvider(props) {
     }
 
     // console.log("number of channels = " + chatChannel.length);
-
     // go through each channel and load chatting history if any.
     // we need to create the channel if it doesn't exist yet.
     for (let i = 0; i < chatChannel.length; i++) {
+
+      if(chatChannel[i].channel_id===null) continue;
+
       const data = {
         channel_id: chatChannel[i].channel_id,
         channel_type: 0,
@@ -1287,7 +1292,6 @@ export function MessageContextProvider(props) {
       };
 
       //console.log("creating channels: members = " + JSON.stringify(chatChannel[i].members));
-
       // note: problem in handling the result!!
       const result = await axios.post('/LS_API/chatting/new', data)
         .then((result) => {
@@ -1325,8 +1329,6 @@ export function MessageContextProvider(props) {
             // <note> registration should work after chattting channel is created first.
             try {
               //console.warn("CSC: register for username + " + currentUser.username);
-
-
               // make it sure current user is in the shared_user_group.
               addContactList({id: currentUser._id, username: currentUser.username}).then((result) =>
               {
@@ -1341,6 +1343,7 @@ export function MessageContextProvider(props) {
         .catch(err => console.warn(err));
     }
     setDatabaseLoadingInProgressFlag(false);
+    //console.warn(`stop loading. context type=${chattingContextType}`);
   }
 
   // <note> obsolete function.
@@ -1446,8 +1449,9 @@ export function MessageContextProvider(props) {
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    setTimeout(()=> loadChattingDatabase(), 1500);
-    setTimeout(()=> loadChildChattingDatabase(), 2000);
+    //setTimeout(()=> loadChattingDatabase(), 1500);
+    loadChattingDatabase();
+    setTimeout(()=> loadChildChattingDatabase(), 500);
   }, [currentListing]);
 
   webSocketConnect();
