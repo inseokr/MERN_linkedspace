@@ -312,16 +312,28 @@ function ChatContactList() {
         {
           // need loading of database
           loadChattingDatabase();
+          indexOfActiveChannel = -1;
         }
         else
         {
           if(indexOfChatpartyWithHistory!==-1 && newContactSelected===false)
           {
             handleClickState(indexOfChatpartyWithHistory);
+            indexOfActiveChannel = indexOfChatpartyWithHistory;
           }
           else {
             handleDelayedPickChatParty();
+            indexOfActiveChannel = -1;
           }
+        }
+      }
+
+      if(indexOfActiveChannel===-1)
+      {
+        // let's prevent infinite rendering
+        if(currChannelInfo.channelName!==null)
+        {
+          setCurrChannelInfo({channelName: null, members: null});
         }
       }
     }
@@ -330,7 +342,10 @@ function ChatContactList() {
     // You may see previous chatting history without it.
     if(contactStates.length===0)
     {
-      setCurrChannelInfo({channelName: null, members: null});
+      if(currChannelInfo.channelName!==null)
+      {
+        setCurrChannelInfo({channelName: null, members: null});
+      }
     }
   }, [contactStates]);
 
@@ -349,7 +364,6 @@ function ChatContactList() {
   }, [friendsList]);
 
   useEffect(() => {
-
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
