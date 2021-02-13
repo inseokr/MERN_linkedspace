@@ -72,6 +72,7 @@ export function MessageContextProvider(props) {
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
   const [ currentHistoryLength, setCurrentHistoryLength] = useState(0);
+  const [databaseLoadingInProgressFlag, setDatabaseLoadingInProgressFlag] = useState(false);
 
   const { currentUser, setCurrentUser, friendsList , refreshUserData, getProfilePicture} = useContext(GlobalContext);
 
@@ -1131,10 +1132,17 @@ export function MessageContextProvider(props) {
   }
 
   // loading chatting database from backend
-  async function loadChattingDatabase() {
-    if (currentUser == undefined) {
-      // console.log("currentUser is not set yet");
+  async function loadChattingDatabase(requestedChannel=null) {
+
+    if (currentUser == undefined || databaseLoadingInProgressFlag===true) {
       return;
+    }
+
+    if(databaseLoadingInProgressFlag===false) 
+    {
+      // some of request may come while this state is actually updated.
+      // what do we do?
+      setDatabaseLoadingInProgressFlag(true);
     }
 
     // console.log("currChannelInfo.channelName = " + currChannelInfo.channelName);
@@ -1146,7 +1154,16 @@ export function MessageContextProvider(props) {
     // note: it will be good time to register the user again?
 
     // ISEO-TBD: need to load group chatting as well.
-    const chatChannel = getListOfChatChannels();
+    let chatChannel = []; 
+
+    if(requestedChannel!==null)
+    {
+      chatChannel.push({channel_id: requestedChannel.channelName, members: requestedChannel.members});
+    }
+    else
+    {
+      chatChannel = getListOfChatChannels();
+    }
 
     // console.log("number of channels = " + chatChannel.length);
 
@@ -1213,6 +1230,7 @@ export function MessageContextProvider(props) {
         })
         .catch(err => console.warn(err));
     }
+    setDatabaseLoadingInProgressFlag(false);
   }
 
   // <note> obsolete function.
@@ -1275,7 +1293,7 @@ export function MessageContextProvider(props) {
     //console.log("currChannelInfo updated");
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
     // It was 4 seconds previously
-    loadChattingDatabase();
+    loadChattingDatabase(currChannelInfo);
     //setTimeout(()=> loadChattingDatabase(), 500);
   }, [currChannelInfo]);
 
