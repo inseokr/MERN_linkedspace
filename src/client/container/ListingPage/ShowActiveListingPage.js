@@ -233,7 +233,8 @@ function ShowActiveListingPage(props) {
       <div className="row">
         {(modal==='false') && <div className="col-lg-3" />}
         <div className={mainClassName}>
-          {(props.type === 'own') && tenantListing}
+          {(props.type === 'own' || props.type === 'friend') && tenantListing}
+          {(props.type === 'own' || props.type === 'child') &&
           <div className="bottom-shadow" style={{marginTop: '20px'}}>
             <span style={{ textAlign: 'center' }}><h3> Housing inventory - 3rd party  </h3></span>
             <hr />
@@ -242,7 +243,7 @@ function ShowActiveListingPage(props) {
                 '_3rdparty', props.type, child_listings,
                 props.listingControl)}
             </div>
-          </div>
+          </div>}
           <div className="bottom-shadow" style={{marginTop: '20px'}}>
             <span style={{ textAlign: 'center' }}><h3> {_titleHousing[props.type]} </h3></span>
             <hr />

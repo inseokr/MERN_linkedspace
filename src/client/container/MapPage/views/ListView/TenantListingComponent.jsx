@@ -252,7 +252,7 @@ function TenantListingComponent(props) {
               {listing.profile_pictures.map(picture => (
                 <Carousel.Item key={picture._id}>
                  <a href={`/listing/tenant/${listing._id}/get`} target="_blank">
-                  <img src={FILE_SERVER_URL+listing.requester.profile_picture} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                  <img src={FILE_SERVER_URL+listing.profile_pictures[0].path} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
                  </a>
                 </Carousel.Item>
               ))}
