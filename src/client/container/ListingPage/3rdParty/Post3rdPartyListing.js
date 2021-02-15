@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import shortid from 'shortid';
 
 import '../common/step_wizard.css';
@@ -127,11 +127,11 @@ function getCoverPhoto() {
               onMouseOver={evt => handleOnMouseHooverImagePreview(evt, 1)}
               onMouseOut={evt => handleOnMouseOutImagePreview(evt, 1)}
             >
-              <input type="file" 
-                required 
-                name="file_name" 
-                id="imageDefaultUpload-1" 
-                onChange={evt => readURL(evt, 1)} 
+              <input type="file"
+                required
+                name="file_name"
+                id="imageDefaultUpload-1"
+                onChange={evt => readURL(evt, 1)}
                 accept=".png, .jpg, .jpeg"
                 onInvalid={() => alert('Please add cover photo')}
               />
