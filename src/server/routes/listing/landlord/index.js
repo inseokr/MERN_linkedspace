@@ -4,6 +4,7 @@ const router = express.Router();
 const passport = require('passport');
 const node = require('deasync');
 const path = require('path');
+const fetch = require('node-fetch');
 const User = require('../../../models/user');
 const LandlordRequest = require('../../../models/listing/landlord_request');
 const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
@@ -14,59 +15,89 @@ const { fileDeleteFromCloud } = require('../../../aws_s3_api');
 node.loop = node.runLoopOnce;
 
 module.exports = function (app) {
-  router.post('/new', (req, res) => {
+  router.post('/new', async (req, res) => {
     if (req.body.submit == 'exit') {
       res.render('listing_main');
     } else {
-      const newListing = new LandlordRequest();
+      // TODO https://github.com/inseokr/MERN_linkedspace/issues/483
+      const { street, city, state, zipcode, country } = req.body.location;
+      const address = `${street}, ${city}, ${state}, ${zipcode}. ${country}`;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then(response => {
+        const { results, status} = response;
+        if (status === "OK") {
+          const geometry = results[0].geometry;
+          const { location } = geometry;
 
-      // add username and id
-      newListing.requester = req.user._id;
+          const newListing = new LandlordRequest();
 
-      newListing.rental_property_information = req.body.rental_property_information;
-      newListing.rental_property_information.location = req.body.location;
+          // add username and id
+          newListing.requester = req.user._id;
 
-      newListing.move_in_date = req.body.move_in_date;
-      newListing.rental_duration = req.body.rental_duration;
-      newListing.maximum_range_in_miles = req.body.maximum_range_in_miles;
-      newListing.rental_budget = req.body.rental_budget;
-      newListing.num_of_bedrooms = 0;
+          newListing.rental_property_information = req.body.rental_property_information;
+          newListing.rental_property_information.location = req.body.location;
+          newListing.rental_property_information.coordinates = location;
 
-      newListing.save((err) => {
-        if (err) {
-        	console.log('New Listing Save Failure');
-        	res.render('/');
+          newListing.move_in_date = req.body.move_in_date;
+          newListing.rental_duration = req.body.rental_duration;
+          newListing.maximum_range_in_miles = req.body.maximum_range_in_miles;
+          newListing.rental_budget = req.body.rental_budget;
+          newListing.num_of_bedrooms = 0;
+
+          newListing.save((err) => {
+            if (err) {
+              console.log('New Listing Save Failure');
+              res.render('/');
+            }
+
+            User.findById(req.user._id, (err, foundUser) => {
+              if (err) {
+                console.log('User Not found with given User');
+                return;
+              }
+
+
+              foundUser.landlord_listing.push(newListing._id);
+              foundUser.save();
+            });
+
+            res.render('listing/landlord/new_step2', { listing_info: { listing: newListing, listing_id: newListing._id } });
+          });
+        } else {
+          console.log('New Listing Fetch Coordinate Error.');
+          res.render('/');
         }
-
-        User.findById(req.user._id, (err, foundUser) => {
-        	if (err) {
-        		console.log('User Not found with given User');
-        		return;
-        	}
-
-
-        	foundUser.landlord_listing.push(newListing._id);
-        	foundUser.save();
-        });
-
-        res.render('listing/landlord/new_step2', { listing_info: { listing: newListing, listing_id: newListing._id } });
       });
     }
   });
 
-  router.post('/:listing_id/new', (req, res) => {
+  router.post('/:listing_id/new', async (req, res) => {
     LandlordRequest.findById(req.params.listing_id, (err, foundListing) => {
-      foundListing.rental_property_information = req.body.rental_property_information;
-      foundListing.rental_property_information.location = req.body.location;
+      // TODO https://github.com/inseokr/MERN_linkedspace/issues/483
+      const { street, city, state, zipcode, country } = req.body.location;
+      const address = `${street}, ${city}, ${state}, ${zipcode}. ${country}`;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then(response => {
+        const { results, status} = response;
+        if (status === "OK") {
+          const geometry = results[0].geometry;
+          const { location } = geometry;
 
-    	foundListing.save((err) => {
-    		if (err) {
-		    	console.log('New Listing Save Failure');
-    			res.render('/');
-    		}
+          foundListing.rental_property_information = req.body.rental_property_information;
+          foundListing.rental_property_information.location = req.body.location;
+          foundListing.rental_property_information.coordinates = location;
 
-        res.render('listing/landlord/new_step2', { listing_info: { listing: foundListing, listing_id: req.params.listing_id } });
-    	});
+          foundListing.save((err) => {
+            if (err) {
+              console.log('New Listing Save Failure');
+              res.render('/');
+            }
+
+            res.render('listing/landlord/new_step2', { listing_info: { listing: foundListing, listing_id: req.params.listing_id } });
+          });
+        } else {
+          console.log('Listing Fetch Coordinate Error.');
+          res.render('/');
+        }
+      });
     });
   });
 
