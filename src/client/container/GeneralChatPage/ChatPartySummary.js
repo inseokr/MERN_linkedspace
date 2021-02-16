@@ -34,10 +34,19 @@ function ChatPartySummary(props) {
 
       if (currentUser.username == currChannelInfo.members[i]) continue;
 
-      const additional_style = {
-        position: 'relative',
-        width: '25px'
-      }
+      let additional_style = 
+        (getUserLoginStatus(currChannelInfo.members[i])===true)? 
+          {
+            position: 'relative',
+            width: '25px',
+            borderColor: 'green',
+            borderStyle: 'solid'
+          } : 
+          {
+            position: 'relative',
+            width: '25px'
+          }
+
       let onlineStatusStyle = { marginTop: '-20px', marginLeft: '32px' };
 
       onlineStatus = (currChannelInfo !== undefined && currChannelInfo.members[i] !== undefined) ? 
@@ -54,10 +63,11 @@ function ChatPartySummary(props) {
       );
     }
 
-    if(currChannelInfo.members.length<=2)
+    // it's redundant information. let's remove it for now.
+    /*if(currChannelInfo.members.length<=2)
     {
       listOfPictures.push(<React.Fragment>{onlineStatus}</React.Fragment>);
-    }
+    }*/
 
     return listOfPictures;
   }
