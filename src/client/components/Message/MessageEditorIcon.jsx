@@ -20,8 +20,7 @@ function MessageEditorIcon(props) {
   const [overlappedComponents, setOverlappedComponets] = useState(null);
   const {
     postSelectedContactList,
-    selectedChatList,
-    resetChatList
+    selectedChatList
   } = useContext(MessageContext);
 
   // const {currentUser} = useContext(GlobalContext);
@@ -52,7 +51,7 @@ function MessageEditorIcon(props) {
       }
     }
   } catch (error) {
-    console.warn(`error=${error}`);
+    console.log(`error=${error}`);
   }
 
   const showModal = () => {
@@ -80,7 +79,7 @@ function MessageEditorIcon(props) {
     }
 
     if (selectedChatList !== undefined && selectedChatList.length >= 1) {
-      postSelectedContactList().then(() => { resetChatList(); });
+      postSelectedContactList().then(() => { });
       // need to make it sure that the selected chatting party is shown in the contact list.
       onClickHandler();
     }

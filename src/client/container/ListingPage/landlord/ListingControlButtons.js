@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { useContext } from 'react';
+import {useHistory} from 'react-router-dom'
 import axios from 'axios';
 
 import '../../../app.css';
@@ -12,6 +13,7 @@ import { GlobalContext } from '../../../contexts/GlobalContext';
 function ListingControlButtons() {
   const { currentListing } = useContext(CurrentListingContext);
   const { currentUser } = useContext(GlobalContext);
+  const history = useHistory();
 
   if (currentUser == null || currentUser == undefined) {
     return (
@@ -50,9 +52,9 @@ function ListingControlButtons() {
         <input type="text" value="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         {/* The button used to copy the text */}
         <div className="d-flex justify-content-around">
-          <button className="btn btn-outline-dark" onClick={copy_posting_link} value={currentListing.list_id}>Copy link of this posting</button>
-          <button className="btn btn-outline-dark" onClick={forward2friend} style={{ marginLeft: '70px !important' }}>Send listing to friends</button>
-          <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Check status</button>
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')} value={currentListing.list_id}>My Postings</button>
+          <button className="btn btn-outline-dark" onClick={forward2friend} style={{ marginLeft: '70px !important' }}>Forward it to Friends</button>
+          <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Check Status</button>
         </div>
       </div>
     ) : '';

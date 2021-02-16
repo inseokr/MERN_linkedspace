@@ -37,7 +37,6 @@ function TenantListingComponent(props) {
   const { listing, toggle, mode } = props;
 
   if (listing === undefined) {
-    console.warn('No listing available');
     return <div> no listing available </div>;
   }
 
@@ -216,7 +215,7 @@ function TenantListingComponent(props) {
   function DashboardControl() {
     return (
       <div className="flex-container" style={{ justifyContent: 'space-between' }}>
-        <SimpleModal show={modalShow} handle1={redirectTo3rdparty} caption1="New" handle2={handleClose} caption2="Exit">
+        <SimpleModal show={modalShow} handle1={redirectTo3rdparty} caption1="Create New Posting" handle2={handleClose} caption2="Close">
           <ShowActiveListingPageWrapper type="child" modal="true" listingControl={listingControl} />
         </SimpleModal>
         <ForwardTenantListingModal listing_id={currentListing._id} modalState={showForwardListingModal} setModalState={setShowForardListingModal}/>
@@ -253,7 +252,7 @@ function TenantListingComponent(props) {
               {listing.profile_pictures.map(picture => (
                 <Carousel.Item key={picture._id}>
                  <a href={`/listing/tenant/${listing._id}/get`} target="_blank">
-                  <img src={FILE_SERVER_URL+listing.requester.profile_picture} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                  <img src={FILE_SERVER_URL+listing.profile_pictures[0].path} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
                  </a>
                 </Carousel.Item>
               ))}

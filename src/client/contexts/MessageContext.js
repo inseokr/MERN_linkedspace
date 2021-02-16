@@ -38,7 +38,7 @@ export function MessageContextProvider(props) {
   // I introduced a context length instead.
   const [dmChannelContexts, setChannelContexts] = useState([]);
   const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
-  const [channelWithLatestMessagae, setChannelWithLatestMessage] = useState(null);
+  const [listingIdWithLatestMessagae, setListingIdWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
   const [collapse, setCollapse] = useState('false');
 
@@ -72,13 +72,14 @@ export function MessageContextProvider(props) {
   const [flagNewlyLoaded, setFlagNewlyLoaded] = useState(false);
 
   const [ currentHistoryLength, setCurrentHistoryLength] = useState(0);
+  const [databaseLoadingInProgressFlag, setDatabaseLoadingInProgressFlag] = useState(false);
 
   const { currentUser, setCurrentUser, friendsList , refreshUserData, getProfilePicture} = useContext(GlobalContext);
 
   // messaging contexts related to posting
   // <note> we may need the whole listing DB?
   // question> Does dashboard has the listing DB?
-  const { currentListing, fetchCurrentListing, setChildIndexByChannelId, focusParentListing , getProfilePictureFromSharedGroup} = useContext(CurrentListingContext);
+  const { currentListing, fetchCurrentListing, setChildIndexByListingId, focusParentListing , getProfilePictureFromSharedGroup} = useContext(CurrentListingContext);
 
   // chattingContextType
   // 0: general chatting
@@ -93,7 +94,7 @@ export function MessageContextProvider(props) {
   const [currentChatPartyPicture, setCurrentChatPartyPicture] = useState('../assets/images/Chinh - Vy.jpg');
 
   const [selectedChatList, setSelectedChatList] = useState([]);
-
+  const [newContactSelected, setNewContactSelected] = useState(false);
 
   function toggleCollapse()
   {
@@ -356,7 +357,51 @@ export function MessageContextProvider(props) {
     });
   }
 
+  function getSelectedGroupChannelId() {
+    let concatenatedFriendsString = '';
+    // 1. go through friends list
+    for (let index = 0; index < selectedChatList.length; index++) {
+      const hypen = (index >= 1) ? '-' : '';
+      concatenatedFriendsString = concatenatedFriendsString + hypen + selectedChatList[index].username;
+    }
+    // need to myself as well
+    concatenatedFriendsString = `${concatenatedFriendsString}-${currentUser.username}`;
+
+    // let's sort it
+    let userList = concatenatedFriendsString.split('-').sort();
+    concatenatedFriendsString = '';
+
+    for (let index = 0; index < userList.length; index++) {
+      const hypen = (index >= 1) ? '-' : '';
+      concatenatedFriendsString = concatenatedFriendsString + hypen + userList[index];
+    }
+
+    const channel_id = (chattingContextType == 1)
+      ? `${currentListing._id}-parent-${concatenatedFriendsString}`
+      : `${currentListing._id}-child-${currentListing.child_listings[childIndex].listing_id._id}-${concatenatedFriendsString}`;
+
+    return channel_id;
+  }
+
+  function getSelectedChannelId() {
+    if(selectedChatList.length>0)
+    {
+      if(selectedChatList.length===1)
+      {
+        return (getDmChannelId(selectedChatList[0].username));
+      }
+      else {
+        return getSelectedGroupChannelId();
+      }
+    }
+    else 
+    {
+      return null;
+    }
+  }
+
   async function postSelectedContactList() {
+    setNewContactSelected(true);
     // DM case
     if (selectedChatList.length == 1) {
       const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
@@ -372,6 +417,7 @@ export function MessageContextProvider(props) {
           // update dmChannelContexts
           // console.log("addContactList: result = " + result);
           reloadChattingDbWithCurrentListing();
+          //setChildIndexByChannelId(getDmChannelId(selectedChatList[0].username));
         })
         .catch((err) => {
           console.log(err);
@@ -728,24 +774,23 @@ export function MessageContextProvider(props) {
         // const newHistory = [...chattingHistory, processedMsg[2]];
         // addMsgToChatHistory(newHistory);
         //console.warn("message"+processedMsg[3]);
-        let _channelId = parseChattingChannelName(processedMsg[1]);
+        let _listingId = parseChattingChannelName(processedMsg[1]);
 
-        if(_channelId!==null)
+        if(_listingId!==null)
         {
-          //console.warn("childListingId: " + _channelId);
+          //console.warn("childListingId: " + _listingId);
           if(doNotDisturbMode===false)
           {
             if(dashboardMode==='normal' || processedMsg[2]===(currentListing.requester.username))
             {
-              if(_channelId==="parent")
+              if(_listingId==="parent")
               {
                 //console.warn("focusParentListing");
                 focusParentListing();
               }
               else
               {
-                //console.warn("setChildIndexByChannelId");
-                setChildIndexByChannelId(_channelId);
+                setChildIndexByListingId(_listingId);
               }
             }
           }
@@ -753,7 +798,7 @@ export function MessageContextProvider(props) {
           {
             // What do we do in this case?
             // let's save the last channelId and move it to the channel when the mode is changed
-            setChannelWithLatestMessage(_channelId);
+            setListingIdWithLatestMessage(_listingId);
           }
         }
         else
@@ -791,7 +836,7 @@ export function MessageContextProvider(props) {
             }
             else
             {
-              setChannelWithLatestMessage(null);
+              setListingIdWithLatestMessage(null);
             }
             // ISEO-TBD: we shouldn't load the listing prematurely?
             //reloadChattingDbWithCurrentListing();
@@ -826,7 +871,7 @@ export function MessageContextProvider(props) {
     return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
 
-  function getDmChannelId(friend_name) {
+  function getDmChannelId(friend_name, _childIndex=childIndex, _contextType=chattingContextType) {
     if (currentUser == null) return '';
 
     const dmChannelNameSuffix = (currentUser.username > friend_name)
@@ -835,9 +880,11 @@ export function MessageContextProvider(props) {
 
     let dmChannelNamePrefix = '';
 
-    if (chattingContextType != 0) {
-      dmChannelNamePrefix = currentListing._id + ((chattingContextType == 1) ? '-parent-'
-        : `-child-${currentListing.child_listings[childIndex].listing_id._id}-`);
+    if (_contextType != MSG_CHANNEL_TYPE_GENERAL) {
+      dmChannelNamePrefix = 
+        currentListing._id + 
+        ((_contextType == MSG_CHANNEL_TYPE_LISTING_PARENT) ? '-parent-'
+        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
     }
 
     // console.log("getDmChannelId: current child index = " + _childIndex);
@@ -846,10 +893,10 @@ export function MessageContextProvider(props) {
     return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
 
-  function getDmChannel(friend_name) {
+  function getDmChannel(friend_name, _childIndex=childIndex, _contextType=chattingContextType) {
     // console.log(`getDmChannel: friend_name = ${friend_name}`);
     const dmChannel = {
-      channel_id: getDmChannelId(friend_name),
+      channel_id: getDmChannelId(friend_name, _childIndex, _contextType),
       members: []
     };
 
@@ -860,7 +907,7 @@ export function MessageContextProvider(props) {
   }
 
   function getListOfChatChannels() {
-    // console.log("getListOfChatChannels");
+        // console.log("getListOfChatChannels");
     // ISEO-TBD: child_listings available only for tenant listing now.
     const _listArray = [friendsList,
       (currentListing != undefined)
@@ -881,23 +928,29 @@ export function MessageContextProvider(props) {
       }
 
       // group channels
+      // <note> we should filter it out based on your name
       // 1. parent level
       if (chattingContextType == 1) {
         for (let lindex = 0;
           lindex < currentListing.list_of_group_chats.length;
           lindex++) {
-          const chatInfo = {
-            channel_id: currentListing.list_of_group_chats[lindex].channel_id,
-            members: []
-          };
+          
+          let channelId = currentListing.list_of_group_chats[lindex].channel_id;
+          if(channelId.includes(currentUser.username)===true)
+          {
+            const chatInfo = {
+              channel_id: channelId,
+              members: []
+            };
 
-          for (let findex = 0;
-            findex < currentListing.list_of_group_chats[lindex].friend_list.length;
-            findex++) {
-            chatInfo.members.push(currentListing.list_of_group_chats[lindex].friend_list[findex].username);
+            for (let findex = 0;
+              findex < currentListing.list_of_group_chats[lindex].friend_list.length;
+              findex++) {
+              chatInfo.members.push(currentListing.list_of_group_chats[lindex].friend_list[findex].username);
+            }
+
+            chatChannels.push(chatInfo);
           }
-
-          chatChannels.push(chatInfo);
         }
       } else if (chattingContextType == 2) {
       // console.log("childIndex = " + childIndex);
@@ -909,30 +962,79 @@ export function MessageContextProvider(props) {
         for (let lindex = 0;
           lindex < currentListing.child_listings[childIndex].list_of_group_chats.length;
           lindex++) {
-          const chatInfo = {
-            channel_id: currentListing.child_listings[childIndex].list_of_group_chats[lindex].channel_id,
-            members: []
-          };
 
-          // console.log("friend_list.length = " + currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length);
+          let channelId = currentListing.child_listings[childIndex].list_of_group_chats[lindex].channel_id;
 
-          for (let findex = 0;
-            findex < currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length;
-            findex++) {
-            chatInfo.members.push(currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+          if(channelId.includes(currentUser.username)===true)
+          {
+            const chatInfo = {
+              channel_id: channelId,
+              members: []
+            };
+
+            // console.log("friend_list.length = " + currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length);
+
+            for (let findex = 0;
+              findex < currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list.length;
+              findex++) {
+              chatInfo.members.push(currentListing.child_listings[childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+            }
+
+            chatChannels.push(chatInfo);
           }
-
-          chatChannels.push(chatInfo);
         }
       }
     } catch (err) {
-      console.warn(err);
+      console.log(err);
     }
-
-    console.log(`chatChannels = ${JSON.stringify(chatChannels)}`);
 
     return chatChannels;
   }
+
+
+  function getListOfAllChildChatChannels() {
+    let chatChannels = [];
+    try {
+      for (let _childIndex=0; _childIndex < currentListing.child_listings.length; _childIndex++)
+      {
+        // DM channels
+        for (let i = 0; i < currentListing.child_listings[_childIndex].shared_user_group.length; i++) {
+          const _currUser = currentListing.child_listings[_childIndex].shared_user_group[i];
+          if (_currUser.username != currentUser.username) {
+            chatChannels.push(getDmChannel(_currUser.username, _childIndex, MSG_CHANNEL_TYPE_LISTING_CHILD));
+          }
+        }
+
+        for (let lindex = 0;
+          lindex < currentListing.child_listings[_childIndex].list_of_group_chats.length;
+          lindex++) {
+
+          let channelId = currentListing.child_listings[_childIndex].list_of_group_chats[lindex].channel_id;
+
+          if(channelId.includes(currentUser.username)===true)
+          {
+            const chatInfo = {
+              channel_id: channelId,
+              members: []
+            };
+            for (let findex = 0;
+              findex < currentListing.child_listings[_childIndex].list_of_group_chats[lindex].friend_list.length;
+              findex++) {
+              chatInfo.members.push(currentListing.child_listings[_childIndex].list_of_group_chats[lindex].friend_list[findex].username);
+            }
+            chatChannels.push(chatInfo);
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log(`chatChannels = ${JSON.stringify(chatChannels)}`);
+    return chatChannels;
+  }
+
+
 
   function getLastReadIndex(channel_id) {
     if(currentUser===null) return 0;
@@ -1008,7 +1110,6 @@ export function MessageContextProvider(props) {
     return newMsgArrived;
   }
 
-
   function checkIfAnyNewMsgArrivedListingChannel() {
     return newMsgArrivedListingChannel;
   }
@@ -1017,10 +1118,7 @@ export function MessageContextProvider(props) {
   // It's called after "channel/new" API call.
   function loadChatHistory(channel_id, history) {
     // It's a special flag to indicate that the channel history is loaded.
-    if (currChannelInfo.channelName == channel_id) {
-      // console.log("setFlagNewlyLoaded!!!!!");
-      setFlagNewlyLoaded(true);
-    }
+    setFlagNewlyLoaded(true);
 
     // update channel DB in react side
     const lastReadIndex = getLastReadIndex(channel_id);
@@ -1069,38 +1167,25 @@ export function MessageContextProvider(props) {
         }
       }
     }
-    // console.log("dmChannelContexts: length before = " + dmChannelContexts.length);
 
     const dmChannelContextArray = dmChannelContexts;
     dmChannelContextArray[channel_id] = dmChannel;
 
     setChannelContexts(dmChannelContextArray);
     setChannelContextLength(Object.keys(dmChannelContextArray).length);
-
     setCurrentHistoryLength(dmChannel.chattingHistory.length);
   }
 
   // loading chatting database from backend
-  async function loadChattingDatabase() {
-    console.log("loadChattingDatabase");
+  async function loadChildChattingDatabase() {
 
     if (currentUser == undefined) {
-      // console.log("currentUser is not set yet");
       return;
     }
 
-    // console.log("currChannelInfo.channelName = " + currChannelInfo.channelName);
+    let chatChannel = getListOfAllChildChatChannels();
 
-    // clear new message arrival;
-    setNewMsgArrived(false);
-    setNewMsgArrivedListingChannel(false);
-
-    // note: it will be good time to register the user again?
-
-    // ISEO-TBD: need to load group chatting as well.
-    const chatChannel = getListOfChatChannels();
-
-    // console.log("number of channels = " + chatChannel.length);
+    //console.warn(`loadChildChattingDatabase:chatChannel: ${JSON.stringify(chatChannel)}`);
 
     // go through each channel and load chatting history if any.
     // we need to create the channel if it doesn't exist yet.
@@ -1113,6 +1198,100 @@ export function MessageContextProvider(props) {
 
       //console.log("creating channels: members = " + JSON.stringify(chatChannel[i].members));
 
+      // note: problem in handling the result!!
+      const result = await axios.post('/LS_API/chatting/new', data)
+        .then((result) => {
+          if (result.data.bNewlyCreated == false) {
+            // update channel DB using the history data
+            // <note> channel could be null if it's a duplicate case.
+            if(result.data.channel!==null)
+            {
+              const channelData = {
+                channel_id: result.data.channel.channel_id,
+                channel_type: result.data.channel.channel_type,
+                last_read_index: getLastReadIndex(result.data.channel.channel_id)
+              };
+
+              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+
+              // ISEO-TBD-1227
+              // CSC:Register will be needed even if it's existing channel
+              try {
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          } else {
+            loadChatHistory(chatChannel[i].channel_id, []);
+            // <note> registration should work after chattting channel is created first.
+            try {
+              // make it sure current user is in the shared_user_group.
+              addContactList({id: currentUser._id, username: currentUser.username}).then((result) =>
+              {
+                chatSocket.send(`CSC:Register:${currentUser.username}`);
+              });
+
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        })
+        .catch(err => console.warn(err));
+    }
+  }
+
+  // loading chatting database from backend
+  async function loadChattingDatabase(requestedChannel=null) {
+
+    if (currentUser == undefined || databaseLoadingInProgressFlag===true)
+    {
+      return;
+    }
+
+    if(databaseLoadingInProgressFlag===false) 
+    {
+      // some of request may come while this state is actually updated.
+      // what do we do?
+      //console.warn(`loadChattingDatabase: current context type=${chattingContextType}`);
+      //console.warn(`starting loading`);
+      setDatabaseLoadingInProgressFlag(true);
+    }
+
+    // console.log("currChannelInfo.channelName = " + currChannelInfo.channelName);
+
+    // clear new message arrival;
+    setNewMsgArrived(false);
+    setNewMsgArrivedListingChannel(false);
+
+    // note: it will be good time to register the user again?
+
+    // ISEO-TBD: need to load group chatting as well.
+    let chatChannel = []; 
+
+    if(requestedChannel!==null)
+    {
+      chatChannel.push({channel_id: requestedChannel.channelName, members: requestedChannel.members});
+    }
+    else
+    {
+      chatChannel = getListOfChatChannels();
+    }
+
+    // console.log("number of channels = " + chatChannel.length);
+    // go through each channel and load chatting history if any.
+    // we need to create the channel if it doesn't exist yet.
+    for (let i = 0; i < chatChannel.length; i++) {
+
+      if(chatChannel[i].channel_id===null) continue;
+
+      const data = {
+        channel_id: chatChannel[i].channel_id,
+        channel_type: 0,
+        members: chatChannel[i].members
+      };
+
+      //console.log("creating channels: members = " + JSON.stringify(chatChannel[i].members));
       // note: problem in handling the result!!
       const result = await axios.post('/LS_API/chatting/new', data)
         .then((result) => {
@@ -1150,8 +1329,6 @@ export function MessageContextProvider(props) {
             // <note> registration should work after chattting channel is created first.
             try {
               //console.warn("CSC: register for username + " + currentUser.username);
-
-
               // make it sure current user is in the shared_user_group.
               addContactList({id: currentUser._id, username: currentUser.username}).then((result) =>
               {
@@ -1165,6 +1342,8 @@ export function MessageContextProvider(props) {
         })
         .catch(err => console.warn(err));
     }
+    setDatabaseLoadingInProgressFlag(false);
+    //console.warn(`stop loading. context type=${chattingContextType}`);
   }
 
   // <note> obsolete function.
@@ -1213,11 +1392,21 @@ export function MessageContextProvider(props) {
       .catch(err => console.warn(err));
   }
 
+
+  function checkIfAnyChatHistory(channel_id)
+  {
+    if(dmChannelContexts[channel_id]!==undefined)
+    {
+      if(dmChannelContexts[channel_id].chattingHistory.length>0) return true;
+    }
+    return false;
+  }
+
   useEffect(() => {
     //console.log("currChannelInfo updated");
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
     // It was 4 seconds previously
-    loadChattingDatabase();
+    loadChattingDatabase(currChannelInfo);
     //setTimeout(()=> loadChattingDatabase(), 500);
   }, [currChannelInfo]);
 
@@ -1233,10 +1422,10 @@ export function MessageContextProvider(props) {
 
   useEffect(() => {
 
-    if(doNotDisturbMode===false && channelWithLatestMessagae!==null )
+    if(doNotDisturbMode===false && listingIdWithLatestMessagae!==null )
     {
-      if(channelWithLatestMessagae!==null){
-        if(channelWithLatestMessagae==="parent")
+      if(listingIdWithLatestMessagae!==null){
+        if(listingIdWithLatestMessagae==="parent")
         {
           //console.warn("focusParentListing");
           focusParentListing();
@@ -1244,7 +1433,7 @@ export function MessageContextProvider(props) {
         else
         {
           //console.warn("setChildIndexByChannelId");
-          setChildIndexByChannelId(channelWithLatestMessagae);
+          setChildIndexByListingId(listingIdWithLatestMessagae);
         }
       }
       else
@@ -1252,21 +1441,17 @@ export function MessageContextProvider(props) {
         focusParentListing();
         reloadChattingDbWithCurrentListing();
       }
-      setChannelWithLatestMessage(null);
+      setListingIdWithLatestMessage(null);
     }
 
   }, [doNotDisturbMode]);
 
-  /*useEffect(() => {
-    //console.warn('ISEO: Loading chatting database... ');
-    loadChattingDatabase();
-  }, [currChannelInfo, channelContextLength]);*/
-
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    console.warn("CurrentListing is just updated");
-    setTimeout(()=> loadChattingDatabase(), 1500);
+    //setTimeout(()=> loadChattingDatabase(), 1500);
+    loadChattingDatabase();
+    setTimeout(()=> loadChildChattingDatabase(), 500);
   }, [currentListing]);
 
   webSocketConnect();
@@ -1316,7 +1501,14 @@ export function MessageContextProvider(props) {
       setCollapse,
       toggleCollapse,
       getLastReadIndexFromContext,
-      currentHistoryLength
+      currentHistoryLength,
+      checkIfAnyChatHistory,
+      getSelectedChannelId,
+      newContactSelected, 
+      setNewContactSelected,
+      flagNewlyLoaded, 
+      setFlagNewlyLoaded,
+      getListOfAllChildChatChannels
     }}
     >
       {props.children}

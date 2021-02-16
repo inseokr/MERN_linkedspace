@@ -18,7 +18,7 @@ function ContactSummary(props) {
     {
       if(currentClickState!=props.clickState)
       {
-        contactRef.current.scrollIntoView({ block: 'end', inline: 'nearest'});
+        contactRef.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest'});
         setCurrentClickState(props.clickState);
       }
     }

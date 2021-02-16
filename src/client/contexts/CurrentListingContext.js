@@ -58,12 +58,17 @@ export function CurrentListingProvider(props) {
   }
 
   function getChildListingUrl() {
-    if(currentListing!==undefined && currentListing.child_listings[currentChildIndex])
-    {
-      return currentListing.child_listings[currentChildIndex].listing_id.listingUrl;
-    }
-    else
-    {
+    try {
+      if(currentListing!==undefined && currentListing.child_listings[currentChildIndex])
+      {
+        return currentListing.child_listings[currentChildIndex].listing_id.listingUrl;
+      }
+      else
+      {
+        return ''
+      }
+    } catch(err) {
+      console.warn(err);
       return ''
     }
   }
@@ -73,7 +78,6 @@ export function CurrentListingProvider(props) {
 
     if(currentListing===undefined || currentListing.child_listings===undefined)
     {
-      console.warn("buildChildListingMappingTable: child listing it not available??");
       return;
     }
     //console.log(`currentListing = ${currentListing}`);
@@ -85,7 +89,9 @@ export function CurrentListingProvider(props) {
       }
       else
       {
-        _tempMap[currentListing.child_listings[index].listing_id._id] = index;
+        if(currentListing.child_listings[index].listing_id!==null) {
+         _tempMap[currentListing.child_listings[index].listing_id._id] = index;
+        }
       }
     }
     setChildListingId2ChildIndexMap(_tempMap);
@@ -93,8 +99,6 @@ export function CurrentListingProvider(props) {
 
   function getChildIndexByListingId(_listingId)
   {
-    //console.log("getChildIndexByListingId = " + childListingId2ChildIndexMap[_listingId]);
-
     if(childListingId2ChildIndexMap[_listingId]!==null && childListingId2ChildIndexMap[_listingId]!==undefined)
     {
       //console.log("getChildIndexByListingId: return index = " + childListingId2ChildIndexMap[_listingId]);
@@ -107,7 +111,7 @@ export function CurrentListingProvider(props) {
     }
   }
 
-  function setChildIndexByChannelId(_listingId)
+  function setChildIndexByListingId(_listingId)
   {
     let _childIndex = getChildIndexByListingId(_listingId);
     setCurrentChildIndex(_childIndex);
@@ -229,7 +233,7 @@ export function CurrentListingProvider(props) {
       currentChildIndex,
       setCurrentChildIndex,
       getChildIndexByListingId,
-      setChildIndexByChannelId,
+      setChildIndexByListingId,
       setParentRef,
       parentRef,
       focusParentListing,
