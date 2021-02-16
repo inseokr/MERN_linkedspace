@@ -58,12 +58,17 @@ export function CurrentListingProvider(props) {
   }
 
   function getChildListingUrl() {
-    if(currentListing!==undefined && currentListing.child_listings[currentChildIndex])
-    {
-      return currentListing.child_listings[currentChildIndex].listing_id.listingUrl;
-    }
-    else
-    {
+    try {
+      if(currentListing!==undefined && currentListing.child_listings[currentChildIndex])
+      {
+        return currentListing.child_listings[currentChildIndex].listing_id.listingUrl;
+      }
+      else
+      {
+        return ''
+      }
+    } catch(err) {
+      console.warn(err);
       return ''
     }
   }
