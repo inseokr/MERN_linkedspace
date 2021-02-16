@@ -144,10 +144,10 @@ const TenantRequestSchema = new mongoose.Schema({
   		country: String,
   		zipcode: String
   	},
-  coordinates: {
+    coordinates: {
 	    lat: Number,
-    lng: Number
-  },
+      lng: Number
+    },
   	// move in date
   	move_in_date: {
   		month: String,

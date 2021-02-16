@@ -22,58 +22,84 @@ function CollectLocationInfo(props) {
     $('#lng').val(lng);
   }
 
-  function processAddressValues(result) {
-    const { address_components: addressComponents, geometry } = result;
-    console.log('addressComponents', addressComponents);
-    const { lat, lng } = geometry.location;
-    const addressValues = {}; // All 6 keys are required,
-    const addressKeys = [
-      'street_number', 'route', 'locality', 'administrative_area_level_1', 'country', 'postal_code'
-    ];
-    addressComponents.forEach((addressComponent) => {
-      const { long_name: longName, short_name: shortName, types } = addressComponent;
-      types.forEach((addressType) => {
-        if (addressKeys.includes(addressType)) {
-          if (['administrative_area_level_1', 'country'].includes(addressType)) {
-            addressValues[addressType] = shortName;
-          } else {
-            addressValues[addressType] = longName;
-          }
+  function processAddressValues(address) {
+    console.log('processAddressValues called.', address);
+    getGeometryFromSearchString(address).then((response) => {
+      const { results, status } = response;
+      if (status === 'OK') {
+        const result = results[0];
+        const { address_components: addressComponents, geometry } = result;
+        const { lat, lng } = geometry.location;
+
+        const addressValues = { // Initiate Empty Address Components.
+          street_number: '',
+          route: '',
+          locality: '',
+          administrative_area_level_1: '',
+          country: '',
+          postal_code: '',
+        };
+        const addressKeys = Object.keys(addressValues);
+
+        console.log('addressComponents', JSON.stringify(addressComponents, null, 2));
+
+        addressComponents.forEach((addressComponent) => {
+          const { long_name: longName, short_name: shortName, types } = addressComponent;
+          types.forEach((addressType) => {
+            if (addressKeys.includes(addressType)) {
+              if (['administrative_area_level_1', 'country'].includes(addressType)) {
+                addressValues[addressType] = shortName;
+              } else {
+                addressValues[addressType] = longName;
+              }
+            }
+          });
+        });
+
+        const street = (addressValues.street_number.length > 0 && addressValues.route.length > 0) ? `${addressValues.street_number} ${addressValues.route}` : '';
+
+        if (addressValues.locality.length > 0) {
+          updateLocationJQuery(
+            street,
+            addressValues.locality,
+            addressValues.administrative_area_level_1,
+            addressValues.postal_code,
+            addressValues.country,
+            lat,
+            lng
+          );
+        } else { // Invalid number of keys, therefore invalid address.
+          setAddressInput('');
+          setLocation(null);
+          setCoordinates(null);
+          alert('Invalid address components.');
         }
-      });
+      }
+    });
+  }
+
+  function processAddressInput(locationValues) {
+    let address = '';
+
+    locationValues.forEach((locationValue) => {
+      if (locationValue.length > 0) {
+        address += `${locationValue}, `;
+      }
     });
 
-    if (Object.keys(addressValues).length === addressKeys.length) {
-      updateLocationJQuery(
-        `${addressValues.street_number} ${addressValues.route}`,
-        addressValues.locality,
-        addressValues.administrative_area_level_1,
-        addressValues.postal_code,
-        addressValues.country,
-        lat,
-        lng
-      );
-    } else { // Invalid number of keys, therefore invalid address.
-      setAddressInput('');
-      setLocation(null);
-      setCoordinates(null);
-      alert('Invalid address components.');
-    }
+    address = address.replace(/,\s*$/, ''); // Remove last comma and trailing spaces.
+
+    return address;
   }
 
   useEffect(() => {
-    if (predictions) {
+    if (predictions) { // Prediction found. See if a prediction matches the address input.
       predictions.forEach((prediction) => {
         if (prediction === addressInput) {
-          getGeometryFromSearchString(prediction).then((response) => {
-            const { results, status } = response;
-            if (status === 'OK') {
-              processAddressValues(results[0]);
-            }
-          });
+          processAddressValues(prediction);
         }
       });
-    } else if (addressInput.length > 0) { // Clear address and location if prediction is null.
+    } else if (addressInput.length === 0) { // Clear if addressInput is empty.
       setAddressInput('');
       setLocation(null);
       setCoordinates(null);
@@ -88,7 +114,7 @@ function CollectLocationInfo(props) {
       } = location;
       const { lat, lng } = coordinates;
       updateLocationJQuery(street, city, state, zipcode, country, lat, lng);
-      setAddressInput(`${street}, ${city}, ${state}, ${zipcode}, ${country}`);
+      setAddressInput(processAddressInput([street, city, state, zipcode, country]));
     }
   }, [location, coordinates]);
 
@@ -122,6 +148,7 @@ function CollectLocationInfo(props) {
             />
           )}
           onChange={(event, value) => setAddressInput(value || '')}
+          onBlur={() => processAddressValues(addressInput)}
         />
       </Tooltip>
       {/* https://github.com/inseokr/MERN_linkedspace/issues/359 */}
