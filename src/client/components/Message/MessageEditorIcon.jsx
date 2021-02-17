@@ -36,13 +36,12 @@ function MessageEditorIcon(props) {
   // "listing_dashboard": message window in the listing dashboard
   // <note> Currently it's only for tenant listing.
   const messageEditorCallerType = callerType;
-
-  // general type doesn't need _childListing.
-  const _childListing = (messageEditorCallerType === 'listing_dashboard' && currentListing !== undefined)
-    ? currentListing.child_listings[currentChildIndex]
-    : [];
+  let _childListing = [];
 
   try {
+  // general type doesn't need _childListing.
+    _childListing = (messageEditorCallerType === 'listing_dashboard' && currentListing !== undefined) ? currentListing.child_listings[currentChildIndex] : [];
+
     if (messageEditorCallerType === 'listing_dashboard') {
       // console.log(`currentChildIndex=${currentChildIndex}`);
       if (currentListing.child_listings.length > 0
