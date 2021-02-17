@@ -46,6 +46,7 @@ function ListingControlButtons() {
   }
 
 
+
   const controlButtons = currentListing.list_id !== 0
     ? (
       <div style={{ marginTop: '30px' }}>
@@ -54,7 +55,11 @@ function ListingControlButtons() {
         <div className="d-flex justify-content-around">
           <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')} value={currentListing.list_id}>My Postings</button>
           <button className="btn btn-outline-dark" onClick={forward2friend} style={{ marginLeft: '70px !important' }}>Forward it to Friends</button>
-          <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Check Status</button>
+          <form role="form" action={'/LS_API/listing/landlord/'+currentListing.list_id+'/edit'} method="post" target="_blank">
+            <div class="action">
+            <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Edit Listing</button>
+            </div>
+          </form>
         </div>
       </div>
     ) : '';
