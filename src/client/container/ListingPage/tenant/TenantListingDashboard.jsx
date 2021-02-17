@@ -103,13 +103,21 @@ function TenantListingDashBoard(props) {
           childListings.map((listing) => {
             if(listing===null || listing.listing_id===null) return;
 
-            const rentalPrice = listing.listing_id.rentalPrice;
-            if (!Number.isNaN(Number(rentalPrice))) { // True if value is a number.
+            const rentalPrice = 
+              (listing.listing_id.listingType==='landlord')? 
+                Number(listing.listing_id.rental_terms.asking_price): 
+                listing.listing_id.rentalPrice;
+
+            if (!Number.isNaN(rentalPrice)) { // True if value is a number.
               const { price } = filterParams;
               const min = price[0];
               const max = price[1];
+
               if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
-                const { coordinates } = listing.listing_id;
+                const { coordinates } = 
+                  (listing.listing_id.listingType==="landlord")? 
+                    listing.listing_id.rental_property_information: 
+                    listing.listing_id;
                 const { _id } = listing;
                 if (validCoordinates(coordinates)) {
                   let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
@@ -120,8 +128,13 @@ function TenantListingDashBoard(props) {
                   } else {
                     imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                   }
+
                   const icon = createMarker(imgSource, (_id === selectedMarkerID));
                   markers.push({ position: coordinates, icon: icon, markerID: _id });
+                }
+                else
+                {
+                  console.warn(`validation of coordinate failure. coordinates=${JSON.stringify(coordinates)}`);
                 }
               }
             }
