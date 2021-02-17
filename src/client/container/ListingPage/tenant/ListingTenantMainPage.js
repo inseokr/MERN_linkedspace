@@ -253,6 +253,13 @@ function ListingTenantMainPage(props) {
           <Link to={`/listing/tenant/${match.params.id}/dashboard`}>
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
           </Link>
+
+          <form role="form" action={'/LS_API/listing/tenant/'+match.params.id+'/edit'} method="post" target="_blank">
+            <div class="action">
+              <button className="btn btn-outline-dark" style={{marginLeft: '70px '}}>Edit Listing</button>
+            </div>
+          </form>
+
         </div>
       </div>
     );
