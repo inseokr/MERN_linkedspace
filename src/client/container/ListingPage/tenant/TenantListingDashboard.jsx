@@ -112,8 +112,8 @@ function TenantListingDashBoard(props) {
               const { price } = filterParams;
               const min = price[0];
               const max = price[1];
-
-              if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
+              
+              if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
                 const { coordinates } = 
                   (listing.listing_id.listingType==="landlord")? 
                     listing.listing_id.rental_property_information: 
