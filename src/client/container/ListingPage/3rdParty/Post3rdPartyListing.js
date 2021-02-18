@@ -16,7 +16,6 @@ import {CurrentListingContext} from '../../../contexts/CurrentListingContext';
 
 import {FILE_SERVER_URL} from '../../../globalConstants';
 
-
 function readURL(event, picIndex) {
   const input = event.target;
 
@@ -128,12 +127,10 @@ function getCoverPhoto() {
               onMouseOut={evt => handleOnMouseOutImagePreview(evt, 1)}
             >
               <input type="file"
-                required
                 name="file_name"
                 id="imageDefaultUpload-1"
                 onChange={evt => readURL(evt, 1)}
                 accept=".png, .jpg, .jpeg"
-                onInvalid={() => alert('Please add cover photo')}
               />
               <label
                 className="pictureAddLabel"
@@ -276,6 +273,13 @@ function Post3rdPartyListing(props) {
     const data = new FormData(evt.target);
 
     const fileName = document.getElementById('imageDefaultUpload-1');
+
+    if(fileName.value==="" && listingId ==="")
+    {
+      alert("Please add cover photo");
+      return;
+    }
+
     data.append("file_name", fileName.value);
 
     const result = await axios.post(`/LS_API/listing/3rdparty/${listingId}/new`, data).then( async (result) => {
