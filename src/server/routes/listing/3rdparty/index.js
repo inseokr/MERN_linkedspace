@@ -102,8 +102,15 @@ module.exports = function (app) {
 	    foundListing.listingUrl = req.body.sourceUrl;
 	    foundListing.listingSummary = req.body.rentalSummary;
 	    foundListing.rentalPrice = req.body.rentalPrice.replace(/\$|,/g, '');
-	    foundListing.location = req.body.location;
-      foundListing.coordinates = req.body.coordinates;
+
+      foundListing.location.street = req.body['location[street]'];
+      foundListing.location.city = req.body['location[city]'];
+      foundListing.location.state = req.body['location[state]'];
+      foundListing.location.country = req.body['location[country]'];
+      foundListing.location.zipcode = req.body['location[zipcode]'];
+  
+      foundListing.coordinates.lat = req.body['coordinates[lat]'];
+      foundListing.coordinates.lng = req.body['coordinates[lng]'];
 
       if (filename != '') {
   	    const original_path = serverPath + picturePath + filename;
