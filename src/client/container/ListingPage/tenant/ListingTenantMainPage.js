@@ -26,7 +26,7 @@ function ListingTenantMainPage(props) {
     } 
     else
     {
-      return (currentListing.requester==currentUser._id);
+      return (currentListing.requester._id==currentUser._id);
     }
   }
 
@@ -248,18 +248,20 @@ function ListingTenantMainPage(props) {
         </SimpleModal>
         <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         <div className="d-flex justify-content-start">
-          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')}>My Postings</button>
+          {isOwner===true && 
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')}>My Postings</button>}
+          {isOwner===false && 
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ShowListingFromFriends')}>Postings From Friends</button>}
           <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }} onClick={() => showForwardWindow()}>Forward it to friends</button>
           <Link to={`/listing/tenant/${match.params.id}/dashboard`}>
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
           </Link>
-
+          { isOwner===true &&
           <form role="form" action={'/LS_API/listing/tenant/'+match.params.id+'/edit'} method="post" target="_blank">
             <div class="action">
               <button className="btn btn-outline-dark" style={{marginLeft: '70px '}}>Edit Listing</button>
             </div>
-          </form>
-
+          </form>}
         </div>
       </div>
     );
