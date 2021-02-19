@@ -21,12 +21,17 @@ function ListingTenantMainPage(props) {
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   function checkIfOwner() {
-    if(currentListing===undefined){
+    try {
+      if(currentListing===undefined){
+        return false;
+      } 
+      else
+      {
+        return (currentListing.requester._id==currentUser._id);
+      }
+    } catch(err) {
+      console.warn(`err`);      
       return false;
-    } 
-    else
-    {
-      return (currentListing.requester._id==currentUser._id);
     }
   }
 
