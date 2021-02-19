@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {useHistory} from 'react-router-dom'
 import axios from 'axios';
 
@@ -14,12 +14,25 @@ function ListingControlButtons() {
   const { currentListing } = useContext(CurrentListingContext);
   const { currentUser } = useContext(GlobalContext);
   const history = useHistory();
+  
+  const checkIfOwner = ()=> {
+    if(currentListing.listing.requester===undefined || currentUser===undefined){
+      return false;
+    } 
+    else
+    {
+      return (currentListing.listing.requester._id==currentUser._id);
+    }
+  }
+
+  const [isOwner, setIsOwner] = useState(checkIfOwner());
 
   if (currentUser == null || currentUser == undefined) {
     return (
       <React.Fragment> </React.Fragment>
     );
   }
+
 
   function copy_posting_link(evt) {
     console.log('copy_posting_link clicked');
@@ -45,7 +58,9 @@ function ListingControlButtons() {
       });
   }
 
-
+  useEffect(() => {
+    setIsOwner(checkIfOwner());
+  }, [currentListing]);
 
   const controlButtons = currentListing.list_id !== 0
     ? (
@@ -53,13 +68,20 @@ function ListingControlButtons() {
         <input type="text" value="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         {/* The button used to copy the text */}
         <div className="d-flex justify-content-around">
+          {isOwner===true && 
           <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')} value={currentListing.list_id}>My Postings</button>
+          }
+          {isOwner===false && 
+          <button className="btn btn-outline-dark" onClick={() => history.push('/ShowListingFromFriends')} value={currentListing.list_id}>Posting From Friends</button>
+          }
+
           <button className="btn btn-outline-dark" onClick={forward2friend} style={{ marginLeft: '70px !important' }}>Forward it to Friends</button>
+          {isOwner===true && 
           <form role="form" action={'/LS_API/listing/landlord/'+currentListing.list_id+'/edit'} method="post" target="_blank">
             <div class="action">
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Edit Listing</button>
             </div>
-          </form>
+          </form>}
         </div>
       </div>
     ) : '';
