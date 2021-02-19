@@ -20,12 +20,14 @@ module.exports = function (app) {
       res.render('listing_main');
     } else {
       // TODO https://github.com/inseokr/MERN_linkedspace/issues/483
-      const { street, city, state, zipcode, country } = req.body.location;
+      const {
+        street, city, state, zipcode, country
+      } = req.body.location;
       const address = `${street}, ${city}, ${state}, ${zipcode}. ${country}`;
-      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then(response => {
-        const { results, status} = response;
-        if (status === "OK") {
-          const geometry = results[0].geometry;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then((response) => {
+        const { results, status } = response;
+        if (status === 'OK') {
+          const { geometry } = results[0];
           const { location } = geometry;
 
           const newListing = new LandlordRequest();
@@ -73,12 +75,14 @@ module.exports = function (app) {
   router.post('/:listing_id/new', async (req, res) => {
     LandlordRequest.findById(req.params.listing_id, (err, foundListing) => {
       // TODO https://github.com/inseokr/MERN_linkedspace/issues/483
-      const { street, city, state, zipcode, country } = req.body.location;
+      const {
+        street, city, state, zipcode, country
+      } = req.body.location;
       const address = `${street}, ${city}, ${state}, ${zipcode}. ${country}`;
-      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then(response => {
-        const { results, status} = response;
-        if (status === "OK") {
-          const geometry = results[0].geometry;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then((response) => {
+        const { results, status } = response;
+        if (status === 'OK') {
+          const { geometry } = results[0];
           const { location } = geometry;
 
           foundListing.rental_property_information = req.body.rental_property_information;
@@ -448,6 +452,13 @@ module.exports = function (app) {
         listing: foundListing, accessibleSpaces: facilities, availableAmenities: amenities, list_id: req.params.list_id
       };
       res.json(listing_info);
+
+      userDbHandler.findUserById(req.user._id).then(async (foundUser) => {
+        if (!foundListing.requester.equals(foundUser._id)) {
+          userDbHandler.readListingFromFriends(foundUser, 'landlord', req.params.list_id);
+          foundUser.save();
+        }
+      });
     });
   });
 
