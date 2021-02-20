@@ -402,7 +402,7 @@ function ListingTenantMainPage(props) {
               {getNumOfRoomMates()}
 
             </div>
-            <div style={{marginLeft: '28%'}}>
+            <div style={{marginLeft: '32%'}}>
             {getListingControls()}
             </div>
 
