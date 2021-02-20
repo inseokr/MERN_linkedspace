@@ -114,9 +114,36 @@
     color: #484848 !important;
 }
 
+
+.shadowedTile {
+    border: 1px solid rgb(221, 221, 221);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
+}
+
 .listingCoverLogo {
-    marginTop:'10px';
-    fontFamily: 'Lobster', cursive;
-    fontFamily: 'Lobster', cursive;
+    margin-top:'10px';
+    font-family: 'Lobster', cursive;
     color: #914669 !important;
+}
+
+._lsFont1 {
+    color: rgb(34, 34, 34) !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    margin-bottom: 4px !important;
+    margin-left: 5px;
+}
+
+._lsFont2 {
+    color: rgb(113, 113, 113) !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    margin-left: 5px;
+    margin-bottom: 5px;
 }

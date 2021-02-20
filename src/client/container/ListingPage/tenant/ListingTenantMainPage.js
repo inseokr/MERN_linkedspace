@@ -124,11 +124,11 @@ function ListingTenantMainPage(props) {
 
     return (
       <div>
-        <div className="_1xzp5ma3">
+        <div className="_lsFont1" style={{textAlign: 'center'}}>
           Rental Preferences
         </div>
 
-        <div className="wooden_background border rounded-top rounded-bottom" style={{ marginTop: '20px' }}>
+        <div className="shadowedTile" style={{ marginTop: '20px' }}>
           <div className="row sub_title" style={{ paddingTop: '8px ' }}>
             {FormatListItems(preferences, 3)}
           </div>
@@ -160,13 +160,11 @@ function ListingTenantMainPage(props) {
     }
 
     return (
-      <div className="row">
+      <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
         {friendList.map((friend, index) => (
-          <div className="col-3" key={friend.username}>
-            <div className=" thumbnail">
-              <img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+friend.profile_picture} alt="friendProfilePicture" />
-              <span className="_so3dpm2" style={{ marginLeft: '50px' }}>{friend.username}</span>
-            </div>
+          <div className=" thumbnail">
+            <img className="img-responsive center rounded-circle" style={{maxHeight:'50px', maxWidth: '50px'}} src={FILE_SERVER_URL+friend.profile_picture} alt="friendProfilePicture" />
+            <span className="_so3dpm2" style={{ marginLeft:'7%' }}>{friend.username}</span>
           </div>
         ))}
       </div>
@@ -176,23 +174,24 @@ function ListingTenantMainPage(props) {
 
   function getContactInformation() {
     return (
-      <div>
-        <div style={{ marginTop: '10px' }}>Contact</div>
-        <div className="sub_title" style={{ marginTop: '10px ' }}>
+        <div style={{ marginTop: '10px ', marginLeft: '-40px' }}>
           <ul style={{ listStyleType: 'none' }}>
             <li>
-              {' '}
-              Phone Number:
-              {currentListing.phone}
+              <div style={{display:'flex'}}>
+                <svg style={{height: '20px', width: '20px'}} xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mobile-alt" class="svg-inline--fa fa-mobile-alt fa-w-10" role="img" viewBox="0 0 320 512"><path fill="currentColor" d="M272 0H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h224c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zM160 480c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm112-108c0 6.6-5.4 12-12 12H60c-6.6 0-12-5.4-12-12V60c0-6.6 5.4-12 12-12h200c6.6 0 12 5.4 12 12v312z"/>
+                </svg>
+                <section className='_lsFont2' style={{marginTop:'4px'}}> {currentListing.phone} </section>
+              </div>
             </li>
             <li>
-              {' '}
-              E-mail:
-              {currentListing.email}
+              <div style={{display:'flex'}}>
+                <svg style={{height: '18px', width: '18px', marginLeft: '3px'}} xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="far" data-icon="envelope" class="svg-inline--fa fa-envelope fa-w-16" role="img" viewBox="0 0 512 512"><path fill="currentColor" d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0 48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18 199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"/>
+                </svg>
+                <section className='_lsFont2' style={{marginTop: '0px'}}> {currentListing.email} </section>
+              </div>
             </li>
           </ul>
         </div>
-      </div>
     );
   }
 
@@ -276,7 +275,7 @@ function ListingTenantMainPage(props) {
   let rentalUnitType = '';
   let profile_picture = '';
   let profile_caption = '';
-  let captionListOfFriends = (isOwner===true)? 'Shared Friends' : 'Referring Friends';
+  let captionListOfFriends = (isOwner===true)? 'Friends shared with this posting' : 'Referring Friends';
   const history = useHistory();
 
   if (currentListingFetched) {
@@ -290,8 +289,7 @@ function ListingTenantMainPage(props) {
       {(currentListingFetched) ? (
         <div>
           <div className="row">
-
-            <div className="col-3" style={{ height: '600px', marginLeft: '30px', border: 'none' }}>
+            <div className="col-3" style={{ display: 'flex', flexDirection: 'column', minHeight: '350px', marginLeft: '30px', border: 'none' }}>
               <img
                 src={FILE_SERVER_URL+profile_picture}
                 align="right"
@@ -300,118 +298,130 @@ function ListingTenantMainPage(props) {
                 }}
                 alt="profilePicture"
               />
-              <div className="border border-top-0" style={{ textAlign: 'center', backgroundColor: '#FFFFFF' }}>
-                {' '}
-                {profile_caption}
-                {' '}
-              </div>
+              {getContactInformation()}
             </div>
 
-            <div className="col-5" style={{ borderStyle: 'none ', height: '500px', marginLeft: '30px' }}>
-              <div className="sub_title" style={{ textAlign: 'center', marginTop: '20px' }}>
-                Self-introduction
+            <div className="col-5" style={{ borderStyle: 'none ', minHeight: '350px', marginLeft: '30px' }}>
+              <div className="_lsFont1" style={{ textAlign: 'center', marginTop: '20px' }}>
+                Self Introduction
               </div>
               <div className="_1ezjrwzo" style={{ marginTop: '20px' }}>
                 {currentListing.rental_description}
               </div>
             </div>
-
+    
             <div
-              className="col-3 wooden_background border"
+              className="col-3 shadowedTile"
               style={{
-                textAlign: 'center', borderStyle: 'none ', height: '600px', marginLeft: '30px'
+                textAlign: 'left',
+                maxHeight: '270px',
+                marginTop: '10px',
+                marginLeft: '30px'
               }}
             >
+              <div className="sub_title" style={{textAlign: 'center', marginBottom: '20px'}}> Rental Summary </div>
 
-              <div className="sub_title" style={{ marginTop: '20px' }}>
-                Preferred Location
+              <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+                Budget: 
               </div>
-              <div className="_1ezjrwzo">
-                {currentListing.location.city}
-                ,
-                {currentListing.location.state}
-                ,
-                {currentListing.location.country}
-                ,
-                {currentListing.location.zipcode}
-              </div>
-
-
-              <div className="sub_title" style={{ marginTop: '20px ' }}>
-                Distance Range Allowed
-              </div>
-              <div className="_1ezjrwzo">
-                {currentListing.maximum_range_in_miles}
-                {' '}
-                miles
-              </div>
-
-              <div className="sub_title" style={{ marginTop: '20px ' }}>
-                Budget
-              </div>
-              <div className="_1ezjrwzo">
+              <div className="_lsFont2">
                 $
                 {currentListing.rental_budget}
-                .00
+                .00 per month
               </div>
+              </section>
 
-              <div className="sub_title" style={{ marginTop: '20px ' }}>
-                Move-in Date
+              <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+                Move-in Date: 
               </div>
-              <div className="_1ezjrwzo">
+              <div  className="_lsFont2">
                 {currentListing.move_in_date.month}
                 /
                 {currentListing.move_in_date.date}
                 /
                 {currentListing.move_in_date.year}
               </div>
+              </section>
 
-              <div className="sub_title" style={{ marginTop: '20px ' }}>
-                Rental Duration
+              <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+                Rental Duration:
               </div>
-              <div className="_1ezjrwzo">
+              <div className="_lsFont2">
                 {currentListing.rental_duration}
                 {' '}
                 months
               </div>
+              </section>
 
-              <div className="sub_title" style={{ marginTop: '20px ' }}>
-                Preferred rental unit type
+              <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+                Preferred rental unit type:
               </div>
-              <div className="_1ezjrwzo">
+              <div className="_lsFont2">
                 {currentListing.rental_preferences.rental_unit_type}
               </div>
+              </section>
 
-              <div className="sub_title" style={{ marginTop: '20px ' }}>
+              <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
                 Number of rooms or Whole Unit?
               </div>
-              <div className="_1ezjrwzo">
+              <div className="_lsFont2">
                 {rentalUnitType}
               </div>
+              </section>
 
+              <section style={{display: 'flex'}}>
+                <div className="_lsFont1">
+                  Preferred Location:
+                </div>
+                <div className="_lsFont2">
+                  {currentListing.location.city}
+                  ,
+                  {currentListing.location.state}
+                  ,
+                  {currentListing.location.country}
+                  ,
+                  {currentListing.location.zipcode}
+                </div>
+              </section>
+
+              <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+                Distance Range Allowed:
+              </div>
+              <div className="_lsFont2">
+                {currentListing.maximum_range_in_miles}
+                {' '}
+                miles
+              </div>
+              </section>
               {getNumOfRoomMates()}
 
             </div>
-            <div className="container" style={{ borderStyle: 'none ', marginTop: '40px' }}>
+            <div style={{marginLeft: '28%'}}>
+            {getListingControls()}
+            </div>
+
+            
+            <div className="container" style={{ borderStyle: 'none ', marginTop: '50px' }}>
               <hr />
               {getRentalPreference()}
               <hr />
 
-              <div className="_1xzp5ma3" style={{ marginTop: '40px', marginLeft: '20px' }}>
+              <div className="_lsFont1" style={{ marginTop: '40px', textAlign: 'center' }}>
                 {captionListOfFriends}
               </div>
 
               <div className="row" style={{ marginTop: '30px' }}>
-                <div className="col-7 wooden_background border rounded-top rounded-bottom">
+                <div className="col-12 shadowedTile">
                   {getFriends()}
-                </div>
-
-                <div className="col-lg-4 sub_title wooden_background border rounded-top rounded-bottom" style={{ maxHeight: '102px', textAlign: 'center', marginLeft: '80px ' }}>
-                  {getContactInformation()}
                 </div>
               </div>
 
-              {getListingControls()}
             </div>
           </div>
 
