@@ -9,13 +9,6 @@ import { createMarker } from '../../../contexts/helper/helper';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 import { MapContainer, TileLayer, Marker, FeatureGroup } from 'react-leaflet'
-import ListingCoverPage from './ListingCoverPage';
-import ListingIntro from './ListingIntro';
-import ExploreHome from './ExploreHome';
-import HomeDetails from './HomeDetails';
-import RentalTerm from './RentalTerm';
-import HostDetails from './HostDetails';
-import ListingControlButtons from './ListingControlButtons';
 
 function LocationInfo() {
   const { currentListing } = useContext(CurrentListingContext);
