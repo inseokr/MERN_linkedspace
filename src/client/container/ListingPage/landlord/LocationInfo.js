@@ -1,11 +1,11 @@
 /* eslint-disable */
 import React, {
-  useContext, useEffect, useRef, useState
+  useContext, useEffect, useState
 } from 'react';
 import '../../../app.css';
 import {FILE_SERVER_URL} from '../../../globalConstants';
 import '../common/listing_style.css';
-import { initGoogleMap, createMarker, getGeometryFromSearchString, getBoundsZoomLevel } from '../../../contexts/helper/helper';
+import { createMarker } from '../../../contexts/helper/helper';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 import { MapContainer, TileLayer, Marker, Popup, FeatureGroup } from 'react-leaflet'
