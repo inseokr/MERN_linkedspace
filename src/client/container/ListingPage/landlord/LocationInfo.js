@@ -8,7 +8,7 @@ import '../common/listing_style.css';
 import { createMarker } from '../../../contexts/helper/helper';
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, FeatureGroup } from 'react-leaflet'
 import ListingCoverPage from './ListingCoverPage';
 import ListingIntro from './ListingIntro';
 import ExploreHome from './ExploreHome';
