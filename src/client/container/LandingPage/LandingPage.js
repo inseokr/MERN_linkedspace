@@ -2,13 +2,13 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import '../../app.css';
+import './LandingPage.css';
 import { STYLESHEET_URL } from '../../globalConstants';
 import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from '../MapPage/index';
 import Search from '../SearchPage/SearchPage';
 import { GlobalContext } from '../../contexts/GlobalContext';
-
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
 //
@@ -65,19 +65,27 @@ export default class LandingPage extends Component {
 
     } else {
       pageToRender = (
-        <div>
+        <div >
           <link
             rel="stylesheet"
             href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
           />
-          <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"} />
-          <div className="container landingPage">
-
+          <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"}/>
+          <div className="container landingPage" >
             <div className="row landingPage">
               <div className="col-lg-12">
-                <div className="content">
-                  <h1> LinkedSpaces</h1>
-                  <h3> Make your next move through a trusted network. </h3>
+                <div className="content" style={{marginTop:'0px'}}>
+                  <section style={{fontSize: '7em', 
+                                   fontWeight: '700', 
+                                   color: 'black'}}> 
+                    LinkedSpaces
+                  </section>
+                  <section style={{fontSize: '3em', 
+                                   fontWeight: '700', 
+                                   color: 'rgb(236 221 227)', 
+                                   marginTop: '0px'}}>
+                    Make your next move through a trusted network
+                  </section>
                   <Search />
                 </div>
               </div>

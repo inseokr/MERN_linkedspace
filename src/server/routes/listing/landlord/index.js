@@ -453,16 +453,12 @@ module.exports = function (app) {
       };
       res.json(listing_info);
 
-      try {
-        userDbHandler.findUserById(req.user._id).then(async (foundUser) => {
-          if (!foundListing.requester.equals(foundUser._id)) {
-            userDbHandler.readListingFromFriends(foundUser, 'landlord', req.params.list_id);
-            foundUser.save();
-          }
-        });
-      } catch (error) {
-        console.warn(error);
-      }
+      userDbHandler.findUserById(req.user._id).then(async (foundUser) => {
+        if (!foundListing.requester.equals(foundUser._id)) {
+          userDbHandler.readListingFromFriends(foundUser, 'landlord', req.params.list_id);
+          foundUser.save();
+        }
+      });
     });
   });
 
