@@ -36,7 +36,7 @@ function TenantListingComponent(props) {
   const { setChattingContextType, chattingContextType, checkAnyUnreadMessages,toggleCollapse } = useContext(MessageContext);
   const { listing, toggle, mode } = props;
 
-  if (listing === undefined) {
+  if (listing === undefined || listing.requester === undefined) {
     return <div> no listing available </div>;
   }
 

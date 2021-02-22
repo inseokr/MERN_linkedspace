@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3),
   },
   textField: {
-    width: '10ch',
+    width: '12ch',
   },
 }));
 
@@ -109,8 +109,8 @@ function PriceFilter(props) {
     if (!Number.isNaN(Number(max))) { // True if value is a number.
       max = parseInt(max, 10);
       if (min < max) {
-        if (max > 1000) {
-          max = 1000; // Change to 1000 if its larger than 1000
+        if (max > 10000) {
+          max = 10000; // Change to 10000 if its larger than 10000
         }
         setPrice([min, max]);
       }
@@ -138,11 +138,11 @@ function PriceFilter(props) {
   const max = price[1];
 
   if (priceSubmitted) {
-    if (min === 1 && max === 1000) {
-      priceTitle = '$1 - $1000+';
+    if (min === 1 && max === 10000) {
+      priceTitle = '$1 - $10000+';
     } else if (min === 1) {
       priceTitle = `Up to $${max}`;
-    } else if (max === 1000) {
+    } else if (max === 10000) {
       priceTitle = `$${min}+`;
     } else {
       priceTitle = `$${min} - $${max}`;
@@ -162,7 +162,7 @@ function PriceFilter(props) {
                 <LinkedSpacesSlider
                   ThumbComponent={LinkedSpacesThumbComponent}
                   min={1}
-                  max={1000}
+                  max={10000}
                   value={interimPrice}
                   onChange={handleChange}
                   valueLabelDisplay="auto"
@@ -190,7 +190,7 @@ function PriceFilter(props) {
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   }}
-                  value={interimMax >= 1000 ? '1000+' : interimMax}
+                  value={interimMax >= 10000 ? '10000+' : interimMax}
                   onChange={handleMaxChange}
                   variant="outlined"
                   size="small"

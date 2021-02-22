@@ -226,9 +226,9 @@ const ChildListing = React.forwardRef(({
   const { price } = filterParams;
   const min = price[0];
   const max = price[1];
-  const rentalPrice = childListing.rentalPrice;
-  if ((rentalPrice >= min && rentalPrice <= max) || max === 1000) {
-    return (
+  const rentalPrice = (childListing.listingType==="landlord")? Number(childListing.rental_terms.asking_price): childListing.rentalPrice;
+  if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
+      return (
       <ListItem>
         <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
           <Grid item xs={4}>

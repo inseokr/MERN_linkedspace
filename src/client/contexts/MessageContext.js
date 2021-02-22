@@ -742,6 +742,7 @@ export function MessageContextProvider(props) {
   function updateChatHistory(msg, local) {
     //console.warn("updateChatHistory");
     if (local == true) {
+      if(msg.length===0) return;
       // sending to chat server
       //
       // need to append header

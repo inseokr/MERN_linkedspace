@@ -1,0 +1,9 @@
+body {
+	background: url(../../assets/images/web-1433045_1920.jpg);
+    background-size: cover;
+    background-position: center; 
+    transition: background 3s linear;
+    -webkit-backface-visibility: hidden;
+    webkit-transition: background-image 1.5s linear;
+    -webkit-transform:translate3d(0,0,0);
+}
