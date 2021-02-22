@@ -20,12 +20,11 @@ function ListingControlButtons() {
   const history = useHistory();
   
   const checkIfOwner = ()=> {
-    if(currentListing.listing.requester===undefined || currentUser===undefined){
-      return false;
-    } 
-    else
-    {
+    try {
       return (currentListing.listing.requester._id==currentUser._id);
+    } catch (error) {
+      console.warn(error);
+      return false;
     }
   }
 
