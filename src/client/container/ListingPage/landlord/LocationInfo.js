@@ -31,14 +31,13 @@ function LocationInfo() {
               const bounds = new window.google.maps.LatLngBounds();
               const imgSource = currentListing.listing ? FILE_SERVER_URL+currentListing.listing.pictures[0].path : FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
 
-              /* JUSTIN-TBD
-              googleMap = initGoogleMap(googleMapRef, getBoundsZoomLevel(geometry.viewport, { height: mapViewProperties.height, width: mapViewProperties.width }), location);
-              const marker = createMarker(googleMap, location, imgSource);
-              marker.addListener('click', () => {
-                alert('Clicked!');
-              });
-              bounds.extend(location);
-              */
+              // JUSTIN-TBD
+              //googleMap = initGoogleMap(googleMapRef, getBoundsZoomLevel(geometry.viewport, { height: mapViewProperties.height, width: mapViewProperties.width }), location);
+              //const marker = createMarker(googleMap, location, imgSource);
+              //marker.addListener('click', () => {
+              //  alert('Clicked!');
+              //});
+              //bounds.extend(location);
             }
           }
         );
@@ -52,7 +51,7 @@ function LocationInfo() {
         <div className="row no_border">
           <div className="col-7">
             <div>
-              <div className="_1xzp5ma3" style={{ fontSize: '100em, !important' }}>
+              <div className="_1xzp5ma3" style={{ fontSize: '100em, !important', marginTop: '45px' }}>
                 Location
               </div>
               <div style={{ height: '300px', marginTop: '5px' }}>

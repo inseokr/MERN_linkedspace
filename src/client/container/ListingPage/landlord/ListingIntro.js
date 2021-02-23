@@ -15,10 +15,12 @@ function ListingIntro() {
         <div className="_tw4pe52">
           {currentListing.listing.num_of_total_guests}
           {' '}
-          guests
+          Guest(s)
+          {' '}
           {currentListing.listing.num_of_bedrooms}
           {' '}
           bedroom
+          {' '}
           {currentListing.listing.num_of_total_baths}
           {' '}
           bath

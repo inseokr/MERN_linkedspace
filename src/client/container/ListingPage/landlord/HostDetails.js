@@ -3,7 +3,6 @@ import React, { useContext } from 'react';
 import '../../../app.css';
 import {FILE_SERVER_URL} from '../../../globalConstants';
 import '../common/listing_style.css';
-
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 
 
@@ -36,21 +35,18 @@ function HostDetails() {
 
         </div>
 
-        <div className="col-lg-4 sub_title wooden_background  rounded-top rounded-bottom" style={{ maxHeight: '102px', textAlign: 'center' }}>
-          <div style={{ marginTop: '10px' }}>Contact</div>
-          <div className="sub_title" style={{ marginTop: '10px !important' }}>
-            <ul style={{ listStyleType: 'none' }}>
-              <li>
-                {' '}
-                Phone Number:
-                {currentListing.listing.contact.phone}
-              </li>
-              <li id="email">
-                {' '}
-                E-mail:
-                {currentListing.listing.contact.email}
-              </li>
-            </ul>
+        <div className="col-lg-4 shadowedTile" style={{ maxHeight: '120px', textAlign: 'left', marginLeft: '45px' }}>
+          <div className="_lsFont1" style={{ marginTop: '-15px' }}>Contact Information</div>
+          <hr/>
+          <div style={{ dislay: 'flex', marginTop: '10px' }}>
+              <section style={{textAlign: 'left', display: 'flex'}}> 
+                <section className="_lsFont1"> Phone Number:{' '}</section> 
+                <section className="_lsFont2">{currentListing.listing.contact.phone}</section>
+              </section>
+              <section style={{textAlign: 'left', display: 'flex'}}> 
+                <section className="_lsFont1"> E-mail:{' '}</section> 
+                <section className="_lsFont2">{currentListing.listing.contact.email}</section>
+              </section>
           </div>
         </div>
       </div>

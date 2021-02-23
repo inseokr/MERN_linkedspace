@@ -16,7 +16,7 @@ function RentalTerm() {
       </div>
 
       <div className="no_border" style={{ marginTop: '20px' }}>
-        <div className="row sub_title wooden_background" style={{ paddingTop: '8px' }}>
+        <div className="row shadowedTile" style={{ paddingTop: '8px' }}>
           <div className="col-4">
             <ul>
               <li>
