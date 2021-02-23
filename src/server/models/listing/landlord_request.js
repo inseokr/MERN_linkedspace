@@ -69,8 +69,6 @@ const LandlordRequestSchema = new mongoose.Schema({
   },
 
   // bedroom information
-  num_of_bedrooms: { type: Number, default: 0 }, // TBD: should be Number instead?
-
   bedrooms: {
     type: Array,
     default: {
@@ -106,6 +104,11 @@ const LandlordRequestSchema = new mongoose.Schema({
     laundry: { type: Boolean, default: false },
     parking: { type: Boolean, default: false }
   },
+
+
+  num_of_bedrooms: { type: Number, default: 0 },
+  num_of_total_baths: { type: Number, default: 0 },
+  num_of_total_guests: { type: Number, default: 0 },
 
 
   // index 0 wil be the cover photo.

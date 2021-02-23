@@ -23,9 +23,6 @@ export default class GeneralChatMainPage extends Component {
                       {display: 'block', position: 'absolute', left: '-300%', width: '300%'}: {},
       rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
       mainWidth: (this.props.meeting === 'true')? '20%': '100%',
-      contactListStyle: (this.props.compact === 'true') ? {height: '78%'} : {},
-      chattingWindowStyle: {},
-      writeChatStyle: {},
       contactCollapseState: 'false'
     };
 
@@ -69,14 +66,22 @@ export default class GeneralChatMainPage extends Component {
     }
   }  
 
+
   render() {
+
     let chattingWindowStyle = 
       (this.context.collapse==='true' && this.props.compact ==='true')?  
         {display:'none'} : {display:'block'};
     let writeChatStyle = 
       (this.context.collapse==='true' && this.props.compact ==='true')? 
-        {display:'none !important'} : {display:'flex !important'};
-
+        {display:'none'} : {display:'flex'};
+    let searchMessageBoxStyle = 
+      (this.context.collapse==='true' && this.props.compact ==='true')? 
+        {display:'none'} : {};
+    let contactListStyle = 
+        (this.context.collapse==='true' && this.props.compact ==='true')? 
+          {display:'none'} : {height: '78%'};
+  
     let viewHeight = '90vh';
 
     if(this.props.compact ==='true')
@@ -91,6 +96,8 @@ export default class GeneralChatMainPage extends Component {
       }
     } 
 
+    let positionValue = (this.props.compact ==='true')? 'fixed': 'relative';
+
     return (
       <div
         className="GeneralChatMainWrapper bg-light"
@@ -102,16 +109,17 @@ export default class GeneralChatMainPage extends Component {
                  '--chatRightPanelHeight': viewHeight,
                  borderBottom: 'hidden',
                  width: this.state.mainWidth,
+                 position: positionValue,
                  zIndex: '10'}}
       >
         <div className="MessageLeftPanel" style={this.state.leftPanelStyle}>
           <div className="MessageHeader_ls">
             <GeneralChatHeader compact={this.props.compact} />
           </div>
-          <div className="SearchMessageBox">
+          <div className="SearchMessageBox" style={searchMessageBoxStyle}>
             <SearchMessageBox />
           </div>
-          <div className="MessageContactList" style={this.state.contactListStyle}>
+          <div className="MessageContactList" style={contactListStyle}>
             <ChatContactList />
           </div>
         </div>
@@ -126,7 +134,7 @@ export default class GeneralChatMainPage extends Component {
           <div className="ChattingWindow" style={chattingWindowStyle}>
             <ChattingWindow />
           </div>
-          <div className="WriteMessageWindow style={writeChatStyle}">
+          <div className="WriteMessageWindow" style={writeChatStyle}>
             <WriteChat />
           </div>
         </div>

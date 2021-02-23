@@ -60,12 +60,11 @@ export default class ListingLandlordMainPage extends Component {
               <ListingCoverPage />
               <div className="container no_border" style={{ marginTop: '20px' }}>
                 <ListingIntro />
+                <ListingControlButtons />
                 <LocationInfo />
                 <ExploreHome />
                 <HomeDetails />
-                <RentalTerm />
                 <HostDetails />
-                <ListingControlButtons />
               </div>
               {footer}
             </div>

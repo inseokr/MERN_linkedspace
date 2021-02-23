@@ -340,6 +340,10 @@ module.exports = function (app) {
       amenities.push('Smoke detector');
     }
 
+    if (listing.amenities.heating != 'off') {
+      amenities.push('Heater');
+    }
+
     if (listing.amenities.private_entrance != 'off') {
       amenities.push('Private entrance');
     }
@@ -453,12 +457,16 @@ module.exports = function (app) {
       };
       res.json(listing_info);
 
-      userDbHandler.findUserById(req.user._id).then(async (foundUser) => {
-        if (!foundListing.requester.equals(foundUser._id)) {
-          userDbHandler.readListingFromFriends(foundUser, 'landlord', req.params.list_id);
-          foundUser.save();
-        }
-      });
+      try {
+        userDbHandler.findUserById(req.user._id).then(async (foundUser) => {
+          if (!foundListing.requester.equals(foundUser._id)) {
+            userDbHandler.readListingFromFriends(foundUser, 'landlord', req.params.list_id);
+            foundUser.save();
+          }
+        });
+      } catch (error) {
+        console.warn(error);
+      }
     });
   });
 
