@@ -17,20 +17,17 @@ function ListingControlButtons() {
   const { currentUser } = useContext(GlobalContext);
   const [modalShow, setModalShow] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [isOwner, setIsOwner] = useState(false);
   const history = useHistory();
-  
+
   const checkIfOwner = ()=> {
-    try {
-      return (currentListing.listing.requester._id==currentUser._id);
-    } catch (error) {
-      console.warn(error);
+    if (currentListing.listing.requester===undefined || currentUser===undefined) {
       return false;
     }
-  }
+    return (currentListing.listing.requester._id === currentUser._id);
+  };
 
-  const [isOwner, setIsOwner] = useState(checkIfOwner());
-
-  if (currentUser == null || currentUser == undefined) {
+  if (currentUser === null || currentUser === undefined) {
     return (
       <React.Fragment> </React.Fragment>
     );
@@ -50,8 +47,8 @@ function ListingControlButtons() {
   async function forward2friend() {
 
     const data = {
-      userList: selectedUsers     
-    }
+      userList: selectedUsers
+    };
 
     const post_url = `/LS_API/listing/landlord/${currentListing.list_id}/forward`;
     await axios.post(post_url, data).then(async (result) => {
@@ -91,6 +88,10 @@ function ListingControlButtons() {
     setIsOwner(checkIfOwner());
   }, [currentListing]);
 
+  useEffect(() => {
+    setIsOwner(checkIfOwner());
+  }, [currentUser]);
+
   const controlButtons = currentListing.list_id !== 0
     ? (
       <div style={{ marginTop: '30px' }}>
@@ -100,17 +101,17 @@ function ListingControlButtons() {
           <SelectionFromDirectFriends show={modalShow} filter={currentListing.listing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
         </SimpleModal>
         <div className="d-flex justify-content-around">
-          {isOwner===true && 
+          {isOwner===true &&
           <button className="btn btn-outline-dark" onClick={() => history.push('/ActiveListing')} value={currentListing.list_id}>My Postings</button>
           }
-          {isOwner===false && 
+          {isOwner===false &&
           <button className="btn btn-outline-dark" onClick={() => history.push('/ShowListingFromFriends')} value={currentListing.list_id}>Posting From Friends</button>
           }
 
           <button className="btn btn-outline-dark" onClick={() => showForwardWindow()} style={{ marginLeft: '70px !important' }}>Forward it to Friends</button>
-          {isOwner===true && 
+          {isOwner===true &&
           <form role="form" action={'/LS_API/listing/landlord/'+currentListing.list_id+'/edit'} method="post" target="_blank">
-            <div class="action">
+            <div className="action">
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Edit Listing</button>
             </div>
           </form>}
