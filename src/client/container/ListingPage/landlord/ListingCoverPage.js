@@ -30,6 +30,7 @@ function ListingCoverPage() {
         <div style={{ marginTop: '20px' }}>
           <div className="show_title">
             BEAUTIFUL HOME IN
+            {' '}
             {currentListing.listing.rental_property_information.location.city.toUpperCase()}
           </div>
         </div>
@@ -90,14 +91,51 @@ function ListingCoverPage() {
               <span className="_so3dpm2">229</span>
             </span>
           </div>
-
-          <div style={{ marginTop: '32px' }}>
-            <span className="_1xzp5ma3">
-              {listingCaption}
-            </span>
-          </div>
-
         </div>
+
+        <div className="sub_title" style={{textAlign: 'center', marginLeft: '-230px', marginTop: '250px', marginBottom: '20px'}}> Rental Terms </div>
+        <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+                Asking Price: 
+              </div>
+              <div className="_lsFont2">
+                $
+                {currentListing.listing.rental_terms.asking_price}
+                {' '}
+                per month
+              </div>
+        </section>
+        <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+              Security Deposit: 
+              </div>
+              <div className="_lsFont2">
+                $
+                {currentListing.listing.rental_terms.security_deposit}
+              </div>
+        </section>
+        <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+              Rental Duration: 
+              </div>
+              <div className="_lsFont2">
+                {currentListing.listing.rental_terms.duration}
+                {' '}months
+              </div>
+        </section>
+        <section style={{display: 'flex'}}>
+              <div className="_lsFont1">
+              Move-in available date from: 
+              </div>
+              <div className="_lsFont2">
+                {currentListing.listing.move_in_date.month}
+                /
+                {currentListing.listing.move_in_date.date}
+                /
+                {currentListing.listing.move_in_date.year}
+              </div>
+        </section>
+
       </div>
 
       <div className="col-8 no_border" style={{ borderStyle: 'none !important', height: '500px', marginLeft: '30px' }}>

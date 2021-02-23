@@ -8,7 +8,6 @@
 
 .GeneralChatMainWrapper {
 	display: grid;
-	position: fixed;
 	grid-template-columns: repeat(12,1fr);
 	grid-gap: 0.1em;
 	border-width: 0.1px;

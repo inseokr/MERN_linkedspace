@@ -340,6 +340,10 @@ module.exports = function (app) {
       amenities.push('Smoke detector');
     }
 
+    if (listing.amenities.heating != 'off') {
+      amenities.push('Heater');
+    }
+
     if (listing.amenities.private_entrance != 'off') {
       amenities.push('Private entrance');
     }
