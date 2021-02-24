@@ -16,11 +16,8 @@ function PickChattingParty(props) {
   // <note> friendsList doesn't include current user.
   const { friendsList, getProfilePicture, getUserLoginStatus } = useContext(GlobalContext);
   const { removeFromChatList, addToChatList } = useContext(MessageContext);
-
-  // this should be done just once
-  const initClickStates = new Array(friendsList.length).fill(0);
-
-  const [clickStates, setClickStates] = useState(initClickStates);
+  //const [clickStates, setClickStates] = useState(new Array(friendsList.length).fill(0));
+  const [clickStates, setClickStates] = useState([]);
 
   const Header = (
     <div className="boldHeader">
@@ -92,10 +89,19 @@ function PickChattingParty(props) {
     if(modalShow===false)
     {
       // clean-up click states
-      let initClickStates = new Array(friendsList.length).fill(0);
+      let initClickStates = new Array(clickStates.length).fill(0);
       setClickStates(initClickStates);
     }
   }, [modalShow]);
+
+
+  useEffect(()=> {
+      if(friendsList!==undefined)
+      {
+        let initClickStates = new Array(friendsList.length).fill(0);
+        setClickStates(initClickStates);
+      }
+  }, [friendsList])
 
   return (
     <div className="container">
