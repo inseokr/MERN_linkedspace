@@ -64,7 +64,6 @@ export default class ListingLandlordMainPage extends Component {
                 <LocationInfo />
                 <ExploreHome />
                 <HomeDetails />
-                <HostDetails />
               </div>
               {footer}
             </div>

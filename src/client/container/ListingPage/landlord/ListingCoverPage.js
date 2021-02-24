@@ -93,9 +93,15 @@ function ListingCoverPage() {
           </div>
         </div>
 
-        <div className="sub_title" style={{textAlign: 'center', marginLeft: '-230px', marginTop: '250px', marginBottom: '20px'}}> Rental Terms </div>
+        <div  
+             className='_rentalTermFont1'
+             style={{ textAlign: 'left', 
+                      marginLeft: '', 
+                      marginTop: '150px', 
+                      marginBottom: '20px'}}> 
+          Rental Terms </div>
         <section style={{display: 'flex'}}>
-              <div className="_lsFont1">
+              <div className="_rentalTermFont2">
                 Asking Price: 
               </div>
               <div className="_lsFont2">
@@ -106,7 +112,7 @@ function ListingCoverPage() {
               </div>
         </section>
         <section style={{display: 'flex'}}>
-              <div className="_lsFont1">
+              <div className="_rentalTermFont2">
               Security Deposit: 
               </div>
               <div className="_lsFont2">
@@ -115,7 +121,7 @@ function ListingCoverPage() {
               </div>
         </section>
         <section style={{display: 'flex'}}>
-              <div className="_lsFont1">
+              <div className="_rentalTermFont2">
               Rental Duration: 
               </div>
               <div className="_lsFont2">
@@ -124,7 +130,7 @@ function ListingCoverPage() {
               </div>
         </section>
         <section style={{display: 'flex'}}>
-              <div className="_lsFont1">
+              <div className="_rentalTermFont2">
               Move-in available date from: 
               </div>
               <div className="_lsFont2">

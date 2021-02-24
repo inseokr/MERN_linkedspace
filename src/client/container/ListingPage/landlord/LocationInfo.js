@@ -43,11 +43,11 @@ function LocationInfo() {
   }, [currentListing]);
 
   return (
-    <div className="App">
+    <div className="App" style={{marginTop:'45px'}}>
       <div className="row no_border">
         <div className="col-7">
           <div>
-            <div className="_1xzp5ma3" style={{ fontSize: '100em, !important' }}>
+            <div className="_lsFont1">
               Location
             </div>
             <div style={{ height: '300px', marginTop: '5px' }}>
@@ -65,22 +65,22 @@ function LocationInfo() {
           </div>
         </div>
 
-        <div className="col-5" style={{ marginTop: '70px' }}>
+        <div className="col-5" style={{ marginTop: '10px' }}>
 
           <div className="subtitle_info">
-            <div className="sub_title">
+            <div className="_lsFont1">
               Neighborhood
             </div>
-            <div className="inner_contents" style={{ marginTop: '2px', whiteSpace: 'pre-line' }}>
+            <div className="_lsFont2">
               {currentListing.listing.summary_of_neighborhood}
             </div>
           </div>
 
           <div className="subtitle_info" style={{ marginTop: '20px' }}>
-            <div className="sub_title">
+            <div className="_lsFont1">
               Transportation
             </div>
-            <div className="inner_contents" style={{ marginTop: '2px', whiteSpace: 'pre-line' }}>
+            <div className="_lsFont2">
               {currentListing.listing.summary_of_transportation}
             </div>
           </div>

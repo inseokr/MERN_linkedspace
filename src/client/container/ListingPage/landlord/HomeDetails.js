@@ -10,7 +10,7 @@ function HomeDetails() {
 
   return (
     <div>
-      <div className="_1xzp5ma3">
+      <div className="_lsFont1" style={{textAlign: 'center'}}>
         Amenities available to you
       </div>
 
@@ -23,7 +23,7 @@ function HomeDetails() {
 
       <hr />
 
-      <div className="_1xzp5ma3" style={{ marginTop: '40px' }}>
+      <div className="_lsFont1" style={{textAlign: 'center'}}>
         Available facilities
       </div>
 
