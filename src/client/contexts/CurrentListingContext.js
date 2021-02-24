@@ -26,7 +26,7 @@ export function CurrentListingProvider(props) {
   const [filterParams, setFilterParams] = useState({
     search: '',
     places: { Entire: true, Private: true, Shared: true },
-    price: [1, 1000],
+    price: [1, 10000],
     date: ''
   });
 
