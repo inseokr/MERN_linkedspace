@@ -89,32 +89,11 @@ function constructBounds(bounds) {
   };
 }
 
-async function updateRentalPropertyInformation(listing) {
-  const rentalPropertyInformation = listing.rental_property_information;
-  const { location } = rentalPropertyInformation;
-  const address = `${location.street}, ${location.city}, ${location.state}, ${location.zipcode}, ${location.country}`;
-  const response = await getGeometryFromSearchString(address);
-  if (response && response.status === 'OK') {
-    const coordinates = response.results[0].geometry.location;
-    const { lat, lng } = coordinates;
-    return {
-      ...listing,
-      rental_property_information: {
-        ...rentalPropertyInformation,
-        address,
-        coordinates: { lat, lng }
-      }
-    };
-  }
-  return listing;
-}
-
 async function getLandLordRequests() {
   const listings = await fetch('/LS_API/getData').then(data => data.json());
   const promises = [];
   for (let i = 0; i < listings.length; i += 1) {
-    const listing = listings[i];
-    promises.push(updateRentalPropertyInformation(listing));
+    promises.push(listings[i]);
   }
   return Promise.all(promises); // Add address and coordinates to object.
 }

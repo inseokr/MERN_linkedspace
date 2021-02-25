@@ -34,20 +34,22 @@ function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin, currentUser} = useContext(GlobalContext);
-  const {doNotDisturbMode, 
-         childIndex, 
-         setChildIndex, 
-         setDoNotDisturbMode, 
-         broadcastDashboardMode, 
+  const {doNotDisturbMode,
+         childIndex,
+         setChildIndex,
+         setDoNotDisturbMode,
+         broadcastDashboardMode,
          toggleCollapse,
-         setChattingContextType, 
+         setChattingContextType,
          chattingContextType } = useContext(MessageContext);
 
   const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
   const [showMessage, setShowMessage] = useState(true);
-  const { refresh, selectedMarkerID, markers } = markerParams;
+  const [refresh, setRefresh] = useState(markerParams['refresh']);
+  const [selectedMarkerID, setSelectedMarkerID] = useState(markerParams['selectedMarkerID']);
+  const [markers, setMarkers] = useState(markerParams['markers']);
   const [map, setMap] = useState(null);
 
   const groupRef = (node) => {
@@ -55,8 +57,7 @@ function TenantListingDashBoard(props) {
       const bounds = node.getBounds();
       if (Object.keys(bounds).length > 0) {
         //fitBounds will happen only if parent listing is selected.
-        if(currentChildIndex===-1)
-        {
+        if(currentChildIndex===-1) {
           map.fitBounds(bounds);
         }
       }
@@ -110,21 +111,15 @@ function TenantListingDashBoard(props) {
           childListings.map((listing) => {
             if(listing===null || listing.listing_id===null) return;
 
-            const rentalPrice = 
-              (listing.listing_id.listingType==='landlord')? 
-                Number(listing.listing_id.rental_terms.asking_price): 
-                listing.listing_id.rentalPrice;
+            const rentalPrice = (listing.listing_id.listingType === "landlord") ? Number(listing.listing_id.rental_terms.asking_price) : listing.listing_id.rentalPrice;
 
             if (!Number.isNaN(rentalPrice)) { // True if value is a number.
               const { price } = filterParams;
               const min = price[0];
               const max = price[1];
-              
+
               if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
-                const { coordinates } = 
-                  (listing.listing_id.listingType==="landlord")? 
-                    listing.listing_id.rental_property_information: 
-                    listing.listing_id;
+                const { coordinates } = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_property_information : listing.listing_id;
                 const { _id } = listing;
                 if (validCoordinates(coordinates)) {
                   let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
@@ -139,10 +134,6 @@ function TenantListingDashBoard(props) {
                   const icon = createMarker(imgSource, (_id === selectedMarkerID));
                   markers.push({ position: coordinates, icon: icon, markerID: _id });
                 }
-                else
-                {
-                  console.warn(`validation of coordinate failure. coordinates=${JSON.stringify(coordinates)}`);
-                }
               }
             }
           });
@@ -154,7 +145,7 @@ function TenantListingDashBoard(props) {
 
   useEffect(() => { // Clear markers when dependencies change.
     setMarkerParams({
-      refresh: map !== null && currentListing,
+      refresh: !!(map !== null && currentListing),
       markers: [],
       selectedMarkerID: selectedMarkerID
     });
@@ -165,19 +156,26 @@ function TenantListingDashBoard(props) {
   }, [props]);
 
   useEffect(() => {
+    const { refresh, markers, selectedMarkerID } = markerParams;
+    setRefresh(refresh);
+    setMarkers(markers);
+    setSelectedMarkerID(selectedMarkerID);
+  }, [markerParams]);
+
+  useEffect(() => {
     // let's set the chatting context when listing is properly updated.
     // <note> chatting context should be updated only when listing's updated.
-    
-    let contextType = 
-      (chattingContextType==MSG_CHANNEL_TYPE_GENERAL && currentListing!==undefined) 
-      ? MSG_CHANNEL_TYPE_LISTING_PARENT : chattingContextType;
+
+    let contextType =
+      (chattingContextType === MSG_CHANNEL_TYPE_GENERAL && currentListing!==undefined)
+        ? MSG_CHANNEL_TYPE_LISTING_PARENT : chattingContextType;
 
     setChattingContextType(contextType);
 
-  }, [currentListing])
+  }, [currentListing]);
 
   const banAdditionalStyle =
-      (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
+    (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
 
   const { center, zoom } = mapParams;
 
@@ -200,8 +198,8 @@ function TenantListingDashBoard(props) {
               </Grid>
             </Grid>
             <Grid className="map" item xs={7}>
-              
-              <div style={mapMessageContainerStyle}> 
+
+              <div style={mapMessageContainerStyle}>
               <section style={chatContainerStyle}>
                 <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
               </section>
@@ -218,12 +216,12 @@ function TenantListingDashBoard(props) {
                       <Marker key={`marker-${index}`} position={marker.position} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
                         <Popup>
                           <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
-                            <section style={{marginTop: '3px'}}> 
+                            <section style={{marginTop: '3px'}}>
                               <a href={getChildListingUrl()} target="_blank">
-                                <i className="fas fa-external-link-alt fa-lg"></i> 
+                                <i className="fas fa-external-link-alt fa-lg"></i>
                               </a>
                             </section>
-                            <section onClick={() => {toggleCollapse();} } style={{color: '#a52a2a'}}> 
+                            <section onClick={() => {toggleCollapse();} } style={{color: '#a52a2a'}}>
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
                                 <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
                                 </path>
