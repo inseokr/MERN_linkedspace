@@ -22,7 +22,7 @@ import {
 } from '../../../contexts/helper/helper';
 
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
-import { MessageContext } from '../../../contexts/MessageContext';
+import { MessageContext, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_PARENT } from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
@@ -34,11 +34,18 @@ function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
 
   const {friendsMap, isUserLoggedIn, setRedirectUrlAfterLogin, currentUser} = useContext(GlobalContext);
-  const {doNotDisturbMode, childIndex, setChildIndex, setDoNotDisturbMode, broadcastDashboardMode, toggleCollapse} = useContext(MessageContext);
+  const {doNotDisturbMode, 
+         childIndex, 
+         setChildIndex, 
+         setDoNotDisturbMode, 
+         broadcastDashboardMode, 
+         toggleCollapse,
+         setChattingContextType, 
+         chattingContextType } = useContext(MessageContext);
+
   const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
-  const [rightPaneMode, setRightPaneMode] = useState('Map');
   const [showMessage, setShowMessage] = useState(true);
   const { refresh, selectedMarkerID, markers } = markerParams;
   const [map, setMap] = useState(null);
@@ -151,26 +158,23 @@ function TenantListingDashBoard(props) {
       markers: [],
       selectedMarkerID: selectedMarkerID
     });
-  }, [map, currentListing, rightPaneMode, selectedMarkerID, mapParams, friendsMap]);
+  }, [map, currentListing, selectedMarkerID, mapParams, friendsMap]);
 
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, 'tenant');
   }, [props]);
 
-  const updateRightPane = (reload) => {
-    if (rightPaneMode === 'Map') {
-      if (!reload) {
-        setRightPaneMode('Message');
-      }
-    } else if (reload) {
-      setShowMessage(false);
-      setTimeout(() => {
-        setShowMessage(true);
-      }, 100);
-    } else {
-      setRightPaneMode('Map');
-    }
-  };
+  useEffect(() => {
+    // let's set the chatting context when listing is properly updated.
+    // <note> chatting context should be updated only when listing's updated.
+    
+    let contextType = 
+      (chattingContextType==MSG_CHANNEL_TYPE_GENERAL && currentListing!==undefined) 
+      ? MSG_CHANNEL_TYPE_LISTING_PARENT : chattingContextType;
+
+    setChattingContextType(contextType);
+
+  }, [currentListing])
 
   const banAdditionalStyle =
       (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
@@ -192,7 +196,7 @@ function TenantListingDashBoard(props) {
             <Grid item xs={5}>
               <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
               <Grid item xs={12}>
-                <TenantDashboardListView toggle={updateRightPane} mode={rightPaneMode} />
+                <TenantDashboardListView/>
               </Grid>
             </Grid>
             <Grid className="map" item xs={7}>
@@ -216,7 +220,7 @@ function TenantListingDashBoard(props) {
                           <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
                             <section style={{marginTop: '3px'}}> 
                               <a href={getChildListingUrl()} target="_blank">
-                                <i class="fas fa-external-link-alt fa-lg"></i> 
+                                <i className="fas fa-external-link-alt fa-lg"></i> 
                               </a>
                             </section>
                             <section onClick={() => {toggleCollapse();} } style={{color: '#a52a2a'}}> 
