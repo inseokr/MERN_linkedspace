@@ -35,10 +35,6 @@ function ContactSummary(props) {
     //console.log(`getContactSummaryClassName: props = ${JSON.stringify(props)}`);
     let listOfClass = (props.clickState === 0 ? 'ContactSummary' : 'ContactSummaryClicked');
 
-    if (props.contactIndex == 0) {
-      setCurrentChatPartyPicture(props.user.profile_picture);
-    }
-
     listOfClass = (props.summary.flag_new_msg) ? `${listOfClass} NewMessageIndicator` : listOfClass;
     return listOfClass;
   }

@@ -39,8 +39,6 @@ function readURL(event, picIndex) {
     const myFormData = new FormData();
     myFormData.append('file_name', input.files[0]);
 
-    console.log('Posting New Picture');
-
     $.ajax({
 	  enctype: 'multipart/form-data',
 	  url: '/LS_API/listing/3rdparty/file_upload',
@@ -156,8 +154,8 @@ function getListingLink() {
       <InputGroup>
         <FormControl
           required
-          placeholder="https://sfbay.craigslist.org/"
-          aria-label="https://sfbay.craigslist.org/"
+          placeholder="sourceUrlPlaceHolder"
+          aria-label="sourceUrlLabel"
           aria-describedby="sourceUrl"
           name="sourceUrl"
           id="sourceUrl"

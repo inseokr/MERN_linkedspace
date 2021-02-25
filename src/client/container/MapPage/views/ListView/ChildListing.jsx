@@ -42,7 +42,7 @@ function getChildListingSummary(childListing) {
 }
 
 const ChildListing = React.forwardRef(({
-  clickState, likedState, clickHandler, likeClickHandler, handleSelect, listing, index, messageClickHandler, removeHandler
+  clickState, likedState, clickHandler, likeClickHandler, handleSelect, listing, index, removeHandler
 }, ref) => {
   // const [modalShow, setModalShow] = useState(false);
   const {
@@ -99,7 +99,6 @@ const ChildListing = React.forwardRef(({
     setChildType((listing.listing_type === '_3rdPartyListing') ? 0 : 1);
 
     setChildIndex(index);
-    messageClickHandler(true);
   }
 
   function listingClickHandler(e) {

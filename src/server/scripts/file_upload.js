@@ -61,7 +61,7 @@ function handleOnMouseOutImagePreview(elementId) {
 
 
 function readURL(input, url_prefix, _id) {
-  console.log(`readURL is called. url_prefix=${url_prefix}`);
+  console.warn(`readURL is called. url_prefix=${url_prefix}`);
 
   if (input.files && input.files[0]) {
     const reader = new FileReader();
@@ -89,7 +89,7 @@ function readURL(input, url_prefix, _id) {
     // ISEO: may need to add listing ID as well.
     $.ajax({
 		  enctype: 'multipart/form-data',
-		  url: `${url_prefix}/${_id}/file_upload`,
+		  url: `/LS_API/${url_prefix}/${_id}/file_upload`,
 		  type: 'POST',
 		  processData: false, // important
 		  contentType: false, // important

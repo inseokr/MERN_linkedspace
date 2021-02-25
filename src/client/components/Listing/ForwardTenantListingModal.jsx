@@ -1,7 +1,8 @@
 /* eslint-disable */
 import React, { useContext, useState, useEffect } from 'react';
 import { CurrentListingContext } from '../../contexts/CurrentListingContext';
-  import SelectionFromDirectFriends from '../../components/Selection/SelectionFromDirectFriends';
+import SelectionFromDirectFriends from '../../components/Selection/SelectionFromDirectFriends';
+import axios from 'axios';
 import SimpleModal from '../../components/Modal/SimpleModal';
 
 

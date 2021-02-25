@@ -9,14 +9,6 @@ function FavoriteDashboard(props) {
 
   function getLastVisitedListingId() {
 
-    console.log("getLastVisitedListingId: before JQuery");
-
-    $.get("https://sfbay.craigslist.org/eby/apa/d/oakland-nice-view-bay-bridge-bedrooms/7247926599.html", 
-      function(response) { 
-        console.log("received response = " + response);
-        alert(response) 
-      });
-
     // This should be called only once when no current user is set
     //console.log("getLastVisitedListingId");
     fetch('/LS_API/listing/getLastVisitedListingId')
