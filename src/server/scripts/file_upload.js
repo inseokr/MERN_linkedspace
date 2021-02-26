@@ -89,7 +89,7 @@ function readURL(input, url_prefix, _id) {
     // ISEO: may need to add listing ID as well.
     $.ajax({
 		  enctype: 'multipart/form-data',
-		  url: `/LS_API/${url_prefix}/${_id}/file_upload`,
+		  url: `${url_prefix}/${_id}/file_upload`,
 		  type: 'POST',
 		  processData: false, // important
 		  contentType: false, // important

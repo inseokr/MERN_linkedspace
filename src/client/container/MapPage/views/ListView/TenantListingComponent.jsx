@@ -30,10 +30,20 @@ function TenantListingComponent(props) {
   const [showForwardListingModal, setShowForardListingModal] = useState(false);
   const [showMeetingRequestModal, setShowMeetingRequestModal] = useState(false);
   const {
-    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
+    currentListing, fetchCurrentListing, currentChildIndex,
     parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType, checkAnyUnreadMessages, toggleCollapse} = useContext(MessageContext);
+
+  // Create reference for the parent listing
+  // <note> how to clean the reference?
+  useEffect(() => {
+    if(parentRef===null)
+    {
+      setParentRef(React.createRef());
+    }
+  }, [currentListing])
+
   const { listing} = props;
 
   if (listing === undefined || listing.requester === undefined) {
@@ -86,8 +96,6 @@ function TenantListingComponent(props) {
       console.warn(`currentChildIndex ${currentChildIndex} is undefined`);
       return;
     }
-
-    console.log('removeChildListing');
 
     // post to DB as well
     const data = {
@@ -225,13 +233,6 @@ function TenantListingComponent(props) {
         </button>
       </div>
     );
-  }
-
-  // Create reference for the parent listing
-  // <note> how to clean the reference?
-  if(parentRef===null)
-  {
-    setParentRef(React.createRef());
   }
 
   return (
