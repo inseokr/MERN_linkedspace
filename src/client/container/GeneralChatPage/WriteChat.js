@@ -6,7 +6,7 @@ import './GeneralChatMainPage.css';
 
 function WriteChat() {
   const { updateChatHistory, doNotDisturbMode, setDoNotDisturbMode, clearNewMessageIndicator } = useContext(MessageContext);
-  const [chatMessage, setChatMessage] = useState('Write message...');
+  const [chatMessage, setChatMessage] = useState('');
   const [modeChanged, setModeChanged] = useState(false);
 
   const handleKeyPress = (e) => {
@@ -20,17 +20,12 @@ function WriteChat() {
     setChatMessage(e.target.value);
   };
 
-  const cleanMessage = (event) => {
-    event.preventDefault();
-    setChatMessage('');
-  };
-
   const handleFocusIn = (event) => {
+    clearNewMessageIndicator();
+
     if(doNotDisturbMode===false)
     {
       // let's clear the new mesasge flag
-      clearNewMessageIndicator();
-      
       setModeChanged(true);
       setDoNotDisturbMode(true);
     }
@@ -65,13 +60,12 @@ function WriteChat() {
           <textarea
             id="ChattingMessage"
             cols="50"
-            placeholder="Write a message..."
+            placeholder=""
             value={chatMessage}
             onChange={handleChangeChatMessage}
             onKeyPress={handleKeyPress}
-            onClick={cleanMessage}
-            onMouseEnter={handleFocusIn}
-            onMouseOut={handleFocusOut}
+            onFocus={handleFocusIn}
+            onBlur={handleFocusOut}
           />
         </form>
       </div>
