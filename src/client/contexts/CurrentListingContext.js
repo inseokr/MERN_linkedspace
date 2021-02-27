@@ -218,6 +218,8 @@ export function CurrentListingProvider(props) {
 
     let userList = currentListing.shared_user_group;
 
+    if(userList===undefined) return sampleProfile;
+
     if(userList.length===0) return sampleProfile;
 
     for(let index=0; index<userList.length; index++)
