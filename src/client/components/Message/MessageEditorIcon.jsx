@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
 import './MessageStyle.css';
 
 import PickChattingParty from './PickChattingParty';
@@ -23,8 +24,12 @@ function MessageEditorIcon(props) {
     selectedChatList
   } = useContext(MessageContext);
 
-  // const {currentUser} = useContext(GlobalContext);
-  const { currentListing, currentChildIndex } = useContext(CurrentListingContext);
+  const {
+    currentListing,
+    currentChildIndex,
+    registeredInSharedGroup,
+    fetchCurrentListing
+  } = useContext(CurrentListingContext);
 
   // let modalFlag = false;
   const { clickHandler, callerType } = props;
@@ -70,6 +75,33 @@ function MessageEditorIcon(props) {
     setModalShow(true);
   };
 
+  const forwardListing = async () => {
+    // check if there is any friend who's not in the shared_user_group
+    const listOfFriendsToForward = [];
+
+    for (let index = 0; index < selectedChatList.length; index += 1) {
+      if (registeredInSharedGroup(selectedChatList[index].username) === false) {
+        listOfFriendsToForward.push(selectedChatList[index]);
+      }
+    }
+
+    if (listOfFriendsToForward.length > 0) {
+      const data = {
+        userList: listOfFriendsToForward
+      };
+      const postUrl = `/LS_API/listing/tenant/${currentListing._id}/forward`;
+      await axios.post(postUrl, data).then(async (result) => {
+        console.log(`result = ${result.data.result}`);
+        alert(`Result = ${result.data.result}`);
+        // ISEO-TBD:
+        // let's check why SelectionFromDirectFriends is not refreshed yet.
+        fetchCurrentListing(currentListing._id, 'tenant');
+      }).catch((err) => {
+        console.warn(err);
+      });
+    }
+  };
+
   const handleClose = async () => {
     setModalShow(false);
 
@@ -80,6 +112,8 @@ function MessageEditorIcon(props) {
     if (selectedChatList !== undefined && selectedChatList.length >= 1) {
       postSelectedContactList().then(() => { });
       // need to make it sure that the selected chatting party is shown in the contact list.
+      // let's forward the listing to the chatting party if it's not in the shared_user_group yet.
+      forwardListing();
       onClickHandler();
     }
   };
