@@ -132,7 +132,7 @@ function addSocketToChannel(channelId, socket_) {
 
     if (bDuplicate === false) {
       channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
-      // console.log(`addSocketToChannel, channel = ${channelId}`);
+      //console.warn(`addSocketToChannel, channel = ${channelId}, socket= ${socket_}`);
     }
 
     // console.log(`length = ${channelIdToSocketList[channelId].length}`);
@@ -178,11 +178,10 @@ function processChatMsgHeader(data) {
   const { channel_id, sender, msg } = parseChatMsgHeader(data);
 
   if (channel_id == undefined) {
-    console.log('No channelID has been identified');
+    console.warn('No channelID has been identified');
     return { targets: null, id: channel_id, message: msg };
   }
 
-  // console.log("channel found. channel ID = " + channel_id)
   targetSockets = getListOfSocketsByChannelId(channel_id);
   return {
     targets: targetSockets, id: channel_id, sender, message: msg
@@ -202,7 +201,7 @@ function routeMessage(data, incomingSocket) {
         return;
       }
       // add to history
-      // console.log("Writer = " + socketToUserMap[incomingSocket.id]);
+      console.log(`Writer = ${socketToUserMap[incomingSocket.id]}`);
 
       const chat = { writer: socketToUserMap[incomingSocket.id], message, timestamp: Date.now() };
       channel.chat_history.push(chat);
@@ -215,9 +214,10 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
+          //console.warn('sending message');
           target.send(data);
         } else {
-          // console.log("Same socket");
+          //console.warn('Same Socket??');
         }
       });
     });

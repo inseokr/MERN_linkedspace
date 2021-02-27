@@ -20,8 +20,8 @@ export default class GeneralChatMainPage extends Component {
       leftPanelColumn: (this.props.compact === 'true') ? '1/4' : '4/6',
       rightPanelColumn: (this.props.compact === 'true') ? '4/13' : '6/10',
       leftPanelStyle: (this.props.meeting === 'true')? 
-                      {display: 'block', position: 'absolute', left: '-300%', width: '300%'}: {},
-      rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-33.5%'}: {},
+                      {display: 'block', position: 'absolute', left: '-302%', width: '300%'}: {},
+      rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-35%'}: {},
       mainWidth: (this.props.meeting === 'true')? '20%': '100%',
       contactCollapseState: 'false'
     };
@@ -62,7 +62,7 @@ export default class GeneralChatMainPage extends Component {
     }
     else
     {
-      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-300%', width: '300%'}, contactCollapseState: 'false'}); 
+      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-302%', width: '300%'}, contactCollapseState: 'false'}); 
     }
   }  
 

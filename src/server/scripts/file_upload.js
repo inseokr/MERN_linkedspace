@@ -61,7 +61,7 @@ function handleOnMouseOutImagePreview(elementId) {
 
 
 function readURL(input, url_prefix, _id) {
-  console.log(`readURL is called. url_prefix=${url_prefix}`);
+  console.warn(`readURL is called. url_prefix=${url_prefix}`);
 
   if (input.files && input.files[0]) {
     const reader = new FileReader();

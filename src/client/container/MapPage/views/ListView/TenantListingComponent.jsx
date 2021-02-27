@@ -30,11 +30,21 @@ function TenantListingComponent(props) {
   const [showForwardListingModal, setShowForardListingModal] = useState(false);
   const [showMeetingRequestModal, setShowMeetingRequestModal] = useState(false);
   const {
-    currentListing, setCurrentListing, fetchCurrentListing, currentChildIndex,
+    currentListing, fetchCurrentListing, currentChildIndex,
     parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
-  const { setChattingContextType, chattingContextType, checkAnyUnreadMessages,toggleCollapse } = useContext(MessageContext);
-  const { listing, toggle, mode } = props;
+  const { setChattingContextType, chattingContextType, checkAnyUnreadMessages, toggleCollapse} = useContext(MessageContext);
+
+  // Create reference for the parent listing
+  // <note> how to clean the reference?
+  useEffect(() => {
+    if(parentRef===null)
+    {
+      setParentRef(React.createRef());
+    }
+  }, [currentListing])
+
+  const { listing} = props;
 
   if (listing === undefined || listing.requester === undefined) {
     return <div> no listing available </div>;
@@ -47,13 +57,6 @@ function TenantListingComponent(props) {
   const rentDuration = `${listing.rental_duration} month(s)`;
   const rentalBudget = `$${listing.rental_budget}`;
   const preferredLocation = `${listing.location.city},${listing.location.state},${listing.location.country}`;
-
-
-  if (chattingContextType === MSG_CHANNEL_TYPE_GENERAL) {
-    //This will be called only if chatting context is changed from general to dashboard
-    setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
-    toggle(true);
-  }
 
   // This is for parent border
   const borderStyle = (chattingContextType===MSG_CHANNEL_TYPE_LISTING_PARENT) ? {
@@ -93,8 +96,6 @@ function TenantListingComponent(props) {
       console.warn(`currentChildIndex ${currentChildIndex} is undefined`);
       return;
     }
-
-    console.log('removeChildListing');
 
     // post to DB as well
     const data = {
@@ -199,11 +200,10 @@ function TenantListingComponent(props) {
 
   // ISEO-TBD: dang... this may cause a problem during reloading of the page.
   const handleParentOnClick = (e) => {
-    console.log(`handleParentOnClick:chattingContextType= ${chattingContextType}`);
+    //console.log(`handleParentOnClick:chattingContextType= ${chattingContextType}`);
     if (chattingContextType !== MSG_CHANNEL_TYPE_LISTING_PARENT) {
-      console.log('setting chatting context type and toggle');
+      //console.log('setting chatting context type and toggle');
       setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
-      toggle(true);
     }
     setMarkerParams({ ...markerParams, selectedMarkerID: currentListing._id});
     setCurrentChildIndex(-1);
@@ -233,13 +233,6 @@ function TenantListingComponent(props) {
         </button>
       </div>
     );
-  }
-
-  // Create reference for the parent listing
-  // <note> how to clean the reference?
-  if(parentRef===null)
-  {
-    setParentRef(React.createRef());
   }
 
   return (
@@ -314,7 +307,6 @@ function TenantListingComponent(props) {
 
       <ChildListingsView
         handleSelect={handleSelect}
-        messageClickHandler={toggle}
         listing={listing}
         removeHandler={removeChildListing}
         chattingContextType={chattingContextType}

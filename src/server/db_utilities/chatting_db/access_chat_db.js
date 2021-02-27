@@ -57,17 +57,43 @@ async function getChannelByChannelId(channelName) {
   });
 }
 
+async function addChannelToSingleUser(chat_channel, user) {
+
+  return new Promise((resolve) => {
+
+    let bDuplicate = false;
+
+    for (let index = 0; index < user.chatting_channels.dm_channels.length; index++) {
+      if (user.chatting_channels.dm_channels[index].name == chat_channel.channel_id) {
+        //console.log(`duplicate found: index=${index}, channel id=${user.chatting_channels.dm_channels[index].name}`);
+        bDuplicate = true;
+        resolve("chatting channel already in the list");
+      }
+    }
+    
+    if(bDuplicate===false) {
+      const dm_channel = { id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0 };
+      user.chatting_channels.dm_channels.push(dm_channel);
+      user.save();
+      resolve("chatting channel added");
+    }
+  });
+
+}
+
 async function addChannelToUser(chat_channel) {
   let numOfProcessed = 0;
   const numOfMembers = chat_channel.members.length;
   const userNameList = [];
 
-  // console.warn(`chat_channel: = ${JSON.stringify(chat_channel)}`);
+  //console.warn(`chat_channel: = ${JSON.stringify(chat_channel)}`);
 
   return new Promise((resolve) => {
     if (numOfMembers === 0) resolve(null);
 
     chat_channel.members.forEach((member) => {
+      //console.warn(`member name: ${member.name}`);
+
       userDbHandler.findUserById(member.id).then((foundUser) => {
         numOfProcessed++;
 
@@ -77,7 +103,7 @@ async function addChannelToUser(chat_channel) {
 
           for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
             if (foundUser.chatting_channels.dm_channels[index].name == chat_channel.channel_id) {
-              console.log('duplicate found');
+              //console.log(`duplicate found: index=${index}, channel id=${foundUser.chatting_channels.dm_channels[index].name}`);
               bDuplicate = true;
             }
           }
@@ -86,7 +112,7 @@ async function addChannelToUser(chat_channel) {
           if (bDuplicate === false) {
             const dm_channel = { id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0 };
             foundUser.chatting_channels.dm_channels.push(dm_channel);
-            console.warn(`adding ${chat_channel.channel_id} to user: ${foundUser.username}`);
+            //console.warn(`adding ${chat_channel.channel_id} to user: ${foundUser.username}`);
             foundUser.save();
           }
         }
@@ -104,6 +130,7 @@ module.exports = {
   findChatPartyByName: getMemberInfoByUserName,
   findChatChannel: getChannelByChannelId,
   addChannelToUser,
+  addChannelToSingleUser,
   getChannels: getListOfChannelsByUserName,
   removeChannelsByPartialChannelId
 };

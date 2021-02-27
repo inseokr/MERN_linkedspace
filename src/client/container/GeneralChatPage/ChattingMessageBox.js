@@ -56,7 +56,7 @@ function ChattingMessageBox(props) {
       }
       else
       {
-        htmlComponents.push(<a href={processedMsg[index].msg} target="_blank"> {processedMsg[index].msg} </a>);
+        htmlComponents.push(<a key={index} href={processedMsg[index].msg} target="_blank"> {processedMsg[index].msg} </a>);
       }
     }
 

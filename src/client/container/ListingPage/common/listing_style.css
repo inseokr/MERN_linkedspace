@@ -147,3 +147,20 @@
     margin-left: 5px;
     margin-bottom: 5px;
 }
+
+._rentalTermFont1 {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.3333333333333333em;
+    letter-spacing: 0.08333333333333333em;
+    color: #767676;
+}
+
+._rentalTermFont2 {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.3333333333333333em;
+    letter-spacing: 0.08333333333333333em;
+    color: #914669;
+    
+}

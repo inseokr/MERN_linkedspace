@@ -127,7 +127,7 @@ function PriceFilter(props) {
   };
 
   const onClear = () => {
-    setInterimPrice([1, 1000]);
+    setInterimPrice([1, 10000]);
   };
 
   const interimMin = interimPrice[0];

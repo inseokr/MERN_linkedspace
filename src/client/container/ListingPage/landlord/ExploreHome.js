@@ -19,7 +19,7 @@ function getListingPictures(listing_info) {
             alt="listingPicture"
           />
           <div className="caption-full ">
-            <h4 className="pull-right inner_contents">{listing_info.listing.pictures[picIndex].caption}</h4>
+            <section className="_lsFont2" style={{textAlign: 'center'}}> {listing_info.listing.pictures[picIndex].caption} </section>
             <p />
           </div>
         </div>
@@ -38,7 +38,7 @@ function ExploreHome() {
   return (
     <div>
       <hr />
-      <div className="_1xzp5ma3" style={{ fontSize: '100em !important' }}>
+      <div className="_lsFont1" style={{textAlign: 'center'}}>
         Explore the house
       </div>
 
