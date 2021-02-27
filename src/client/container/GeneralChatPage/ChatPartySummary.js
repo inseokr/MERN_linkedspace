@@ -99,7 +99,7 @@ function ChatPartySummary(props) {
         { getChatPartySummary() }
       </section>
       {(compact==='true') &&
-      <section onClick={collapseHandler} style={{position: 'absolute', right: '0'}}>
+      <section onClick={collapseHandler} style={{position: 'absolute', right: '3px'}}>
         {collapseIcon}
       </section>}
     </React.Fragment>
