@@ -1450,9 +1450,8 @@ export function MessageContextProvider(props) {
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    //setTimeout(()=> loadChattingDatabase(), 1500);
-    loadChattingDatabase();
-    setTimeout(()=> loadChildChattingDatabase(), 500);
+    setTimeout(()=> loadChattingDatabase(), 500);
+    setTimeout(()=> loadChildChattingDatabase(), 2500);
   }, [currentListing]);
 
   webSocketConnect();
