@@ -51,12 +51,14 @@ module.exports = function (app) {
       res.render('listing_main');
     } else {
       // TODO https://github.com/inseokr/MERN_linkedspace/issues/483
-      const { street, city, state, zipcode, country } = req.body.location;
+      const {
+        street, city, state, zipcode, country
+      } = req.body.location;
       const address = `${street}, ${city}, ${state}, ${zipcode}. ${country}`;
-      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then(response => {
-        const { results, status} = response;
-        if (status === "OK") {
-          const geometry = results[0].geometry;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then((response) => {
+        const { results, status } = response;
+        if (status === 'OK') {
+          const { geometry } = results[0];
           const { location } = geometry;
 
           // create a new listing
@@ -105,12 +107,14 @@ module.exports = function (app) {
   router.post('/:listing_id/new', async (req, res) => {
     TenantRequest.findById(req.params.listing_id, (err, foundListing) => {
       // TODO https://github.com/inseokr/MERN_linkedspace/issues/483
-      const { street, city, state, zipcode, country } = req.body.location;
+      const {
+        street, city, state, zipcode, country
+      } = req.body.location;
       const address = `${street}, ${city}, ${state}, ${zipcode}. ${country}`;
-      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then(response => {
-        const { results, status} = response;
-        if (status === "OK") {
-          const geometry = results[0].geometry;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(response => response.json()).then((response) => {
+        const { results, status } = response;
+        if (status === 'OK') {
+          const { geometry } = results[0];
           const { location } = geometry;
 
           foundListing.location = req.body.location;
@@ -481,6 +485,7 @@ module.exports = function (app) {
 
 
   router.post('/:list_id/addUserGroup', (req, res) => {
+    //console.warn('addUserGroup');
     TenantRequest.findById(req.params.list_id, (err, foundListing) => {
       function checkDuplicate(user_list, _id) {
         let bDuplicate = false;
@@ -515,13 +520,9 @@ module.exports = function (app) {
 	    	switch (chattingType) {
 	    		case 1:
 	    			// find the ID of the friend
-	    			if (checkDuplicate(foundListing.shared_user_group, _friend._id) == true) {
-	    				console.log('Duplicate found');
-	    				res.json({ result: 'Duplicate found' });
-	    				return;
-	    			}
-
-	    			foundListing.shared_user_group.push(_friend._id);
+	    			if (checkDuplicate(foundListing.shared_user_group, _friend._id) === false) {
+	    			  foundListing.shared_user_group.push(_friend._id);
+            }
 
             // let's add the current user if it's not the shared_user_group yet.
             if (checkDuplicate(foundListing.shared_user_group, req.user._id) === false) {
@@ -537,17 +538,14 @@ module.exports = function (app) {
               return;
             }
 
-	    			if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend._id) == true) {
-	    				// console.log('Duplicate found');
-	    				res.json({ result: 'Duplicate found' });
-	    				return;
-	    			}
-            // console.log(`Pushing friend = ${_friend.username}`);
-
-    				foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
+	    			if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend._id) === false) {
+              //console.log(`Pushing friend = ${_friend.username}`);
+      				foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
+            }
 
             // let's add the current user if it's not the shared_user_group yet.
             if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, req.user._id) === false) {
+              //console.warn('adding current user');
               foundListing.child_listings[childInfo.index].shared_user_group.push(req.user._id);
             }
 
@@ -558,20 +556,36 @@ module.exports = function (app) {
 	    			return;
 	    	}
 
-	    	foundListing.save((err) => {
+	    	foundListing.save(async (err) => {
 	    		if (err) {
 	    			res.json({ result: 'DB save failure' });
 	    			return;
 	    		}
-	    		// console.log("ISEO: user added successfully");
+	    		//console.log('ISEO: user added successfully');
 		    	res.json({ result: 'Added successfully' });
 
-          let notificationUserList = (chattingType === 1) ? foundListing.shared_user_group : foundListing.child_listings[childInfo.index].shared_user_group;
-          notificationUserList = notificationUserList.filter(user => !user.equals(req.user._id));
-
           // we should notify to other people in the group.
-          // console.log(`notificationUserList = ${JSON.stringify(notificationUserList)}`);
-          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, notificationUserList);
+          let pathToPopulate = '';
+
+          if (chattingType === 1) {
+            pathToPopulate = 'shared_user_group';
+          } else {
+            pathToPopulate = `child_listings.${childInfo.index}.shared_user_group`;
+          }
+
+          await foundListing.populate(pathToPopulate, 'username').execPopulate();
+          foundListing.populated(pathToPopulate);
+
+          const userNameList = [];
+          const notificationUserList = (chattingType === 1) ? foundListing.shared_user_group : foundListing.child_listings[childInfo.index].shared_user_group;
+
+          for (let index = 0; index < notificationUserList.length; index++) {
+            if (req.user.username !== notificationUserList[index].username) {
+              userNameList.push(notificationUserList[index].username);
+            }
+          }
+          // <note> sendDashboardControlMessage expects username, not the ID
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
 	    	});
 	    });
     });
