@@ -118,7 +118,7 @@ async function addChannelToUser(chat_channel) {
         }
 
         if (numOfProcessed === chat_channel.members.length) {
-          // console.warn(`numOfProcessed=${numOfProcessed}, userNameList=${JSON.stringify(userNameList)}`);
+          //console.warn(`numOfProcessed=${numOfProcessed}, userNameList=${JSON.stringify(userNameList)}`);
           resolve(userNameList);
         }
       });

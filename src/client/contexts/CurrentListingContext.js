@@ -218,6 +218,8 @@ export function CurrentListingProvider(props) {
 
     let userList = currentListing.shared_user_group;
 
+    if(userList===undefined) return sampleProfile;
+
     if(userList.length===0) return sampleProfile;
 
     for(let index=0; index<userList.length; index++)
@@ -226,6 +228,27 @@ export function CurrentListingProvider(props) {
     }
 
     console.warn("getProfilePictureFromSharedGroup: no user found with given user name = " + user_name);
+    return sampleProfile;
+
+  }
+
+  function registeredInSharedGroup(user_name) {
+    if (user_name === undefined || currentUser === null) return false;
+
+    if (user_name === currentUser.username) {
+      return true;
+    }
+
+    let userList = currentListing.shared_user_group;
+
+    if(userList.length===0) return false;
+
+    for(let index=0; index<userList.length; index++)
+    {
+      if(userList[index].username===user_name) return true;
+    }
+
+    return false;
   }
 
   return (
@@ -254,6 +277,7 @@ export function CurrentListingProvider(props) {
       setMarkerParams,
       getProfilePictureFromSharedGroup,
       getChildListingUrl,
+      registeredInSharedGroup,
     }}
     >
       {props.children}

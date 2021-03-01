@@ -813,9 +813,6 @@ export function MessageContextProvider(props) {
         //console.warn(`Got control message=${msg}`);
 
         let processedControlMessage = parseControlMessage(msg);
-
-        //console.warn(`Got control message. code=${processedControlMessage[1]}`);
-
         switch(processedControlMessage[1])
         {
           case 'setModeNomal':
@@ -827,7 +824,7 @@ export function MessageContextProvider(props) {
             alert(`Dashboard will be controlled by ${currentListing.requester.username}`);
             break;
           case 'autoRefresh':
-            // console.warn('Got control message');
+            //console.warn('Got auto refresh');
             // need to refresh the currentListing.
             // This will be a rare occasion, and most likely it's ok to switch to the parent listing when there is a change in the child listing.
             if(doNotDisturbMode===false)
@@ -840,8 +837,9 @@ export function MessageContextProvider(props) {
               setListingIdWithLatestMessage(null);
             }
             // ISEO-TBD: we shouldn't load the listing prematurely?
-            //reloadChattingDbWithCurrentListing();
+            // reloadChattingDbWithCurrentListing();
             setTimeout(()=> reloadChattingDbWithCurrentListing(), 2000);
+            setTimeout(()=> refreshUserData(), 1000);
             break;
 
           default: console.warn("Unknown control packet"); break;
@@ -1450,9 +1448,9 @@ export function MessageContextProvider(props) {
   // loadChattingDatabase should be called by currentListing first.
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
-    //setTimeout(()=> loadChattingDatabase(), 1500);
-    loadChattingDatabase();
-    setTimeout(()=> loadChildChattingDatabase(), 500);
+    //console.warn(`currentListing has been updated`);
+    setTimeout(()=> loadChattingDatabase(), 500);
+    setTimeout(()=> loadChildChattingDatabase(), 2500);
   }, [currentListing]);
 
   webSocketConnect();

@@ -110,7 +110,7 @@ function ListingControlButtons() {
 
           <button className="btn btn-outline-dark" onClick={() => showForwardWindow()} style={{ marginLeft: '70px !important' }}>Forward it to Friends</button>
           {isOwner===true &&
-          <form role="form" action={'/LS_API/listing/landlord/'+currentListing.list_id+'/edit'} method="post" target="_blank">
+          <form role="form" action={'/LS_API/listing/landlord/'+currentListing.list_id+'/edit'} method="post">
             <div className="action">
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px !important' }}>Edit Listing</button>
             </div>

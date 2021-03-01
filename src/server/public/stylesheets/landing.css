@@ -1,8 +1,17 @@
  body {
-    /*background: url(https://images.unsplash.com/photo-1414016642750-7fdd78dc33d9?dpr=2&fit=crop&fm=jpg&h=825&ixlib=rb-0.3.5&q=50&w=1450);*/
-    /*background: url(https://images.unsplash.com/photo-1444012236767-1b471c68781c?dpr=2&fit=crop&fm=jpg&h=825&ixlib=rb-0.3.5&q=50&w=1450);*/
-    /*background: url(https://images.unsplash.com/photo-1444012104069-996724bf4a0a?dpr=2&fit=crop&fm=jpg&h=825&ixlib=rb-0.3.5&q=50&w=1450);*/
+    
+    background: url(/LS_API/public/user_resources/pictures/yoobin_1.png);
+    /*bckground: url(/LS_API/public/user_resources/pictures/airbnb_bg_1.jpg);*/
+    background: url(/LS_API/public/user_resources/pictures/yoobin_2.png);
     background: url(/LS_API/public/user_resources/pictures/web-1433045_1920.jpg);
+    background: url(/LS_API/public/user_resources/pictures/web-1433045_1920.jpg);
+    background: url(https://a0.muscache.com/im/pictures/miso/Hosting-4105892/original/8c00b511-5525-4d7a-a80e-883d2dd8b629.jpeg?im_w=1200);
+    background: url(https://a0.muscache.com/im/pictures/b43a6e00-bad4-4e5b-8b9d-6b1f0b6e4ca8.jpg?im_w=1200);
+    background: url(https://a0.muscache.com/im/pictures/11137748/d34e89c0_original.jpg?im_w=1200);
+    background: url(https://a0.muscache.com/im/pictures/166791ff-bc82-4b88-ba3d-49be1d462dce.jpg?im_w=2560);
+    background: url(https://a0.muscache.com/im/pictures/11137748/d34e89c0_original.jpg?im_w=1200);
+    background: url(https://a0.muscache.com/im/pictures/41ed9fc5-c45f-4ecb-85c8-f9480c136337.jpg?im_w=1200);
+    
     background-size: cover;
     background-position: center; 
     transition: background 3s linear;

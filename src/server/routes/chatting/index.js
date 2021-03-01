@@ -94,7 +94,7 @@ module.exports = function (app) {
 		    // <note> we should re-factor index.js in the root routes directory, need to inherit app.
 		    newChannel.channel_creator.name = req.user.username;
 		    // ISEO-DEPLOY-ISSUE
-      // : Is it safe to use appl.locals here?? will it work when multiple users got loggined?
+      		// : Is it safe to use appl.locals here?? will it work when multiple users got loggined?
 		    newChannel.channel_creator.id = app.locals.currentUser[req.user.username].id_;
 		    // <note> req.body doesn't include those information.
 
@@ -127,11 +127,11 @@ module.exports = function (app) {
 				              const result = { bNewlyCreated: true };
 				              res.json(result);
 
-				              // console.warn(`userNameList = ${JSON.stringify(userNameList)}`);
+				              //console.warn(`userNameList = ${JSON.stringify(userNameList)}`);
 				              if (userNameList !== null && userNameList !== undefined) {
 				              	// remove current user from the list
 				              	const adjustedUsernameList = userNameList.filter(user => user !== req.user.username);
-				              	// console.warn(`adjustedUsernameList: ${JSON.stringify(adjustedUsernameList)}`);
+				              	//console.warn(`adjustedUsernameList: ${JSON.stringify(adjustedUsernameList)}`);
 				              	chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, adjustedUsernameList);
 				              }
 			              });

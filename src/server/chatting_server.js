@@ -132,7 +132,7 @@ function addSocketToChannel(channelId, socket_) {
 
     if (bDuplicate === false) {
       channelIdToSocketList[channelId] = [...channelIdToSocketList[channelId], socket_];
-      //console.warn(`addSocketToChannel, channel = ${channelId}, socket= ${socket_}`);
+      // console.warn(`addSocketToChannel, channel = ${channelId}, socket= ${socket_}`);
     }
 
     // console.log(`length = ${channelIdToSocketList[channelId].length}`);
@@ -214,10 +214,10 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          //console.warn('sending message');
+          // console.warn('sending message');
           target.send(data);
         } else {
-          //console.warn('Same Socket??');
+          // console.warn('Same Socket??');
         }
       });
     });
@@ -227,17 +227,17 @@ function routeMessage(data, incomingSocket) {
 }
 
 function sendDashboardControlMessage(command, userNameList) {
-  // console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
+  //console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
   try {
     switch (command) {
       case DASHBOARD_AUTO_REFRESH:
       case DASHBOARD_CTRL_SET_MODE_LOCKED:
       case DASHBOARD_CTRL_SET_MODE_NORMAL:
         userNameList.forEach((name) => {
-          // console.log(`sending control message to user = ${name}`);
+          //console.log(`sending control message to user = ${name}`);
           if (userToSocketMap[name] !== undefined) {
             userToSocketMap[name].forEach((_socket) => {
-              // console.log('sending control message');
+              //console.log('sending control message');
               _socket.send(controlCodeStrings[command]);
             });
           }
