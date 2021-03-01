@@ -103,7 +103,7 @@ function ShowActiveListingPage(props) {
                 <button className="btn btn-info">Edit</button>
               </div>
             </Link> :
-            <form role="form" action={`/LS_API/listing/${listing_url_type}/${listing.id}/edit`} method="post" target="_blank">
+            <form role="form" action={`/LS_API/listing/${listing_url_type}/${listing.id}/edit`} method="post">
               <div className="action">
                 <button className="btn btn-info">Edit</button>
               </div>

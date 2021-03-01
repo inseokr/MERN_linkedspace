@@ -261,7 +261,7 @@ function ListingTenantMainPage(props) {
             <button className="btn btn-outline-dark" style={{ marginLeft: '70px ' }}>Dashboard</button>
           </Link>
           { isOwner===true &&
-          <form role="form" action={'/LS_API/listing/tenant/'+match.params.id+'/edit'} method="post" target="_blank">
+          <form role="form" action={'/LS_API/listing/tenant/'+match.params.id+'/edit'} method="post">
             <div class="action">
               <button className="btn btn-outline-dark" style={{marginLeft: '70px '}}>Edit Listing</button>
             </div>
