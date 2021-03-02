@@ -352,6 +352,7 @@ function ChatContactList() {
   }, [contactStates]);
 
   useEffect(() => {
+    //console.warn(`buildContactStates: chattingContextType/currentListing`);
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
@@ -360,12 +361,14 @@ function ChatContactList() {
 
 
   useEffect(()=> {
+    //console.warn(`buildContactStates: friendsList`);
     // rebuild states as new friends got added
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
   }, [friendsList]);
 
   useEffect(() => {
+    //console.warn(`buildContactStates: childIndex/currentChildIndex`);
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
@@ -374,6 +377,7 @@ function ChatContactList() {
 
 
   useEffect(() => {
+    //console.warn(`buildContactStates: dmChannelContexts/msgCounter`);
     let _contactStates = buildContactStates();
     if(_contactStates.length!==0) {
         setContactStates(_contactStates);
@@ -385,19 +389,33 @@ function ChatContactList() {
   }, [chattingContextType]);
 
   useEffect(()=> {
+    //console.warn(`buildContactStates: channelContextLength`);
     let _contactStates = buildContactStates();
     if(_contactStates.length!==0) {
         setContactStates(_contactStates);
     }
   }, [channelContextLength])
 
-  
+  function checkAnyActiveChannel() {
+    if(contactStates!==undefined && contactStates.length > 0) {
+      for(let index=0; index < contactStates.length; index++) {
+        if(contactStates[index].active===1) return true;
+      }
+    }
+    return false;
+  }
+
   useEffect(()=> {
+    //console.warn(`buildContactStates: flagNewlyLoaded=${flagNewlyLoaded}`);
+    //console.warn(`contactStates = ${JSON.stringify(contactStates)}`)
     if(flagNewlyLoaded===true)
     {
-      let _contactStates = buildContactStates();
-      if(_contactStates.length!==0) {
-          setContactStates(_contactStates);
+      if(checkAnyActiveChannel()===false)
+      {
+        let _contactStates = buildContactStates();
+        if(_contactStates.length!==0) {
+            setContactStates(_contactStates);
+        }
       }
       setFlagNewlyLoaded(false);
     }
