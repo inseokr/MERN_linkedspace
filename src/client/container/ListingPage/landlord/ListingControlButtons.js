@@ -95,7 +95,7 @@ function ListingControlButtons() {
   const controlButtons = currentListing.list_id !== 0
     ? (
       <div style={{ marginTop: '30px' }}>
-        <input type="text" value="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
+        <input type="text" defaultValue="Hello World" id="post_link" style={{ color: 'white', borderStyle: 'none' }} />
         {/* The button used to copy the text */}
         <SimpleModal show={modalShow} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" styles={{width: '20%', height: 'auto'}}>
           <SelectionFromDirectFriends show={modalShow} filter={currentListing.listing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
