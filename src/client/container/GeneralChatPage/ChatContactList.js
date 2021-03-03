@@ -98,7 +98,7 @@ function ChatContactList() {
         }
         else
         {
-          console.warn(`newMsgArrivedListingChannel=${checkIfAnyNewMsgArrivedListingChannel()}, new msg? = ${checkIfAnyNewMessage(_contactState.channelInfo.channelName)}`);
+          //console.warn(`newMsgArrivedListingChannel=${checkIfAnyNewMsgArrivedListingChannel()}, new msg? = ${checkIfAnyNewMessage(_contactState.channelInfo.channelName)}`);
           if (checkIfAnyNewMessage(_contactState.channelInfo.channelName) && 
               (checkIfAnyNewMsgArrived()===true || checkIfAnyNewMsgArrivedListingChannel()===true) )
           {
@@ -224,11 +224,10 @@ function ChatContactList() {
       // get the index by channelId
       let index = channelId2IndexMap[channelId];
 
-      if(index===undefined) 
+      if(index===undefined)
       {
         //console.warn(`handleDelayedPickChatParty: loading chatting DB`);
         loadChattingDatabase();
-
         return false;
       }
       else
@@ -237,7 +236,6 @@ function ChatContactList() {
         handleClickState(index);
         setNewContactSelected(false);
         resetChatList();
-
         return true;
       }
     }
@@ -286,9 +284,8 @@ function ChatContactList() {
       {
         handleClickState(index);
         setNewContactSelected(false);
+        resetChatList();
       }
-
-      resetChatList();
     }
   }, [newContactSelected]);
 
@@ -336,9 +333,8 @@ function ChatContactList() {
             indexOfActiveChannel = indexOfChatpartyWithHistory;
           }
           else {
-            //console.warn(`handleDelayedPickChatParty`);
-            
             let bChatPartyAvailable = handleDelayedPickChatParty();
+            //console.warn(`handleDelayedPickChatParty: bChatPartyAvailable=${bChatPartyAvailable}`);
             if( bChatPartyAvailable === false) indexOfActiveChannel = -1;
           }
         }
