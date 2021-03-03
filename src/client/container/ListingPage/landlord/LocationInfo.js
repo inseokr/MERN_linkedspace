@@ -59,7 +59,7 @@ function LocationInfo() {
                       <Marker key={`marker`} position={marker.position} icon={marker.icon}/>
                     </FeatureGroup>
                   </MapContainer>
-                ) : (<></>))
+                ) : (<div className="loader"/>))
               }
             </div>
           </div>
