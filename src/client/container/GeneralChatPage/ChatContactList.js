@@ -165,7 +165,7 @@ function ChatContactList() {
             }
             else
             {
-              if (checkIfAnyNewMessage(_contactState.channelInfo.channelName)
+              if (checkIfAnyNewMessage(_contactState.channelInfo.channelName) &&
                   (checkIfAnyNewMsgArrived()===true || checkIfAnyNewMsgArrivedListingChannel()===true))
               {
                 _contactState.active = 1;
@@ -183,7 +183,6 @@ function ChatContactList() {
                 _contactState.active = 0;
               }
             }
-
             _contactStates.push(_contactState);
           }
         }
@@ -287,8 +286,9 @@ function ChatContactList() {
       {
         handleClickState(index);
         setNewContactSelected(false);
-        resetChatList();
       }
+
+      resetChatList();
     }
   }, [newContactSelected]);
 
