@@ -31,7 +31,9 @@ function ChatContactList() {
     newContactSelected, 
     setNewContactSelected,
     flagNewlyLoaded,
-    setFlagNewlyLoaded
+    setFlagNewlyLoaded,
+    checkIfAnyNewMsgArrived,
+    checkIfAnyNewMsgArrivedListingChannel
   } = useContext(MessageContext);
 
   function removeCurrentUserFromList(_list) {
@@ -71,7 +73,6 @@ function ChatContactList() {
     let bFoundDefaultContact = false;
 
     // console.log.log("adjustedFriendsList: length = " + adjustedFriendsList.length);
-
     try {
       // 1. process DM
       for (let i = 0; i < adjustedFriendsList.length; i++) {
@@ -88,17 +89,20 @@ function ChatContactList() {
 
         _contactState.channelInfo.members.push(adjustedFriendsList[i].username);
 
-
         if ((bFoundDefaultContact === false) && 
             (currChannelInfo.channelName === _contactState.channelInfo.channelName)) {
+              //console.warn(`${currChannelInfo.channelName} set to active as it's the current active chatting channel`)
               _contactState.active = 1;
               bFoundDefaultContact = true;
               _currentActiveIndex = i;
         }
         else
         {
-          if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
+          console.warn(`newMsgArrivedListingChannel=${checkIfAnyNewMsgArrivedListingChannel()}, new msg? = ${checkIfAnyNewMessage(_contactState.channelInfo.channelName)}`);
+          if (checkIfAnyNewMessage(_contactState.channelInfo.channelName) && 
+              (checkIfAnyNewMsgArrived()===true || checkIfAnyNewMsgArrivedListingChannel()===true) )
           {
+            //console.warn(`new message`);
             _contactState.active = 1;
 
             if(bFoundDefaultContact === true && (_currentActiveIndex < _contactStates.length))
@@ -114,7 +118,6 @@ function ChatContactList() {
             _contactState.active = 0;
           }
         }
-
         _contactStates.push(_contactState);
       }
 
@@ -162,7 +165,8 @@ function ChatContactList() {
             }
             else
             {
-              if (checkIfAnyNewMessage(_contactState.channelInfo.channelName))
+              if (checkIfAnyNewMessage(_contactState.channelInfo.channelName)
+                  (checkIfAnyNewMsgArrived()===true || checkIfAnyNewMsgArrivedListingChannel()===true))
               {
                 _contactState.active = 1;
 
@@ -203,7 +207,6 @@ function ChatContactList() {
       // Error may happen because contactStates is being access even before it's created.
       //console.warn(`buildContactStates: error = ${err}`);
     }
-
     return _contactStates;
   }
 
@@ -213,7 +216,6 @@ function ChatContactList() {
   // It's called, but not used to update contactStates
   const [contactStates, setContactStates] = useState(buildContactStates());
   let channelId2IndexMap = [];
-
 
   function handleDelayedPickChatParty() {
     if(newContactSelected===true)
@@ -225,15 +227,23 @@ function ChatContactList() {
 
       if(index===undefined) 
       {
+        //console.warn(`handleDelayedPickChatParty: loading chatting DB`);
         loadChattingDatabase();
+
+        return false;
       }
       else
       {
+        //console.warn(`handleDelayedPickChatParty: delayed click`);
         handleClickState(index);
         setNewContactSelected(false);
         resetChatList();
+
+        return true;
       }
     }
+
+    return false;
   }
 
   async function handleClickState(index) {
@@ -251,6 +261,8 @@ function ChatContactList() {
 
       // We need to make it sure that loadChattingDatabase should be called in sequence.
       // second parameter tells if loadChattingDatabase is needed
+      // <note> does it have the proper channInformation?
+      //console.warn(`handleClickState = ${JSON.stringify(_newContactStates[index].channelInfo)}`);
       switchChattingChannel(_newContactStates[index].channelInfo, true);
     } catch (err) {
       console.warn(`handleClickState: error = ${err}`);
@@ -258,6 +270,7 @@ function ChatContactList() {
   }
 
   useEffect(() => {
+    //console.warn(`newContactSelected`);
     if(newContactSelected===true)
     {
       // MessageContext will get the channel ID from the selectedChatList
@@ -324,8 +337,9 @@ function ChatContactList() {
           }
           else {
             //console.warn(`handleDelayedPickChatParty`);
-            handleDelayedPickChatParty();
-            indexOfActiveChannel = -1;
+            
+            let bChatPartyAvailable = handleDelayedPickChatParty();
+            if( bChatPartyAvailable === false) indexOfActiveChannel = -1;
           }
         }
       }
@@ -352,6 +366,7 @@ function ChatContactList() {
   }, [contactStates]);
 
   useEffect(() => {
+    //console.warn(`buildContactStates: chattingContextType/currentListing`);
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
@@ -360,12 +375,14 @@ function ChatContactList() {
 
 
   useEffect(()=> {
+    //console.warn(`buildContactStates: friendsList`);
     // rebuild states as new friends got added
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
   }, [friendsList]);
 
   useEffect(() => {
+    //console.warn(`buildContactStates: childIndex/currentChildIndex`);
     // need to re-build the states if chattingContextType is changed.
     let _contactStates = buildContactStates();
     setContactStates(_contactStates);
@@ -374,6 +391,7 @@ function ChatContactList() {
 
 
   useEffect(() => {
+    //console.warn(`buildContactStates: dmChannelContexts/msgCounter`);
     let _contactStates = buildContactStates();
     if(_contactStates.length!==0) {
         setContactStates(_contactStates);
@@ -381,23 +399,36 @@ function ChatContactList() {
   }, [dmChannelContexts, msgCounter]);
 
   useEffect(() => {
+    //console.warn(`chattingContextType changed`);
     loadChattingDatabase();
   }, [chattingContextType]);
 
   useEffect(()=> {
+    //console.warn(`buildContactStates: channelContextLength`);
     let _contactStates = buildContactStates();
     if(_contactStates.length!==0) {
-        setContactStates(_contactStates);
+      setContactStates(_contactStates);
     }
   }, [channelContextLength])
 
-  
+  function checkAnyActiveChannel() {
+    if(contactStates!==undefined && contactStates.length > 0) {
+      for(let index=0; index < contactStates.length; index++) {
+        if(contactStates[index].active===1) return true;
+      }
+    }
+    return false;
+  }
+
   useEffect(()=> {
     if(flagNewlyLoaded===true)
     {
-      let _contactStates = buildContactStates();
-      if(_contactStates.length!==0) {
-          setContactStates(_contactStates);
+      if(checkAnyActiveChannel()===false)
+      {
+        let _contactStates = buildContactStates();
+        if(_contactStates.length!==0) {
+            setContactStates(_contactStates);
+        }
       }
       setFlagNewlyLoaded(false);
     }

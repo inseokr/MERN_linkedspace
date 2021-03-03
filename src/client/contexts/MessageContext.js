@@ -346,7 +346,7 @@ export function MessageContextProvider(props) {
             // ID of chatting channel will be returned.
             // update dmChannelContexts
             // console.log("addContactList: result = " + result);
-            reloadChattingDbWithCurrentListing();
+            //reloadChattingDbWithCurrentListing();
             resolve(result);
           })
           .catch((err) => {
@@ -625,6 +625,9 @@ export function MessageContextProvider(props) {
 
 
   async function clearNewMessageIndicator() {
+
+    setNewMsgArrived(false);
+    setNewMsgArrivedListingChannel(false);
     
     if(dmChannelContexts[currChannelInfo.channelName]===undefined)
     {
@@ -1113,6 +1116,59 @@ export function MessageContextProvider(props) {
     return newMsgArrivedListingChannel;
   }
 
+
+  function loadChatHistoryNoImmedateStateUpdate(channel_id, history) {
+    // update channel DB in react side
+    const lastReadIndex = getLastReadIndex(channel_id);
+
+    const dmChannel = {
+      channel_id,
+      channel_type: 0,
+      last_read_index: lastReadIndex,
+      chattingHistory: buildHistoryFromDb(history)
+    };
+
+    if (dmChannel.chattingHistory.length) {
+      dmChannel.flag_new_msg = checkIfAnyNewMsg(lastReadIndex, dmChannel.chattingHistory);
+
+      let indexOfLastReceivedMessage = -1;
+
+      // need to find the last received message. not the last messgae.
+      for(let index=dmChannel.chattingHistory.length - 1; index>=0; index--)
+      {
+        if(dmChannel.chattingHistory[index].username!==currentUser.username)
+        {
+          indexOfLastReceivedMessage = index;
+          break;
+        }
+      }
+
+      if(indexOfLastReceivedMessage!==-1)
+      {
+        dmChannel.msg_summary = `${dmChannel.chattingHistory[indexOfLastReceivedMessage].message.slice(0, 25)}...`;
+        dmChannel.datestamp = dmChannel.chattingHistory[indexOfLastReceivedMessage].datestamp;
+      }
+      else
+      {
+        dmChannel.msg_summary = '';
+        dmChannel.datestamp = '';
+      }
+
+      if (dmChannel.flag_new_msg == true) {
+        if(processChattingChannelName(channel_id).type==="general")
+        {
+          setNewMsgArrived(true);
+        }
+        else
+        {
+          setNewMsgArrivedListingChannel(true);
+        }
+      }
+    }
+
+    return dmChannel;
+  }
+
   // <note> It's different from loadChattingHistory.
   // It's called after "channel/new" API call.
   function loadChatHistory(channel_id, history) {
@@ -1188,6 +1244,9 @@ export function MessageContextProvider(props) {
 
     // go through each channel and load chatting history if any.
     // we need to create the channel if it doesn't exist yet.
+    const dmChannelContextArray = dmChannelContexts;
+    let numOfNewMessage = 0;
+
     for (let i = 0; i < chatChannel.length; i++) {
       const data = {
         channel_id: chatChannel[i].channel_id,
@@ -1205,13 +1264,20 @@ export function MessageContextProvider(props) {
             // <note> channel could be null if it's a duplicate case.
             if(result.data.channel!==null)
             {
+              let channelId = result.data.channel.channel_id
               const channelData = {
-                channel_id: result.data.channel.channel_id,
+                channel_id: channelId,
                 channel_type: result.data.channel.channel_type,
-                last_read_index: getLastReadIndex(result.data.channel.channel_id)
+                last_read_index: getLastReadIndex(channelId)
               };
 
-              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+              //loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+              dmChannelContextArray[channelId] = 
+                loadChatHistoryNoImmedateStateUpdate(chatChannel[i].channel_id, result.data.channel.chat_history);
+
+              if(dmChannelContextArray[channelId].chattingHistory.length!=dmChannelContexts[channelId].chattingHistory.length) {
+                numOfNewMessage += 1;
+              }
 
               // ISEO-TBD-1227
               // CSC:Register will be needed even if it's existing channel
@@ -1222,7 +1288,10 @@ export function MessageContextProvider(props) {
               }
             }
           } else {
-            loadChatHistory(chatChannel[i].channel_id, []);
+            //loadChatHistory(chatChannel[i].channel_id, []);
+            dmChannelContextArray[chatChannel[i].channel_id] = 
+                loadChatHistoryNoImmedateStateUpdate(chatChannel[i].channel_id, []);
+
             // <note> registration should work after chattting channel is created first.
             try {
               // make it sure current user is in the shared_user_group.
@@ -1238,6 +1307,14 @@ export function MessageContextProvider(props) {
         })
         .catch(err => console.warn(err));
     }
+
+    setTimeout(() => setChannelContexts(dmChannelContextArray), 100);
+    setTimeout(() => setChannelContextLength(Object.keys(dmChannelContextArray).length), 1000);
+    setTimeout(() => setCurrentHistoryLength(numOfNewMessage), 1500 );
+    // ISEO-TBD: Is it necessary?
+    // Yes, it is... there was a problem in React. useEffect is not called if the structure's too big.
+    // let's set it if there is any change in the length
+    setFlagNewlyLoaded(true);
   }
 
   // loading chatting database from backend
@@ -1259,9 +1336,12 @@ export function MessageContextProvider(props) {
 
     // console.log("currChannelInfo.channelName = " + currChannelInfo.channelName);
 
+    const dmChannelContextArray = dmChannelContexts;
+    let numOfNewMessage = 0;
+
     // clear new message arrival;
-    setNewMsgArrived(false);
-    setNewMsgArrivedListingChannel(false);
+    //setNewMsgArrived(false);
+    //setNewMsgArrivedListingChannel(false);
 
     // note: it will be good time to register the user again?
 
@@ -1304,13 +1384,20 @@ export function MessageContextProvider(props) {
             // <note> channel could be null if it's a duplicate case.
             if(result.data.channel!==null)
             {
+              let channelId = result.data.channel.channel_id;
+
               const channelData = {
-                channel_id: result.data.channel.channel_id,
+                channel_id: channelId,
                 channel_type: result.data.channel.channel_type,
-                last_read_index: getLastReadIndex(result.data.channel.channel_id)
+                last_read_index: getLastReadIndex(channelId)
               };
 
-              loadChatHistory(chatChannel[i].channel_id, result.data.channel.chat_history);
+              dmChannelContextArray[channelId] = 
+                loadChatHistoryNoImmedateStateUpdate(chatChannel[i].channel_id, result.data.channel.chat_history);
+
+              if(dmChannelContextArray[channelId].chattingHistory.length!=dmChannelContexts[channelId].chattingHistory.length) {
+                numOfNewMessage += 1;
+              }
 
               // ISEO-TBD-1227
               // CSC:Register will be needed even if it's existing channel
@@ -1323,7 +1410,9 @@ export function MessageContextProvider(props) {
               }
             }
           } else {
-            loadChatHistory(chatChannel[i].channel_id, []);
+
+            dmChannelContextArray[chatChannel[i].channel_id] =
+              loadChatHistoryNoImmedateStateUpdate(chatChannel[i].channel_id, []);
 
             // <note> registration should work after chattting channel is created first.
             try {
@@ -1341,6 +1430,15 @@ export function MessageContextProvider(props) {
         })
         .catch(err => console.warn(err));
     }
+
+    setChannelContexts(dmChannelContextArray);
+    setChannelContextLength(Object.keys(dmChannelContextArray).length);
+    // ISEO-TBD: Is it necessary?
+    // Yes, it is... there was a problem in React. useEffect is not called if the structure's too big.
+    // let's set it if there is any change in the length
+    setCurrentHistoryLength(numOfNewMessage);
+    setFlagNewlyLoaded(true);
+
     setDatabaseLoadingInProgressFlag(false);
     //console.warn(`stop loading. context type=${chattingContextType}`);
   }
@@ -1449,7 +1547,14 @@ export function MessageContextProvider(props) {
   // currChannelInfo could trigger loadChattingDatabase, but we should ensure the listing is updated.
   useEffect(() => {
     //console.warn(`currentListing has been updated`);
+    // loading DMs and group channels, only the ones related to the current active listing.
     setTimeout(()=> loadChattingDatabase(), 500);
+    // loading all the child listings
+    // we'd better modify loadChattingDatabase to load channels in the parent level only?
+    // Question> why do we need to load everything??
+    // <note> mostly it's the way how we could handle the case when the listing's forwarded and friend started the communication from other child listing.
+    // We may not be able to handle this case unless we go through all the channels in all different child listings.
+    // Some optimization could be achieved if we know which child listing has a new chatting channel?
     setTimeout(()=> loadChildChattingDatabase(), 2500);
   }, [currentListing]);
 
