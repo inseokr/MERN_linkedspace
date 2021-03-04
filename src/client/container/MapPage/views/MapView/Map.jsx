@@ -53,15 +53,20 @@ function Map() {
     });
 
     listingsByBounds.forEach((listing) => {
-      const { coordinates } = listing.rental_property_information;
-      const image = listing.pictures.length > 0
-        ? `${FILE_SERVER_URL}${listing.pictures[0].path}`
-        : `${FILE_SERVER_URL}/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg`;
-      const marker = createMarker(googleMap, coordinates, image);
-      marker.addListener('click', () => {
-        alert('Clicked!');
-      });
-      bounds.extend(coordinates);
+      try {
+        const { coordinates } = listing.rental_property_information;
+        const image = listing.pictures.length > 0
+          ? `${FILE_SERVER_URL}${listing.pictures[0].path}`
+          : `${FILE_SERVER_URL}/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg`;
+        const marker = createMarker(googleMap, coordinates, image);
+
+        marker.addListener('click', () => {
+          alert('Clicked!');
+        });
+        bounds.extend(coordinates);
+      } catch (err) {
+        console.warn(err);
+      }
     });
   }, [listingsByBounds]);
 
