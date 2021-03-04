@@ -145,7 +145,6 @@ function ListingComponent(props) {
                       {listing.requester.username}
                     </Typography>
                   </div>
-                  {getConnectedFriends()}
                 </div>
               </Paper>
             </Grid>
