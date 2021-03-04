@@ -26,7 +26,7 @@ function DirectFriends() {
       maxWidth: '100%',
       maxHeight: '100%',
       marginTop: '10px',
-      width: '80%'
+      height: '80%'
     };
 
     if (network_info == null) return friends;
@@ -35,7 +35,7 @@ function DirectFriends() {
 
     for (let i = 0; i < network_info.direct_friends_list.length; i++) {
       friends.push(
-        <div className="network_board">
+        <div className="network_board" style={{marginTop: '10px'}}>
           <div className="profile_picture">
             <img className="img-responsive center rounded-circle" style={profile_style} src={FILE_SERVER_URL+network_info.direct_friends_list[i].profile_picture} />
           </div>
