@@ -80,7 +80,7 @@ export default class GeneralChatMainPage extends Component {
         {display:'none'} : {};
     let contactListStyle = 
         (this.context.collapse==='true' && this.props.compact ==='true')? 
-          {display:'none'} : {height: '78%'};
+          {display:'none'} : {height: '90%'};
   
     let viewHeight = '90vh';
 
@@ -115,9 +115,6 @@ export default class GeneralChatMainPage extends Component {
         <div className="MessageLeftPanel" style={this.state.leftPanelStyle}>
           <div className="MessageHeader_ls">
             <GeneralChatHeader compact={this.props.compact} />
-          </div>
-          <div className="SearchMessageBox" style={searchMessageBoxStyle}>
-            <SearchMessageBox />
           </div>
           <div className="MessageContactList" style={contactListStyle}>
             <ChatContactList />
