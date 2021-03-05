@@ -10,7 +10,7 @@ function GeneralChatHeader(props) {
 
   return (
     <React.Fragment>
-      <div className="MessageHeaderLabel"> Messaging </div>
+      <div className="MessageHeaderLabel" style={{marginLeft: '10px'}}> Contacts </div>
       <MessageEditorIcon callerType={caller_type} />
     </React.Fragment>
   );

@@ -77,12 +77,12 @@ export default class LandingPage extends Component {
                 <div className="content" style={{marginTop:'0px'}}>
                   <section style={{fontSize: '7em', 
                                    fontWeight: '700', 
-                                   color: 'black'}}> 
+                                   color:  'white'}}> 
                     LinkedSpaces
                   </section>
                   <section style={{fontSize: '3em', 
                                    fontWeight: '700', 
-                                   color: 'rgb(236 221 227)', 
+                                   color: 'white', 
                                    marginTop: '0px'}}>
                     Make your next move through a trusted network
                   </section>

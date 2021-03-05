@@ -57,10 +57,7 @@ export default class App extends Component {
   }
 
   clickHandler() {
-    console.log('loginClickHander called');
-
-    //this.setState({ showLoginModal: true });
-
+    //console.warn('loginClickHander called');
     if(this.state.showLoginModal===false)
     {
       this.setState({ showLoginModal: true });

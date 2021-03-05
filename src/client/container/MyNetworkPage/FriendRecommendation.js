@@ -12,7 +12,7 @@ function FriendRecommendation() {
     maxWidth: '100%',
     maxHeight: '100%',
     marginTop: '10px',
-    width: '80%'
+    height: '80%'
   };
 
   function getRecommendedFriends() {

@@ -9,9 +9,9 @@ import './mynetwork_style.css';
 function MyNetworkCenterPane() {
   return (
     <div>
-      <FriendRecommendation />
-      <IncomingFriendRequest />
       <DirectFriends />
+      <IncomingFriendRequest />
+      <FriendRecommendation />
     </div>
   );
 }

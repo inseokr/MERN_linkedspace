@@ -57,7 +57,7 @@ module.exports = function (app) {
 
   router.get('/getData', (req, res) => {
     // read listing information from database.
-    LandlordRequest.find({}).then((listings) => {
+    LandlordRequest.find({}).populate('requester', 'username profile_picture').then((listings) => {
       res.send(listings);
     });
   });

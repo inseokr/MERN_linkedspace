@@ -300,13 +300,7 @@ module.exports = function (app) {
 
 
   router.get('/:list_id/fetch', (req, res) => {
-    if (req.user === undefined) {
-      console.log("fetch's not allowed when user is not logged in");
-      res.json(null);
-      return;
-    }
     // console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
-
     TenantRequest.findById(req.params.list_id, async (err, foundListing) => {
       if (err || foundListing === null) {
         console.warn('Listing not found');
@@ -317,6 +311,10 @@ module.exports = function (app) {
 
       /* await foundListing.populate('requester', 'username profile_picture loggedInTime').execPopulate();
       foundListing.populated('requester'); */
+      if (req.user === undefined) {
+        res.json(foundListing);
+        return;
+      }
 
       const populateChildren = new Promise(async (resolve, reject) => {
         await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
@@ -327,9 +325,7 @@ module.exports = function (app) {
 
           foundListing.child_listings.forEach(async (child, index, array) => {
             const pathToPopulate = `child_listings.${index}.listing_id`;
-
             // console.log("child listing reference = " + child.listing_type);
-
             await foundListing.populate({ path: pathToPopulate, model: child.listing_type }).execPopulate();
             foundListing.populated(pathToPopulate);
 
@@ -485,7 +481,7 @@ module.exports = function (app) {
 
 
   router.post('/:list_id/addUserGroup', (req, res) => {
-    //console.warn('addUserGroup');
+    // console.warn('addUserGroup');
     TenantRequest.findById(req.params.list_id, (err, foundListing) => {
       function checkDuplicate(user_list, _id) {
         let bDuplicate = false;
@@ -539,13 +535,13 @@ module.exports = function (app) {
             }
 
 	    			if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend._id) === false) {
-              //console.log(`Pushing friend = ${_friend.username}`);
+              // console.log(`Pushing friend = ${_friend.username}`);
       				foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
             }
 
             // let's add the current user if it's not the shared_user_group yet.
             if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, req.user._id) === false) {
-              //console.warn('adding current user');
+              // console.warn('adding current user');
               foundListing.child_listings[childInfo.index].shared_user_group.push(req.user._id);
             }
 
@@ -561,7 +557,7 @@ module.exports = function (app) {
 	    			res.json({ result: 'DB save failure' });
 	    			return;
 	    		}
-	    		//console.log('ISEO: user added successfully');
+	    		// console.log('ISEO: user added successfully');
 		    	res.json({ result: 'Added successfully' });
 
           // we should notify to other people in the group.

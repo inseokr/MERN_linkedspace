@@ -401,6 +401,7 @@ export function MessageContextProvider(props) {
   }
 
   async function postSelectedContactList() {
+
     setNewContactSelected(true);
     // DM case
     if (selectedChatList.length == 1) {
@@ -461,7 +462,6 @@ export function MessageContextProvider(props) {
         : `${currentListing._id}-child-${currentListing.child_listings[childIndex].listing_id._id}-${concatenatedFriendsString}`;
 
       // console.log("postSelectedContactList: currentListing.child_listings[childIndex].listing_id = " + JSON.stringify(currentListing.child_listings[childIndex].listing_id));
-
       const data = {
         friends,
         chattingType,
@@ -1456,9 +1456,18 @@ export function MessageContextProvider(props) {
   }
 
 
-  // const [selectedChatList, setSelectedChatList] = useState([]);
+  function checkDuplicateInChatList(list, userName)
+  {
+    for(let index=0; index<list.length; index++) {
+      if(list[index].username === userName) return true;
+    }
+    return false;
+  }
 
   function addToChatList(_friend) {
+    let bDuplicate = checkDuplicateInChatList(selectedChatList, _friend.username);
+    if(bDuplicate===true) return;
+
     const tempList = [...selectedChatList];
     tempList.push(_friend);
     setSelectedChatList(tempList);

@@ -39,7 +39,7 @@ function MyNetworkLeftPane() {
   }
 
   return (
-    <div className="d-flex justify-content-around connection_pannel wooden_background">
+    <div className="d-flex justify-content-around connection_pannel">
       <div className="connection_image">
         <div className="col">
           {getFriendImages()}

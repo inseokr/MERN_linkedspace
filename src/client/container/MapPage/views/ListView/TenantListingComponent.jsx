@@ -221,7 +221,7 @@ function TenantListingComponent(props) {
         <ForwardTenantListingModal listing_id={currentListing._id} modalState={showForwardListingModal} setModalState={setShowForardListingModal}/>
         <Invite2DashboardModal listing_id={currentListing._id} modalState={showMeetingRequestModal} setModalState={setShowMeetingRequestModal}/>
         <button className="btn btn-info" onClick={() => {setShowMeetingRequestModal(true)}} style={{fontSize: '0.7rem', height: '45px'}}>
-          Meeting Request
+          Invite to meeting
         </button>
 
         <button className="btn btn-info"  onClick={() => {setShowForardListingModal(true)}} style={{fontSize: '0.7rem', height: '45px'}}>
@@ -241,15 +241,21 @@ function TenantListingComponent(props) {
       <ListItem key={listing.requester._id}>
         <Grid container style={borderStyle}>
           <Grid item xs={4}>
-            <Carousel interval={null} slide activeIndex={index} onSelect={handleSelect} className="carousel">
+            <div onSelect={handleSelect}>
               {listing.profile_pictures.map(picture => (
-                <Carousel.Item key={picture._id}>
                  <a href={`/listing/tenant/${listing._id}/get`} target="_blank">
-                  <img src={FILE_SERVER_URL+listing.profile_pictures[0].path} alt={userName} className="carouselImage rounded-circle" style={{ maxWidth: '90%' }} />
+                  <img 
+                    src={FILE_SERVER_URL+listing.profile_pictures[0].path} 
+                    alt={userName} 
+                    className="rounded-circle" 
+                    style={{ 
+                            marginLeft: '20px', 
+                            width: '160px', 
+                            maxWidth: '100%', 
+                            maxHeight: '100%' }} />
                  </a>
-                </Carousel.Item>
               ))}
-            </Carousel>
+            </div>
           </Grid>
           <Grid item xs={8}>
             <Paper className="description" onClick={handleParentOnClick} style={{background: _backGroundColor}}>
