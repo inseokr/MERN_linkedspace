@@ -15,6 +15,8 @@ import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
 import SimpleModal from '../../../components/Modal/SimpleModal';
+import LandingPage from '../../LandingPage/LandingPage';
+import { STYLESHEET_URL } from '../../../globalConstants';
 
 import {
   createMarker,
@@ -184,8 +186,14 @@ function TenantListingDashBoard(props) {
   let chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
 
   return (
-    (isUserLoggedIn()===false)? <React.Fragment> </React.Fragment> :
-      <Grid component="main">
+    (isUserLoggedIn()===false)? 
+      <div>
+          <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"}/>
+          <div className="container landingPage" >
+          </div>
+      </div>
+      :
+       <Grid component="main">
         <CssBaseline />
         <Box className="App" component="div" display="flex" flexDirection="column">
             <span className="DashboardModeControlCaption" > Do not disturb mode </span>
