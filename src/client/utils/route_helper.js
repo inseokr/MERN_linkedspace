@@ -9,6 +9,12 @@ function preprocessUrlRequest(loginStatus, loginClickHandler, hideLoginModal)
     if(sessionStorage.getItem('redirectUrlAfterLogin')===null && window.location.pathname!=="/")
     {
       //console.warn("Setting redirectURL");
+      // following 2 URL will be alllowed
+      // listing/tenant/*/get
+      // listing/landlord/*/get
+      let matchedUrl = window.location.pathname.match(/listing.*\/get/g);
+      if(matchedUrl!==null) return;
+
       sessionStorage.setItem('redirectUrlAfterLogin', window.location.pathname);
       loginClickHandler();
     }

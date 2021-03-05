@@ -209,11 +209,6 @@ function ListingTenantMainPage(props) {
 
 
   function getListingControls() {
-    if (!isLoggedIn) {
-      return (
-        <React.Fragment> </React.Fragment>
-      );
-    }
 
     async function forward2friend() {
 
@@ -402,10 +397,12 @@ function ListingTenantMainPage(props) {
               {getNumOfRoomMates()}
 
             </div>
-            <div style={{marginLeft: '32%'}}>
-            {getListingControls()}
-            </div>
-
+            
+            {isLoggedIn === true && 
+              <div style={{marginLeft: '32%'}}>
+              {getListingControls()}
+              </div>
+            }
             
             <div className="container" style={{ borderStyle: 'none ', marginTop: '50px' }}>
               <hr />
