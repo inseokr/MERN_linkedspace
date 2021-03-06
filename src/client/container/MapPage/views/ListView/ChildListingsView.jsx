@@ -9,6 +9,7 @@ import constructListingInformationBullets from '../../helper/helper';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import { MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../../contexts/MessageContext';
 import ChildListing from './ChildListing';
+import EmptyChildListing from './EmptyChildListing';
 import axios from 'axios';
 
 
@@ -57,7 +58,6 @@ export default class ChildListingsView extends Component {
             handleSelect={this.props.handleSelect}
             listing={childListing}
             index={index}
-            messageClickHandler={this.props.messageClickHandler}
             removeHandler={this.props.removeHandler}
             ref={this.state.refs[index]}
           />
@@ -189,7 +189,6 @@ export default class ChildListingsView extends Component {
             handleSelect={this.props.handleSelect}
             listing={childListing}
             index={index}
-            messageClickHandler={this.props.messageClickHandler}
             removeHandler={this.props.removeHandler}
             ref={curRef}
           />
@@ -248,6 +247,7 @@ export default class ChildListingsView extends Component {
   render() {
     return (
       <React.Fragment>
+        {this.context.currentListing.child_listings.length===0 && <EmptyChildListing handleAttachListing={this.props.handleAttachListing}/>}
         {this.state.childListingsViews}
       </React.Fragment>
     );
