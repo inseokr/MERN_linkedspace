@@ -1508,6 +1508,11 @@ export function MessageContextProvider(props) {
     return false;
   }
 
+  function checkIfAnyNewMessage(channel_id)
+  {
+    return dmChannelContexts[channel_id].flag_new_msg;
+  }
+
   useEffect(() => {
     //console.log("currChannelInfo updated");
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
@@ -1621,7 +1626,8 @@ export function MessageContextProvider(props) {
       setNewContactSelected,
       flagNewlyLoaded, 
       setFlagNewlyLoaded,
-      getListOfAllChildChatChannels
+      getListOfAllChildChatChannels,
+      checkIfAnyNewMessage
     }}
     >
       {props.children}

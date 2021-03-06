@@ -8,22 +8,24 @@ import { MessageContext } from '../../contexts/MessageContext';
 // import sampleProfile from '../../assets/images/Chinh - Vy.jpg';
 
 function ContactSummary(props) {
-  const { setCurrentChatPartyPicture } = useContext(MessageContext);
+  const { setCurrentChatPartyPicture, currChannelInfo, checkIfAnyNewMessage } = useContext(MessageContext);
   const [currentClickState, setCurrentClickState] = useState(false);
 
   const contactRef = useRef(null);
 
+  // let's use scrollIntoView only if it's clicked by a new message.
   useEffect(() => {
     if(contactRef.current)
     {
       if(currentClickState!=props.clickState)
       {
         //contactRef.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest'});
-        contactRef.current.scrollIntoView();
+        if(checkIfAnyNewMessage(currChannelInfo.channelName)===true) {
+          contactRef.current.scrollIntoView();
+        }
         setCurrentClickState(props.clickState);
       }
     }
-
   }, [props.clickState]);
 
   function handleClick(e) {
