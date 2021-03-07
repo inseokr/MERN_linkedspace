@@ -24,15 +24,21 @@ module.exports = function (app) {
   function getSummaryOfUser(user_id) {
     return new Promise((resolve) => {
       User.findById(user_id, (err, curr_user) => {
-        const friend = 				{
-				  profile_picture: curr_user.profile_picture,
-				  name: `${curr_user.firstname} ${curr_user.lastname}`,
-				  address: { city: curr_user.address.city, state: curr_user.address.state },
-				  username: curr_user.username,
-				  id: user_id
-        };
+        
+        if(curr_user===null) {
+          resolve(null);
+        }
+        else {
+          const friend = 				{
+            profile_picture: curr_user.profile_picture,
+            name: `${curr_user.firstname} ${curr_user.lastname}`,
+            address: { city: curr_user.address.city, state: curr_user.address.state },
+            username: curr_user.username,
+            id: user_id
+          };
 
-        resolve(friend);
+          resolve(friend);
+        }
       });
     });
   }
@@ -68,7 +74,8 @@ module.exports = function (app) {
     let bFound = false;
 
     curr_user.direct_friends.forEach((friend) => {
-      if (friend.equals(friend_id) == true) {
+      if (friend.equals(
+        friend_id) == true) {
         bFound = true;
         // ISEO: seriously??? function return twice??
         // I returned true from here,
@@ -189,7 +196,10 @@ module.exports = function (app) {
 
       for (let friend_idx = 0; friend_idx < input_list.length; friend_idx++) {
         const friend = await getSummaryOfUser(input_list[friend_idx]);
-        const res = await pushFriendReqstList(output_list, friend);
+        
+        if(friend!==null) {
+          const res = await pushFriendReqstList(output_list, friend);
+        }
 
         if ((friend_idx + 1) == input_list.length) {
           resolve(output_list);

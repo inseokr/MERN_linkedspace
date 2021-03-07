@@ -1510,7 +1510,11 @@ export function MessageContextProvider(props) {
 
   function checkIfAnyNewMessage(channel_id)
   {
-    return dmChannelContexts[channel_id].flag_new_msg;
+    if(dmChannelContexts[channel_id]===undefined) return false;
+    else
+    {
+      return dmChannelContexts[channel_id].flag_new_msg;
+    }
   }
 
   useEffect(() => {
