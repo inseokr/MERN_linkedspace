@@ -243,7 +243,7 @@ function TenantListingComponent(props) {
           <Grid item xs={4}>
             <div onSelect={handleSelect}>
               {listing.profile_pictures.map(picture => (
-                 <a href={`/listing/tenant/${listing._id}/get`} target="_blank">
+                 <a href={`/listing/tenant/${listing._id}/get`} key={listing._id} target="_blank">
                   <img 
                     src={FILE_SERVER_URL+listing.profile_pictures[0].path} 
                     alt={userName} 
@@ -316,6 +316,7 @@ function TenantListingComponent(props) {
         listing={listing}
         removeHandler={removeChildListing}
         chattingContextType={chattingContextType}
+        handleAttachListing={showModal}
       />
     </div>
   );
