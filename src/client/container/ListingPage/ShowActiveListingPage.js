@@ -143,7 +143,7 @@ function ShowActiveListingPage(props) {
           <div className="friendSummary">
             <span className="panel-subtitle">
               {' '}
-              {listing.friend.friend_name}
+              {listing.friend.username}
               {' '}
             </span>
             <span className="socialDistance">
