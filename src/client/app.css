@@ -196,3 +196,35 @@ span.newMsgSignature {
     padding: 24px;
     box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
 }
+
+
+._lsTitleLarge {
+    color: rgb(34, 34, 34) !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 650 !important;
+    font-size: 25px !important;
+    line-height: 20px !important;
+    margin-bottom: 4px !important;
+    margin-left: 5px;
+}
+
+._lsMediaMedium {
+    color: rgb(113, 113, 113) !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 18px !important;
+    line-height: 25px !important;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+._lsClickForDetails {
+    color: #0f3e6f !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 18px !important;
+    font-style: italic;
+    line-height: 25px !important;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
