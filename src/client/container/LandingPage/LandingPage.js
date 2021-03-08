@@ -3,12 +3,15 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import '../../app.css';
 import './LandingPage.css';
-import { STYLESHEET_URL } from '../../globalConstants';
+import { FILE_SERVER_URL } from '../../globalConstants';
 import Home from '../HomePage/Home';
 import Dashboard from '../DashboardPage/Dashboard';
 import Map from '../MapPage/index';
 import Search from '../SearchPage/SearchPage';
 import { GlobalContext } from '../../contexts/GlobalContext';
+import TenantIntro from './TenantIntro';
+import DashboardIntro from './DashboardIntro';
+import $ from 'jquery';
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
 //
@@ -33,16 +36,11 @@ export default class LandingPage extends Component {
 
   constructor(props) {
     super(props);
+
+    this.handleSignupClick = this.handleSignupClick.bind(this);
   }
 
   componentWillMount() {
-/*
-    fetch('/LS_API/getLastMenu')
-      .then(res => res.json())
-      .then((menuFromExpress) => {
-        console.log('menuFromExpress:', menuFromExpress);
-        this.setState({ lastMenu: menuFromExpress, fetchedMenu: true });
-      });*/
   }
 
   componentDidMount() {
@@ -50,12 +48,31 @@ export default class LandingPage extends Component {
     refreshUserData();
   }
 
+  handleSignupClick() {
+    //console.log('handleSignupClick');
+    const { signupClickHandler } = this.props;
+    signupClickHandler();
+  }
+
   render() {
     const redirectUrl = sessionStorage.getItem('redirectUrlAfterLogin');
-
     console.warn("redirectUrl = " + redirectUrl);
 
     let pageToRender = <div />;
+    let bgFileUrl = "/public/user_resources/pictures/airbnb_bg_1.jpg";
+
+    let landingPageStyle = {
+      backgroundImage: `url(${FILE_SERVER_URL}${bgFileUrl}`,
+      minHeight: "89vh",
+      minWidth: "100%"
+    }
+
+    let noLoginComponents = (this.context.isUserLoggedIn()===false) ? 
+      <React.Fragment>
+      <TenantIntro handleSignupClick={this.handleSignupClick}/>
+      <DashboardIntro handleSignupClick={this.handleSignupClick}/> 
+      </React.Fragment> :
+      <React.Fragment></React.Fragment>;
 
     if (redirectUrl !== null && this.context.isUserLoggedIn()===false) {
       console.log('is this even being called', redirectUrl);
@@ -70,8 +87,7 @@ export default class LandingPage extends Component {
             rel="stylesheet"
             href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
           />
-          <link rel="stylesheet" href={STYLESHEET_URL+"/stylesheets/landing.css"}/>
-          <div className="container landingPage" >
+          <div className="container landingPage" style={landingPageStyle}>
             <div className="row landingPage">
               <div className="col-lg-12">
                 <div className="content" style={{marginTop:'0px'}}>
@@ -91,6 +107,9 @@ export default class LandingPage extends Component {
               </div>
             </div>
           </div>
+          {noLoginComponents}
+          <div className="_lsFont2" style={{borderTopStyle: 'none', textAlign: 'left', marginTop: '10px'}}> 
+          <section style={{marginTop: '10px', minHeight: '30px'}}> © 2021 LinkedSpaces, Inc. All rights reserved</section> </div>
         </div>
       );
     }
