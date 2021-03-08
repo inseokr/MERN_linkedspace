@@ -144,12 +144,12 @@ export default class App extends Component {
                     <EditProfileMain />
                   </Route>
 
-                  <Route exact path="/" render={props => <LandingPage {...props} />} />
+                  <Route exact path="/" render={props => <LandingPage {...props} signupClickHandler={this.signupClickHandler} />} />
 
                   <Route path="/facebooklogin/:id/login" render={props => <FacebookLogin {...props} updateLoginStatus={this.updateLoginStatus} />} />
 
                   <Route exact path="/homepage">
-                    <LandingPage />
+                    <LandingPage signupClickHandler={this.signupClickHandler}/>
                   </Route>
 
                   <Route exact path="/3rdParty" component={Post3rdPartyListing} />
