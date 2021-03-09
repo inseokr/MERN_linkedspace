@@ -10,7 +10,9 @@ import Map from '../MapPage/index';
 import Search from '../SearchPage/SearchPage';
 import { GlobalContext } from '../../contexts/GlobalContext';
 import TenantIntro from './TenantIntro';
+import VacationIntro from './VacationIntro';
 import DashboardIntro from './DashboardIntro';
+import MiddlemenIntro from './MiddlemenIntro';
 import $ from 'jquery';
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -23,7 +25,6 @@ import $ from 'jquery';
 
 // You can think of these components as "pages"
 // in your app.
-
 export default class LandingPage extends Component {
   // <note> can we have multiple contexts?
   static contextType = GlobalContext;
@@ -70,7 +71,9 @@ export default class LandingPage extends Component {
     let noLoginComponents = (this.context.isUserLoggedIn()===false) ? 
       <React.Fragment>
       <TenantIntro handleSignupClick={this.handleSignupClick}/>
-      <DashboardIntro handleSignupClick={this.handleSignupClick}/> 
+      <VacationIntro handleSignupClick={this.handleSignupClick}/>
+      <MiddlemenIntro handleSignupClick={this.handleSignupClick}/>
+      <DashboardIntro handleSignupClick={this.handleSignupClick}/>
       </React.Fragment> :
       <React.Fragment></React.Fragment>;
 
