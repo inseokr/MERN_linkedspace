@@ -36,10 +36,11 @@ function VacationIntro(props) {
             <div style={IntroStyle}>
                 <section className="_lsTitleLarge" style={{textAlign: 'left'}}> Planning Vacation?  </section>
                 <section className="_lsMediaMedium" style={{marginTop: '25px'}}> 
-                    Vacation planning could be very painful process for many people, and getting the right accommodation satisfying the majority of people in the group will be always a challenging task.
+                    Vacation planning could be very painful process for many people, and getting the right accommodation could be always a challenging task.
                     <br></br>
                     <br></br>
-                    LinkedSpace will turn this paintful process into a joyful one, and the best deal could be found very efficient way with minimum efforts.
+                    LinkedSpaces will turn this process into a fun activity with very unique collaboration tool. You don't need to deal with multiple services anymore, and all the information will be kept in one place where all the necessary conversations will be happening per each choice/option for your vacation.
+                    Group chatting may do a similar thing, but you may know the value of the tool once you start to use it.
                     <br></br>
                     <br></br>
                 </section>
