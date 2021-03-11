@@ -104,7 +104,7 @@ function TenantListingDashBoard(props) {
       const { coordinates, _id } = currentListing;
       if (validCoordinates(coordinates)) {
         const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
-        const icon = createMarker(imgSource, (_id === selectedMarkerID));
+        const icon = createMarker({type: "image", data: imgSource}, (_id === selectedMarkerID));
         markers.push({ position: coordinates, icon: icon, markerID: _id });
       }
 
@@ -134,8 +134,10 @@ function TenantListingDashBoard(props) {
                   } else {
                     imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                   }
-
-                  const icon = createMarker(imgSource, (_id === selectedMarkerID));
+                  const _price = (listing.listing_id.listingType === "landlord")? 
+                                  listing.listing_id.rental_terms.asking_price: 
+                                  listing.listing_id.rentalPrice;
+                  const icon = createMarker({type: "price", data: _price}, (_id === selectedMarkerID));
                   markers.push({ position: coordinates, icon: icon, markerID: _id });
                 }
               }

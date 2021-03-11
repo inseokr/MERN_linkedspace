@@ -1,7 +1,7 @@
 #marker_selected {
-    border: 2px solid rgb(17, 83, 153);
-    height: 50px;
-    width: 50px;
+    border: 2px solid rgb(220, 53, 69);
+    height: 45px;
+    width: 45px;
     border-radius: 50%;
     position: relative;
     z-index: 10;
@@ -10,12 +10,24 @@
     animation-duration: 1s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
+    background-color: black;
+    color: white;
 }
 
 #marker_default {
     border: 2px solid rgb(220, 53, 69);
-    height: 40px;
-    width: 40px;
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+    background-color: azure;
+    color: black;
+}
+
+
+#marker_img_default {
+    border: 2px solid rgb(220, 53, 69);
+    height: 45px;
+    width: 45px;
     border-radius: 50%;
 }
 
@@ -34,4 +46,11 @@
 .bounce {
     -webkit-animation-name: bounce;
     animation-name: bounce;
+}
+
+.markerContentStyle {
+    margin-top: 10px;
+    text-align: center;
+    font-weight:bold;
+    font-size: small;
 }
