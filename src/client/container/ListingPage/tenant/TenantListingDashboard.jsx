@@ -32,7 +32,7 @@ import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
 
 // import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Circle } from 'react-leaflet'
 
 function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
@@ -241,6 +241,10 @@ function TenantListingDashBoard(props) {
                             </section>
                           </section>
                         </Popup>
+                        <Circle 
+                          center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
+                          fillColor="gray" 
+                          radius={1000}/>
                       </DashboardMarker>
                     )}
                   </FeatureGroup>

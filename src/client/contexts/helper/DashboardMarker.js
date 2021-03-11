@@ -12,7 +12,7 @@ const DashboardMarker = props => {
     const markerRef = useRef();
 
     useEffect(() => {
-        if(markerIndex===currentChildIndex) {
+        if(markerIndex===currentChildIndex && markerIndex!==-1) {
             markerRef.current.openPopup();
         }
     }, [currentChildIndex]);
