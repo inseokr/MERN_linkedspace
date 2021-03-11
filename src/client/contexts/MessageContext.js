@@ -40,7 +40,7 @@ export function MessageContextProvider(props) {
   const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
   const [listingIdWithLatestMessagae, setListingIdWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
-  const [collapse, setCollapse] = useState('false');
+  const [collapse, setCollapse] = useState('true');
 
   // ISEO-TBD:
   // Very annoying issue with React. ChattingWindow doesn't re-render even if dmChannelContexts are changes.

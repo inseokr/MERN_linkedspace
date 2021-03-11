@@ -23,6 +23,8 @@ import {
   validCoordinates
 } from '../../../contexts/helper/helper';
 
+import DashboardMarker from '../../../contexts/helper/DashboardMarker';
+
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 import { MessageContext, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_PARENT } from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
@@ -90,8 +92,8 @@ function TenantListingDashBoard(props) {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
         setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
-        setCurrentChildIndex(index);
-        setChildIndex(index);
+        setCurrentChildIndex(index-1);
+        setChildIndex(index-1);
       }
     });
   };
@@ -221,11 +223,11 @@ function TenantListingDashBoard(props) {
                   <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <FeatureGroup ref={groupRef}>
                     {markers.map((marker, index) =>
-                      <Marker key={`marker-${index}`} position={marker.position} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
+                      <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
                         <Popup>
                           <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
                             <section style={{marginTop: '3px'}}>
-                              <a href={getChildListingUrl()} target="_blank">
+                              <a href={getChildListingUrl(index-1)} target="_blank">
                                 <i className="fas fa-external-link-alt fa-lg"></i>
                               </a>
                             </section>
@@ -237,7 +239,7 @@ function TenantListingDashBoard(props) {
                             </section>
                           </section>
                         </Popup>
-                      </Marker>
+                      </DashboardMarker>
                     )}
                   </FeatureGroup>
                 </MapContainer>
