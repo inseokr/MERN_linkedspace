@@ -37,19 +37,19 @@ function MiddlemenIntro(props) {
             <div style={IntroStyle}>
                 <section className="_lsTitleLarge" style={{textAlign: 'left'}}> You and your social network matters </section>
                 <section className="_lsMediaMedium" style={{marginTop: '25px'}}> 
-                    You are not looking for house/room, neither planning any vacation. Why bother signing up this service then?
+                    If you are not looking for a house/room or planning any vacation, why bother signing up this service then?
                     <br></br>
                     <br></br>
-                    LinkedSpaces works through your social network, and some of deal in the LinkedSpaces won't be possible without you. Your contributions will be closely monitored, and the credit will be properly accrued in the system.
+                    LinkedSpaces works through your social network. Your contributions will be closely monitored, and the credit will be properly accrued in the system.
                     <br></br>
                     <br></br>
-                    Various contributions you could make:
+                    Various contributions you can make:
                     <br></br>
                     <br></br>
                     <ul>
-                        <li> Connect your friends who may have a house/room or look for tenants</li>
+                        <li> Connect your friends who may have a house/room or looking for tenants</li>
                         <li> Share your local information if you happen to live in the destination your friend's heading to or land on</li>
-                        <li> Social stamp for those who's looking for house/room</li>
+                        <li> Social stamp for those looking for a house/room</li>
                     </ul>
 
                 </section>
