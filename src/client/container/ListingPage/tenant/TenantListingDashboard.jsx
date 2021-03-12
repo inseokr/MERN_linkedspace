@@ -209,10 +209,10 @@ function TenantListingDashBoard(props) {
       let latDistance = Math.abs(currBounds._southWest.lat - _coordinate.lat);
       let lngDistance = Math.abs(currBounds._northEast.lng - _coordinate.lng);
 
-      currBounds._northEast.lat = currBounds._northEast.lat - latDistance*30;
-      currBounds._northEast.lng = currBounds._northEast.lng + lngDistance*30;
-      currBounds._southWest.lat = currBounds._southWest.lat - latDistance*30;
-      currBounds._southWest.lng = currBounds._southWest.lng + lngDistance*30;
+      currBounds._northEast.lat = currBounds._northEast.lat - latDistance*10;
+      currBounds._northEast.lng = currBounds._northEast.lng + lngDistance*10;
+      currBounds._southWest.lat = currBounds._southWest.lat - latDistance*10;
+      currBounds._southWest.lng = currBounds._southWest.lng + lngDistance*10;
 
       map.fitBounds(currBounds);
     }
