@@ -20,11 +20,12 @@ function DashboardIntro(props) {
     let ImgStyle = {
         maxWidth: '100vh',
         marginTop: '50px',
-        marginLeft: '50px'
-
+        marginLeft: '50px',
+        borderRadius: '5%'
     };
 
-    let urlImg = "/public/user_resources/pictures/LinkedSpaces_Dashboard.jpg";
+
+    let urlImg = "/public/user_resources/pictures/LinkedSpaces_Dashboard1.jpg";
 
     function handleSignUp() {
         console.warn(`handleSignUp`);
