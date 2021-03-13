@@ -200,9 +200,11 @@ function TenantListingDashBoard(props) {
       // <note> not sure but the map's not moving as calculated.
       // I had to multiply 10 or any bigger value
       let _coordinate = 
-      (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord")?
-        currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
-        currentListing.child_listings[currentChildIndex].listing_id.coordinates;
+      (currentChildIndex===-1) ? 
+        currentListing.coordinates : 
+          (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
+            currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
+            currentListing.child_listings[currentChildIndex].listing_id.coordinates;
 
       // let's figure out the distance to the top/left corner
       // 1. lat
