@@ -26,7 +26,10 @@ import {
 import DashboardMarker from '../../../contexts/helper/DashboardMarker';
 
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
-import { MessageContext, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_PARENT } from '../../../contexts/MessageContext';
+import {  MessageContext, 
+          MSG_CHANNEL_TYPE_GENERAL, 
+          MSG_CHANNEL_TYPE_LISTING_PARENT, 
+          MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
@@ -100,6 +103,7 @@ function TenantListingDashBoard(props) {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
         setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
+        //console.warn(`setting child index to ${index-1}`);
         setCurrentChildIndex(index-1);
         setChildIndex(index-1);
       }
@@ -238,11 +242,11 @@ function TenantListingDashBoard(props) {
 
     setChattingContextType(contextType);
 
-    //console.warn(`currentListing has been updated`);
-
-    setCurrentChildIndex(-1);
-    setChildIndex(-1);
-
+    if(contextType!==MSG_CHANNEL_TYPE_LISTING_CHILD) {
+      //console.warn(`currentListing has been updated, index will be set to -1`);
+      setCurrentChildIndex(-1);
+      setChildIndex(-1);
+    }
   }, [currentListing]);
 
   function controlMessageWindow() {
