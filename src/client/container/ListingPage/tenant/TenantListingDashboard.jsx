@@ -107,10 +107,12 @@ function TenantListingDashBoard(props) {
   };
 
   useEffect(() => { // Populate markers if ready.
+    //console.warn(`refresh=${refresh}`);
     if (refresh) {
       const markers = []; // New list of markers.
       const { coordinates, _id } = currentListing;
       if (validCoordinates(coordinates)) {
+        //console.warn(`createMarker`);
         const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
         const icon = createMarker({type: "image", data: imgSource}, (_id === selectedMarkerID));
         markers.push({ position: coordinates, icon: icon, markerID: _id });
@@ -153,17 +155,60 @@ function TenantListingDashBoard(props) {
           });
         }
       }
+
+      //console.warn(`length of markers = ${markers.length}`);
+      setMarkers(markers);
       setMarkerParams({ ...markerParams, markers: markers, refresh: false });
     }
   }, [refresh]);
 
   useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: map changed`);
     setMarkerParams({
       refresh: !!(map !== null && currentListing),
       markers: [],
       selectedMarkerID: selectedMarkerID
     });
-  }, [map, currentListing, selectedMarkerID, mapParams, friendsMap]);
+  }, [map]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: currentListing changed`);
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });
+  }, [ currentListing ]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: selectedMarkerID changed`);
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });
+  }, [ selectedMarkerID ]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: mapParams changed`);
+    /*
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });*/
+  }, [ mapParams ]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: friendsMap changed`);
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });
+  }, [friendsMap]);
+
+
 
   useEffect(() => {
     //console.warn(`fetchCurrentListing by props`);
@@ -171,9 +216,15 @@ function TenantListingDashBoard(props) {
   }, [props]);
 
   useEffect(() => {
+    //console.warn(`length of markers=${markers.length}`);
+  }, [markers])
+
+  useEffect(() => {
+    //console.warn(`markerParams`);
     const { refresh, markers, selectedMarkerID } = markerParams;
-    setRefresh(refresh);
     setMarkers(markers);
+    setRefresh(refresh);
+    // do we need to set the marker again??
     setSelectedMarkerID(selectedMarkerID);
   }, [markerParams]);
 
