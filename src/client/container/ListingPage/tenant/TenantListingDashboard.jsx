@@ -271,7 +271,7 @@ function TenantListingDashBoard(props) {
                         <Popup>
                           <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
                             <section style={{marginTop: '3px'}}>
-                              <a href={getChildListingUrl(index-1)} target="_blank">
+                              <a href={(index===0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
                                 <i className="fas fa-external-link-alt fa-lg"></i>
                               </a>
                             </section>
