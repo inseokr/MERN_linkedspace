@@ -254,24 +254,30 @@ function TenantListingDashBoard(props) {
       // let's move the marker if possible
       // <note> not sure but the map's not moving as calculated.
       // I had to multiply 10 or any bigger value
-      let _coordinate = 
-      (currentChildIndex===-1) ? 
-        currentListing.coordinates : 
-          (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
-            currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
-            currentListing.child_listings[currentChildIndex].listing_id.coordinates;
+      try {
+        let _coordinate = 
+        (currentChildIndex===-1) ? 
+          currentListing.coordinates : 
+            (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
+              currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
+              currentListing.child_listings[currentChildIndex].listing_id.coordinates;
 
-      // let's figure out the distance to the top/left corner
-      // 1. lat
-      let latDistance = Math.abs(currBounds._southWest.lat - _coordinate.lat);
-      let lngDistance = Math.abs(currBounds._northEast.lng - _coordinate.lng);
+        // let's figure out the distance to the top/left corner
+        // 1. lat
+        let latDistance = Math.abs(currBounds._southWest.lat - _coordinate.lat);
+        let lngDistance = Math.abs(currBounds._northEast.lng - _coordinate.lng);
 
-      currBounds._northEast.lat = currBounds._northEast.lat - latDistance*10;
-      currBounds._northEast.lng = currBounds._northEast.lng + lngDistance*10;
-      currBounds._southWest.lat = currBounds._southWest.lat - latDistance*10;
-      currBounds._southWest.lng = currBounds._southWest.lng + lngDistance*10;
+        currBounds._northEast.lat = currBounds._northEast.lat - latDistance*10;
+        currBounds._northEast.lng = currBounds._northEast.lng + lngDistance*10;
+        currBounds._southWest.lat = currBounds._southWest.lat - latDistance*10;
+        currBounds._southWest.lng = currBounds._southWest.lng + lngDistance*10;
 
-      map.fitBounds(currBounds);
+        map.fitBounds(currBounds);
+      } catch(err) {
+        console.warn(err);
+        console.warn(`currentChildIndex=${currentChildIndex}`);
+      }
+
     }
 
     toggleCollapse();
