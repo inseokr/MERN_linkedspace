@@ -344,8 +344,7 @@ app.namespace('/LS_API', () => {
     const picIndex = req.body.pic_index;
     LandlordRequest.findById(req.params.list_id, (err, foundListing) => {
       try {
-        const picPath = `/public/user_resources/pictures/landlord/${req.params.list_id}_${picIndex}.jpg`;
-
+        const picPath = foundListing.pictures[picIndex - 1].path;
         fileDeleteFromCloud(picPath);
 
         fs.unlinkSync(serverPath + picPath);

@@ -9,27 +9,32 @@ import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
 function getListingPictures(listing_info) {
   const pictures = [];
 
-  for (let picIndex = 1; picIndex < listing_info.listing.num_of_pictures_uploaded; ++picIndex) {
-    const picture = (
-      <div className="col-3">
-        <div className=" thumbnail" style={{ backgroundColor: '#f2f2f2' }}>
-          <img
-            className="img-responsive"
-            src={FILE_SERVER_URL+listing_info.listing.pictures[picIndex].path}
-            alt="listingPicture"
-          />
-          <div className="caption-full ">
-            <section className="_lsFont2" style={{textAlign: 'center'}}> {listing_info.listing.pictures[picIndex].caption} </section>
-            <p />
+  try {
+    for (let picIndex = 1; picIndex < listing_info.listing.num_of_pictures_uploaded; ++picIndex) {
+      const picture = (
+        <div className="col-3">
+          <div className=" thumbnail" style={{ backgroundColor: '#f2f2f2' }}>
+            <img
+              className="img-responsive"
+              src={FILE_SERVER_URL+listing_info.listing.pictures[picIndex].path}
+              alt="listingPicture"
+            />
+            <div className="caption-full ">
+              <section className="_lsFont2" style={{textAlign: 'center'}}> {listing_info.listing.pictures[picIndex].caption} </section>
+              <p />
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
 
-    pictures.push(picture);
+      pictures.push(picture);
+    }
+
+    return pictures;
+  } catch (err) {
+    console.warn(err);
+    return [];
   }
-
-  return pictures;
 }
 
 function ExploreHome() {

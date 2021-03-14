@@ -269,14 +269,18 @@ module.exports = function (app) {
     // <note> There could be empty picture entry....
     let processedPictures = 0;
 
-    for (let picIndex = 0; processedPictures < foundListing.num_of_pictures_uploaded; picIndex++) {
-      console.log(`ISEO: picIndex = ${picIndex}`);
-      if (foundListing.pictures[picIndex].path != '') {
-        foundListing.pictures[picIndex].caption = eval(`req.body.caption_${picIndex + 1}`);
-        processedPictures++;
+    try {
+      for (let picIndex = 0; processedPictures < foundListing.num_of_pictures_uploaded; picIndex++) {
+        console.log(`ISEO: picIndex = ${picIndex}`);
+        if (foundListing.pictures[picIndex].path != '') {
+          foundListing.pictures[picIndex].caption = eval(`req.body.caption_${picIndex + 1}`);
+          processedPictures++;
+        }
       }
+      foundListing.save();
+    } catch (err) {
+      console.warn(err);
     }
-    foundListing.save();
   }
 
 
