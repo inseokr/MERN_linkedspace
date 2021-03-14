@@ -57,11 +57,20 @@ export function CurrentListingProvider(props) {
     }
   }
 
-  function getChildListingUrl() {
+  function getChildListingUrl(index=-1) {
+    let _childIndex = (index===-1)? currentChildIndex: index;
+
     try {
-      if(currentListing!==undefined && currentListing.child_listings[currentChildIndex])
+      if(currentListing!==undefined && currentListing.child_listings[_childIndex])
       {
-        return currentListing.child_listings[currentChildIndex].listing_id.listingUrl;
+        let _childListing = currentListing.child_listings[_childIndex].listing_id;
+
+        if(_childListing.listingType==='_3rdparty') {
+          return _childListing.listingUrl;
+        }
+        else {
+          return `/listing/landlord/${_childListing._id}/get`;
+        }
       }
       else
       {

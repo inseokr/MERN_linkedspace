@@ -40,7 +40,7 @@ export function MessageContextProvider(props) {
   const [doNotDisturbMode, setDoNotDisturbMode] = useState(false);
   const [listingIdWithLatestMessagae, setListingIdWithLatestMessage] = useState(null);
   const [channelContextLength, setChannelContextLength] = useState(0);
-  const [collapse, setCollapse] = useState('false');
+  const [collapse, setCollapse] = useState('true');
 
   // ISEO-TBD:
   // Very annoying issue with React. ChattingWindow doesn't re-render even if dmChannelContexts are changes.
@@ -285,6 +285,7 @@ export function MessageContextProvider(props) {
     setWaitMessage(false);
     setFlagNewlyLoaded(false);
 
+    
     setChildType(0);
     setChildIndex(0);
 
@@ -876,27 +877,35 @@ export function MessageContextProvider(props) {
   function getDmChannelId(friend_name, _childIndex=childIndex, _contextType=chattingContextType) {
     if (currentUser == null) return '';
 
-    const dmChannelNameSuffix = (currentUser.username > friend_name)
-      ? `${friend_name}-dm-${currentUser.username}`
-      : `${currentUser.username}-dm-${friend_name}`;
+    try {
+      const dmChannelNameSuffix = (currentUser.username > friend_name)
+        ? `${friend_name}-dm-${currentUser.username}`
+        : `${currentUser.username}-dm-${friend_name}`;
 
-    let dmChannelNamePrefix = '';
+      let dmChannelNamePrefix = '';
 
-    if (_contextType != MSG_CHANNEL_TYPE_GENERAL) {
-      dmChannelNamePrefix = 
-        currentListing._id + 
-        ((_contextType == MSG_CHANNEL_TYPE_LISTING_PARENT) ? '-parent-'
-        : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
+      if (_contextType != MSG_CHANNEL_TYPE_GENERAL) {
+        dmChannelNamePrefix = 
+          currentListing._id + 
+          ((_contextType == MSG_CHANNEL_TYPE_LISTING_PARENT) ? '-parent-'
+          : `-child-${currentListing.child_listings[_childIndex].listing_id._id}-`);
+      }
+
+      // console.log("getDmChannelId: current child index = " + _childIndex);
+      // console.log("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
+
+      return (dmChannelNamePrefix + dmChannelNameSuffix);
+    } catch (err) {
+      console.warn(err);
+      //console.warn(`_childIndex=${_childIndex}`);
+      //console.warn(`child_listings=${JSON.stringify(currentListing.child_listings)}`);
+      return '';
     }
-
-    // console.log("getDmChannelId: current child index = " + _childIndex);
-    // console.log("getDmChannelId: channel prefix = " + dmChannelNamePrefix);
-
-    return (dmChannelNamePrefix + dmChannelNameSuffix);
   }
 
   function getDmChannel(friend_name, _childIndex=childIndex, _contextType=chattingContextType) {
-    // console.log(`getDmChannel: friend_name = ${friend_name}`);
+    //console.warn(`getDmChannel: friend_name = ${friend_name}, childIndex=${childIndex}, _childIndex=${_childIndex}`);
+
     const dmChannel = {
       channel_id: getDmChannelId(friend_name, _childIndex, _contextType),
       members: []

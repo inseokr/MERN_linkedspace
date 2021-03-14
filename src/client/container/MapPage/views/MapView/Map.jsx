@@ -58,7 +58,7 @@ function Map() {
         const image = listing.pictures.length > 0
           ? `${FILE_SERVER_URL}${listing.pictures[0].path}`
           : `${FILE_SERVER_URL}/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg`;
-        const marker = createMarker(googleMap, coordinates, image);
+        const marker = createMarker({ type: 'image', data: image }, true);
 
         marker.addListener('click', () => {
           alert('Clicked!');

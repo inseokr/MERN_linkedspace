@@ -43,18 +43,23 @@ function ChatContactList() {
   }
 
   function _getContactList() {
-    // non-listing associated chatting window
-    if (chattingContextType == 0) {
-      return ((friendsList == undefined) ? null : friendsList);
-    }
-    // listing associated chatting window
+    try {
+      // non-listing associated chatting window
+      if (chattingContextType == 0) {
+        return ((friendsList == undefined) ? null : friendsList);
+      }
+      // listing associated chatting window
 
-    if (chattingContextType == 1) {
-      return currentListing.shared_user_group;
-    }
+      if (chattingContextType == 1) {
+        return currentListing.shared_user_group;
+      }
 
-    return ((currentListing.child_listings[childIndex] == undefined)
-      ? null : currentListing.child_listings[childIndex].shared_user_group);
+      return ((currentListing.child_listings[childIndex] == undefined)
+        ? null : currentListing.child_listings[childIndex].shared_user_group);
+    } catch(err) {
+      console.warn(err);
+      return null;
+    }
   }
 
   function checkIfAnyNewMessage(channelName)
@@ -290,6 +295,7 @@ function ChatContactList() {
   }, [newContactSelected]);
 
   useEffect(() => {
+    //console.warn(`contactStates updated`);
     // check if there is no active channel
     let bFoundDefaultContact = false;
     let indexOfChatpartyWithHistory = -1;
@@ -417,6 +423,7 @@ function ChatContactList() {
   }
 
   useEffect(()=> {
+    //console.warn(`flagNewlyLoaded`);
     if(flagNewlyLoaded===true)
     {
       if(checkAnyActiveChannel()===false)

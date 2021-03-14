@@ -37,7 +37,7 @@ function getChildListingSummary(childListing) {
     listingUrl: 'TBD',
     coverPhoto: childListing.pictures[0].path,
     rentalPrice: childListing.rental_terms.asking_price,
-    listingSummary: `${childListing.summary_of_listing.slice(0, 20)}...`
+    listingSummary: `${childListing.summary_of_listing.slice(0, 100)}...`
   };
 }
 

@@ -79,17 +79,22 @@ function CollectLocationInfo(props) {
   }
 
   function processAddressInput(locationValues) {
-    let address = '';
+    try {
+      let address = '';
 
-    locationValues.forEach((locationValue) => {
-      if (locationValue.length > 0) {
-        address += `${locationValue}, `;
-      }
-    });
+      locationValues.forEach((locationValue) => {
+        if (locationValue.length > 0) {
+          address += `${locationValue}, `;
+        }
+      });
 
-    address = address.replace(/,\s*$/, ''); // Remove last comma and trailing spaces.
+      address = address.replace(/,\s*$/, ''); // Remove last comma and trailing spaces.
 
-    return address;
+      return address;
+    } catch (err) {
+      console.warn(err);
+      return '';
+    }
   }
 
   useEffect(() => {

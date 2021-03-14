@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { divIcon } from 'leaflet';
 
 const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
@@ -28,8 +29,19 @@ function getGeometryFromSearchString(search) {
   return fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${search}&key=${GOOGLE_MAP_API_KEY}`).then(response => response.json());
 }
 
-function createMarker(imgSource, markerSelected) {
-  const htmlObject = markerSelected ? `<img id="marker_selected" class="bounce" src="${imgSource}" alt="Selected Marker">` : `<img id="marker_default" class="bounce" src="${imgSource}" alt="Default Marker">`;
+function createMarker(marker, markerSelected) {
+  let htmlObject = ''; 
+
+  //console.warn(`createMarker: marker=${JSON.stringify(marker)}`);
+  if(marker.type==="price") {
+    htmlObject = markerSelected ? 
+                      `<div id="marker_selected" class="bounce" alt="Selected Marker"> <section class="markerContentStyle"> $${marker.data} </section> </div>` : 
+                      `<div id="marker_default" class="bounce" alt="Default Marker"}> <section class="markerContentStyle"> $${marker.data} </section> </div>`;
+  } else {
+    htmlObject = markerSelected ? 
+                      `<img id="marker_img_default" class="bounce" src="${marker.data}" alt="Selected Marker">` : 
+                      `<img id="marker_img_default" class="bounce" src="${marker.data}" alt="Default Marker">`;
+  }
   return divIcon({
     html: htmlObject,
     iconSize: [25, 41],

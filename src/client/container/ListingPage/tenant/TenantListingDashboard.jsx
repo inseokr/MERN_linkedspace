@@ -23,14 +23,19 @@ import {
   validCoordinates
 } from '../../../contexts/helper/helper';
 
+import DashboardMarker from '../../../contexts/helper/DashboardMarker';
+
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
-import { MessageContext, MSG_CHANNEL_TYPE_GENERAL, MSG_CHANNEL_TYPE_LISTING_PARENT } from '../../../contexts/MessageContext';
+import {  MessageContext, 
+          MSG_CHANNEL_TYPE_GENERAL, 
+          MSG_CHANNEL_TYPE_LISTING_PARENT, 
+          MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
 
 // import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Circle } from 'react-leaflet'
 
 function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
@@ -42,6 +47,7 @@ function TenantListingDashBoard(props) {
          setDoNotDisturbMode,
          broadcastDashboardMode,
          toggleCollapse,
+         collapse,
          setChattingContextType,
          chattingContextType } = useContext(MessageContext);
 
@@ -53,14 +59,21 @@ function TenantListingDashBoard(props) {
   const [selectedMarkerID, setSelectedMarkerID] = useState(markerParams['selectedMarkerID']);
   const [markers, setMarkers] = useState(markerParams['markers']);
   const [map, setMap] = useState(null);
+  const [currBounds, setCurrBounds] = useState(null);
 
+  // when this function's called?
+  // <note> whenever marker is called.
+  // getBounds return the same value somehow.
   const groupRef = (node) => {
     if (node !== null && map !== null) {
-      const bounds = node.getBounds();
+      let bounds = node.getBounds();
       if (Object.keys(bounds).length > 0) {
         //fitBounds will happen only if parent listing is selected.
         if(currentChildIndex===-1) {
           map.fitBounds(bounds);
+          if(currBounds===null) {
+            setCurrBounds(bounds);
+          }
         }
       }
     }
@@ -90,19 +103,22 @@ function TenantListingDashBoard(props) {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
         setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
-        setCurrentChildIndex(index);
-        setChildIndex(index);
+        //console.warn(`setting child index to ${index-1}`);
+        setCurrentChildIndex(index-1);
+        setChildIndex(index-1);
       }
     });
   };
 
   useEffect(() => { // Populate markers if ready.
+    //console.warn(`refresh=${refresh}`);
     if (refresh) {
       const markers = []; // New list of markers.
       const { coordinates, _id } = currentListing;
       if (validCoordinates(coordinates)) {
+        //console.warn(`createMarker`);
         const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
-        const icon = createMarker(imgSource, (_id === selectedMarkerID));
+        const icon = createMarker({type: "image", data: imgSource}, (_id === selectedMarkerID));
         markers.push({ position: coordinates, icon: icon, markerID: _id });
       }
 
@@ -132,8 +148,10 @@ function TenantListingDashBoard(props) {
                   } else {
                     imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                   }
-
-                  const icon = createMarker(imgSource, (_id === selectedMarkerID));
+                  const _price = (listing.listing_id.listingType === "landlord")? 
+                                  listing.listing_id.rental_terms.asking_price: 
+                                  listing.listing_id.rentalPrice;
+                  const icon = createMarker({type: "price", data: _price}, (_id === selectedMarkerID));
                   markers.push({ position: coordinates, icon: icon, markerID: _id });
                 }
               }
@@ -141,26 +159,76 @@ function TenantListingDashBoard(props) {
           });
         }
       }
+
+      //console.warn(`length of markers = ${markers.length}`);
+      setMarkers(markers);
       setMarkerParams({ ...markerParams, markers: markers, refresh: false });
     }
   }, [refresh]);
 
   useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: map changed`);
     setMarkerParams({
       refresh: !!(map !== null && currentListing),
       markers: [],
       selectedMarkerID: selectedMarkerID
     });
-  }, [map, currentListing, selectedMarkerID, mapParams, friendsMap]);
+  }, [map]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: currentListing changed`);
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });
+  }, [ currentListing ]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: selectedMarkerID changed`);
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });
+  }, [ selectedMarkerID ]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: mapParams changed`);
+    /*
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });*/
+  }, [ mapParams ]);
+
+  useEffect(() => { // Clear markers when dependencies change.
+    //console.warn(`setMarkerParams: friendsMap changed`);
+    setMarkerParams({
+      refresh: !!(map !== null && currentListing),
+      markers: [],
+      selectedMarkerID: selectedMarkerID
+    });
+  }, [friendsMap]);
+
+
 
   useEffect(() => {
+    //console.warn(`fetchCurrentListing by props`);
     fetchCurrentListing(props.match.params.id, 'tenant');
   }, [props]);
 
   useEffect(() => {
+    //console.warn(`length of markers=${markers.length}`);
+  }, [markers])
+
+  useEffect(() => {
+    //console.warn(`markerParams`);
     const { refresh, markers, selectedMarkerID } = markerParams;
-    setRefresh(refresh);
     setMarkers(markers);
+    setRefresh(refresh);
+    // do we need to set the marker again??
     setSelectedMarkerID(selectedMarkerID);
   }, [markerParams]);
 
@@ -174,7 +242,46 @@ function TenantListingDashBoard(props) {
 
     setChattingContextType(contextType);
 
+    if(contextType!==MSG_CHANNEL_TYPE_LISTING_CHILD) {
+      //console.warn(`currentListing has been updated, index will be set to -1`);
+      setCurrentChildIndex(-1);
+      setChildIndex(-1);
+    }
   }, [currentListing]);
+
+  function controlMessageWindow() {
+    if( collapse == "true") {
+      // let's move the marker if possible
+      // <note> not sure but the map's not moving as calculated.
+      // I had to multiply 10 or any bigger value
+      try {
+        let _coordinate = 
+        (currentChildIndex===-1) ? 
+          currentListing.coordinates : 
+            (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
+              currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
+              currentListing.child_listings[currentChildIndex].listing_id.coordinates;
+
+        // let's figure out the distance to the top/left corner
+        // 1. lat
+        let latDistance = Math.abs(currBounds._southWest.lat - _coordinate.lat);
+        let lngDistance = Math.abs(currBounds._northEast.lng - _coordinate.lng);
+
+        currBounds._northEast.lat = currBounds._northEast.lat - latDistance*10;
+        currBounds._northEast.lng = currBounds._northEast.lng + lngDistance*10;
+        currBounds._southWest.lat = currBounds._southWest.lat - latDistance*10;
+        currBounds._southWest.lng = currBounds._southWest.lng + lngDistance*10;
+
+        map.fitBounds(currBounds);
+      } catch(err) {
+        console.warn(err);
+        console.warn(`currentChildIndex=${currentChildIndex}`);
+      }
+
+    }
+
+    toggleCollapse();
+  }
 
   const banAdditionalStyle =
     (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
@@ -221,15 +328,15 @@ function TenantListingDashBoard(props) {
                   <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <FeatureGroup ref={groupRef}>
                     {markers.map((marker, index) =>
-                      <Marker key={`marker-${index}`} position={marker.position} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
+                      <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
                         <Popup>
                           <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
                             <section style={{marginTop: '3px'}}>
-                              <a href={getChildListingUrl()} target="_blank">
+                              <a href={(index===0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
                                 <i className="fas fa-external-link-alt fa-lg"></i>
                               </a>
                             </section>
-                            <section onClick={() => {toggleCollapse();} } style={{color: '#a52a2a'}}>
+                            <section onClick={() => {controlMessageWindow();} } style={{color: '#a52a2a'}}>
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
                                 <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
                                 </path>
@@ -237,7 +344,12 @@ function TenantListingDashBoard(props) {
                             </section>
                           </section>
                         </Popup>
-                      </Marker>
+                        {(currentListing!==undefined) && (currentListing.coordinates!==undefined) &&
+                        <Circle 
+                          center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
+                          fillColor="gray" 
+                          radius={1000}/>}
+                      </DashboardMarker>
                     )}
                   </FeatureGroup>
                 </MapContainer>

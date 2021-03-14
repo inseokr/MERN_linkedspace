@@ -33,14 +33,14 @@ function TenantIntro(props) {
             <div style={IntroStyle}>
                 <section className="_lsTitleLarge"> Find room/house through trusted social network  </section>
                 <section className="_lsMediaMedium" style={{marginTop: '25px'}}> 
-                    Credit score matters, but you feel more secure when the deal's through your trusted network.
+                    While credit scores do matter, you feel more secure when the deal goes through your trusted network.
                     <br></br>
                     <br></br>
-                    For those who struggle due to lack of credit history, linkedSpaces will be the perfect solution,
-                    and you will be offered affordable housing solutions through your social network.
+                    For those who struggle due to lack of credit history, LinkedSpaces will be the perfect solution,
+                    and you will be offered affordable housings through your social network.
                     <br></br>
                     <br></br>
-                    Simply create your advertisement and share it through LinkedSpaces ecosystem.
+                    Simply create your advertisement and share it through the LinkedSpaces ecosystem.
                 </section>
                 <br></br>
                 <section className="_lsClickForDetails" onClick={handleSignUp} style={{cursor: 'pointer'}}>

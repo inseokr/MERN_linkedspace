@@ -34,7 +34,7 @@ function LocationInfo() {
           const { coordinates } = rental_property_information;
           if (coordinates && pictures.length > 0) {
             const imgSource = pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+pictures[0].path;
-            const icon = createMarker(imgSource);
+            const icon = createMarker({type: 'image', data: imgSource}, true);
             setMarker({ position: coordinates, icon: icon });
           }
         }
