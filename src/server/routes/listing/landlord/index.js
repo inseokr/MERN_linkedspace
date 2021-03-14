@@ -3,12 +3,15 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const node = require('deasync');
+const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
 const User = require('../../../models/user');
 const LandlordRequest = require('../../../models/listing/landlord_request');
 const listingDbHandler = require('../../../db_utilities/listing_db/access_listing_db');
 const userDbHandler = require('../../../db_utilities/user_db/access_user_db');
+
+const serverPath = './src/server';
 
 const { fileDeleteFromCloud } = require('../../../aws_s3_api');
 
@@ -271,7 +274,6 @@ module.exports = function (app) {
 
     try {
       for (let picIndex = 0; processedPictures < foundListing.num_of_pictures_uploaded; picIndex++) {
-        console.log(`ISEO: picIndex = ${picIndex}`);
         if (foundListing.pictures[picIndex].path != '') {
           foundListing.pictures[picIndex].caption = eval(`req.body.caption_${picIndex + 1}`);
           processedPictures++;
@@ -485,10 +487,10 @@ module.exports = function (app) {
     	}
 
     	try {
-    		for (let picIndex = 0; picIndex < foundListing.num_of_pictures_uploaded; picIndex++) {
+        for (let picIndex = 0; picIndex < foundListing.num_of_pictures_uploaded; picIndex++) {
           if (foundListing.pictures[picIndex].path != '') {
-          	fileDeleteFromCloud(foundListing.pictures[picIndex].path);
-		    fs.unlinkSync(foundListing.pictures[picIndex].path);
+            fileDeleteFromCloud(foundListing.pictures[picIndex].path);
+            fs.unlinkSync(serverPath + foundListing.pictures[picIndex].path);
           }
         }
 	    } catch (err) {
