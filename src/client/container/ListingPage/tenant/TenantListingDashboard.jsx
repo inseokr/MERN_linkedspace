@@ -31,6 +31,7 @@ import { GlobalContext } from '../../../contexts/GlobalContext';
 import { FILE_SERVER_URL } from '../../../globalConstants';
 import { preprocessUrlRequest } from '../../../utils/route_helper';
 
+import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Circle } from 'react-leaflet'
 
 function TenantListingDashBoard(props) {
@@ -240,28 +241,21 @@ function TenantListingDashBoard(props) {
   }, [currentListing]);
 
   function controlMessageWindow() {
-    if( collapse === "true") {
-      // let's move the marker if possible
-      // <note> not sure but the map's not moving as calculated.
-      // I had to multiply 10 or any bigger value
-      let _coordinate =
+    if (collapse === "true" && currBounds) {
+      const coordinate =
         (currentChildIndex===-1) ?
           currentListing.coordinates :
           (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
             currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
             currentListing.child_listings[currentChildIndex].listing_id.coordinates;
 
-      // let's figure out the distance to the top/left corner
-      // 1. lat
-      let latDistance = Math.abs(currBounds._southWest.lat - _coordinate.lat);
-      let lngDistance = Math.abs(currBounds._northEast.lng - _coordinate.lng);
-
-      currBounds._northEast.lat = currBounds._northEast.lat - latDistance*10;
-      currBounds._northEast.lng = currBounds._northEast.lng + lngDistance*10;
-      currBounds._southWest.lat = currBounds._southWest.lat - latDistance*10;
-      currBounds._southWest.lng = currBounds._southWest.lng + lngDistance*10;
-
-      map.fitBounds(currBounds);
+      const {lat, lng} = coordinate;
+      const {_northEast: northEast, _southWest: southWest} = currBounds;
+      if (lat && lng && northEast && southWest) {
+        const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
+        const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 20);
+        map.flyTo([lat - latOffSet, lng + lngOffSet], 15);
+      }
     }
 
     toggleCollapse();
@@ -308,7 +302,7 @@ function TenantListingDashBoard(props) {
                     <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                   </SimpleModal>
                   <div>
-                    <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
+                    <MapContainer className='mapContainerStyle leaflet-center' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
                       <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                       <FeatureGroup ref={groupRef}>
                         {markers.map((marker, index) =>
