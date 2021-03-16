@@ -13,6 +13,7 @@ import SimpleModal from '../../../components/Modal/SimpleModal';
 
 
 function ListingControlButtons() {
+  try {
   const { currentListing } = useContext(CurrentListingContext);
   const { currentUser } = useContext(GlobalContext);
   const [modalShow, setModalShow] = useState(false);
@@ -27,11 +28,15 @@ function ListingControlButtons() {
     return (currentListing.listing.requester._id === currentUser._id);
   };
 
-  if (currentUser === null || currentUser === undefined) {
-    return (
-      <React.Fragment> </React.Fragment>
-    );
-  }
+  useEffect(() => {
+    setIsOwner(checkIfOwner());
+  }, [currentListing]);
+
+  useEffect(() => {
+    setIsOwner(checkIfOwner());
+  }, [currentUser]);
+
+
 
   function copy_posting_link(evt) {
     console.log('copy_posting_link clicked');
@@ -84,13 +89,7 @@ function ListingControlButtons() {
     setModalShow(false);
   }
 
-  useEffect(() => {
-    setIsOwner(checkIfOwner());
-  }, [currentListing]);
 
-  useEffect(() => {
-    setIsOwner(checkIfOwner());
-  }, [currentUser]);
 
   const controlButtons = currentListing.list_id !== 0
     ? (
@@ -119,11 +118,26 @@ function ListingControlButtons() {
       </div>
     ) : '';
 
-  return (
-    <div>
-      {controlButtons}
-    </div>
-  );
+    if (currentUser === null || currentUser === undefined) {
+      return (
+        <React.Fragment> </React.Fragment>
+      );
+    }
+    else {
+      return (
+        <div>
+          {controlButtons}
+        </div>
+      );
+    }
+
+  } catch(err) {
+    console.warn(err);
+    return (
+      <React.Fragment> </React.Fragment>
+    );
+  }
+  
 }
 
 export default ListingControlButtons;
