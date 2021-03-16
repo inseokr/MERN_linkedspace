@@ -162,9 +162,9 @@ function ListingTenantMainPage(props) {
     return (
       <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
         {friendList.map((friend, index) => (
-          <div className=" thumbnail">
+          <div className=" thumbnail" style={{display: 'flex', flexDirection: 'column'}}>
             <img className="img-responsive center rounded-circle" style={{maxHeight:'50px', maxWidth: '50px'}} src={FILE_SERVER_URL+friend.profile_picture} alt="friendProfilePicture" />
-            <span className="_so3dpm2" style={{ marginLeft:'7%' }}>{friend.username}</span>
+            <span className="_so3dpm2" style={{textAlign: 'center'}}>{friend.username}</span>
           </div>
         ))}
       </div>
