@@ -1,41 +1,32 @@
 /* eslint-disable */
-import React, {
-  useState, useContext, useRef, useEffect
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
 
 import '../../MapPage/index.css';
-import './TenantListingDashboard.css'
+import './TenantListingDashboard.css';
 
 import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboardListView';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
-import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
 import SimpleModal from '../../../components/Modal/SimpleModal';
-import LandingPage from '../../LandingPage/LandingPage';
-import { STYLESHEET_URL } from '../../../globalConstants';
+import { FILE_SERVER_URL, STYLESHEET_URL } from '../../../globalConstants';
 
-import {
-  createMarker,
-  validCoordinates
-} from '../../../contexts/helper/helper';
+import { createMarker, validCoordinates } from '../../../contexts/helper/helper';
 
 import DashboardMarker from '../../../contexts/helper/DashboardMarker';
 
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
-import {  MessageContext,
-          MSG_CHANNEL_TYPE_GENERAL,
-          MSG_CHANNEL_TYPE_LISTING_PARENT,
-          MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../contexts/MessageContext';
+import {
+  MessageContext,
+  MSG_CHANNEL_TYPE_GENERAL,
+  MSG_CHANNEL_TYPE_LISTING_CHILD,
+  MSG_CHANNEL_TYPE_LISTING_PARENT
+} from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
-import { FILE_SERVER_URL } from '../../../globalConstants';
-import { preprocessUrlRequest } from '../../../utils/route_helper';
-
-import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Circle } from 'react-leaflet'
+import { Circle, FeatureGroup, MapContainer, Popup, TileLayer } from 'react-leaflet';
 
 function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
@@ -44,7 +35,6 @@ function TenantListingDashBoard(props) {
 
   const {
     doNotDisturbMode,
-    childIndex,
     setChildIndex,
     setDoNotDisturbMode,
     broadcastDashboardMode,
@@ -54,35 +44,23 @@ function TenantListingDashBoard(props) {
     chattingContextType
   } = useContext(MessageContext);
 
-  const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
+  const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, setMapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
-  const [showMessage, setShowMessage] = useState(true);
-  const [refresh, setRefresh] = useState(markerParams['refresh']);
-  const [selectedMarkerID, setSelectedMarkerID] = useState(markerParams['selectedMarkerID']);
-  const [markers, setMarkers] = useState(markerParams['markers']);
+  const {refresh, selectedMarkerID, markers} = markerParams;
   const [map, setMap] = useState(null);
-  const [currBounds, setCurrBounds] = useState(null);
+  const {bounds, center, zoom} = mapParams;
 
-  // when this function's called?
-  // <note> whenever marker is called.
-  // getBounds return the same value somehow.
   const groupRef = (node) => {
     if (node !== null && map !== null) {
-      let bounds = node.getBounds();
-      if (Object.keys(bounds).length > 0) {
-        if (currentChildIndex === -1) { //fitBounds will happen only if parent listing is selected.
+      if (bounds === null) { //fitBounds will happen only if parent listing is selected.
+        const bounds = node.getBounds();
+        if (Object.keys(bounds).length > 0) {
           map.fitBounds(bounds);
-          if (currBounds === null) {
-            setCurrBounds(bounds);
-          }
+          setMapParams({ ...mapParams, bounds: bounds });
         }
       }
     }
-  };
-
-  const showModal = () => {
-    setModalShow(true);
   };
 
   const handleClose = () => {
@@ -91,7 +69,7 @@ function TenantListingDashBoard(props) {
 
   const handleClickDoNotDisturbMode = () => {
     if (currentListing.requester.username === currentUser.username) {
-      broadcastDashboardMode((doNotDisturbMode===false)? "locked": "normal");
+      broadcastDashboardMode((!doNotDisturbMode) ? "locked" : "normal");
     }
     setDoNotDisturbMode(!doNotDisturbMode);
   };
@@ -101,7 +79,6 @@ function TenantListingDashBoard(props) {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
         setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
-        //console.warn(`setting child index to ${index-1}`);
         setCurrentChildIndex(index-1);
         setChildIndex(index-1);
       }
@@ -109,8 +86,7 @@ function TenantListingDashBoard(props) {
   };
 
   useEffect(() => { // Populate markers if ready.
-    //console.warn(`refresh=${refresh}`);
-    if (refresh) {
+    if (refresh && currentListing) {
       const markers = []; // New list of markers.
       const { coordinates, _id, child_listings } = currentListing;
       if (validCoordinates(coordinates)) {
@@ -154,78 +130,38 @@ function TenantListingDashBoard(props) {
           });
         }
       }
-
-      //console.warn(`length of markers = ${markers.length}`);
-      setMarkers(markers);
       setMarkerParams({ ...markerParams, markers: markers, refresh: false });
     }
-  }, [refresh]);
+  }, [refresh, currentListing]);
 
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: map changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [map]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: currentListing changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [ currentListing ]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: selectedMarkerID changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [ selectedMarkerID ]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: mapParams changed`);
-    /*
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });*/
-  }, [ mapParams ]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: friendsMap changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [friendsMap]);
-
-
+  useEffect(() => {
+    if (currentListing && selectedMarkerID && bounds) {
+      const { _id: id, coordinates } = currentListing;
+      if (id === selectedMarkerID && coordinates) {
+        setMapParams({ ...mapParams, bounds: null });
+      } else {
+        const { child_listings } = currentListing;
+        if (child_listings && child_listings.length > 0) {
+          child_listings.map((listing) => {
+            const { _id: id, listing_id } = listing;
+            if (listing_id) {
+              const { coordinates } = listing_id;
+              if (id === selectedMarkerID && coordinates) {
+                const modifiedCoordinates = collapse === 'true' ? coordinates : modifyCoordinate(bounds, coordinates);
+                map.flyTo(modifiedCoordinates, 15, { animate: true, duration: 2.0 });
+              }
+            }
+          });
+        }
+      }
+      setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
+    }
+  }, [currentListing, selectedMarkerID, friendsMap]);
 
   useEffect(() => {
     //console.warn(`fetchCurrentListing by props`);
     fetchCurrentListing(props.match.params.id, 'tenant');
   }, [props]);
-
-  useEffect(() => {
-    //console.warn(`length of markers=${markers.length}`);
-  }, [markers]);
-
-  useEffect(() => {
-    //console.warn(`markerParams`);
-    const { refresh, markers, selectedMarkerID } = markerParams;
-    setMarkers(markers);
-    setRefresh(refresh);
-    // do we need to set the marker again??
-    setSelectedMarkerID(selectedMarkerID);
-  }, [markerParams]);
 
   useEffect(() => {
     // let's set the chatting context when listing is properly updated.
@@ -244,35 +180,38 @@ function TenantListingDashBoard(props) {
     }
   }, [currentListing]);
 
+  function modifyCoordinate(bounds, coordinate) {
+    const {lat, lng} = coordinate;
+    const {_northEast: northEast, _southWest: southWest} = bounds;
+
+    if (lat && lng && northEast && southWest) {
+      const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
+      const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 15);
+      return {
+        lat: lat - latOffSet,
+        lng: lng + lngOffSet
+      };
+    }
+
+    return coordinate;
+  }
+
   function controlMessageWindow() {
-    if (collapse === "true" && currBounds) {
+    if (collapse === 'true' && bounds) {
       const coordinate =
         (currentChildIndex===-1) ?
           currentListing.coordinates :
           (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
             currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
             currentListing.child_listings[currentChildIndex].listing_id.coordinates;
-
-      const {lat, lng} = coordinate;
-      const {_northEast: northEast, _southWest: southWest} = currBounds;
-      if (lat && lng && northEast && southWest) {
-        const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
-        const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 20);
-        map.flyTo([lat - latOffSet, lng + lngOffSet], 15);
-      }
+      map.flyTo(modifyCoordinate(bounds, coordinate), 15, { animate: true, duration: 1.5 });
     }
-
     toggleCollapse();
   }
 
-  const banAdditionalStyle =
-    (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
-
-  const { center, zoom } = mapParams;
-
-  //let mapMessageContainerStyle = { display: 'grid', gridTemplateColumns: '4fr 8fr'};
-  let mapMessageContainerStyle = { };
-  let chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
+  const banAdditionalStyle = (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
+  const mapMessageContainerStyle = { };
+  const chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
 
   return (
     (isUserLoggedIn()===false)?
@@ -306,33 +245,41 @@ function TenantListingDashBoard(props) {
                     <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
                   </SimpleModal>
                   <div>
-                    <MapContainer className='mapContainerStyle leaflet-center' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
+                    <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
                       <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                       <FeatureGroup ref={groupRef}>
-                        {markers.map((marker, index) =>
-                          <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
-                            <Popup>
-                              <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
-                                <section style={{marginTop: '3px'}}>
-                                  <a href={(index===0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
-                                    <i className="fas fa-external-link-alt fa-lg"/>
-                                  </a>
-                                </section>
-                                <section onClick={() => {controlMessageWindow();} } style={{color: '#a52a2a'}}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
-                                    <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
-                                    </path>
-                                  </svg>
-                                </section>
-                              </section>
-                            </Popup>
-                            {(currentListing!==undefined) && (currentListing.coordinates!==undefined) &&
-                            <Circle
-                              center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
-                              fillColor="gray"
-                              radius={1000}/>}
-                          </DashboardMarker>
-                        )}
+                        {
+                          markers.length > 0 ? (
+                            <>
+                              {
+                                markers.map((marker, index) =>
+                                  <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
+                                    <Popup>
+                                      <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
+                                        <section style={{marginTop: '3px'}}>
+                                          <a href={(index===0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
+                                            <i className="fas fa-external-link-alt fa-lg"/>
+                                          </a>
+                                        </section>
+                                        <section onClick={() => {controlMessageWindow()} } style={{color: '#a52a2a'}}>
+                                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+                                            <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
+                                            </path>
+                                          </svg>
+                                        </section>
+                                      </section>
+                                    </Popup>
+                                    {(currentListing!==undefined) && (currentListing.coordinates!==undefined) &&
+                                    <Circle
+                                      center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
+                                      fillColor="gray"
+                                      radius={1000}/>}
+                                  </DashboardMarker>
+                                )
+                              }
+                            </>
+                          ) : (<></>)
+                        }
                       </FeatureGroup>
                     </MapContainer>
                   </div>
