@@ -113,6 +113,7 @@ const LandlordRequestSchema = new mongoose.Schema({
 
   // index 0 wil be the cover photo.
   num_of_pictures_uploaded: { type: Number, default: 0 },
+  upload_count: { type: Number, default: 0},
 
   pictures: [
     {

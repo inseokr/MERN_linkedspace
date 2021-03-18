@@ -307,32 +307,45 @@ app.namespace('/LS_API', () => {
   // ISEO: req.files were undefined if it's used in routers.
   // We need to address this problem later, but I will define it inside app.js for now.
   app.post('/listing/landlord/:list_id/file_upload', (req, res) => {
-    console.log(`file upload: listing_id: ${req.params.list_id}`);
+    //console.log(`file upload: listing_id: ${req.params.list_id}`);
 
     LandlordRequest.findById(req.params.list_id, (err, foundListing) => {
       if (Object.keys(req.files).length == 0) {
         return res.status(400).send('No files were uploaded.');
       }
-      console.log(`Found listing. listing_id=${req.params.list_id}`);
+      //console.log(`Found listing. listing_id=${req.params.list_id}`);
       // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
       const sampleFile = req.files.file_name;
       const picIndex = req.body.pic_index;
       const { list_id } = req.params;
-      const picPath = `/public/user_resources/pictures/landlord/${list_id}_${picIndex}_${sampleFile.name}`;
+      const picPath = `/public/user_resources/pictures/landlord/${list_id}_${foundListing.upload_count}_${sampleFile.name}`;
 
       console.log(`picPath=${picPath}`);
       // Use the mv() method to place the file somewhere on your server
       sampleFile.mv(serverPath + picPath, (err) => {
         if (err) return res.status(500).send(err);
-        console.log('ISEO: Successful File upload');
+        //console.log(`ISEO: Successful File upload. index=${picIndex}`);
         const picture = { path: picPath, caption: req.body.caption };
-        // check if entry exists already
-        if (picIndex > foundListing.pictures.length) {
-          foundListing.pictures.push(picture);
-        } else {
-          foundListing.pictures[picIndex - 1] = picture;
+        if(picIndex==1) {
+          // check if cover photo has been uploaded before
+          if(foundListing.pictures.length>=1) {
+            //console.warn(`updating cover photo`);
+            foundListing.pictures[0] = picture;
+          }
+          else {
+            //console.warn(`cover photo has been added first time`);
+            foundListing.pictures.push(picture);
+            foundListing.num_of_pictures_uploaded += 1;
+          }
+
         }
-        foundListing.num_of_pictures_uploaded += 1;
+        else {
+          //console.warn(`adding other photos`);
+          foundListing.pictures.push(picture);
+          foundListing.num_of_pictures_uploaded += 1;
+        }
+
+        foundListing.upload_count += 1;
         foundListing.save();
         fileUpload2Cloud(serverPath, picPath);
         res.send('File uploaded!');
@@ -344,12 +357,29 @@ app.namespace('/LS_API', () => {
     const picIndex = req.body.pic_index;
     LandlordRequest.findById(req.params.list_id, (err, foundListing) => {
       try {
-        const picPath = foundListing.pictures[picIndex - 1].path;
-        fileDeleteFromCloud(picPath);
+        let newPictureArray = [];
+        let numberOfPictures = foundListing.num_of_pictures_uploaded;
 
-        fs.unlinkSync(serverPath + picPath);
-        foundListing.pictures[picIndex - 1].path = '';
-        foundListing.num_of_pictures_uploaded -= 1;
+        // let's shift all the other pictures.
+        for(let index=0; index<numberOfPictures; index++ ) {  
+          if(index==(picIndex-1)) {
+            const picPath = foundListing.pictures[index].path;
+            fileDeleteFromCloud(picPath);
+            fs.unlinkSync(serverPath + picPath);
+            if(index===0) {
+              foundListing.pictures[index].path = '';
+              newPictureArray.push(foundListing.pictures[index]);
+            }
+            else {
+              foundListing.num_of_pictures_uploaded -= 1;
+            }
+          }
+          else {
+            newPictureArray.push(foundListing.pictures[index]);
+          }
+        }
+        foundListing.pictures = newPictureArray;
+
         foundListing.save();
       } catch (err) {
         console.error(err);

@@ -74,7 +74,10 @@
 </div>
 
 <script>
-	var nextPictureIndex = 1;
+	var nextPictureIndex = <%=listing_info.listing.pictures.length+1%>;
+
+	//console.warn(`nextPictureIndex: ${nextPictureIndex}`);
+
 	// set display to none except the first
 	for (var pictureIndex =1; pictureIndex <=20; pictureIndex++)
 	{
@@ -179,7 +182,9 @@
 
 		    $(`#previewLabel-${picIndex}`).css('opacity', 0);
 
-		    nextPictureIndex++;
+		    nextPictureIndex += 1;  
+			//console.warn(`readURL: ${nextPictureIndex}`);
+
 		    var picturePreviewId = document.getElementById(`avatar-upload-${nextPictureIndex}`);
 			picturePreviewId.style.display = "inline-block";
 
