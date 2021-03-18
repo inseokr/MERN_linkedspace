@@ -101,14 +101,31 @@
 	}
 
 	<%if(listing_info.listing!=null){%>
+		var lengthOfCoverPhotoPath = <%=listing_info.listing.pictures[0].path.length%>;
+
 		<%for(var i=0; i<listing_info.listing.pictures.length; i++){%>
 			// Load the image and the caption
-			$("#imagePreview-<%=i+1%>").css('background-image', 'url("<%=locals.fileServerUrl%>/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[0].path.split("/").length-1]%>")');
-			$("#previewLabel-<%=i+1%>").css('opacity', 0);
-			$("#imageCapture-<%=i+1%>").val('<%=listing_info.listing.pictures[i].caption%>');
-			// Display the next image
-			var picturePreviewId = document.getElementById("avatar-upload-<%=i+2%>");
-			picturePreviewId.style.display = "inline-block";
+			if(<%=i%>==0 && lengthOfCoverPhotoPath==0) {
+				//console.warn(`cover photo`);
+				$(`#avatar-upload-1`).css('max-width', '500px');
+				$(`#avatar-preview-1`).css('width', '490px');
+				$(`#avatar-preview-1`).css('height', '250px');
+				$(`#previewLabel-1`).css('left', '55px');
+				$(`#previewLabel-1`).css('bottom', '80px');
+				$(`#previewLabel-1`).text('Add Cover Photo');
+				$(`#previewLabel-1`).css('font-size', '3em');
+			}	
+			else {		
+				//console.warn(`loading other pictures`);
+				$("#imagePreview-<%=i+1%>").css('background-image', 'url("<%=locals.fileServerUrl%>/public/user_resources/pictures/landlord/<%=listing_info.listing.pictures[i].path.split("/")[listing_info.listing.pictures[i].path.split("/").length-1]%>")');
+				$("#previewLabel-<%=i+1%>").css('opacity', 0);
+				$("#imageCapture-<%=i+1%>").val('<%=listing_info.listing.pictures[i].caption%>');
+				$("#avatar-upload-<%=i+1%>").css('display', "inline-block");
+
+				// Display the next image
+				var picturePreviewId = document.getElementById("avatar-upload-<%=i+2%>");
+				picturePreviewId.style.display = "inline-block";
+			}
 		<%}%>
 	<%}%>
 
