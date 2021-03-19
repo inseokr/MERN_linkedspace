@@ -226,7 +226,7 @@ function EditProfileMain() {
                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
                   <h5>Upload/Change your profile picture</h5>
                 </div>
-                <div className="avatar-upload" id="avatar-upload">
+                <div className="avatar-upload" id="avatar-upload" style={{marginLeft:'150px'}}>
                   <div className="avatar-edit" id="avatar-edit" onMouseOver={evt => handleOnMouseHooverImagePreview(evt)}>
                     <label htmlFor="imageUpload" id="editLabel" />
                   </div>
