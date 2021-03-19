@@ -292,7 +292,11 @@ function handleListingForward(req, res, type) {
           sendNotificationEmail(foundFriend.email, `new listing shared by ${req.user.username}`, notificationBody);
 
           foundFriend.save();
-          const _wait = await listing.shared_user_group.push(foundFriend._id);
+
+          if(checkDuplicate(listing.shared_user_group, foundFriend._id) === false ) {
+            const _wait = await listing.shared_user_group.push(foundFriend._id);
+          }
+          
           forwardCount++;
         }
       }
