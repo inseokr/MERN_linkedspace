@@ -74,10 +74,6 @@
 </div>
 
 <script>
-	var nextPictureIndex = <%=listing_info.listing.pictures.length+1%>;
-
-	//console.warn(`nextPictureIndex: ${nextPictureIndex}`);
-
 	// set display to none except the first
 	for (var pictureIndex =1; pictureIndex <=20; pictureIndex++)
 	{
@@ -101,7 +97,7 @@
 	}
 
 	<%if(listing_info.listing!=null){%>
-		var lengthOfCoverPhotoPath = <%=listing_info.listing.pictures[0].path.length%>;
+		var lengthOfCoverPhotoPath = <%=(listing_info.listing.pictures.length>=1)? listing_info.listing.pictures[0].path.length : 0%>;
 
 		<%for(var i=0; i<listing_info.listing.pictures.length; i++){%>
 			// Load the image and the caption
@@ -148,9 +144,6 @@
 	    $(`#imagePreview-${picIndex}`).css('background-image', 'url("")');
 	    $(`#previewLabel-${picIndex}`).css('opacity', 1);
 	    $(`#deleteLabel-${picIndex}`).css('opacity', 0)
-
-	    // ISEO: this may need some  adjustement as the deletion could happen randomly.
-	    nextPictureIndex--;
 	}
 
 	function handleOnMouseHooverImagePreview(elementId, picIndex){
@@ -199,10 +192,8 @@
 
 		    $(`#previewLabel-${picIndex}`).css('opacity', 0);
 
-		    nextPictureIndex += 1;  
-			//console.warn(`readURL: ${nextPictureIndex}`);
 
-		    var picturePreviewId = document.getElementById(`avatar-upload-${nextPictureIndex}`);
+			var picturePreviewId = document.getElementById(`avatar-upload-${picIndex+1}`);
 			picturePreviewId.style.display = "inline-block";
 
 	        // Upload the file along with caption
