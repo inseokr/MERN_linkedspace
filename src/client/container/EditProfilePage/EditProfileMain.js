@@ -17,7 +17,7 @@ function EditProfileMain() {
   const { currentUser } = useContext(GlobalContext);
 
   const action_url = (currentUser != null) ? `/LS_API/profile/${currentUser._id}?_method=PUT` : '';
-  const currentAddress = (currentUser != null) ? 
+  const currentAddress = (currentUser != null && currentUser.address !== undefined) ? 
                           `${currentUser.address.street}, ${currentUser.address.city}, ${currentUser.address.state}, ${currentUser.address.zipcode}, ${currentUser.address.country}`
                           : '';
 
