@@ -68,7 +68,8 @@ router.get('/getLastVisitedListingId', (req, res) => {
 
 router.get('/get_active_listing/own', (req, res) => {
   User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing')
-    .exec((err, foundUser) => {
+
+    .exec(async (err, foundUser) => {
       if (err) {
         console.log(err);
       } else {
@@ -76,28 +77,48 @@ router.get('/get_active_listing/own', (req, res) => {
         const landlord_listing = [];
         const _3rdparty_listing = [];
 
-        // <note> yes, landlord_listing array got screwed up after populate... darn...
-        foundUser.tenant_listing.forEach((listing) => {
+        for (let index = 0; index < foundUser.tenant_listing.length; index++) {
+          const listing = foundUser.tenant_listing[index];
+
           const profile_picture = (listing.profile_pictures[0] == undefined) ? '' : listing.profile_pictures[0].path;
 
-          const tlist = { id: listing._id, picture: profile_picture, listingType: 'tenant' };
-          tenant_listing.push(tlist);
-        });
+          const pathToPopulate = 'requester';
+          await listing.populate(pathToPopulate, 'username profile_picture firtname lastname').execPopulate();
+          listing.populated(pathToPopulate);
 
-        foundUser.landlord_listing.forEach((listing) => {
+          const tlist = {
+            id: listing._id,
+            picture: profile_picture,
+            delegated_posting: listing.delegated_posting,
+            username: (listing.delegated_posting == true)
+              ? listing.posting_originator.username
+              : listing.requester.username,
+            location: listing.location,
+            listingType: 'tenant'
+          };
+          tenant_listing.push(tlist);
+        }
+
+        for (let index = 0; index < foundUser.landlord_listing.length; index++) {
+          const listing = foundUser.landlord_listing[index];
+
           const listing_picture = (listing.pictures[0] == undefined) ? '' : listing.pictures[0].path;
 
-          const llist = { id: listing._id, picture: listing_picture, listingType: 'landlord' };
+          const llist = {
+            id: listing._id,
+            picture: listing_picture,
+            location: listing.rental_property_information.location,
+            listingType: 'landlord'
+          };
           landlord_listing.push(llist);
-        });
-
+        }
 
         let numOfProcessedListing = 0;
 
         foundUser._3rdparty_listing.forEach(async (listing, index) => {
           // populate requester
           const pathToPopulate = `_3rdparty_listing.${index}.requester`;
-          await foundUser.populate(pathToPopulate, 'username profile_picture firtname lastname').execPopulate();
+          await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
           foundUser.populated(pathToPopulate);
 
@@ -141,21 +162,19 @@ router.get('/get_active_listing/friend', (req, res) => {
       for (let index = 0; index < foundUser.incoming_landlord_listing.length; index++) {
         const listing = foundUser.incoming_landlord_listing[index];
         const pathToPopulate = `incoming_landlord_listing.${index}.id`;
-
         await foundUser.populate({ path: pathToPopulate, model: 'LandlordRequest' }).execPopulate();
         foundUser.populated(pathToPopulate);
-
         if (listing.id != null) {
           const llist = {
             id: listing.id._id,
             picture: listing.id.pictures[0].path,
             friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length - 2],
+            location: listing.id.rental_property_information.location,
             timestamp: listing.received_date
           };
           landlord_listing.push(llist);
         }
       }
-
 
       for (let index = 0; index < foundUser.incoming_tenant_listing.length; index++) {
         const listing = foundUser.incoming_tenant_listing[index];
@@ -164,11 +183,16 @@ router.get('/get_active_listing/friend', (req, res) => {
         await foundUser.populate({ path: pathToPopulate, model: 'TenantRequest' }).execPopulate();
         foundUser.populated(pathToPopulate);
 
+        const listingOriginator = (listing.posting_originator === undefined) ? '' : listing.id.posting_originator.username;
+
         if (listing.id != null) {
           const tlist = {
             id: listing.id._id,
             picture: listing.id.profile_pictures[0].path,
             friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length - 2],
+            delegated_posting: listing.id.delegated_posting,
+            username: listingOriginator,
+            location: listing.id.location,
             timestamp: listing.received_date
           };
           tenant_listing.push(tlist);

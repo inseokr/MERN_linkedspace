@@ -144,10 +144,10 @@ const TenantRequestSchema = new mongoose.Schema({
   		country: String,
   		zipcode: String
   	},
-    coordinates: {
+  coordinates: {
 	    lat: Number,
-      lng: Number
-    },
+    lng: Number
+  },
   	// move in date
   	move_in_date: {
   		month: String,
@@ -191,18 +191,28 @@ const TenantRequestSchema = new mongoose.Schema({
   group_rental: String,
   num_of_roommates: { type: Number, default: 0 },
 
+  // this could be different from the requester
+  delegated_posting: { type: Boolean, default: false },
+
+  posting_originator: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    username: String,
+  },
+
+  // following 2 information should be merged to posting_originator
   phone: String,
   email: String,
 
   list_of_referring_friends: [
     {
       profile_picture: String,
-
       friend_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
       },
-
       username: String,
     }]
 

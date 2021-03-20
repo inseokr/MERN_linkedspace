@@ -70,20 +70,35 @@ function ShowActiveListingPage(props) {
     }
   
     function getListingSourceInformation(listing_prefix, listing) {
-      if (listing_prefix === '_3rdparty') {
-        return (
-          <span style={{ textAlign: 'center', color: '#332f2f' }}>
-            {' '}
-            <h6>
+      switch(listing_prefix) {
+        case '_3rdparty':
+          return (
+            <span className="_lsFont2" style={{ textAlign: 'center'}}>
               {' '}
-              {listing.source}
+              <h6>
+                {' '}
+                {listing.source}
+                {' '}
+              </h6>
               {' '}
-            </h6>
-            {' '}
-          </span>
-        );
+            </span>
+          );
+        case 'tenant':
+          console.warn(`listing.delegated_posting = ${listing.delegated_posting}`);
+          return (
+            <span className="_lsFont2" style={{ textAlign: 'center'}}>
+              {' '}
+              <h6>
+                {' '}
+                {listing.username}
+                {' '}
+              </h6>
+              {' '}
+            </span>
+          );
+        default: return null;
+
       }
-      return null;
     }
   
     function getListingControls(listing, type) {
@@ -159,32 +174,39 @@ function ShowActiveListingPage(props) {
       );
     }
   
+    try {
     for (let index = 0; index < listingDB.length; index++) {
       const additionalClasses = 
         ((type==="friend") && (checkIfListingRead(currentUser, listing_prefix, listingDB[index].id)===false))? 'bottom_highlight': "";
   
       if (!checkChildListing(child_listings, listingDB[index].id)) {
         const listing = (
-          <div className={`network_board ${additionalClasses}`} key={listingDB[index].id}>
+          <div className={`posting_board raisedTile ${additionalClasses}`} key={listingDB[index].id}>
+            <div className="_lsFont2" id="location" style={{textAlign: 'center'}}> 
+              <i class="fas fa-map-marker-alt" style={{marginRight: '10px', marginLeft: '3px'}}></i>
+              {listingDB[index].location.city}
+            </div>
             <div className="profile_picture">
               {getCoverImg(listing_prefix, listingDB[index], type)}
               {getListingSourceInformation(listing_prefix, listingDB[index])}
             </div>
-  
-            <div className="d-flex justify-content-center">
+            <div className="d-flex justify-content-center" id="action">
               {getListingControls(listingDB[index], type)}
             </div>
           </div>
         );
   
-        console.log('adding to listing');
+        //console.log('adding to listing');
         listings.push(listing);
       }
+    }
+    } catch(err) {
+      console.warn(err);
     }
   
     if(type=="own") {
       const addListingTile = 
-        <div className='network_board'>
+        <div className='posting_board raisedTile '>
           <AddItem onClickHander={loadCreateListingPage} listingType={listing_prefix}/>
         </div>
   
