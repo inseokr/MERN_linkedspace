@@ -17,7 +17,11 @@ function EditProfileMain() {
   const { currentUser } = useContext(GlobalContext);
 
   const action_url = (currentUser != null) ? `/LS_API/profile/${currentUser._id}?_method=PUT` : '';
+  const currentAddress = (currentUser != null) ? 
+                          `${currentUser.address.street}, ${currentUser.address.city}, ${currentUser.address.state}, ${currentUser.address.zipcode}, ${currentUser.address.country}`
+                          : '';
 
+  //console.warn(`currentAddress=${currentAddress}`);
   function readURL(event) {
     const input = event.target;
 
@@ -293,7 +297,7 @@ function EditProfileMain() {
                 <br />
                 <hr />
 
-                {CollectLocationInfo()}
+                <CollectLocationInfo currentAddress={currentAddress}/>
 
                 {/* birthdate */}
                 <hr />

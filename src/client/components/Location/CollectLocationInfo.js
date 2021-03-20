@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import $ from 'jquery';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -7,9 +8,10 @@ import useAddressPredictions from '../../hooks/useAddressPredictions';
 import { getGeometryFromSearchString } from '../../contexts/helper/helper';
 
 function CollectLocationInfo(props) {
+  const {currentAddress} = props;
   const [location, setLocation] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
-  const [addressInput, setAddressInput] = useState('');
+  const [addressInput, setAddressInput] = useState(currentAddress);
   const predictions = useAddressPredictions(addressInput);
 
   function updateLocationJQuery(street, city, state, zipcode, country, lat, lng) {
