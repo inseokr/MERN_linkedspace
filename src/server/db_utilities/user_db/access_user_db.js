@@ -206,6 +206,21 @@ function handleListingForward(req, res, type) {
     return bDuplicate;
   }
 
+
+  function checkUserIdDuplicate(list, id) {
+    let bDuplicate = false;
+
+    if (list.length >= 1) {
+      bDuplicate = list.some(
+        _list => _list.equals(id)
+      );
+    }
+
+    //console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
+
+    return bDuplicate;
+  }
+
   User.findById(req.user._id, async (err, foundUser) => {
     if (err) {
       res.json({ result: 'User not found' });
@@ -292,7 +307,11 @@ function handleListingForward(req, res, type) {
           sendNotificationEmail(foundFriend.email, `new listing shared by ${req.user.username}`, notificationBody);
 
           foundFriend.save();
-          const _wait = await listing.shared_user_group.push(foundFriend._id);
+
+          if (checkUserIdDuplicate(listing.shared_user_group, foundFriend._id) === false) {
+            const _wait = await listing.shared_user_group.push(foundFriend._id);
+          }
+
           forwardCount++;
         }
       }
@@ -306,7 +325,6 @@ function handleListingForward(req, res, type) {
     });
   });
 }
-
 
 
 // how do I know the referring friends?

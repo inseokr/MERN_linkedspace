@@ -17,7 +17,11 @@ function EditProfileMain() {
   const { currentUser } = useContext(GlobalContext);
 
   const action_url = (currentUser != null) ? `/LS_API/profile/${currentUser._id}?_method=PUT` : '';
+  const currentAddress = (currentUser != null && currentUser.address !== undefined) ? 
+                          `${currentUser.address.street}, ${currentUser.address.city}, ${currentUser.address.state}, ${currentUser.address.zipcode}, ${currentUser.address.country}`
+                          : '';
 
+  //console.warn(`currentAddress=${currentAddress}`);
   function readURL(event) {
     const input = event.target;
 
@@ -226,7 +230,7 @@ function EditProfileMain() {
                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
                   <h5>Upload/Change your profile picture</h5>
                 </div>
-                <div className="avatar-upload" id="avatar-upload">
+                <div className="avatar-upload" id="avatar-upload" style={{marginLeft:'150px'}}>
                   <div className="avatar-edit" id="avatar-edit" onMouseOver={evt => handleOnMouseHooverImagePreview(evt)}>
                     <label htmlFor="imageUpload" id="editLabel" />
                   </div>
@@ -293,7 +297,7 @@ function EditProfileMain() {
                 <br />
                 <hr />
 
-                {CollectLocationInfo()}
+                <CollectLocationInfo currentAddress={currentAddress}/>
 
                 {/* birthdate */}
                 <hr />

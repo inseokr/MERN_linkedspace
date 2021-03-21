@@ -168,8 +168,19 @@ module.exports = function (app) {
             foundListing.profile_pictures[0].caption = req.body.caption;
           }
 
-          foundListing.phone = req.body.phone;
-          foundListing.email = req.body.email;
+          // process renter's information if this posting has been created by someone else
+          //console.warn(`request_delegated=${JSON.stringify(req.body)}`);
+          if (req.body.request_delegated == 'true') {
+            foundListing.delegated_posting = true;
+            foundListing.posting_originator.username = req.body.name;
+            foundListing.phone = req.body.phone;
+            foundListing.email = req.body.email;
+          } else {
+            foundListing.delegated_posting = false;
+            foundListing.posting_originator.username = req.user.username;
+            foundListing.phone = req.user.phone;
+            foundListing.email = req.user.email;
+          }
 
           if (req.body.group_rental == 'on') {
             const listOfRoomMate = [];

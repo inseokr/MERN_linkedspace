@@ -110,10 +110,9 @@ function MessageEditorIcon(props) {
     }
 
     if (selectedChatList !== undefined && selectedChatList.length >= 1) {
-      postSelectedContactList().then(() => { });
+      postSelectedContactList().then(() => { forwardListing(); });
       // need to make it sure that the selected chatting party is shown in the contact list.
       // let's forward the listing to the chatting party if it's not in the shared_user_group yet.
-      forwardListing();
       onClickHandler();
     }
   };
