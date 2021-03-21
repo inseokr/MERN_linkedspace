@@ -197,7 +197,6 @@ span.newMsgSignature {
     box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
 }
 
-
 ._lsTitleLarge {
     color: rgb(34, 34, 34) !important;
     font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
@@ -227,4 +226,36 @@ span.newMsgSignature {
     line-height: 25px !important;
     margin-left: 5px;
     margin-bottom: 5px;
+}
+
+.posting_board {
+  display: inline-grid;
+  border: 1px solid #dee2e6;
+  grid-template-columns:180px;
+  grid-template-rows: 30px 180px 40px;
+  opacity: 1;
+  height: 270px;
+}
+
+.posting_board .profile_picture {
+  grid-row-start: 2;
+  grid-row-end: 3;
+  text-align: center;
+}
+
+.posting_board  #location {
+  grid-row-start: 1;
+  grid-row-end: 2;
+  text-align: center;
+}
+
+.posting_board  #action {
+  grid-row-start: 3;
+  grid-row-end: 4;
+  text-align: center;
+}
+
+.bottom_highlight {
+  border-bottom-width: thick !important;
+  border-bottom-color: red !important;
 }
