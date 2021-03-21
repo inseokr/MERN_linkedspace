@@ -216,6 +216,8 @@ function handleListingForward(req, res, type) {
       );
     }
 
+    //console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
+
     return bDuplicate;
   }
 
