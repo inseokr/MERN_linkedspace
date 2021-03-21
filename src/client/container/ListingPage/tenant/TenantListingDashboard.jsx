@@ -14,7 +14,11 @@ import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
 import SimpleModal from '../../../components/Modal/SimpleModal';
 import { FILE_SERVER_URL, STYLESHEET_URL } from '../../../globalConstants';
 
-import { createMarker, validCoordinates } from '../../../contexts/helper/helper';
+import {
+  createMarker,
+  getGeometryFromSearchString,
+  validCoordinates
+} from '../../../contexts/helper/helper';
 
 import DashboardMarker from '../../../contexts/helper/DashboardMarker';
 
@@ -47,9 +51,10 @@ function TenantListingDashBoard(props) {
   const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, setMapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
-  const {refresh, selectedMarkerID, markers} = markerParams;
+  const { refresh, selectedMarkerID, markers } = markerParams;
+  const { search } = filterParams;
   const [map, setMap] = useState(null);
-  const {bounds, center, zoom} = mapParams;
+  const { bounds, center, zoom } = mapParams;
 
   const groupRef = (node) => {
     if (node !== null && map !== null) {
@@ -141,7 +146,7 @@ function TenantListingDashBoard(props) {
         setMapParams({ ...mapParams, bounds: null });
       } else {
         const { child_listings } = currentListing;
-        if (child_listings && child_listings.length > 0) {
+        if (map && child_listings && child_listings.length > 0) {
           child_listings.map((listing) => {
             const { _id: id, listing_id } = listing;
             if (listing_id) {
@@ -156,10 +161,26 @@ function TenantListingDashBoard(props) {
       }
       setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
     }
-  }, [currentListing, selectedMarkerID, friendsMap]);
+  }, [map, currentListing, selectedMarkerID, friendsMap]);
+
+  useEffect(() => { // fly to coordinate from updated search.
+    if (map && search.length > 0) {
+      getGeometryFromSearchString(search).then(response => {
+        const { results, status } = response;
+        if (status === "OK" && results.length > 0) {
+          const { geometry } = results[0];
+          if (geometry) {
+            const { location } = geometry;
+            if (location) {
+              map.flyTo(location, 15, { animate: true, duration: 2.0 });
+            }
+          }
+        }
+      });
+    }
+  }, [map, search]);
 
   useEffect(() => {
-    //console.warn(`fetchCurrentListing by props`);
     fetchCurrentListing(props.match.params.id, 'tenant');
   }, [props]);
 
