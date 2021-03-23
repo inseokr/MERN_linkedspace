@@ -154,7 +154,7 @@ function getListingLink() {
       <InputGroup>
         <FormControl
           required
-          placeholder="sourceUrlPlaceHolder"
+          placeholder="Copy the URL"
           aria-label="sourceUrlLabel"
           aria-describedby="sourceUrl"
           name="sourceUrl"
@@ -184,11 +184,11 @@ function getListingPrice() {
 function getListingSummary() {
   return (
     <div style={{ width: '78%' }}>
-      <label className="control-label">Brief Summary of rental</label>
+      <label className="control-label">Brief summary of rental</label>
       <InputGroup>
         <FormControl
           required
-          placeholder="You may copy the headline of listing."
+          placeholder="You may copy the headline or summary"
           aria-label="rentalSummary"
           aria-describedby="rentalSummary"
           id="rentalSummary"
@@ -320,33 +320,15 @@ function Post3rdPartyListing(props) {
   return (
     <div>
       <div className="container" style={{ textAlign: 'center', marginBottom: '10px' }}>
-        <h3>Posting 3rd Party Listing</h3>
+        <h3>3rd Party Listing</h3>
       </div>
 
       <div className="container">
-
-        <div className="stepwizard offset-md-3">
-          <div className="stepwizard-row setup-panel">
-            <div className="stepwizard-step">
-              <a className="btn-circle btn btn-primary" href={`/LS_API/listing/3rdparty/${listingId}/step1`} type="button">1</a>
-            </div>
-            <div className="stepwizard-step">
-              <a disabled="disabled" className="btn-circle btn btn-outline-secondary" href={`/listing/3rdparty/${listingId}/step2`} type="button">2</a>
-            </div>
-          </div>
-        </div>
-
           <form role="form" id="listingForm" onSubmit={(evt) => handleFormClick(evt, listingId)} action={`/LS_API/listing/3rdparty/${listingId}/new`} method="POST">
 
             <div className="row setup-content" id="step-1" style={{ marginTop: '30px' }}>
               <div className="col-md-6 offset-md-3">
                 <div className="col-md-12">
-
-                  <div style={{ textAlign: 'center' }}>
-                    <h5> Summary of listing </h5>
-                  </div>
-
-                  <hr />
 
                   {/* 1. Source: Craigslist, SF Korean, other
   				      			2. Link
@@ -372,11 +354,12 @@ function Post3rdPartyListing(props) {
                   <div style={{ textAlign: 'center' }}>
                     <h5> Location </h5>
                   </div>
-                  <hr />
-                  <CollectLocationInfo
-                    location={currentLocation}
-                    coordinates={currentCoordinates}
-                  />
+                  <div style={{marginLeft:'43px'}}>
+                    <CollectLocationInfo
+                      location={currentLocation}
+                      coordinates={currentCoordinates}
+                    />
+                  </div>
                 </div>
 
                 <hr />
