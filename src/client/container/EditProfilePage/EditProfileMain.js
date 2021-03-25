@@ -260,7 +260,7 @@ function EditProfileMain() {
                   <h5>User Name</h5>
                 </div>
                 <hr />
-                <div className="flex-container" style={{ marginTop: '10px' }}>
+                <div className="flex-container" style={{ marginTop: '10px', justifyContent: 'center' }}>
                   <div style={{ width: '50%' }}>
                     <input type="text" className="form-control" style={{ width: '100%' }} name="user_name" id="user_name" placeholder="User Name" readOnly />
                   </div>
