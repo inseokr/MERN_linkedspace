@@ -248,20 +248,26 @@ function TenantListingDashBoard(props) {
 
   function controlMessageWindow() {
     if (collapse === "true" && currBounds) {
-      const coordinate =
-        (currentChildIndex===-1) ?
-          currentListing.coordinates :
-          (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
-            currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
-            currentListing.child_listings[currentChildIndex].listing_id.coordinates;
 
-      const {lat, lng} = coordinate;
-      const {_northEast: northEast, _southWest: southWest} = currBounds;
-      if (lat && lng && northEast && southWest) {
-        const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
-        const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 20);
-        map.flyTo([lat - latOffSet, lng + lngOffSet], 15);
+      try {
+        const coordinate =
+          (currentChildIndex===-1) ?
+            currentListing.coordinates :
+            (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
+              currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
+              currentListing.child_listings[currentChildIndex].listing_id.coordinates;
+
+        const {lat, lng} = coordinate;
+        const {_northEast: northEast, _southWest: southWest} = currBounds;
+        if (lat && lng && northEast && southWest) {
+          const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
+          const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 20);
+          map.flyTo([lat - latOffSet, lng + lngOffSet], 15);
+        }
+      } catch(err) {
+        console.warn(err);
       }
+
     }
 
     toggleCollapse();
