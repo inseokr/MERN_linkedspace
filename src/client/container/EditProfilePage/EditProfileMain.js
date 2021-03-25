@@ -185,11 +185,21 @@ function EditProfileMain() {
       $('#year').val(tempDate.getFullYear());
     }
 
-    if (currentUser.gender == 'M') {
-      $('#male').prop('checked', true);
-    } else {
-      $('#female').prop('checked', true);
+    switch(currentUser.gender) {
+      case 'M':
+        $('#male').prop('checked', true);
+        break;
+      case 'F':
+        $('#female').prop('checked', true);
+        break;
+      case 'O':
+        $('#other').prop('checked', true);
+        break;
+      default: 
+        $('#nodisclosure').prop('checked', true);
+        break;
     }
+
 
     // load profile picture
     if (currentUser.profile_picture != undefined) {
