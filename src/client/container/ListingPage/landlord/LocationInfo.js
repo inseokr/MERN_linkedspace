@@ -47,8 +47,15 @@ function LocationInfo() {
       <div className="row no_border">
         <div className="col-7">
           <div>
-            <div className="_lsFont1">
-              Location
+            <div className="_lsFont1" style={{display: 'flex'}}>
+              Location: 
+              <div className="_lsFont2">
+              {currentListing.listing.rental_property_information.location.street}
+              {currentListing.listing.rental_property_information.location.street.length>1 && <React.Fragment>,</React.Fragment>}
+              {currentListing.listing.rental_property_information.location.city}
+              ,
+              {currentListing.listing.rental_property_information.location.state}
+              </div>
             </div>
             <div style={{ height: '300px', marginTop: '5px' }}>
               {
