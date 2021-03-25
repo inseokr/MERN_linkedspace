@@ -242,75 +242,75 @@ function TenantListingDashBoard(props) {
         </div>
       </div>
       :
-      <Grid component="main">
-        <CssBaseline />
-        <Box className="App" component="div" display="flex" flexDirection="column">
-          <span className="DashboardModeControlCaption" > Do not disturb mode </span>
-          <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
-          <Grid container alignContent="stretch" >
-            <Grid item xs={5}>
-              <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
-              <Grid item xs={12}>
-                <TenantDashboardListView/>
+      <Grid container direction="row" justify="space-evenly">
+        <Grid item xs={12}>
+          <CssBaseline />
+          <Box className="App" component="div" display="flex" flexDirection="column">
+            <span className="DashboardModeControlCaption" > Do not disturb mode </span>
+            <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
+            <Grid container alignContent="stretch" >
+              <Grid item xs={5}>
+                <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
+                <Grid item xs={12}>
+                  <TenantDashboardListView/>
+                </Grid>
+              </Grid>
+              <Grid className="map" item xs={7}>
+
+                <div style={mapMessageContainerStyle}>
+                  <section style={chatContainerStyle}>
+                    <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
+                  </section>
+
+                  <React.Fragment>
+                    <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
+                      <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
+                    </SimpleModal>
+                    <div>
+                      <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
+                        <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <FeatureGroup ref={groupRef}>
+                          {
+                            markers.length > 0 ? (
+                              <>
+                                {
+                                  markers.map((marker, index) =>
+                                    <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
+                                      <Popup>
+                                        <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
+                                          <section style={{marginTop: '3px'}}>
+                                            <a href={(index === 0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
+                                              <i className="fas fa-external-link-alt fa-lg"/>
+                                            </a>
+                                          </section>
+                                          <section onClick={() => {controlMessageWindow()} } style={{color: '#a52a2a'}}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+                                              <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
+                                              </path>
+                                            </svg>
+                                          </section>
+                                        </section>
+                                      </Popup>
+                                      {(currentListing !== undefined) && (currentListing.coordinates !== undefined) &&
+                                      <Circle
+                                        center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
+                                        fillColor="gray"
+                                        radius={1000}/>}
+                                    </DashboardMarker>
+                                  )
+                                }
+                              </>
+                            ) : (<></>)
+                          }
+                        </FeatureGroup>
+                      </MapContainer>
+                    </div>
+                  </React.Fragment>
+                </div>
               </Grid>
             </Grid>
-            <Grid className="map" item xs={7}>
-
-              <div style={mapMessageContainerStyle}>
-                <section style={chatContainerStyle}>
-                  <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
-                </section>
-
-                <React.Fragment>
-                  <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
-                    <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
-                  </SimpleModal>
-                  <div>
-                    <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
-                      <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <FeatureGroup ref={groupRef}>
-                        {
-                          markers.length > 0 ? (
-                            <>
-                              {
-                                markers.map((marker, index) =>
-                                  <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
-                                    <Popup>
-                                      <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
-                                        <section style={{marginTop: '3px'}}>
-                                          <a href={(index===0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
-                                            <i className="fas fa-external-link-alt fa-lg"/>
-                                          </a>
-                                        </section>
-                                        <section onClick={() => {controlMessageWindow()} } style={{color: '#a52a2a'}}>
-                                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
-                                            <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
-                                            </path>
-                                          </svg>
-                                        </section>
-                                      </section>
-                                    </Popup>
-                                    {(currentListing!==undefined) && (currentListing.coordinates!==undefined) &&
-                                    <Circle
-                                      center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
-                                      fillColor="gray"
-                                      radius={1000}/>}
-                                  </DashboardMarker>
-                                )
-                              }
-                            </>
-                          ) : (<></>)
-                        }
-                      </FeatureGroup>
-                    </MapContainer>
-                  </div>
-                </React.Fragment>
-
-              </div>
-
-            </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        </Grid>
       </Grid>
   );
 }
