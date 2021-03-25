@@ -63,6 +63,7 @@ function TenantListingDashBoard(props) {
   const [markers, setMarkers] = useState(markerParams['markers']);
   const [map, setMap] = useState(null);
   const [currBounds, setCurrBounds] = useState(null);
+  const [markerClicked, setMarkerClicked] = useState(false);
 
   // when this function's called?
   // <note> whenever marker is called.
@@ -104,6 +105,7 @@ function TenantListingDashBoard(props) {
         //console.warn(`setting child index to ${index-1}`);
         setCurrentChildIndex(index-1);
         setChildIndex(index-1);
+        setMarkerClicked(true);
       }
     });
   };
@@ -310,7 +312,13 @@ function TenantListingDashBoard(props) {
                       <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                       <FeatureGroup ref={groupRef}>
                         {markers.map((marker, index) =>
-                          <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
+                          <DashboardMarker key={`marker-${index}`} 
+                                           position={marker.position}  
+                                           markerIndex={index-1} 
+                                           icon={marker.icon} 
+                                           markerClickState={markerClicked}  
+                                           markerClickStatehandler={setMarkerClicked} 
+                                           eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
                             <Popup>
                               <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
                                 <section style={{marginTop: '3px'}}>

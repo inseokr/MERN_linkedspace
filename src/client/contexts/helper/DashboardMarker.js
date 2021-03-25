@@ -7,16 +7,18 @@ import { CurrentListingContext } from '../CurrentListingContext';
 const DashboardMarker = props => {
 
     const { currentChildIndex } = useContext(CurrentListingContext);
-    const {markerIndex} = props;
+    const {markerIndex, markerClickState, markerClickStatehandler} = props;
     
     const markerRef = useRef();
 
     useEffect(() => {
         if(markerIndex===currentChildIndex && markerIndex!==-1) {
-            markerRef.current.openPopup();
+            if(markerClickState===true) {
+                markerRef.current.openPopup();
+                markerClickStatehandler(false);
+            }
         }
-    }, [currentChildIndex]);
-
+    }, [currentChildIndex, markerClickState]);
 
     return <Marker ref={markerRef} {...props}/>
   }
