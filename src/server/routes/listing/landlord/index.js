@@ -297,64 +297,64 @@ module.exports = function (app) {
   }
 
   function preprocessListing(listing, accessibleSpaces, amenities) {
-    if (listing.accessible_spaces.living_room != 'off') {
+    if (listing.accessible_spaces.living_room != false) {
       accessibleSpaces.push('living room');
     }
 
-    if (listing.accessible_spaces.pool != 'off') {
+    if (listing.accessible_spaces.pool != false) {
       accessibleSpaces.push('pool');
     }
 
-    if (listing.accessible_spaces.gym != 'off') {
+    if (listing.accessible_spaces.gym != false) {
       accessibleSpaces.push('gym');
     }
 
-    if (listing.accessible_spaces.laundry != 'off') {
+    if (listing.accessible_spaces.laundry != false) {
       accessibleSpaces.push('laundry');
     }
 
-    if (listing.accessible_spaces.kitchen != 'off') {
+    if (listing.accessible_spaces.kitchen != false) {
       accessibleSpaces.push('kitchen');
     }
 
-    if (listing.accessible_spaces.parking != 'off') {
+    if (listing.accessible_spaces.parking != false) {
       accessibleSpaces.push('parking');
     }
 
     // amenities
-    if (listing.amenities.internet != 'off') {
+    if (listing.amenities.internet != false) {
       amenities.push('Internet');
     }
 
-    if (listing.amenities.closet != 'off') {
+    if (listing.amenities.closet != false) {
       amenities.push('Closet');
     }
 
-    if (listing.amenities.tv != 'off') {
+    if (listing.amenities.tv != false) {
       amenities.push('TV entertainment system');
     }
 
-    if (listing.amenities.ac != 'off') {
+    if (listing.amenities.ac != false) {
       amenities.push('Air Conditioner');
     }
 
-    if (listing.amenities.desk != 'off') {
+    if (listing.amenities.desk != false) {
       amenities.push('Desk');
     }
 
-    if (listing.amenities.smoke_detector != 'off') {
+    if (listing.amenities.smoke_detector != false) {
       amenities.push('Smoke detector');
     }
 
-    if (listing.amenities.heating != 'off') {
+    if (listing.amenities.heating != false) {
       amenities.push('Heater');
     }
 
-    if (listing.amenities.private_entrance != 'off') {
+    if (listing.amenities.private_entrance != false) {
       amenities.push('Private entrance');
     }
 
-    if (listing.amenities.fire_extinguisher != 'off') {
+    if (listing.amenities.fire_extinguisher != false) {
       amenities.push('Fire extinguisher');
     }
   }
