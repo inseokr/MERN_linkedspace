@@ -77,11 +77,13 @@ function updateUserSocketMap(currentSocket, user_name) {
   }
 
   if (bDuplicate === false) {
-    console.log(`Updating socketToUserMap for user = ${user_name}`);
+    //console.log(`Updating socketToUserMap for user = ${user_name}`);
 
     userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
-
     socketToUserMap[currentSocket.id] = user_name;
+
+    // <note> let's update the status of user to online
+    userDbHandler.updateLoggedInStatus(user_name, "online");
   }
 
   // <TBD> When is the right point to do this?
@@ -279,6 +281,14 @@ function removeSocket(socket_) {
   // 2. userToSocketMap
   // <note> There could be multiple sockets for the same user.
   userToSocketMap[userName] = userToSocketMap.filter(item => item != socket_);
+
+  if((userName!==undefined) && (userToSocketMap[userName].length===0)) {
+    //console.warn(`No socket available for ${userName}`);
+    // let's update login status here.
+    // <note> User could be still in logged in status, but no communication channel available.
+    // In this case, we will treat it as offline.
+    userDbHandler.updateLoggedInStatus(userName, "offline");
+  }
 
   // 3. channelIdToSocketList
   // <Note> It may need to go through whole channel??

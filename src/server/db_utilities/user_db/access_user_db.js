@@ -216,7 +216,7 @@ function handleListingForward(req, res, type) {
       );
     }
 
-    //console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
+    // console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
 
     return bDuplicate;
   }
@@ -424,11 +424,26 @@ function addListing2User(user, listing, type) {
   */
 }
 
+// status: ["online", "offline"]
+async function updateLoggedInStatus(userName, status) {
+  const foundUser = await getUserByName_(userName);
+
+  if (foundUser !== null) {
+    if (status === 'offline') {
+      foundUser.loggedInTime = null;
+    } else if (foundUser.loggedInTime !== null) {
+      foundUser.loggedInTime = Date.now();
+    }
+    foundUser.save();
+  }
+}
+
 module.exports = {
   getUserByName: getUserByName_,
   findUserById: findUserById_,
   deleteListingFromUserDB,
   getReferringFriendsByListingId,
   handleListingForward,
-  readListingFromFriends
+  readListingFromFriends,
+  updateLoggedInStatus
 };
