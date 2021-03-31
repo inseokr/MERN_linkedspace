@@ -40,7 +40,11 @@ module.exports = function (app) {
 
 
   router.post('/new', (req, res) => {
-    const filename = req.body.file_name.replace(/^.*[\\\/]/, '');
+    console.warn(`Original file name =${req.body.file_name}`);
+    const copiedFileName = req.body.file_name;
+    console.warn(`copiedFileName =${copiedFileName}`);
+    const filename = copiedFileName.replace(/^.*[\\\/]/, '');
+    console.warn(`converted file name = ${filename}`);
 
     const newListing = new _3rdPartyListing();
 
@@ -96,7 +100,15 @@ module.exports = function (app) {
     _3rdPartyListing.findById(req.params.listing_id, (err, foundListing) => {
       console.log('Updating 3rdparty posting');
 
-      const filename = path.parse(req.body.file_name).base;
+      /*console.warn(`file_name=${req.body.file_name}`);
+      //const filename = path.parse(req.body.file_name).base;
+      const filename = req.body.file_name.replace(/^.*[\\\/]/, '');
+      console.warn(`after conversion: file_name=${filename}`);*/
+      console.warn(`Original file name =${req.body.file_name}`);
+      const copiedFileName = req.body.file_name;
+      console.warn(`copiedFileName =${copiedFileName}`);
+      const filename = copiedFileName.replace(/^.*[\\\/]/, '');
+      console.warn(`converted file name = ${filename}`);
 
 	    foundListing.listingSource = req.body.listingSource;
 	    foundListing.listingUrl = req.body.sourceUrl;
