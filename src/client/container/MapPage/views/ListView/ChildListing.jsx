@@ -13,6 +13,7 @@ import { GlobalContext } from '../../../../contexts/GlobalContext';
 import { CurrentListingContext } from '../../../../contexts/CurrentListingContext';
 import { FILE_SERVER_URL } from '../../../../globalConstants';
 import axios from 'axios';
+import shortid from 'shortid';
 
 function getChildListingSummary(childListing) {
 
@@ -207,7 +208,10 @@ const ChildListing = React.forwardRef(({
     _childListing.shared_user_group.forEach((user, _index) => {
       if(checkIfInLikedList(user._id)===true)
       {
-        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" src={FILE_SERVER_URL+getProfilePictureFromSharedGroup(user.username)} alt="Liked friend"  />);
+        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" 
+                                 src={FILE_SERVER_URL+getProfilePictureFromSharedGroup(user.username)} 
+                                 key={shortid.generate()}
+                                 alt="Liked friend"  />);
       }
     });
 
