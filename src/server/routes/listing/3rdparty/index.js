@@ -40,11 +40,11 @@ module.exports = function (app) {
 
 
   router.post('/new', (req, res) => {
-    console.warn(`Original file name =${req.body.file_name}`);
+    //console.warn(`Original file name =${req.body.file_name}`);
     const copiedFileName = req.body.file_name;
-    console.warn(`copiedFileName =${copiedFileName}`);
+    //console.warn(`copiedFileName =${copiedFileName}`);
     const filename = copiedFileName.replace(/^.*[\\\/]/, '');
-    console.warn(`converted file name = ${filename}`);
+    //console.warn(`converted file name = ${filename}`);
 
     const newListing = new _3rdPartyListing();
 
@@ -98,17 +98,17 @@ module.exports = function (app) {
 
   router.post('/:listing_id/new', (req, res) => {
     _3rdPartyListing.findById(req.params.listing_id, (err, foundListing) => {
-      console.log('Updating 3rdparty posting');
+      //console.log('Updating 3rdparty posting');
 
       /*console.warn(`file_name=${req.body.file_name}`);
       //const filename = path.parse(req.body.file_name).base;
       const filename = req.body.file_name.replace(/^.*[\\\/]/, '');
       console.warn(`after conversion: file_name=${filename}`);*/
-      console.warn(`Original file name =${req.body.file_name}`);
+      //console.warn(`Original file name =${req.body.file_name}`);
       const copiedFileName = req.body.file_name;
-      console.warn(`copiedFileName =${copiedFileName}`);
+      //console.warn(`copiedFileName =${copiedFileName}`);
       const filename = copiedFileName.replace(/^.*[\\\/]/, '');
-      console.warn(`converted file name = ${filename}`);
+      //console.warn(`converted file name = ${filename}`);
 
 	    foundListing.listingSource = req.body.listingSource;
 	    foundListing.listingUrl = req.body.sourceUrl;
@@ -130,7 +130,7 @@ module.exports = function (app) {
         const new_path = `${serverPath + new_full_picture_path}`;
         fs.rename(original_path, new_path, (err) => {
           if (err) throw err;
-          console.log('File renamed successfully');
+          //console.log('File renamed successfully');
           fileUpload2Cloud(serverPath, new_full_picture_path);
         });
 

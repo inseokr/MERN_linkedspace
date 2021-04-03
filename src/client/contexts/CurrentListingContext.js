@@ -184,6 +184,12 @@ export function CurrentListingProvider(props) {
 
     let successful = 0;
 
+    if(currentListing!==undefined && currentListing._id!=id) {
+      //console.warn(`new listing is being loaded`);
+      setCurrentChildIndex(-1);
+      focusParentListing();
+    }
+
     await fetch(`/LS_API/${_prefix + id}/fetch`)
       .then(res => res.json())
       .then((listing) => {
