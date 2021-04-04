@@ -52,7 +52,7 @@ function ForwardTenantListingModal(props) {
     }
 
     return (
-      <SimpleModal show={modalState} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" styles={{width: '20%', height: 'auto'}}>
+      <SimpleModal show={modalState} handle1={forward2friend} caption1="Forward" handle2={handleCancel} caption2="Cancel" styles={{width: '20%', height: '80vh'}}>
         <SelectionFromDirectFriends show={modalState} filter={currentListing.shared_user_group} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
       </SimpleModal>
     );
