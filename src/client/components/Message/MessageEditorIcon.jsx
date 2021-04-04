@@ -79,6 +79,8 @@ function MessageEditorIcon(props) {
     // check if there is any friend who's not in the shared_user_group
     const listOfFriendsToForward = [];
 
+    console.warn(`forwardListing: selected length=${selectedChatList.length}`);
+
     for (let index = 0; index < selectedChatList.length; index += 1) {
       if (registeredInSharedGroup(selectedChatList[index].username) === false) {
         listOfFriendsToForward.push(selectedChatList[index]);
@@ -89,6 +91,9 @@ function MessageEditorIcon(props) {
       const data = {
         userList: listOfFriendsToForward
       };
+      
+      console.warn(`forwardListing: listOfFriendsToForward length=${listOfFriendsToForward.length}`);
+
       const postUrl = `/LS_API/listing/tenant/${currentListing._id}/forward`;
       await axios.post(postUrl, data).then(async (result) => {
         console.log(`result = ${result.data.result}`);
