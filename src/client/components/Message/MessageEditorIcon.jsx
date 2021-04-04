@@ -91,7 +91,6 @@ function MessageEditorIcon(props) {
       const data = {
         userList: listOfFriendsToForward
       };
-      
       console.warn(`forwardListing: listOfFriendsToForward length=${listOfFriendsToForward.length}`);
 
       const postUrl = `/LS_API/listing/tenant/${currentListing._id}/forward`;
