@@ -31,7 +31,7 @@ function TenantListingComponent(props) {
   const [showMeetingRequestModal, setShowMeetingRequestModal] = useState(false);
   const {
     currentListing, fetchCurrentListing, currentChildIndex,
-    parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
+    parentRef, setParentRef, setCurrentChildIndex, mapParams, setMapParams, setMarkerParams
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType, checkAnyUnreadMessages, toggleCollapse} = useContext(MessageContext);
 
@@ -205,7 +205,8 @@ function TenantListingComponent(props) {
       //console.log('setting chatting context type and toggle');
       setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
     }
-    setMarkerParams({ ...markerParams, selectedMarkerID: currentListing._id});
+    setMapParams({ ...mapParams, bounds: null }); // Reset map bounds.
+    setMarkerParams({ refresh: true, selectedMarkerID: currentListing._id, markers: []});
     setCurrentChildIndex(-1);
     // need to reload the message window...
   };

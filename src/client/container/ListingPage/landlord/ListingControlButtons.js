@@ -22,10 +22,15 @@ function ListingControlButtons() {
   const history = useHistory();
 
   const checkIfOwner = ()=> {
-    if (currentListing.listing.requester===undefined || currentUser===undefined) {
+    try {
+      if (currentListing.listing.requester===undefined || currentUser===undefined) {
+        return false;
+      }
+      return (currentListing.listing.requester._id === currentUser._id);
+    } catch(err) {
+      console.warn(err);
       return false;
     }
-    return (currentListing.listing.requester._id === currentUser._id);
   };
 
   useEffect(() => {

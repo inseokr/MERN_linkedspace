@@ -65,10 +65,10 @@
                   <% } %>
               </select>
             </div>
-            <div class="form-group" style="width:30%">
-              <label class="control-label">Maximum Budget</label>
+            <div class="form-group" style="width:50%">
+              <label class="control-label">Budget Per Month</label>
 
-              <select class="form-control" style="width:80%" required="required" name="rental_budget" id="rental_budget" placeholder="">
+              <select class="form-control" style="width:50%" required="required" name="rental_budget" id="rental_budget" placeholder="">
                 <% 
                   for (var cur_budget=300; cur_budget<5000; cur_budget+=100) {%>
                       <option value=<%=cur_budget%>> $<%=cur_budget%> </option>

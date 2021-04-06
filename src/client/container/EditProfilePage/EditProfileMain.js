@@ -185,11 +185,21 @@ function EditProfileMain() {
       $('#year').val(tempDate.getFullYear());
     }
 
-    if (currentUser.gender == 'M') {
-      $('#male').prop('checked', true);
-    } else {
-      $('#female').prop('checked', true);
+    switch(currentUser.gender) {
+      case 'M':
+        $('#male').prop('checked', true);
+        break;
+      case 'F':
+        $('#female').prop('checked', true);
+        break;
+      case 'O':
+        $('#other').prop('checked', true);
+        break;
+      default: 
+        $('#nodisclosure').prop('checked', true);
+        break;
     }
+
 
     // load profile picture
     if (currentUser.profile_picture != undefined) {
@@ -260,7 +270,7 @@ function EditProfileMain() {
                   <h5>User Name</h5>
                 </div>
                 <hr />
-                <div className="flex-container" style={{ marginTop: '10px' }}>
+                <div className="flex-container" style={{ marginTop: '10px', justifyContent: 'center' }}>
                   <div style={{ width: '50%' }}>
                     <input type="text" className="form-control" style={{ width: '100%' }} name="user_name" id="user_name" placeholder="User Name" readOnly />
                   </div>

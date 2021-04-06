@@ -12,7 +12,8 @@
 	<!-- totalSteps and curr_step should be provided -->
 	<%var curr_step=1; 
 	  var totalSteps=6;
-	  var title = "What kind of place do you have?"%> 
+	  var title = "Location";
+	  var title1 = "What kind of place do you have?"%> 
 	<% include ../../partials/stepwizard_v2 %>
 
 	<%if(listing_info.listing==null) {%>
@@ -24,7 +25,7 @@
 			<div class="col-md-6 offset-md-3">
 				<div class="col-md-12">
 					<div style="text-align:center">
-						<h5><%=title%></h5>
+						<h5><%=title1%></h5>
 					</div>
 					<hr>
 

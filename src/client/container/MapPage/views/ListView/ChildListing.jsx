@@ -56,7 +56,7 @@ const ChildListing = React.forwardRef(({
 
   const [modalShow, setModalShow] = useState(false);
 
-  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, filterParams, mapParams, setMapParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup } 	= useContext(CurrentListingContext);
   const { getProfilePicture, currentUser } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
@@ -106,8 +106,16 @@ const ChildListing = React.forwardRef(({
     // e.preventDefault();
     clickHandler(index);
     console.log('listingClickHandler', listing);
-    setMarkerParams({ ...markerParams, selectedMarkerID: listing._id});
-    setCurrentChildIndex(index);
+    const { _id } = listing;
+    const { selectedMarkerID } = markerParams;
+    if (selectedMarkerID === _id) { // Clicked on same listing.
+      setMapParams({ ...mapParams, bounds: null }); // Reset map bounds.
+      setMarkerParams({ refresh: true, selectedMarkerID: currentListing._id, markers: []});
+      setCurrentChildIndex(-1);
+    } else {
+      setMarkerParams({ refresh: true, selectedMarkerID: listing._id, markers: []});
+      setCurrentChildIndex(index);
+    }
     // update the message context
     updateMessageContext();
   }

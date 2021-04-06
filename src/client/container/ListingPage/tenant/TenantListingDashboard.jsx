@@ -91,13 +91,15 @@ function TenantListingDashBoard(props) {
   };
 
   useEffect(() => { // Populate markers if ready.
-    if (refresh && currentListing) {
+    if (refresh) {
       const markers = []; // New list of markers.
       const { coordinates, _id, child_listings } = currentListing;
       if (validCoordinates(coordinates)) {
         const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
-        const icon = createMarker({type: "image", data: imgSource}, (_id === selectedMarkerID));
-        markers.push({ position: coordinates, icon: icon, markerID: _id }); // Add parent listing marker.
+        const markerSelected = _id === selectedMarkerID;
+        console.log("B R O O O ", _id, selectedMarkerID);
+        const icon = createMarker({type: "image", data: imgSource}, markerSelected);
+        markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected }); // Add parent listing marker.
       }
 
       if (child_listings) { // Add child listings markers if they exist.
@@ -127,8 +129,9 @@ function TenantListingDashBoard(props) {
                   const _price = (listing.listing_id.listingType === "landlord")?
                     listing.listing_id.rental_terms.asking_price:
                     listing.listing_id.rentalPrice;
-                  const icon = createMarker({type: "price", data: _price}, (_id === selectedMarkerID));
-                  markers.push({ position: coordinates, icon: icon, markerID: _id });
+                  const markerSelected = !!(_id === selectedMarkerID && currentChildIndex !== -1);
+                  const icon = createMarker({type: "price", data: _price}, markerSelected);
+                  markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected });
                 }
               }
             }
@@ -137,31 +140,54 @@ function TenantListingDashBoard(props) {
       }
       setMarkerParams({ ...markerParams, markers: markers, refresh: false });
     }
-  }, [refresh, currentListing]);
+  }, [refresh, currentChildIndex]);
 
   useEffect(() => {
-    if (currentListing && selectedMarkerID && bounds) {
-      const { _id: id, coordinates } = currentListing;
-      if (id === selectedMarkerID && coordinates) {
-        setMapParams({ ...mapParams, bounds: null });
-      } else {
-        const { child_listings } = currentListing;
-        if (map && child_listings && child_listings.length > 0) {
-          child_listings.map((listing) => {
-            const { _id: id, listing_id } = listing;
-            if (listing_id) {
-              const { coordinates } = listing_id;
-              if (id === selectedMarkerID && coordinates) {
-                const modifiedCoordinates = collapse === 'true' ? coordinates : modifyCoordinate(bounds, coordinates);
-                map.flyTo(modifiedCoordinates, 15, { animate: true, duration: 2.0 });
-              }
-            }
-          });
+    if (map && bounds && markers.length > 0) {
+      const { _id: id } = currentListing; // ID of Parent Listing.
+      markers.map((marker) => {
+        const { position, markerID, selected } = marker;
+        if (selected) {
+          if (id !== markerID) { // // Child Listing
+            const modifiedCoordinates = collapse === 'true' ? position : modifyCoordinate(bounds, position);
+            map.flyTo(modifiedCoordinates, 15, { animate: true, duration: 2.0 });
+          }
         }
-      }
-      setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
+      });
     }
-  }, [map, currentListing, selectedMarkerID, friendsMap]);
+  }, [bounds, markers, collapse]);
+
+  useEffect(() => {
+    if (currentListing) {
+      setMapParams({ ...mapParams, bounds: null }); // Reset map bounds.
+      setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] }); // Refresh for both parent and child.
+    }
+  }, [currentListing, map, friendsMap]);
+
+  // TODO Old code. May need.
+  // useEffect(() => {
+  //   if (map && bounds && currentListing && selectedMarkerID) {
+  //     const { _id: id, coordinates } = currentListing;
+  //     if (id === selectedMarkerID && coordinates) {
+  //       setMapParams({ ...mapParams, bounds: null });
+  //     } else {
+  //       const { child_listings } = currentListing;
+  //       if (map && child_listings && child_listings.length > 0) {
+  //         child_listings.map((listing) => {
+  //           const { _id: id, listing_id } = listing;
+  //           if (listing_id) {
+  //             const { coordinates } = listing_id;
+  //             if (id === selectedMarkerID && coordinates) {
+  //               const modifiedCoordinates = collapse === 'true' ? coordinates : modifyCoordinate(bounds, coordinates);
+  //               map.flyTo(modifiedCoordinates, 15, { animate: true, duration: 2.0 });
+  //             }
+  //           }
+  //         });
+  //       }
+  //     }
+  //     setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
+  //   }
+  // }, [map, bounds, currentListing, selectedMarkerID, friendsMap, collapse]);
 
   useEffect(() => { // fly to coordinate from updated search.
     if (map && search.length > 0) {
@@ -225,6 +251,7 @@ function TenantListingDashBoard(props) {
           (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
             currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
             currentListing.child_listings[currentChildIndex].listing_id.coordinates;
+      console.log("controlMessageWindow", )
       map.flyTo(modifyCoordinate(bounds, coordinate), 15, { animate: true, duration: 1.5 });
     }
     toggleCollapse();
@@ -271,36 +298,30 @@ function TenantListingDashBoard(props) {
                         <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                         <FeatureGroup ref={groupRef}>
                           {
-                            markers.length > 0 ? (
-                              <>
-                                {
-                                  markers.map((marker, index) =>
-                                    <DashboardMarker key={`marker-${index}`} position={marker.position}  markerIndex={index-1} icon={marker.icon} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
-                                      <Popup>
-                                        <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
-                                          <section style={{marginTop: '3px'}}>
-                                            <a href={(index === 0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
-                                              <i className="fas fa-external-link-alt fa-lg"/>
-                                            </a>
-                                          </section>
-                                          <section onClick={() => {controlMessageWindow()} } style={{color: '#a52a2a'}}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
-                                              <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
-                                              </path>
-                                            </svg>
-                                          </section>
-                                        </section>
-                                      </Popup>
-                                      {(currentListing !== undefined) && (currentListing.coordinates !== undefined) &&
-                                      <Circle
-                                        center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
-                                        fillColor="gray"
-                                        radius={1000}/>}
-                                    </DashboardMarker>
-                                  )
-                                }
-                              </>
-                            ) : (<></>)
+                            markers.map((marker, index) =>
+                              <DashboardMarker key={`marker-${index}`} position={marker.position} markerIndex={index-1} icon={marker.icon} markerSelected={marker.selected} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}}>
+                                <Popup>
+                                  <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
+                                    <section style={{marginTop: '3px'}}>
+                                      <a href={(index === 0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
+                                        <i className="fas fa-external-link-alt fa-lg"/>
+                                      </a>
+                                    </section>
+                                    <section onClick={() => {controlMessageWindow()} } style={{color: '#a52a2a'}}>
+                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+                                        <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
+                                        </path>
+                                      </svg>
+                                    </section>
+                                  </section>
+                                </Popup>
+                                {(currentListing !== undefined) && (currentListing.coordinates !== undefined) &&
+                                <Circle
+                                  center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
+                                  fillColor="gray"
+                                  radius={1000}/>}
+                              </DashboardMarker>
+                            )
                           }
                         </FeatureGroup>
                       </MapContainer>

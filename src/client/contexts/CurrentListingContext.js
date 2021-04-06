@@ -31,7 +31,7 @@ export function CurrentListingProvider(props) {
   });
 
   const [markerParams, setMarkerParams] = useState({
-    refresh: true,
+    refresh: false,
     selectedMarkerID: null,
     markers: []
   });
