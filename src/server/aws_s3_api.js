@@ -24,9 +24,8 @@ const fileUpload2Cloud = (serverPath, fileName) => {
 
   s3.upload(params, (err, data) => {
     if (err) {
-      throw err;
+      console.warn(`fileUpload2Cloud: error = ${err}`);
     }
-    console.log(`AWS S3:File uploaded successfully. ${data.Location}`);
   });
 };
 
@@ -42,9 +41,8 @@ const fileDeleteFromCloud = (fileName) => {
 
   s3.deleteObject(params, (err, data) => {
     if (err) {
-      throw err;
+      console.warn(`fileDeleteFromCloud: error = ${err}`);
     }
-    console.log('AWS S3:File deleted successfully.');
   });
 };
 

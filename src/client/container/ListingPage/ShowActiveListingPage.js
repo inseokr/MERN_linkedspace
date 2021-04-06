@@ -9,6 +9,7 @@ import { GlobalContext } from '../../contexts/GlobalContext';
 import GetRatingDeco from '../../components/decos/GetRatingDeco';
 import '../../container/ListingPage/common/file_upload.css';
 import AddItem from '../../components/CustomControls/AddItem';
+import shortid from 'shortid';
 
 function ShowActiveListingPage(props) {
   const { listing_info, currentListing } = useContext(CurrentListingContext);
@@ -183,7 +184,7 @@ function ShowActiveListingPage(props) {
         const listing = (
           <div className={`posting_board raisedTile ${additionalClasses}`} key={listingDB[index].id}>
             <div className="_lsFont2" id="location" style={{textAlign: 'center'}}> 
-              <i class="fas fa-map-marker-alt" style={{marginRight: '10px', marginLeft: '3px'}}></i>
+              <i className="fas fa-map-marker-alt" style={{marginRight: '10px', marginLeft: '3px'}}></i>
               {listingDB[index].location.city}
             </div>
             <div className="profile_picture">
@@ -206,7 +207,7 @@ function ShowActiveListingPage(props) {
   
     if(type=="own") {
       const addListingTile = 
-        <div className='posting_board raisedTile '>
+        <div className='posting_board raisedTile ' key={shortid.generate()}>
           <AddItem onClickHander={loadCreateListingPage} listingType={listing_prefix}/>
         </div>
   

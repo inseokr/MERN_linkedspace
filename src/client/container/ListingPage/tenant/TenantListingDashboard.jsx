@@ -251,7 +251,6 @@ function TenantListingDashBoard(props) {
           (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
             currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
             currentListing.child_listings[currentChildIndex].listing_id.coordinates;
-      console.log("controlMessageWindow", )
       map.flyTo(modifyCoordinate(bounds, coordinate), 15, { animate: true, duration: 1.5 });
     }
     toggleCollapse();
