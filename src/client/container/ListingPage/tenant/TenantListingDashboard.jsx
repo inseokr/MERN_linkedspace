@@ -52,6 +52,7 @@ function TenantListingDashBoard(props) {
 
   const [modalShow, setModalShow] = useState(false);
   const [map, setMap] = useState(null);
+  const [currentMarker, setCurrentMarker] = useState(null);
   const { refresh, selectedMarkerID, markers } = markerParams;
   const { search } = filterParams;
   const { bounds, center, zoom } = mapParams;
@@ -59,10 +60,10 @@ function TenantListingDashBoard(props) {
   const groupRef = (node) => {
     if (node !== null && map !== null) {
       if (bounds === null) { //fitBounds will happen only if parent listing is selected.
-        const bounds = node.getBounds();
-        if (Object.keys(bounds).length > 0) {
-          map.fitBounds(bounds);
-          setMapParams({ bounds, center: map.getCenter(), zoom: map.getZoom() });
+        const nodeBounds = node.getBounds();
+        if (nodeBounds && Object.keys(nodeBounds).length > 0) {
+          map.fitBounds(nodeBounds);
+          setMapParams({ bounds: nodeBounds, center: map.getCenter(), zoom: map.getZoom() });
         }
       }
     }
@@ -97,7 +98,6 @@ function TenantListingDashBoard(props) {
       if (validCoordinates(coordinates)) {
         const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
         const markerSelected = _id === selectedMarkerID;
-        console.log("B R O O O ", _id, selectedMarkerID);
         const icon = createMarker({type: "image", data: imgSource}, markerSelected);
         markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected }); // Add parent listing marker.
       }
@@ -105,7 +105,7 @@ function TenantListingDashBoard(props) {
       if (child_listings) { // Add child listings markers if they exist.
         if (child_listings.length > 0) {
           child_listings.map((listing) => {
-            if(listing===null || listing.listing_id===null) return;
+            if(listing === null || listing.listing_id === null) return;
 
             const rentalPrice = (listing.listing_id.listingType === "landlord") ? Number(listing.listing_id.rental_terms.asking_price) : listing.listing_id.rentalPrice;
 
@@ -148,14 +148,24 @@ function TenantListingDashBoard(props) {
       markers.map((marker) => {
         const { position, markerID, selected } = marker;
         if (selected) {
-          if (id !== markerID) { // // Child Listing
-            const modifiedCoordinates = collapse === 'true' ? position : modifyCoordinate(bounds, position);
-            map.flyTo(modifiedCoordinates, 15, { animate: true, duration: 2.0 });
+          if (id !== markerID) { // Child Listing
+            map.flyTo(position, 15, { animate: true, duration: 2.0 });
+            map.once('moveend', function() {
+              setCurrentMarker(marker);
+            });
           }
         }
       });
     }
-  }, [bounds, markers, collapse]);
+  }, [bounds, markers]);
+
+  useEffect(() => {
+    if (map && currentMarker) { // Offset map if chat is open.
+      const { position } = currentMarker;
+      const modifiedCoordinate = collapse === 'true' ? position : modifyCoordinate(map.getBounds(), position);
+      map.flyTo(modifiedCoordinate, 15, { animate: true, duration: 1.0 });
+    }
+  }, [currentMarker, collapse]);
 
   useEffect(() => {
     if (currentListing) {
@@ -163,31 +173,6 @@ function TenantListingDashBoard(props) {
       setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] }); // Refresh for both parent and child.
     }
   }, [currentListing, map, friendsMap]);
-
-  // TODO Old code. May need.
-  // useEffect(() => {
-  //   if (map && bounds && currentListing && selectedMarkerID) {
-  //     const { _id: id, coordinates } = currentListing;
-  //     if (id === selectedMarkerID && coordinates) {
-  //       setMapParams({ ...mapParams, bounds: null });
-  //     } else {
-  //       const { child_listings } = currentListing;
-  //       if (map && child_listings && child_listings.length > 0) {
-  //         child_listings.map((listing) => {
-  //           const { _id: id, listing_id } = listing;
-  //           if (listing_id) {
-  //             const { coordinates } = listing_id;
-  //             if (id === selectedMarkerID && coordinates) {
-  //               const modifiedCoordinates = collapse === 'true' ? coordinates : modifyCoordinate(bounds, coordinates);
-  //               map.flyTo(modifiedCoordinates, 15, { animate: true, duration: 2.0 });
-  //             }
-  //           }
-  //         });
-  //       }
-  //     }
-  //     setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
-  //   }
-  // }, [map, bounds, currentListing, selectedMarkerID, friendsMap, collapse]);
 
   useEffect(() => { // fly to coordinate from updated search.
     if (map && search.length > 0) {
@@ -232,8 +217,8 @@ function TenantListingDashBoard(props) {
     const {_northEast: northEast, _southWest: southWest} = bounds;
 
     if (lat && lng && northEast && southWest) {
-      const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
-      const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 15);
+      const latOffSet = Math.abs((northEast.lat - southWest.lat) / 5);
+      const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 5);
       return {
         lat: lat - latOffSet,
         lng: lng + lngOffSet
@@ -241,19 +226,6 @@ function TenantListingDashBoard(props) {
     }
 
     return coordinate;
-  }
-
-  function controlMessageWindow() {
-    if (collapse === 'true' && bounds) {
-      const coordinate =
-        (currentChildIndex===-1) ?
-          currentListing.coordinates :
-          (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
-            currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
-            currentListing.child_listings[currentChildIndex].listing_id.coordinates;
-      map.flyTo(modifyCoordinate(bounds, coordinate), 15, { animate: true, duration: 1.5 });
-    }
-    toggleCollapse();
   }
 
   const banAdditionalStyle = (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
@@ -306,7 +278,7 @@ function TenantListingDashBoard(props) {
                                         <i className="fas fa-external-link-alt fa-lg"/>
                                       </a>
                                     </section>
-                                    <section onClick={() => {controlMessageWindow()} } style={{color: '#a52a2a'}}>
+                                    <section onClick={() => {toggleCollapse()} } style={{color: '#a52a2a'}}>
                                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
                                         <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
                                         </path>
