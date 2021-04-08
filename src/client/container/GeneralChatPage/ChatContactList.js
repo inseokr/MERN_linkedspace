@@ -20,6 +20,7 @@ function ChatContactList() {
     setCurrChannelInfo,
     childIndex,
     loadChattingDatabase,
+    loadChattingDatabase4SelectedChannel,
     chattingContextType,
     getDmChannelId,
     msgCounter,
@@ -232,7 +233,8 @@ function ChatContactList() {
       if(index===undefined)
       {
         //console.warn(`handleDelayedPickChatParty: loading chatting DB`);
-        loadChattingDatabase();
+        // ISEO-TBD: how can we load the specific channel?
+        loadChattingDatabase4SelectedChannel();
         return false;
       }
       else
@@ -283,7 +285,9 @@ function ChatContactList() {
 
       if(index===undefined) 
       {
-        loadChattingDatabase();
+        //console.warn(`loadChattingDatabase: newContactSelected`);
+        //ISEO-TBD: do we really need to load everything here?
+        loadChattingDatabase4SelectedChannel();
       }
       else
       {
@@ -327,7 +331,8 @@ function ChatContactList() {
         {
           // need loading of database
           //console.warn(`Noooo... still no context created yet`);
-          loadChattingDatabase();
+          // ISEO-TBD: do we need to load all database?
+          loadChattingDatabase(contactStates[0].channelInfo);
           indexOfActiveChannel = -1;
         }
         else

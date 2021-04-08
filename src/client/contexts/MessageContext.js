@@ -266,15 +266,12 @@ export function MessageContextProvider(props) {
 
   }
 
-
   function refreshUserDataFromMessageContext() {
     refreshUserData();
   }
 
-
   function reset(mode) {
-    // console.log("MessageContext: being reset");
-    // console.log("MessageContext: current channel name = " + currChannelInfo.channelName );
+    //console.warn("MessageContext: being reset");
     setChannelContexts([]);
     setChannelContextLength(0);
     setNewMsgArrived(false);
@@ -399,6 +396,27 @@ export function MessageContextProvider(props) {
     {
       return null;
     }
+  }
+
+  function getSelectedMembers() {
+    let _members = [];
+
+    if(selectedChatList.length>0)
+    {
+      if(selectedChatList.length===1)
+      {
+        _members.push(currentUser.username);
+        _members.push(selectedChatList[0].username);
+      }
+      else {
+        _members.push(currentUser.username);
+        for(let index=0; index<selectedChatList.length; index++) {
+          _members.push(selectedChatList[index].username);
+        }
+      }
+    }
+
+    return _members;
   }
 
   async function postSelectedContactList() {
@@ -1326,12 +1344,17 @@ export function MessageContextProvider(props) {
     setFlagNewlyLoaded(true);
   }
 
+  async function loadChattingDatabase4SelectedChannel() {
+    let selectedChannel = {channelName: getSelectedChannelId(), members: getSelectedMembers() };
+    loadChattingDatabase(selectedChannel);
+  }
+
   // loading chatting database from backend
   async function loadChattingDatabase(requestedChannel=null) {
 
     if (currentUser == undefined || databaseLoadingInProgressFlag===true)
     {
-      return;
+      return false;
     }
 
     if(databaseLoadingInProgressFlag===false) 
@@ -1450,6 +1473,7 @@ export function MessageContextProvider(props) {
 
     setDatabaseLoadingInProgressFlag(false);
     //console.warn(`stop loading. context type=${chattingContextType}`);
+    return true;
   }
 
   // <note> obsolete function.
@@ -1531,7 +1555,6 @@ export function MessageContextProvider(props) {
     //ISEO-TBD: I can't believe it. Why it doesn't have up to date currentListing yet?
     // It was 4 seconds previously
     loadChattingDatabase(currChannelInfo);
-    //setTimeout(()=> loadChattingDatabase(), 500);
   }, [currChannelInfo]);
 
 
@@ -1599,6 +1622,7 @@ export function MessageContextProvider(props) {
       getChattingHistory,
       updateChatHistory,
       loadChattingDatabase,
+      loadChattingDatabase4SelectedChannel,
       checkNewlyLoaded,
       checkIfAnyNewMsgArrived,
       checkIfAnyNewMsgArrivedListingChannel,
