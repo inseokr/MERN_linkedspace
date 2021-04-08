@@ -86,7 +86,7 @@ module.exports = function (app) {
 
 		    const newChannel = new ChatChannel();
 
-     		// console.warn(`New channel: channel ID = ${req.body.channel_id}`);
+     		console.warn(`New channel: channel ID = ${req.body.channel_id}`);
 		    newChannel.channel_id = req.body.channel_id;
 		    newChannel.channel_type = req.body.channel_type;
 
@@ -108,7 +108,7 @@ module.exports = function (app) {
 		      chatDbHandler.findChatPartyByName(req.body.members[index]).then(async (memberInfo) => {
 		            numberOfPushedMembers++;
 
-		            // console.warn(`adding ${JSON.stringify(memberInfo)} to the chatting channel`);
+		            console.warn(`adding ${JSON.stringify(memberInfo)} to the chatting channel`);
 
 		            newChannel.members.push(memberInfo);
 

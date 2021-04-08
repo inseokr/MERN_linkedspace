@@ -169,7 +169,7 @@ module.exports = function (app) {
           }
 
           // process renter's information if this posting has been created by someone else
-          //console.warn(`request_delegated=${JSON.stringify(req.body)}`);
+          // console.warn(`request_delegated=${JSON.stringify(req.body)}`);
           if (req.body.request_delegated == 'true') {
             foundListing.delegated_posting = true;
             foundListing.posting_originator.username = req.body.name;
@@ -478,11 +478,12 @@ module.exports = function (app) {
 
 		    	foundListing.save((err) => {
 			    		if (err) {
+                console.warn(`addGroupChat failure with reason=${err}`);
 			    			res.json({ result: 'DB save failure' });
 			    			return;
 			    		}
-			    		// console.log("addGroupChat: user added successfully");
-			    		// console.log("addGroupChat: list_of_group_chats = " + JSON.stringify(foundListing.list_of_group_chats));
+			    		//console.log('addGroupChat: user added successfully');
+			    		//console.log(`addGroupChat: list_of_group_chats = ${JSON.stringify(foundListing.list_of_group_chats)}`);
 				    	res.json({ result: 'Added successfully' });
 		    	});
     		}
@@ -654,12 +655,18 @@ module.exports = function (app) {
 	    	console.error(err);
 	    }
 
+      // ISEO-TBD: this is very error prone
+      // user DB are being saved in parallel which is very risky.
+      // both deleteListingFromUserDB & removeChannelFromUserDb will try to save user database concurrently.
+      // we may need to combine both functions into one?
+      // Or we should ensure all the database operations have been completed?
+
 	    // clean up chatting related resources
 	    // 1. go through all the child listing and remove chatting channels.
 	    listingDbHandler.cleanAllChildListingsFromParent(foundListing);
 
 	    // 2. remove the tenant listing from other users including creator
-	    userDbHandler.deleteListingFromUserDB(foundListing);
+	    //userDbHandler.deleteListingFromUserDB(foundListing);
 
       // 3. remove channels in the parent level
       const channel_id_prefix = `${req.params.list_id}-`;
@@ -670,9 +677,34 @@ module.exports = function (app) {
         await foundListing.populate(pathToPopulate, 'username').execPopulate();
         foundListing.populated(pathToPopulate);
 
-        chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
-      });
+        let userName = foundListing.shared_user_group[userIndex].username;
 
+        userDbHandler.getUserByName(userName).then((foundUser) => {
+          let new_dm_channels = [];
+
+          for(let index=0; index<foundUser.chatting_channels.dm_channels.length; index++) {
+            let channel = foundUser.chatting_channels.dm_channels[index];
+            if (channel.name.search(channel_id_prefix) != -1) {
+              // remove the chatting channel from chatting server.
+              chatServer.removeChannel(channel.name);
+            } else {
+              new_dm_channels.push(channel);
+            }
+          }
+          foundUser.chatting_channels.dm_channels = new_dm_channels;
+          // check if current user is the creator
+          if(foundListing.requester.equals(foundUser._id)){
+            //console.warn(`deleteOwnListing`);
+            userDbHandler.deleteOwnListing(foundUser, foundListing);
+          }
+          else {
+            //console.warn(`deleteListingFromFriends`);
+            userDbHandler.deleteListingFromFriends(foundUser, foundListing);
+          }
+          foundUser.save();
+        });
+        //chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
+      });
 
       foundListing.remove();
 
