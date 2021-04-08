@@ -235,6 +235,9 @@ function TenantListingComponent(props) {
     );
   }
 
+  const dashboardTitle = (listing.rental_duration=='24')? 'Dinner gathering event' : 'Summary of rental request';
+  const eventDateCaption = (listing.rental_duration=='24')? 'Event date:': 'Move-in date:';
+
   return (
     <div>
       <div ref={parentRef} onClick={handleParentOnClick} id='tenantParentListing' style={{ position: 'sticky', top: '0', zIndex: '100', background: 'white'}}>
@@ -261,7 +264,7 @@ function TenantListingComponent(props) {
             <Paper className="description" onClick={handleParentOnClick} style={{background: _backGroundColor}}>
               <div style={{ display:'flex', flexFlow: 'row', justifyContent: 'space-between', marginLeft: '5px'}}> 
                 <Typography className="description__address" color="textSecondary" style={{marginBottom: '10px', textAlign: "center"}}>
-                  Summary of rental request
+                  {dashboardTitle}
                 </Typography>
 
                 <section style={{color: 'rgb(165, 42, 42)'}} onClick={toggleCollapse}>
@@ -273,7 +276,7 @@ function TenantListingComponent(props) {
               </div>
 
                 <Typography className="description__address" style={{fontSize: '.9rem'}}>
-                  Move-in date:
+                  {eventDateCaption}
                   {' '}
                   {moveInDate}
                 </Typography>
@@ -284,6 +287,7 @@ function TenantListingComponent(props) {
                   {preferredLocation}
                 </Typography>
 
+              {listing.rental_duration!='24' &&
               <div style={{ display: 'grid', gridTemplateColumns: "7fr 5fr"}}>
                 <Typography className="description__address" style={{fontSize: '.9rem'}}>
                   Rental duration: 
@@ -297,6 +301,7 @@ function TenantListingComponent(props) {
                   /m
                 </Typography>
               </div>
+              }
               <Typography className="description__address" color="textSecondary" style={{marginTop: '10px', marginBottom: '5px', fontSize: '.9rem'}}>
                 Posted by:
                 {' '}

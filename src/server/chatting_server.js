@@ -323,21 +323,21 @@ function removeChannelFromUserDb(name, channel_id) {
 
     const new_dm_channels = [];
 
-    foundUser.chatting_channels.dm_channels.forEach((channel) => {
-      console.log(`current channel name = ${channel.name}`);
-      // found the partial matching
+    for(let index=0; index<foundUser.chatting_channels.dm_channels.length; index++) {
+      let channel = foundUser.chatting_channels.dm_channels[index];
       if (channel.name.search(channel_id) != -1) {
         // remove the chatting channel from chatting server.
         removeChannel(channel.name);
       } else {
         new_dm_channels.push(channel);
       }
-    });
+    }
 
     foundUser.chatting_channels.dm_channels = new_dm_channels;
 
     console.log(`After dm_channels length = ${foundUser.chatting_channels.dm_channels.length}`);
     foundUser.save();
+    
   });
 }
 

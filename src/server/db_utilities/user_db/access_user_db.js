@@ -89,11 +89,15 @@ async function deleteListingFromUserDB(listing) {
   for (let index = 0; index < creator.direct_friends.length; index++) {
     const friend = await findUserById_(creator.direct_friends[index]);
     if (friend != null) {
+      //console.warn(`deleteListingFromUserDB: deleting the listing for user =${friend.username}`);
       deleteListingFromFriends(friend, listing);
       friend.save();
+    } else {
+      console.warn('deleteListingFromUserDB: the friend can\'t be found');
     }
   }
 
+  //console.warn('deleteListingFromUserDB: creator save');
   creator.save();
 }
 
@@ -445,5 +449,7 @@ module.exports = {
   getReferringFriendsByListingId,
   handleListingForward,
   readListingFromFriends,
-  updateLoggedInStatus
+  updateLoggedInStatus,
+  deleteOwnListing,
+  deleteListingFromFriends
 };

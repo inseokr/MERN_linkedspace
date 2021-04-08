@@ -81,7 +81,7 @@ function Invite2DashboardModal(props) {
 
 
     return (
-      <SimpleModal show={modalState} handle1={inviteFriends} caption1="Invite" handle2={handleCancel} caption2="Cancel" styles={{width: '20%', height: 'auto'}}>
+      <SimpleModal show={modalState} handle1={inviteFriends} caption1="Invite" handle2={handleCancel} caption2="Cancel" styles={{width: '20%', height: '80vh'}}>
         <SelectionFromDirectFriends show={modalState} filter={[]} handleAddUser={handleAddUser} handleRemoveUser={handleRemoveUser} title="Please select users"/>
       </SimpleModal>
     );
