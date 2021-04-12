@@ -30,16 +30,16 @@ function getGeometryFromSearchString(search) {
 }
 
 function createMarker(marker, markerSelected) {
-  let htmlObject = ''; 
+  let htmlObject = '';
 
   //console.warn(`createMarker: marker=${JSON.stringify(marker)}`);
   if(marker.type==="price") {
-    htmlObject = markerSelected ? 
-                      `<div id="marker_selected" class="bounce" alt="Selected Marker"> <section class="markerContentStyle"> $${marker.data} </section> </div>` : 
+    htmlObject = markerSelected ?
+                      `<div id="marker_selected" class="bounce" alt="Selected Marker"> <section class="markerContentStyle"> $${marker.data} </section> </div>` :
                       `<div id="marker_default" class="bounce" alt="Default Marker"}> <section class="markerContentStyle"> $${marker.data} </section> </div>`;
   } else {
-    htmlObject = markerSelected ? 
-                      `<img id="marker_img_default" class="bounce" src="${marker.data}" alt="Selected Marker">` : 
+    htmlObject = markerSelected ?
+                      `<img id="marker_img_default" class="bounce" src="${marker.data}" alt="Selected Marker">` :
                       `<img id="marker_img_default" class="bounce" src="${marker.data}" alt="Default Marker">`;
   }
   return divIcon({
@@ -50,7 +50,18 @@ function createMarker(marker, markerSelected) {
   });
 }
 
-// Validate coordinate
+// Validate if given coordinates are equal.
+function compareCoordinates(firstCoordinate, secondCoordinate) {
+  const { lat: firstLat, lng: firstLng } = firstCoordinate;
+  const { lat: secondLat, lng: secondLng } = secondCoordinate;
+
+  const latComparision = Math.abs(firstLat / secondLat);
+  const lngComparision = Math.abs(firstLng / secondLng);
+
+  return !!((latComparision >= 0.999 && latComparision <= 1.001) && (lngComparision >= 0.999 && lngComparision <= 1.001));
+}
+
+// Validate coordinate.
 function validCoordinates(coordinates) {
   if (coordinates === undefined) return false;
 
@@ -192,6 +203,7 @@ export {
   initGoogleMap,
   getGeometryFromSearchString,
   createMarker,
+  compareCoordinates,
   validCoordinates,
   getBoundsZoomLevel,
   centerCoordinates,

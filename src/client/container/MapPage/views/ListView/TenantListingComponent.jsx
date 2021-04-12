@@ -31,7 +31,7 @@ function TenantListingComponent(props) {
   const [showMeetingRequestModal, setShowMeetingRequestModal] = useState(false);
   const {
     currentListing, fetchCurrentListing, currentChildIndex,
-    parentRef, setParentRef, setCurrentChildIndex, mapParams, setMapParams, setMarkerParams
+    parentRef, setParentRef, setCurrentChildIndex, markerParams, setMarkerParams
   } = useContext(CurrentListingContext);
   const { setChattingContextType, chattingContextType, checkAnyUnreadMessages, toggleCollapse} = useContext(MessageContext);
 
@@ -42,7 +42,7 @@ function TenantListingComponent(props) {
     {
       setParentRef(React.createRef());
     }
-  }, [currentListing])
+  }, [currentListing]);
 
   const { listing} = props;
 
@@ -69,8 +69,7 @@ function TenantListingComponent(props) {
     borderLeftWidth: '5px'
   } : {};
 
-
-  const _backGroundColor = (chattingContextType===MSG_CHANNEL_TYPE_LISTING_PARENT)? "#b0becc": "white";
+  const _backGroundColor = (chattingContextType === MSG_CHANNEL_TYPE_LISTING_PARENT && markerParams.selectedMarkerID === currentListing._id)? "#b0becc": "white";
 
   async function addChildListing(childListing) {
     // console.log("addChildListing with childListing =" + JSON.stringify(childListing));
@@ -200,15 +199,16 @@ function TenantListingComponent(props) {
 
   // ISEO-TBD: dang... this may cause a problem during reloading of the page.
   const handleParentOnClick = (e) => {
-    //console.log(`handleParentOnClick:chattingContextType= ${chattingContextType}`);
     if (chattingContextType !== MSG_CHANNEL_TYPE_LISTING_PARENT) {
-      //console.log('setting chatting context type and toggle');
       setChattingContextType(MSG_CHANNEL_TYPE_LISTING_PARENT);
     }
-    setMapParams({ ...mapParams, bounds: null }); // Reset map bounds.
-    setMarkerParams({ refresh: true, selectedMarkerID: currentListing._id, markers: []});
+
+    const { selectedMarkerID } = markerParams;
+    const { _id: id } = currentListing;
+    const markerID = selectedMarkerID === id ? null : id;
+
+    setMarkerParams({ refresh: true, selectedMarkerID: markerID, markers: [] });
     setCurrentChildIndex(-1);
-    // need to reload the message window...
   };
 
   const listingControl = { add: addChildListing, remove: removeChildListing };

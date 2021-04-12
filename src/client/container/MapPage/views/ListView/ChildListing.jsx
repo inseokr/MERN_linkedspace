@@ -57,7 +57,7 @@ const ChildListing = React.forwardRef(({
 
   const [modalShow, setModalShow] = useState(false);
 
-  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup }	= useContext(CurrentListingContext);
   const { getProfilePicture, currentUser } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
@@ -106,9 +106,15 @@ const ChildListing = React.forwardRef(({
     e.stopPropagation();
     // e.preventDefault();
     clickHandler(index);
-    console.log('listingClickHandler', listing);
-    setMarkerParams({ refresh: true, selectedMarkerID: listing._id, markers: []});
-    setCurrentChildIndex(index);
+    const { _id } = listing;
+    const { refresh, selectedMarkerID } = markerParams;
+    if (selectedMarkerID === _id && !refresh) { // Clicked on same listing.
+      setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] });
+      setCurrentChildIndex(-1);
+    } else {
+      setMarkerParams({ refresh: true, selectedMarkerID: listing._id, markers: [] });
+      setCurrentChildIndex(index);
+    }
     // update the message context
     updateMessageContext();
   }
@@ -233,7 +239,7 @@ const ChildListing = React.forwardRef(({
   if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
     return (
       <ListItem>
-        <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
+        <Grid container className="childListing" ref={reference} onClick={(event) => listingClickHandler(event)} style={borderStyle}>
           <Grid item xs={4}>
             <Carousel interval={null} slide activeIndex={0} onSelect={handleSelect} className="carousel">
               <Carousel.Item>

@@ -15,6 +15,7 @@ import SimpleModal from '../../../components/Modal/SimpleModal';
 import { FILE_SERVER_URL, STYLESHEET_URL } from '../../../globalConstants';
 
 import {
+  compareCoordinates,
   createMarker,
   getGeometryFromSearchString,
   validCoordinates
@@ -39,6 +40,7 @@ function TenantListingDashBoard(props) {
 
   const {
     doNotDisturbMode,
+    childIndex,
     setChildIndex,
     setDoNotDisturbMode,
     broadcastDashboardMode,
@@ -52,22 +54,10 @@ function TenantListingDashBoard(props) {
 
   const [modalShow, setModalShow] = useState(false);
   const [map, setMap] = useState(null);
-  const [currentMarker, setCurrentMarker] = useState(null);
+  const [mapInitiated, setMapInitiated] = useState(false);
   const { refresh, selectedMarkerID, markers } = markerParams;
   const { search } = filterParams;
-  const { bounds, center, zoom } = mapParams;
-
-  const groupRef = (node) => {
-    if (node !== null && map !== null) {
-      if (bounds === null) { //fitBounds will happen only if parent listing is selected.
-        const nodeBounds = node.getBounds();
-        if (nodeBounds && Object.keys(nodeBounds).length > 0) {
-          map.fitBounds(nodeBounds);
-          setMapParams({ bounds: nodeBounds, center: map.getCenter(), zoom: map.getZoom() });
-        }
-      }
-    }
-  };
+  const { center, zoom } = mapParams;
 
   const handleClose = () => {
     setModalShow(false);
@@ -84,95 +74,129 @@ function TenantListingDashBoard(props) {
     markers.map((marker, index) => {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
-        setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
+        setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
         setCurrentChildIndex(index-1);
         setChildIndex(index-1);
       }
     });
   };
 
-  useEffect(() => { // Populate markers if ready.
-    if (refresh) {
-      const markers = []; // New list of markers.
-      const { coordinates, _id, child_listings } = currentListing;
-      if (validCoordinates(coordinates)) {
-        const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
-        const markerSelected = _id === selectedMarkerID;
-        const icon = createMarker({type: "image", data: imgSource}, markerSelected);
-        markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected }); // Add parent listing marker.
-      }
+  const modifyCoordinate = (bounds, coordinate) => {
+    const {lat, lng} = coordinate;
+    const {_northEast: northEast, _southWest: southWest} = bounds;
 
-      if (child_listings) { // Add child listings markers if they exist.
-        if (child_listings.length > 0) {
-          child_listings.map((listing) => {
-            if(listing === null || listing.listing_id === null) return;
+    if (lat && lng && northEast && southWest) {
+      const latOffSet = Math.abs((northEast.lat - southWest.lat) / 5);
+      const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 5);
+      return {
+        lat: lat - latOffSet,
+        lng: lng + lngOffSet
+      };
+    }
 
-            const rentalPrice = (listing.listing_id.listingType === "landlord") ? Number(listing.listing_id.rental_terms.asking_price) : listing.listing_id.rentalPrice;
+    return coordinate;
+  };
 
-            if (!Number.isNaN(rentalPrice)) { // True if value is a number.
-              const { price } = filterParams;
-              const min = price[0];
-              const max = price[1];
+  const processMarkers = async () => {
+    const markers = []; // New list of markers.
+    const { coordinates, _id, child_listings } = currentListing;
 
-              if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
-                const { coordinates } = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_property_information : listing.listing_id;
-                const { _id } = listing;
-                if (validCoordinates(coordinates)) {
-                  let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
-                  if (listing.listing_type === 'LandlordRequest') {
-                    if (listing.listing_id.pictures.length > 0) {
-                      imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
-                    }
-                  } else {
-                    imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
-                  }
-                  const _price = (listing.listing_id.listingType === "landlord")?
-                    listing.listing_id.rental_terms.asking_price:
-                    listing.listing_id.rentalPrice;
-                  const markerSelected = !!(_id === selectedMarkerID && currentChildIndex !== -1);
-                  const icon = createMarker({type: "price", data: _price}, markerSelected);
-                  markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected });
+    if (validCoordinates(coordinates)) {
+      const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
+      const markerSelected = _id === selectedMarkerID;
+      const icon = createMarker({type: "image", data: imgSource}, markerSelected);
+      markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected }); // Add parent listing marker.
+    }
+
+    if (child_listings) { // Add child listings markers if they exist.
+      if (child_listings.length > 0) {
+        child_listings.map((listing) => {
+          if(listing === null || listing.listing_id === null) return;
+
+          const rentalPrice = (listing.listing_id.listingType === "landlord") ? Number(listing.listing_id.rental_terms.asking_price) : listing.listing_id.rentalPrice;
+
+          if (!Number.isNaN(rentalPrice)) { // True if value is a number.
+            const { price } = filterParams;
+            const min = price[0];
+            const max = price[1];
+
+            if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
+              const { coordinates } = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_property_information : listing.listing_id;
+              const { _id } = listing;
+              if (validCoordinates(coordinates)) {
+                let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
+                if (listing.listing_type === 'LandlordRequest' && listing.listing_id.pictures.length > 0) {
+                  imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
+                } else {
+                  imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                 }
+                const _price = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_terms.asking_price : listing.listing_id.rentalPrice;
+                const markerSelected = !!(_id === selectedMarkerID && currentChildIndex !== -1);
+                const icon = createMarker({ type: "price", data: _price }, markerSelected);
+                markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected });
               }
             }
-          });
-        }
+          }
+        });
       }
-      setMarkerParams({ ...markerParams, markers: markers, refresh: false });
     }
-  }, [refresh, currentChildIndex]);
+
+    const bounds = L.latLngBounds(markers.map(marker => marker.position)); // Extract coordinates from array or marker objects.
+    if (bounds) {
+      map.fitBounds(bounds);
+      setMapParams({ bounds: bounds, center: map.getCenter(), zoom: map.getZoom() });
+    }
+
+    return markers;
+  };
 
   useEffect(() => {
-    if (map && bounds && markers.length > 0) {
+    if (!mapInitiated && (map && Object.keys(map).length > 0)) { // Map initiated.
+      setMapInitiated(true);
+      setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] });
+    }
+  }, [mapInitiated, map]);
+
+  useEffect(() => { // Populate markers and set map bounds to fit all markers.
+    if (refresh && currentListing && mapInitiated) {
+      processMarkers().then(response => {
+        setMarkerParams({ ...markerParams, refresh: false, markers: response });
+      });
+    }
+  }, [currentListing, mapInitiated, refresh, selectedMarkerID, currentChildIndex, childIndex]);
+
+  useEffect(() => {
+    if (mapInitiated && markers.length > 0) {
       const { _id: id } = currentListing; // ID of Parent Listing.
       markers.map((marker) => {
         const { position, markerID, selected } = marker;
         if (selected) {
           if (id !== markerID) { // Child Listing
-            map.flyTo(position, 15, { animate: true, duration: 2.0 });
-            map.once('moveend', function() {
-              setCurrentMarker(marker);
-            });
+            if (collapse === "false") { // Chat is open.
+              if (compareCoordinates(map.getCenter(), position)) { // Map is already at the position.
+                map.flyTo(modifyCoordinate(map.getBounds(), position), 15, { animate: true, duration: 1.0 }); // Directly fly to modified position.
+              } else { // Map is not at the position.
+                map.flyTo(position, 15, { animate: true, duration: 1.0 });
+                map.once("moveend", function() {
+                  if (compareCoordinates(map.getCenter(), position)) { // Map is at the position.
+                    map.flyTo(modifyCoordinate(map.getBounds(), position), 15, { animate: true, duration: 1.0 });
+                  }
+                });
+              }
+            } else if (collapse === "true") { // Chat is not open.
+              map.flyTo(position, 15, { animate: true, duration: 1.0 });
+            }
           }
         }
       });
     }
-  }, [bounds, markers]);
-
-  useEffect(() => {
-    if (map && currentMarker) { // Offset map if chat is open.
-      const { position } = currentMarker;
-      const modifiedCoordinate = collapse === 'true' ? position : modifyCoordinate(map.getBounds(), position);
-      map.flyTo(modifiedCoordinate, 15, { animate: true, duration: 1.0 });
-    }
-  }, [currentMarker, collapse]);
+  }, [markers, collapse]);
 
   useEffect(() => {
     if (currentListing) {
-      setMapParams({ ...mapParams, bounds: null }); // Reset map bounds.
       setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] }); // Refresh for both parent and child.
     }
-  }, [currentListing, map, friendsMap]);
+  }, [currentListing, friendsMap]);
 
   useEffect(() => { // fly to coordinate from updated search.
     if (map && search.length > 0) {
@@ -189,7 +213,7 @@ function TenantListingDashBoard(props) {
         }
       });
     }
-  }, [map, search]);
+  }, [search]);
 
   useEffect(() => {
     fetchCurrentListing(props.match.params.id, 'tenant');
@@ -206,27 +230,10 @@ function TenantListingDashBoard(props) {
     setChattingContextType(contextType);
 
     if(contextType!==MSG_CHANNEL_TYPE_LISTING_CHILD) {
-      //console.warn(`currentListing has been updated, index will be set to -1`);
       setCurrentChildIndex(-1);
       setChildIndex(-1);
     }
   }, [currentListing]);
-
-  function modifyCoordinate(bounds, coordinate) {
-    const {lat, lng} = coordinate;
-    const {_northEast: northEast, _southWest: southWest} = bounds;
-
-    if (lat && lng && northEast && southWest) {
-      const latOffSet = Math.abs((northEast.lat - southWest.lat) / 5);
-      const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 5);
-      return {
-        lat: lat - latOffSet,
-        lng: lng + lngOffSet
-      };
-    }
-
-    return coordinate;
-  }
 
   const banAdditionalStyle = (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
   const mapMessageContainerStyle = { };
@@ -267,7 +274,7 @@ function TenantListingDashBoard(props) {
                     <div>
                       <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
                         <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                        <FeatureGroup ref={groupRef}>
+                        <FeatureGroup>
                           {
                             markers.map((marker, index) =>
                               <DashboardMarker key={`marker-${index}`} position={marker.position} markerIndex={index-1} icon={marker.icon} markerSelected={marker.selected} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}}>
