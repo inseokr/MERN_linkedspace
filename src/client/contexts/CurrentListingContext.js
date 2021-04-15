@@ -248,7 +248,7 @@ export function CurrentListingProvider(props) {
   }
 
   function registeredInSharedGroup(user_name) {
-    if (user_name === undefined || currentUser === null) return false;
+    if (user_name === undefined || currentUser === null || currentListing === undefined) return false;
 
     if (user_name === currentUser.username) {
       return true;
