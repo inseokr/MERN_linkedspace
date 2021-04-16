@@ -194,7 +194,7 @@ function TenantListingDashBoard(props) {
 
   useEffect(() => {
     if (currentListing) {
-      setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] }); // Refresh for both parent and child.
+      setMarkerParams({ ...markerParams, refresh: true, markers: [] }); // Refresh for both parent and child.
     }
   }, [currentListing, friendsMap]);
 
@@ -224,12 +224,12 @@ function TenantListingDashBoard(props) {
     // <note> chatting context should be updated only when listing's updated.
 
     let contextType =
-      (chattingContextType === MSG_CHANNEL_TYPE_GENERAL && currentListing!==undefined)
+      (chattingContextType === MSG_CHANNEL_TYPE_GENERAL && currentListing !== undefined)
         ? MSG_CHANNEL_TYPE_LISTING_PARENT : chattingContextType;
 
     setChattingContextType(contextType);
 
-    if(contextType!==MSG_CHANNEL_TYPE_LISTING_CHILD) {
+    if (contextType !== MSG_CHANNEL_TYPE_LISTING_CHILD) {
       setCurrentChildIndex(-1);
       setChildIndex(-1);
     }
