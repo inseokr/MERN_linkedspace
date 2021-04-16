@@ -423,7 +423,7 @@ export function MessageContextProvider(props) {
 
     setNewContactSelected(true);
     // DM case
-    if (selectedChatList.length == 1) {
+    if (chattingContextType != 0 && selectedChatList.length == 1) {
       const post_url = `/LS_API/listing/${currentListing.listingType}/${currentListing._id}/addUserGroup`;
       const data = {
         friend: { id: selectedChatList[0].id, username: selectedChatList[0].username },

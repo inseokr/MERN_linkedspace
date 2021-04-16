@@ -55,7 +55,7 @@ async function registerSocketToChannels(currentSocket, user_name) {
 
   // ISEO-TBD: we should register listing related channels as well
   channels.dm_channels.forEach((channel) => {
-    // console.warn(`adding user=${user_name} to channel=${channel.name}`);
+    console.warn(`adding user=${user_name} to channel=${channel.name}`);
     addSocketToChannel(channel.name, currentSocket);
   });
 }
@@ -77,7 +77,7 @@ function updateUserSocketMap(currentSocket, user_name) {
   }
 
   if (bDuplicate === false) {
-    //console.log(`Updating socketToUserMap for user = ${user_name}`);
+    console.warn(`Updating socketToUserMap for user = ${user_name}`);
 
     userToSocketMap[user_name] = [...userToSocketMap[user_name], currentSocket];
     socketToUserMap[currentSocket.id] = user_name;
