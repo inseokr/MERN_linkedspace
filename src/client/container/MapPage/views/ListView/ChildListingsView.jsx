@@ -37,6 +37,32 @@ import axios from 'axios';
 export default class ChildListingsView extends Component {
   static contextType = CurrentListingContext;
 
+  getChildTagInformation(index) {
+    const tagStyle = {
+      background: 'white', 
+      border: '1px solid blue',
+      height: 'fit-content',
+      width: 'fit-content',
+      display: 'relative',
+      marginTop: '10px',
+      marginRight: '-40px',
+      marginLeft: '2px'
+    };
+
+    const indexStyle = {
+      color: 'black',
+      padding: '3px',
+    };
+    
+    return (
+      <div style={tagStyle}>
+        <span style={indexStyle}> 
+        #{index}
+        </span>
+      </div>
+    );
+  }
+
 
   // ISEO-TBD: this function can't be called inside useEffect as it's calling another hook.
   buildChildListingViewsByHandleClick() {
@@ -46,10 +72,9 @@ export default class ChildListingsView extends Component {
       // console.log("childListingsViews: index="+index);
       // console.log("childListingsViews: clickStates="+this.state.clickStates[index]);
       // console.log("childListingsViews: refs="+this.state.refs[index]);
-
-
       _childListingViews.push(
-        <div key={shortid.generate()}>
+        <div key={shortid.generate()} style={{display:"flex", flexDirection: "row"}}>
+          {this.getChildTagInformation(index)}
           <ChildListing
             clickState={this.state.clickStates[index]}
             likedState={this.state.likedStates[index]}
@@ -180,7 +205,8 @@ export default class ChildListingsView extends Component {
       //console.warn(`likedState[${index}]=${listLikedStates[index]}`);
 
       _childListingViews.push(
-        <div key={shortid.generate()}>
+        <div key={shortid.generate()} style={{display:"flex", flexDirection: "row"}}>
+          {this.getChildTagInformation(index)}
           <ChildListing
             clickState={listClickStates[index]}
             likedState={listLikedStates[index]}
@@ -218,6 +244,7 @@ export default class ChildListingsView extends Component {
     this.handleLikedState = this.handleLikedState.bind(this);
     this.buildChildListingViews = this.buildChildListingViews.bind(this);
     this.buildChildListingViewsByHandleClick = this.buildChildListingViewsByHandleClick.bind(this);
+    this.getChildTagInformation = this.getChildTagInformation.bind(this);
     this.handleClickFromMap = this.handleClickFromMap.bind(this);
   }
 
