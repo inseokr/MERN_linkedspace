@@ -53,11 +53,11 @@ export default class ChildListingsView extends Component {
       color: 'black',
       padding: '3px',
     };
-    
+
     return (
       <div style={tagStyle}>
         <span style={indexStyle}> 
-        #{index}
+        #{index+1}
         </span>
       </div>
     );
