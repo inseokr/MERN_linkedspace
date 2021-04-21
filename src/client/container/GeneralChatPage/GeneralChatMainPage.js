@@ -19,7 +19,7 @@ export default class GeneralChatMainPage extends Component {
      this.state = {
       leftPanelColumn: (this.props.compact === 'true') ? '1/4' : '4/6',
       rightPanelColumn: (this.props.compact === 'true') ? '4/13' : '6/10',
-      leftPanelStyle: (this.props.meeting === 'true')? 
+      leftPanelStyle: (this.props.meeting === 'true')?
                       {display: 'block', position: 'absolute', left: '-302%', width: '300%'}: {},
       rightPanelStyle: (this.props.meeting === 'true')? {width: '135%', marginLeft: '-35%'}: {},
       mainWidth: (this.props.meeting === 'true')? '20%': '100%',
@@ -45,7 +45,7 @@ export default class GeneralChatMainPage extends Component {
   }
 
   collapseHandler() {
-    if(this.context.collapse==='false')
+    if(this.context.collapse === 'false')
     {
       this.context.setCollapse('true');
     }
@@ -53,7 +53,7 @@ export default class GeneralChatMainPage extends Component {
     {
       this.context.setCollapse('false');
     }
-  }  
+  }
 
   contactListCollapeHandler() {
     if(this.state.contactCollapseState==='false')
@@ -62,26 +62,26 @@ export default class GeneralChatMainPage extends Component {
     }
     else
     {
-      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-302%', width: '300%'}, contactCollapseState: 'false'}); 
+      this.setState({leftPanelStyle: {display: 'block', position: 'absolute', left: '-302%', width: '300%'}, contactCollapseState: 'false'});
     }
-  }  
+  }
 
 
   render() {
 
-    let chattingWindowStyle = 
-      (this.context.collapse==='true' && this.props.compact ==='true')?  
+    let chattingWindowStyle =
+      (this.context.collapse==='true' && this.props.compact ==='true')?
         {display:'none'} : {display:'block'};
-    let writeChatStyle = 
-      (this.context.collapse==='true' && this.props.compact ==='true')? 
+    let writeChatStyle =
+      (this.context.collapse==='true' && this.props.compact ==='true')?
         {display:'none'} : {display:'flex'};
-    let searchMessageBoxStyle = 
-      (this.context.collapse==='true' && this.props.compact ==='true')? 
+    let searchMessageBoxStyle =
+      (this.context.collapse==='true' && this.props.compact ==='true')?
         {display:'none'} : {};
-    let contactListStyle = 
-        (this.context.collapse==='true' && this.props.compact ==='true')? 
+    let contactListStyle =
+        (this.context.collapse==='true' && this.props.compact ==='true')?
           {display:'none'} : {height: '90%'};
-  
+
     let viewHeight = '90vh';
 
     if(this.props.compact ==='true')
@@ -94,7 +94,7 @@ export default class GeneralChatMainPage extends Component {
       {
         viewHeight = '50vh';
       }
-    } 
+    }
 
     let positionValue = (this.props.compact ==='true')? 'fixed': 'relative';
 
@@ -102,7 +102,7 @@ export default class GeneralChatMainPage extends Component {
       <div
         className="GeneralChatMainWrapper bg-light"
         id="chattingPanel"
-        style={{ '--leftPanelColumn': this.state.leftPanelColumn, 
+        style={{ '--leftPanelColumn': this.state.leftPanelColumn,
                  '--rightPanelColumn': this.state.rightPanelColumn,
                  '--chatMainHeight': viewHeight,
                  '--chatLeftPanelHeight': viewHeight,
@@ -123,9 +123,9 @@ export default class GeneralChatMainPage extends Component {
 
         <div className="MessageRightPanel" style={this.state.rightPanelStyle}>
           <div className="SenderProfileSummary">
-            <ChatPartySummary 
+            <ChatPartySummary
               compact={this.props.compact}
-              collapseHandler={this.collapseHandler} collapseState={this.context.collapse} 
+              collapseHandler={this.collapseHandler} collapseState={this.context.collapse}
               contactListCollapeHandler={this.contactListCollapeHandler} contactCollapseState={this.state.contactCollapseState} />
           </div>
           <div className="ChattingWindow" style={chattingWindowStyle}>

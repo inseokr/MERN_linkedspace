@@ -101,7 +101,7 @@ function PickChattingParty(props) {
         let initClickStates = new Array(friendsList.length).fill(0);
         setClickStates(initClickStates);
       }
-  }, [friendsList])
+  }, [friendsList]);
 
   return (
     <div className="container">

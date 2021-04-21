@@ -1,41 +1,37 @@
 /* eslint-disable */
-import React, {
-  useState, useContext, useRef, useEffect
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
 
 import '../../MapPage/index.css';
-import './TenantListingDashboard.css'
+import './TenantListingDashboard.css';
 
 import TenantDashboardListView from '../../MapPage/views/ListView/TenantDashboardListView';
 import FilterView from '../../MapPage/views/FilterView/FilterView';
 import GeneralChatMainPage from '../../GeneralChatPage/GeneralChatMainPage';
-import ToggleSwitch from '../../../components/CustomControls/ToggleSwitch';
 import SimpleModal from '../../../components/Modal/SimpleModal';
-import LandingPage from '../../LandingPage/LandingPage';
-import { STYLESHEET_URL } from '../../../globalConstants';
+import { FILE_SERVER_URL, STYLESHEET_URL } from '../../../globalConstants';
 
 import {
+  compareCoordinates,
   createMarker,
+  getGeometryFromSearchString,
   validCoordinates
 } from '../../../contexts/helper/helper';
 
 import DashboardMarker from '../../../contexts/helper/DashboardMarker';
 
 import { CurrentListingContext } from '../../../contexts/CurrentListingContext';
-import {  MessageContext,
-          MSG_CHANNEL_TYPE_GENERAL,
-          MSG_CHANNEL_TYPE_LISTING_PARENT,
-          MSG_CHANNEL_TYPE_LISTING_CHILD } from '../../../contexts/MessageContext';
+import {
+  MessageContext,
+  MSG_CHANNEL_TYPE_GENERAL,
+  MSG_CHANNEL_TYPE_LISTING_CHILD,
+  MSG_CHANNEL_TYPE_LISTING_PARENT
+} from '../../../contexts/MessageContext';
 import { GlobalContext } from '../../../contexts/GlobalContext';
-import { FILE_SERVER_URL } from '../../../globalConstants';
-import { preprocessUrlRequest } from '../../../utils/route_helper';
-
-import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Circle } from 'react-leaflet'
+import { Circle, FeatureGroup, MapContainer, Popup, TileLayer } from 'react-leaflet';
 
 function TenantListingDashBoard(props) {
   const {loginClickHandler, hideLoginModal} = props;
@@ -54,37 +50,14 @@ function TenantListingDashBoard(props) {
     chattingContextType
   } = useContext(MessageContext);
 
-  const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
+  const { currentListing, currentChildIndex, setCurrentChildIndex, getChildListingUrl, fetchCurrentListing, mapParams, setMapParams, filterParams, setFilterParams, markerParams, setMarkerParams } = useContext(CurrentListingContext);
 
   const [modalShow, setModalShow] = useState(false);
-  const [showMessage, setShowMessage] = useState(true);
-  const [refresh, setRefresh] = useState(markerParams['refresh']);
-  const [selectedMarkerID, setSelectedMarkerID] = useState(markerParams['selectedMarkerID']);
-  const [markers, setMarkers] = useState(markerParams['markers']);
   const [map, setMap] = useState(null);
-  const [currBounds, setCurrBounds] = useState(null);
-  const [markerClicked, setMarkerClicked] = useState(false);
-
-  // when this function's called?
-  // <note> whenever marker is called.
-  // getBounds return the same value somehow.
-  const groupRef = (node) => {
-    if (node !== null && map !== null) {
-      let bounds = node.getBounds();
-      if (Object.keys(bounds).length > 0) {
-        if (currentChildIndex === -1) { //fitBounds will happen only if parent listing is selected.
-          map.fitBounds(bounds);
-          if (currBounds === null) {
-            setCurrBounds(bounds);
-          }
-        }
-      }
-    }
-  };
-
-  const showModal = () => {
-    setModalShow(true);
-  };
+  const [mapInitiated, setMapInitiated] = useState(false);
+  const { refresh, selectedMarkerID, markers } = markerParams;
+  const { search } = filterParams;
+  const { center, zoom } = mapParams;
 
   const handleClose = () => {
     setModalShow(false);
@@ -92,7 +65,7 @@ function TenantListingDashBoard(props) {
 
   const handleClickDoNotDisturbMode = () => {
     if (currentListing.requester.username === currentUser.username) {
-      broadcastDashboardMode((doNotDisturbMode===false)? "locked": "normal");
+      broadcastDashboardMode((!doNotDisturbMode) ? "locked" : "normal");
     }
     setDoNotDisturbMode(!doNotDisturbMode);
   };
@@ -101,186 +74,170 @@ function TenantListingDashBoard(props) {
     markers.map((marker, index) => {
       const { markerID } = marker;
       if (markerID === selectedMarkerID) {
-        setMarkerParams({ ...markerParams, selectedMarkerID: selectedMarkerID });
-        //console.warn(`setting child index to ${index-1}`);
+        setMarkerParams({ refresh: true, selectedMarkerID: selectedMarkerID, markers: [] }); // Refresh for both parent and child.
         setCurrentChildIndex(index-1);
         setChildIndex(index-1);
-        setMarkerClicked(true);
       }
     });
   };
 
-  useEffect(() => { // Populate markers if ready.
-    //console.warn(`refresh=${refresh}`);
-    if (refresh) {
-      const markers = []; // New list of markers.
-      const { coordinates, _id, child_listings } = currentListing;
-      if (validCoordinates(coordinates)) {
-        const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
-        const icon = createMarker({type: "image", data: imgSource}, (_id === selectedMarkerID));
-        markers.push({ position: coordinates, icon: icon, markerID: _id }); // Add parent listing marker.
-      }
+  const modifyCoordinate = (bounds, coordinate) => {
+    const {lat, lng} = coordinate;
+    const {_northEast: northEast, _southWest: southWest} = bounds;
 
-      if (child_listings) { // Add child listings markers if they exist.
-        if (child_listings.length > 0) {
-          child_listings.map((listing) => {
-            if(listing===null || listing.listing_id===null) return;
+    if (lat && lng && northEast && southWest) {
+      const latOffSet = Math.abs((northEast.lat - southWest.lat) / 5);
+      const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 5);
+      return {
+        lat: lat - latOffSet,
+        lng: lng + lngOffSet
+      };
+    }
 
-            const rentalPrice = (listing.listing_id.listingType === "landlord") ? Number(listing.listing_id.rental_terms.asking_price) : listing.listing_id.rentalPrice;
+    return coordinate;
+  };
 
-            if (!Number.isNaN(rentalPrice)) { // True if value is a number.
-              const { price } = filterParams;
-              const min = price[0];
-              const max = price[1];
+  const processMarkers = async () => {
+    const markers = []; // New list of markers.
+    const { coordinates, _id, child_listings } = currentListing;
 
-              if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
-                const { coordinates } = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_property_information : listing.listing_id;
-                const { _id } = listing;
-                if (validCoordinates(coordinates)) {
-                  let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
-                  if (listing.listing_type === 'LandlordRequest') {
-                    if (listing.listing_id.pictures.length > 0) {
-                      imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
-                    }
-                  } else {
-                    imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
-                  }
-                  const _price = (listing.listing_id.listingType === "landlord")?
-                    listing.listing_id.rental_terms.asking_price:
-                    listing.listing_id.rentalPrice;
-                  const icon = createMarker({type: "price", data: _price}, (_id === selectedMarkerID));
-                  markers.push({ position: coordinates, icon: icon, markerID: _id });
+    if (validCoordinates(coordinates)) {
+      const imgSource = currentListing.profile_pictures.length === 0 ? FILE_SERVER_URL+'/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg' : FILE_SERVER_URL+currentListing.profile_pictures[0].path;
+      const markerSelected = _id === selectedMarkerID;
+      const icon = createMarker({type: "image", data: imgSource}, markerSelected);
+      markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected }); // Add parent listing marker.
+    }
+
+    if (child_listings) { // Add child listings markers if they exist.
+      if (child_listings.length > 0) {
+        child_listings.map((listing) => {
+          if(listing === null || listing.listing_id === null) return;
+
+          const rentalPrice = (listing.listing_id.listingType === "landlord") ? Number(listing.listing_id.rental_terms.asking_price) : listing.listing_id.rentalPrice;
+
+          if (!Number.isNaN(rentalPrice)) { // True if value is a number.
+            const { price } = filterParams;
+            const min = price[0];
+            const max = price[1];
+
+            if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
+              const { coordinates } = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_property_information : listing.listing_id;
+              const { _id } = listing;
+              if (validCoordinates(coordinates)) {
+                let imgSource = '/LS_API/public/user_resources/pictures/5cac12212db2bf74d8a7b3c2_1.jpg';
+                if (listing.listing_type === 'LandlordRequest' && listing.listing_id.pictures.length > 0) {
+                  imgSource = FILE_SERVER_URL+listing.listing_id.pictures[0].path;
+                } else {
+                  imgSource = FILE_SERVER_URL+listing.listing_id.coverPhoto.path;
                 }
+                const _price = (listing.listing_id.listingType === "landlord") ? listing.listing_id.rental_terms.asking_price : listing.listing_id.rentalPrice;
+                const markerSelected = !!(_id === selectedMarkerID && currentChildIndex !== -1);
+                const icon = createMarker({ type: "price", data: _price }, markerSelected);
+                markers.push({ position: coordinates, icon: icon, markerID: _id, selected: markerSelected });
               }
             }
-          });
-        }
+          }
+        });
       }
-
-      //console.warn(`length of markers = ${markers.length}`);
-      setMarkers(markers);
-      setMarkerParams({ ...markerParams, markers: markers, refresh: false });
     }
-  }, [refresh]);
 
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: map changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [map]);
+    const bounds = L.latLngBounds(markers.map(marker => marker.position)); // Extract coordinates from array or marker objects.
+    if (bounds) {
+      map.fitBounds(bounds);
+      setMapParams({ bounds: bounds, center: map.getCenter(), zoom: map.getZoom() });
+    }
 
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: currentListing changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [ currentListing ]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: selectedMarkerID changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [ selectedMarkerID ]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: mapParams changed`);
-    /*
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });*/
-  }, [ mapParams ]);
-
-  useEffect(() => { // Clear markers when dependencies change.
-    //console.warn(`setMarkerParams: friendsMap changed`);
-    setMarkerParams({
-      refresh: !!(map !== null && currentListing),
-      markers: [],
-      selectedMarkerID: selectedMarkerID
-    });
-  }, [friendsMap]);
-
-
+    return markers;
+  };
 
   useEffect(() => {
-    //console.warn(`fetchCurrentListing by props`);
+    if (!mapInitiated && (map && Object.keys(map).length > 0)) { // Map initiated.
+      setMapInitiated(true);
+      setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] });
+    }
+  }, [mapInitiated, map]);
+
+  useEffect(() => { // Populate markers and set map bounds to fit all markers.
+    if (refresh && currentListing && mapInitiated) {
+      processMarkers().then(response => {
+        setMarkerParams({ ...markerParams, refresh: false, markers: response });
+      });
+    }
+  }, [currentListing, mapInitiated, refresh, selectedMarkerID, currentChildIndex, childIndex]);
+
+  useEffect(() => {
+    if (mapInitiated && markers.length > 0) {
+      const { _id: id } = currentListing; // ID of Parent Listing.
+      markers.map((marker) => {
+        const { position, markerID, selected } = marker;
+        if (selected) {
+          if (id !== markerID) { // Child Listing
+            if (collapse === "false") { // Chat is open.
+              if (compareCoordinates(map.getCenter(), position)) { // Map is already at the position.
+                map.flyTo(modifyCoordinate(map.getBounds(), position), 15, { animate: true, duration: 1.0 }); // Directly fly to modified position.
+              } else { // Map is not at the position.
+                map.flyTo(position, 15, { animate: true, duration: 1.0 });
+                map.once("moveend", function() {
+                  if (compareCoordinates(map.getCenter(), position)) { // Map is at the position.
+                    map.flyTo(modifyCoordinate(map.getBounds(), position), 15, { animate: true, duration: 1.0 });
+                  }
+                });
+              }
+            } else if (collapse === "true") { // Chat is not open.
+              map.flyTo(position, 15, { animate: true, duration: 1.0 });
+            }
+          }
+        }
+      });
+    }
+  }, [markers, collapse]);
+
+  useEffect(() => {
+    if (currentListing) {
+      setMarkerParams({ ...markerParams, refresh: true, markers: [] }); // Refresh for both parent and child.
+    }
+  }, [currentListing, friendsMap]);
+
+  useEffect(() => { // fly to coordinate from updated search.
+    if (map && search.length > 0) {
+      getGeometryFromSearchString(search).then(response => {
+        const { results, status } = response;
+        if (status === "OK" && results.length > 0) {
+          const { geometry } = results[0];
+          if (geometry) {
+            const { location } = geometry;
+            if (location) {
+              map.flyTo(location, 15, { animate: true, duration: 2.0 });
+            }
+          }
+        }
+      });
+    }
+  }, [search]);
+
+  useEffect(() => {
     fetchCurrentListing(props.match.params.id, 'tenant');
   }, [props]);
-
-  useEffect(() => {
-    //console.warn(`length of markers=${markers.length}`);
-  }, [markers]);
-
-  useEffect(() => {
-    //console.warn(`markerParams`);
-    const { refresh, markers, selectedMarkerID } = markerParams;
-    setMarkers(markers);
-    setRefresh(refresh);
-    // do we need to set the marker again??
-    setSelectedMarkerID(selectedMarkerID);
-  }, [markerParams]);
 
   useEffect(() => {
     // let's set the chatting context when listing is properly updated.
     // <note> chatting context should be updated only when listing's updated.
 
     let contextType =
-      (chattingContextType === MSG_CHANNEL_TYPE_GENERAL && currentListing!==undefined)
+      (chattingContextType === MSG_CHANNEL_TYPE_GENERAL && currentListing !== undefined)
         ? MSG_CHANNEL_TYPE_LISTING_PARENT : chattingContextType;
 
     setChattingContextType(contextType);
 
-    if(contextType!==MSG_CHANNEL_TYPE_LISTING_CHILD) {
-      //console.warn(`currentListing has been updated, index will be set to -1`);
+    if (contextType !== MSG_CHANNEL_TYPE_LISTING_CHILD) {
       setCurrentChildIndex(-1);
       setChildIndex(-1);
     }
   }, [currentListing]);
 
-  function controlMessageWindow() {
-    if (collapse === "true" && currBounds) {
-
-      try {
-        const coordinate =
-          (currentChildIndex===-1) ?
-            currentListing.coordinates :
-            (currentListing.child_listings[currentChildIndex].listing_id.listingType==="landlord") ?
-              currentListing.child_listings[currentChildIndex].listing_id.rental_property_information.coordinates:
-              currentListing.child_listings[currentChildIndex].listing_id.coordinates;
-
-        const {lat, lng} = coordinate;
-        const {_northEast: northEast, _southWest: southWest} = currBounds;
-        if (lat && lng && northEast && southWest) {
-          const latOffSet = Math.abs((northEast.lat - southWest.lat) / 20);
-          const lngOffSet = Math.abs((southWest.lng - northEast.lng) / 20);
-          map.flyTo([lat - latOffSet, lng + lngOffSet], 15);
-        }
-      } catch(err) {
-        console.warn(err);
-      }
-
-    }
-
-    toggleCollapse();
-  }
-
-  const banAdditionalStyle =
-    (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
-
-  const { center, zoom } = mapParams;
-
-  //let mapMessageContainerStyle = { display: 'grid', gridTemplateColumns: '4fr 8fr'};
-  let mapMessageContainerStyle = { };
-  let chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
+  const banAdditionalStyle = (doNotDisturbMode===true) ? {color: "rgb(243 17 76)"}: {color: "rgb(233 214 219)"};
+  const mapMessageContainerStyle = { };
+  const chatContainerStyle = { position: 'absolute', top: '0', right: '20%'};
 
   return (
     (isUserLoggedIn()===false)?
@@ -290,73 +247,69 @@ function TenantListingDashBoard(props) {
         </div>
       </div>
       :
-      <Grid component="main">
-        <CssBaseline />
-        <Box className="App" component="div" display="flex" flexDirection="column">
-          <span className="DashboardModeControlCaption" > Do not disturb mode </span>
-          <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
-          <Grid container alignContent="stretch" >
-            <Grid item xs={5}>
-              <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
-              <Grid item xs={12}>
-                <TenantDashboardListView/>
+      <Grid container direction="row" justify="space-evenly">
+        <Grid item xs={12}>
+          <CssBaseline />
+          <Box className="App" component="div" display="flex" flexDirection="column">
+            <span className="DashboardModeControlCaption" > Do not disturb mode </span>
+            <i className="fa fa-ban fa-2x DashboardModeControl" onClick={handleClickDoNotDisturbMode} aria-hidden="true" style={banAdditionalStyle}/>
+            <Grid container alignContent="stretch" >
+              <Grid item xs={5}>
+                <FilterView filterParams={filterParams} setFilterParams={setFilterParams} filters={{ search: true, places: false, price: true }} />
+                <Grid item xs={12}>
+                  <TenantDashboardListView/>
+                </Grid>
+              </Grid>
+              <Grid className="map" item xs={7}>
+
+                <div style={mapMessageContainerStyle}>
+                  <section style={chatContainerStyle}>
+                    <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
+                  </section>
+
+                  <React.Fragment>
+                    <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
+                      <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
+                    </SimpleModal>
+                    <div>
+                      <MapContainer className='mapContainerStyle' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
+                        <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <FeatureGroup>
+                          {
+                            markers.map((marker, index) =>
+                              <DashboardMarker key={`marker-${index}`} position={marker.position} markerIndex={index-1} icon={marker.icon} markerSelected={marker.selected} eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}}>
+                                <Popup>
+                                  <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
+                                    <section style={{marginTop: '3px'}}>
+                                      <a href={(index === 0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
+                                        <i className="fas fa-external-link-alt fa-lg"/>
+                                      </a>
+                                    </section>
+                                    <section onClick={() => {toggleCollapse()}} style={{color: '#a52a2a'}}>
+                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+                                        <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
+                                        </path>
+                                      </svg>
+                                    </section>
+                                  </section>
+                                </Popup>
+                                {(currentListing !== undefined) && (currentListing.coordinates !== undefined) &&
+                                <Circle
+                                  center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
+                                  fillColor="gray"
+                                  radius={1000}/>}
+                              </DashboardMarker>
+                            )
+                          }
+                        </FeatureGroup>
+                      </MapContainer>
+                    </div>
+                  </React.Fragment>
+                </div>
               </Grid>
             </Grid>
-            <Grid className="map" item xs={7}>
-
-              <div style={mapMessageContainerStyle}>
-                <section style={chatContainerStyle}>
-                  <GeneralChatMainPage id="compactChattingPage" compact="true" meeting="true"/>
-                </section>
-
-                <React.Fragment>
-                  <SimpleModal show={modalShow} handle1={handleClose} caption1="close" styles={{width: '20%', height: 'auto'}}>
-                    <div style={{ marginLeft: '5px' }}> Listing Summary goes here</div>
-                  </SimpleModal>
-                  <div>
-                    <MapContainer className='mapContainerStyle leaflet-center' center={center} zoom={zoom} scrollWheelZoom={true} whenCreated={setMap} >
-                      <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <FeatureGroup ref={groupRef}>
-                        {markers.map((marker, index) =>
-                          <DashboardMarker key={`marker-${index}`} 
-                                           position={marker.position}  
-                                           markerIndex={index-1} 
-                                           icon={marker.icon} 
-                                           markerClickState={markerClicked}  
-                                           markerClickStatehandler={setMarkerClicked} 
-                                           eventHandlers={{click: (e) => {onMarkerClick(e, marker.markerID)}}} >
-                            <Popup>
-                              <section style={{display: 'grid', gridTemplateColumns: '1fr 1fr', color: '#115399'}}>
-                                <section style={{marginTop: '3px'}}>
-                                  <a href={(index===0)? `/listing/tenant/${currentListing._id}/get`: getChildListingUrl(index-1)} target="_blank">
-                                    <i className="fas fa-external-link-alt fa-lg"/>
-                                  </a>
-                                </section>
-                                <section onClick={() => {controlMessageWindow();} } style={{color: '#a52a2a'}}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
-                                    <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
-                                    </path>
-                                  </svg>
-                                </section>
-                              </section>
-                            </Popup>
-                            {(currentListing!==undefined) && (currentListing.coordinates!==undefined) &&
-                            <Circle
-                              center={{lat: currentListing.coordinates.lat, lng: currentListing.coordinates.lng}}
-                              fillColor="gray"
-                              radius={1000}/>}
-                          </DashboardMarker>
-                        )}
-                      </FeatureGroup>
-                    </MapContainer>
-                  </div>
-                </React.Fragment>
-
-              </div>
-
-            </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        </Grid>
       </Grid>
   );
 }
