@@ -1,26 +1,21 @@
 /* eslint-disable */
-import React, {useRef, useEffect, useContext} from 'react';
-import {Marker} from 'react-leaflet';
+import React, { useRef, useEffect, useContext, useState } from 'react';
+import { Marker } from 'react-leaflet';
 
-import { CurrentListingContext } from '../CurrentListingContext';
+function DashboardMarker(props) {
+  const { markerSelected } = props;
 
-const DashboardMarker = props => {
+  const markerRef = useRef();
 
-    const { currentChildIndex } = useContext(CurrentListingContext);
-    const {markerIndex, markerClickState, markerClickStatehandler} = props;
-    
-    const markerRef = useRef();
+  useEffect(() => {
+    if (markerSelected) {
+      markerRef.current.openPopup();
+    }
+  }, [markerSelected]);
 
-    useEffect(() => {
-        if(markerIndex===currentChildIndex && markerIndex!==-1) {
-            if(markerClickState===true) {
-                markerRef.current.openPopup();
-                markerClickStatehandler(false);
-            }
-        }
-    }, [currentChildIndex, markerClickState]);
+  return (
+    <Marker ref={markerRef} {...props}/>
+  );
+}
 
-    return <Marker ref={markerRef} {...props}/>
-  }
-
-  export default DashboardMarker;
+export default DashboardMarker;
