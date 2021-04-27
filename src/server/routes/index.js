@@ -91,6 +91,22 @@ module.exports = function (app) {
     res.render('signup');
   });
 
+  router.post('/updatePushToken', (req, res) => {
+    if (req.user != null) {
+      const currUserName = req.user.username;
+      const userId = req.user._id;
+
+      //console.log(`Update push token for user: ${currUserName}, token: ${req.body.token}`);
+      User.findById(userId, (err, foundUser) => {
+        foundUser.expoPushToken = req.body.token;
+        foundUser.save();
+        res.send({ result: 'successful updatePushToken' });
+      });
+    } else {
+      res.send({ result: 'user it not logged in' });
+    }
+  });
+
   // handle sign up logic
   router.post('/signup', (req, res) => {
     const birthdayString = `${req.body.year}-${req.body.month}-${req.body.day}`;

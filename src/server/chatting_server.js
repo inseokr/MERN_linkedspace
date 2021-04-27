@@ -29,6 +29,9 @@
 // <QUESTION> Probably it's better that we use API to manage chatting room instead of using socket
 // channel? That's true... However message may need to include header still to route it properly?
 // 1.3 special channel
+// import { Expo } from 'expo-server-sdk';
+const { Expo } = require('expo-server-sdk');
+
 const uuidv4 = require('uuid/v4');
 const WebSocket = require('ws');
 const chatDbHandler = require('./db_utilities/chatting_db/access_chat_db');
@@ -49,6 +52,62 @@ const socketToUserMap = [];
 const userToSocketMap = [];
 const channelIdToSocketList = [];
 const socketToChannelIdMap = [];
+
+
+async function actualPush(expo, chunks) {
+  const tickets = [];
+
+  for (const chunk of chunks) {
+    try {
+      const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+      console.log(ticketChunk);
+      tickets.push(...ticketChunk);
+      // NOTE: If a ticket contains an error code in ticket.details.error, you
+      // must handle it appropriately. The error codes are listed in the Expo
+      // documentation:
+      // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+
+function sendPushNotification(userName) {
+  if (userName === null) {
+    return;
+  }
+
+  userDbHandler.getUserByName(userName).then((foundUser) => {
+    const pushToken = foundUser.expoPushToken;
+
+    const expo = new Expo();
+    // Create the messages that you want to send to clients
+    const messages = [];
+
+    console.warn('sendPushNotification');
+
+    if (!Expo.isExpoPushToken(pushToken)) {
+      console.error(`Push token ${pushToken} is not a valid Expo push token`);
+      return;
+    }
+
+    // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
+    messages.push({
+      to: pushToken,
+      sound: 'default',
+      body: 'You\'ve got a new message from LinkedSpaces',
+      data: { withSome: 'data' },
+    });
+
+    // The Expo push notification service accepts batches of notifications so
+    // that you don't need to send 1000 requests to send 1000 notifications. We
+    // recommend you batch your notifications to reduce the number of requests
+    // and to compress them (notifications with similar content will get
+    // compressed).
+    const chunks = expo.chunkPushNotifications(messages);
+    actualPush(expo, chunks);
+  });
+}
 
 async function registerSocketToChannels(currentSocket, user_name) {
   const channels = await chatDbHandler.getChannels(user_name);
@@ -83,7 +142,7 @@ function updateUserSocketMap(currentSocket, user_name) {
     socketToUserMap[currentSocket.id] = user_name;
 
     // <note> let's update the status of user to online
-    userDbHandler.updateLoggedInStatus(user_name, "online");
+    userDbHandler.updateLoggedInStatus(user_name, 'online');
   }
 
   // <TBD> When is the right point to do this?
@@ -217,6 +276,8 @@ function routeMessage(data, incomingSocket) {
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
           // console.warn('sending message');
+          // sendPushNotification();
+          sendPushNotification(socketToUserMap[target.id]);
           target.send(data);
         } else {
           // console.warn('Same Socket??');
@@ -229,17 +290,17 @@ function routeMessage(data, incomingSocket) {
 }
 
 function sendDashboardControlMessage(command, userNameList) {
-  //console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
+  // console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
   try {
     switch (command) {
       case DASHBOARD_AUTO_REFRESH:
       case DASHBOARD_CTRL_SET_MODE_LOCKED:
       case DASHBOARD_CTRL_SET_MODE_NORMAL:
         userNameList.forEach((name) => {
-          //console.log(`sending control message to user = ${name}`);
+          // console.log(`sending control message to user = ${name}`);
           if (userToSocketMap[name] !== undefined) {
             userToSocketMap[name].forEach((_socket) => {
-              //console.log('sending control message');
+              // console.log('sending control message');
               _socket.send(controlCodeStrings[command]);
             });
           }
@@ -282,12 +343,12 @@ function removeSocket(socket_) {
   // <note> There could be multiple sockets for the same user.
   userToSocketMap[userName] = userToSocketMap.filter(item => item != socket_);
 
-  if((userName!==undefined) && (userToSocketMap[userName].length===0)) {
-    //console.warn(`No socket available for ${userName}`);
+  if ((userName !== undefined) && (userToSocketMap[userName].length === 0)) {
+    // console.warn(`No socket available for ${userName}`);
     // let's update login status here.
     // <note> User could be still in logged in status, but no communication channel available.
     // In this case, we will treat it as offline.
-    userDbHandler.updateLoggedInStatus(userName, "offline");
+    userDbHandler.updateLoggedInStatus(userName, 'offline');
   }
 
   // 3. channelIdToSocketList
@@ -323,8 +384,8 @@ function removeChannelFromUserDb(name, channel_id) {
 
     const new_dm_channels = [];
 
-    for(let index=0; index<foundUser.chatting_channels.dm_channels.length; index++) {
-      let channel = foundUser.chatting_channels.dm_channels[index];
+    for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
+      const channel = foundUser.chatting_channels.dm_channels[index];
       if (channel.name.search(channel_id) != -1) {
         // remove the chatting channel from chatting server.
         removeChannel(channel.name);
@@ -337,7 +398,6 @@ function removeChannelFromUserDb(name, channel_id) {
 
     console.log(`After dm_channels length = ${foundUser.chatting_channels.dm_channels.length}`);
     foundUser.save();
-    
   });
 }
 
