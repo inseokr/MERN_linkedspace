@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './ListingComponent.css';
 import ListItem from '@material-ui/core/ListItem';
-import { Paper, Grid, Typography } from '@material-ui/core';
+import { Paper, Grid, Typography, IconButton } from '@material-ui/core';
 import Carousel from 'react-bootstrap/Carousel';
 import constructListingInformationBullets from '../../helper/helper';
 import MessageEditorIcon from '../../../../components/Message/MessageEditorIcon';
@@ -57,7 +57,7 @@ const ChildListing = React.forwardRef(({
 
   const [modalShow, setModalShow] = useState(false);
 
-  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup } 	= useContext(CurrentListingContext);
+  const { setCurrentChildIndex, currentListing, filterParams, markerParams, setMarkerParams, getProfilePictureFromSharedGroup }	= useContext(CurrentListingContext);
   const { getProfilePicture, currentUser } = useContext(GlobalContext);
   const [clicked, setClicked] = useState(0);
   const [reference, setReference] = useState(null);
@@ -106,9 +106,15 @@ const ChildListing = React.forwardRef(({
     e.stopPropagation();
     // e.preventDefault();
     clickHandler(index);
-    console.log('listingClickHandler', listing);
-    setMarkerParams({ ...markerParams, selectedMarkerID: listing._id});
-    setCurrentChildIndex(index);
+    const { _id } = listing;
+    const { refresh, selectedMarkerID } = markerParams;
+    if (selectedMarkerID === _id && !refresh) { // Clicked on same listing.
+      setMarkerParams({ refresh: true, selectedMarkerID: null, markers: [] });
+      setCurrentChildIndex(-1);
+    } else {
+      setMarkerParams({ refresh: true, selectedMarkerID: listing._id, markers: [] });
+      setCurrentChildIndex(index);
+    }
     // update the message context
     updateMessageContext();
   }
@@ -142,8 +148,15 @@ const ChildListing = React.forwardRef(({
     setModalShow(false);
   }
 
+  function handleChatIconOnClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    toggleCollapse();
+  }
+
   const scrollToBottom = () => {
-  // console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
+    // console.log("scrollToBottom. numOfMsgHistory="+numOfMsgHistory);
     if (reference.current !== undefined && reference.current != null) {
       reference.current.scrollIntoView({ block: 'end', inline: 'nearest' });
     }
@@ -154,7 +167,7 @@ const ChildListing = React.forwardRef(({
     // I assume it's happening because React is doing things in parallel and the scroll operation is made
     // while the data is still being loaded.
     setTimeout(() => {
-    scrollToBottom();
+      scrollToBottom();
     }, 100);
   }
 
@@ -208,10 +221,10 @@ const ChildListing = React.forwardRef(({
     _childListing.shared_user_group.forEach((user, _index) => {
       if(checkIfInLikedList(user._id)===true)
       {
-        listOfFriendsImage.push(<img className="img-responsive center rounded-circle" 
-                                 src={FILE_SERVER_URL+getProfilePictureFromSharedGroup(user.username)} 
-                                 key={shortid.generate()}
-                                 alt="Liked friend"  />);
+        listOfFriendsImage.push(<img className="img-responsive center rounded-circle"
+                                     src={FILE_SERVER_URL+getProfilePictureFromSharedGroup(user.username)}
+                                     key={shortid.generate()}
+                                     alt="Liked friend"  />);
       }
     });
 
@@ -231,9 +244,9 @@ const ChildListing = React.forwardRef(({
   const max = price[1];
   const rentalPrice = (childListing.listingType==="landlord")? Number(childListing.rental_terms.asking_price): childListing.rentalPrice;
   if ((rentalPrice >= min && rentalPrice <= max) || max === 10000) {
-      return (
+    return (
       <ListItem>
-        <Grid container className="childListing" ref={reference} onClick={listingClickHandler} style={borderStyle}>
+        <Grid container className="childListing" ref={reference} onClick={(event) => listingClickHandler(event)} style={borderStyle}>
           <Grid item xs={4}>
             <Carousel interval={null} slide activeIndex={0} onSelect={handleSelect} className="carousel">
               <Carousel.Item>
@@ -249,12 +262,12 @@ const ChildListing = React.forwardRef(({
           </Grid>
 
           <Grid item xs={8}>
-            <div className="flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}> 
+            <div className="flex-container" style={{ flexDirection: 'column', justifyContent: 'space-between', background: _backGroundColor}}>
               <div style={{ display:'flex', flexFlow: 'row', justifyContent: 'space-between', marginLeft: '5px'}}>
                 <Typography className="description__title" color="textSecondary" gutterBottom style={{fontSize: '.9rem', marginLeft: '5px', color: '#652143'}}>
                   {listingTitle}
                 </Typography>
-                <section style={{color: 'rgb(165, 42, 42)'}} onClick={toggleCollapse}>
+                <section style={{color: 'rgb(165, 42, 42)'}} onClick={(event) => {handleChatIconOnClick(event)}}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
                     <path d="M17 13.75l2-2V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h8.25l-2 2H5v12h12v-5.25zm5-8a1 1 0 01-.29.74L13.15 15 7 17l2-6.15 8.55-8.55a1 1 0 011.41 0L21.71 5a1 1 0 01.29.71zm-4.07 1.83l-1.5-1.5-6.06 6.06 1.5 1.5zm1.84-1.84l-1.5-1.5-1.18 1.17 1.5 1.5z">
                     </path>
@@ -288,8 +301,8 @@ const ChildListing = React.forwardRef(({
                     {childListing.requester.username}
                   </Typography>
                 </div>
-                 <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" styles={{width: '20%', height: 'auto', overflowY: 'hidden'}}>
-                    <div style={{textAlign: "center", marginTop: "10px", marginBottom: "10px", fontSize: "120%", color: "#981407"}}> Are you sure to remove this listing?</div>
+                <SimpleModal show={modalShow} handle1={removeListingHandler} caption1="Yes" handle2={handleCancel} caption2="No" styles={{width: '20%', height: 'auto', overflowY: 'hidden'}}>
+                  <div style={{textAlign: "center", marginTop: "10px", marginBottom: "10px", fontSize: "120%", color: "#981407"}}> Are you sure to remove this listing?</div>
                 </SimpleModal>
                 {(childListing.requester.username===currentUser.username) &&
                 <button className="btn btn-danger" onClick={handleRemoveButton} style={{fontSize: '.9rem', height: '45px'}}>
