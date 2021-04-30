@@ -72,7 +72,7 @@ async function actualPush(expo, chunks) {
   }
 }
 
-function sendPushNotification(userName) {
+function sendPushNotification(userName, channelName) {
   if (userName === null) {
     return;
   }
@@ -96,7 +96,7 @@ function sendPushNotification(userName) {
       to: pushToken,
       sound: 'default',
       body: 'You\'ve got a new message from LinkedSpaces',
-      data: { withSome: 'data' },
+      data: { channelId: channelName },
     });
 
     // The Expo push notification service accepts batches of notifications so
@@ -114,7 +114,7 @@ async function registerSocketToChannels(currentSocket, user_name) {
 
   // ISEO-TBD: we should register listing related channels as well
   channels.dm_channels.forEach((channel) => {
-    console.warn(`adding user=${user_name} to channel=${channel.name}`);
+    // console.warn(`adding user=${user_name} to channel=${channel.name}`);
     addSocketToChannel(channel.name, currentSocket);
   });
 }
@@ -277,7 +277,7 @@ function routeMessage(data, incomingSocket) {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
           // console.warn('sending message');
           // sendPushNotification();
-          sendPushNotification(socketToUserMap[target.id]);
+          sendPushNotification(socketToUserMap[target.id], channel.channel_id);
           target.send(data);
         } else {
           // console.warn('Same Socket??');
