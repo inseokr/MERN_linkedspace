@@ -311,7 +311,7 @@ module.exports = function (app) {
 
 
   router.get('/:list_id/fetch', (req, res) => {
-    // console.log("REACT: fetch tenant listing request with listing id= " + JSON.stringify(req.params.list_id));
+    console.log(`REACT: fetch tenant listing request with listing id= ${JSON.stringify(req.params.list_id)}`);
     TenantRequest.findById(req.params.list_id, async (err, foundListing) => {
       if (err || foundListing === null) {
         console.warn('Listing not found');
@@ -371,7 +371,7 @@ module.exports = function (app) {
           foundListing.populated('requester');
 
           // update status of listing ID from friends
-          // console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
+          console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
 
           res.json(foundListing);
 
@@ -381,7 +381,7 @@ module.exports = function (app) {
           if (!foundListing.requester.equals(foundUser._id)) {
             userDbHandler.readListingFromFriends(foundUser, 'tenant', req.params.list_id);
           }
-          // console.log(`Recording liast visited listing ID =  ${JSON.stringify(foundUser.lastVistedListingId)}`);
+          console.log(`Recording liast visited listing ID =  ${JSON.stringify(foundUser.lastVistedListingId)}`);
           foundUser.save();
         });
       });
@@ -478,12 +478,12 @@ module.exports = function (app) {
 
 		    	foundListing.save((err) => {
 			    		if (err) {
-                console.warn(`addGroupChat failure with reason=${err}`);
+              console.warn(`addGroupChat failure with reason=${err}`);
 			    			res.json({ result: 'DB save failure' });
 			    			return;
 			    		}
-			    		//console.log('addGroupChat: user added successfully');
-			    		//console.log(`addGroupChat: list_of_group_chats = ${JSON.stringify(foundListing.list_of_group_chats)}`);
+			    		// console.log('addGroupChat: user added successfully');
+			    		// console.log(`addGroupChat: list_of_group_chats = ${JSON.stringify(foundListing.list_of_group_chats)}`);
 				    	res.json({ result: 'Added successfully' });
 		    	});
     		}
@@ -666,7 +666,7 @@ module.exports = function (app) {
 	    listingDbHandler.cleanAllChildListingsFromParent(foundListing);
 
 	    // 2. remove the tenant listing from other users including creator
-	    //userDbHandler.deleteListingFromUserDB(foundListing);
+	    // userDbHandler.deleteListingFromUserDB(foundListing);
 
       // 3. remove channels in the parent level
       const channel_id_prefix = `${req.params.list_id}-`;
@@ -677,13 +677,13 @@ module.exports = function (app) {
         await foundListing.populate(pathToPopulate, 'username').execPopulate();
         foundListing.populated(pathToPopulate);
 
-        let userName = foundListing.shared_user_group[userIndex].username;
+        const userName = foundListing.shared_user_group[userIndex].username;
 
         userDbHandler.getUserByName(userName).then((foundUser) => {
-          let new_dm_channels = [];
+          const new_dm_channels = [];
 
-          for(let index=0; index<foundUser.chatting_channels.dm_channels.length; index++) {
-            let channel = foundUser.chatting_channels.dm_channels[index];
+          for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
+            const channel = foundUser.chatting_channels.dm_channels[index];
             if (channel.name.search(channel_id_prefix) != -1) {
               // remove the chatting channel from chatting server.
               chatServer.removeChannel(channel.name);
@@ -693,17 +693,16 @@ module.exports = function (app) {
           }
           foundUser.chatting_channels.dm_channels = new_dm_channels;
           // check if current user is the creator
-          if(foundListing.requester.equals(foundUser._id)){
-            //console.warn(`deleteOwnListing`);
+          if (foundListing.requester.equals(foundUser._id)) {
+            // console.warn(`deleteOwnListing`);
             userDbHandler.deleteOwnListing(foundUser, foundListing);
-          }
-          else {
-            //console.warn(`deleteListingFromFriends`);
+          } else {
+            // console.warn(`deleteListingFromFriends`);
             userDbHandler.deleteListingFromFriends(foundUser, foundListing);
           }
           foundUser.save();
         });
-        //chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
+        // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
       });
 
       foundListing.remove();
