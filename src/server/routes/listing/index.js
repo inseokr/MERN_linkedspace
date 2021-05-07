@@ -64,9 +64,11 @@ router.get('/getLastVisitedListingId', (req, res) => {
     // console.log(`sending lastVisitedListingId = ${JSON.stringify(foundUser.lastVistedListingId)}`);
     if (foundUser.lastVistedListingId === null) {
       // check listing from friends first
-      if (foundUser.incoming_tenant_listing.length > 1) {
+      if (foundUser.incoming_tenant_listing.length >= 1) {
+        // console.warn(`incoming tenant listing ID: ${JSON.stringify(foundUser.incoming_tenant_listing[0].id)}`);
         res.json(foundUser.incoming_tenant_listing[0].id);
-      } else if (foundUser.tenant_listing.length > 1) {
+      } else if (foundUser.tenant_listing.length >= 1) {
+        // console.warn(`tenant listing ID: ${JSON.stringify(foundUser.tenant_listing[0])}`);
         res.json(foundUser.tenant_listing[0]);
       } else {
         res.json(null);
