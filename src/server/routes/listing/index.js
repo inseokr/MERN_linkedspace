@@ -107,7 +107,8 @@ router.get('/get_active_listing/own', (req, res) => {
               ? listing.posting_originator.username
               : listing.requester.username,
             location: listing.location,
-            listingType: 'tenant'
+            listingType: 'tenant',
+            date: listing.move_in_date
           };
           tenant_listing.push(tlist);
         }
@@ -206,7 +207,8 @@ router.get('/get_active_listing/friend', (req, res) => {
             delegated_posting: listing.id.delegated_posting,
             username: listingOriginator,
             location: listing.id.location,
-            timestamp: listing.received_date
+            timestamp: listing.received_date,
+            date: listing.move_in_date
           };
           tenant_listing.push(tlist);
         }
