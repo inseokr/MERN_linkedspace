@@ -96,7 +96,7 @@ router.get('/get_active_listing/own', (req, res) => {
           const profile_picture = (listing.profile_pictures[0] == undefined) ? '' : listing.profile_pictures[0].path;
 
           const pathToPopulate = 'requester';
-          await listing.populate(pathToPopulate, 'username profile_picture firtname lastname').execPopulate();
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname move_in_date').execPopulate();
           listing.populated(pathToPopulate);
 
           const tlist = {
@@ -184,7 +184,7 @@ router.get('/get_active_listing/friend', (req, res) => {
             picture: listing.id.pictures[0].path,
             friend: listing.list_of_referring_friends[listing.list_of_referring_friends.length - 2],
             location: listing.id.rental_property_information.location,
-            timestamp: listing.received_date
+            timestamp: listing.received_date,
           };
           landlord_listing.push(llist);
         }
@@ -208,8 +208,9 @@ router.get('/get_active_listing/friend', (req, res) => {
             username: listingOriginator,
             location: listing.id.location,
             timestamp: listing.received_date,
-            date: listing.move_in_date
+            date: listing.id.move_in_date
           };
+
           tenant_listing.push(tlist);
         }
       }
