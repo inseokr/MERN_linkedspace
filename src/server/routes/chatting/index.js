@@ -31,49 +31,52 @@ module.exports = function (app) {
   router.post('/update', (req, res) => {
     let result = { op_result: 'success' };
 
-    //console.log("chatting update called, channel = " + req.body.channel_id + " index= " + req.body.lastReadIndex);
+    // console.log("chatting update called, channel = " + req.body.channel_id + " index= " + req.body.lastReadIndex);
 
     // update channel DB in User DB
     User.findOne({ username: req.user.username }, (err, user) => {
       if (err) {
         result = { op_result: 'failed' };
-        //console.log("User not found");
+        // console.log("User not found");
         res.json(result);
         return;
       }
 
       // find the channel and update the index.
       try {
+        for (let index = 0; index < user.chatting_channels.dm_channels.length; index++) {
+          const channel = user.chatting_channels.dm_channels[index];
+          if (channel.name == req.body.channel_id) {
+            // console.warn(`Channel found`);
+            channel.lastReadIndex = req.body.lastReadIndex;
+            user.save();
+            res.json(result);
+            return;
+          }
+        }
 
-		for(let index=0; index< user.chatting_channels.dm_channels.length; index++) {
-			let channel = user.chatting_channels.dm_channels[index];
-			if(channel.name == req.body.channel_id){
-				//console.warn(`Channel found`);
-				channel.lastReadIndex = req.body.lastReadIndex;
-				user.save();
-				res.json(result);
-				return;
-			}
-		}
-
-		//console.warn(`Channel not found`);
-		chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
-			// It's a dirty patch to 
-			chatDbHandler.addChannelToSingleUser(channel, user).then((result) => {
-				res.json({op_result: result});
-			});
-		});
-        
-
+        // console.warn(`Channel not found`);
+        chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
+          // It's a dirty patch to
+          chatDbHandler.addChannelToSingleUser(channel, user).then((result) => {
+            res.json({ op_result: result });
+          });
+        });
       } catch (err) {
-        console.log("err="+err);
-		res.json({op_result: err});
+        console.log(`err=${err}`);
+        res.json({ op_result: err });
       }
     });
   });
 
   router.post('/new', (req, res) => {
-    // What if we're getting the new channel request even before it's saved in the database?
+	    if (req.user === undefined) {
+	      const result = { bNewlyCreated: false, channel: null };
+	      res.json(result);
+	      return;
+	    }
+
+    	// What if we're getting the new channel request even before it's saved in the database?
 	  	chatDbHandler.findChatChannel(req.body.channel_id).then((channel) => {
 		    if (channel != null) {
 		      const result = { bNewlyCreated: false, channel };
@@ -127,11 +130,11 @@ module.exports = function (app) {
 				              const result = { bNewlyCreated: true };
 				              res.json(result);
 
-				              //console.warn(`userNameList = ${JSON.stringify(userNameList)}`);
+				              // console.warn(`userNameList = ${JSON.stringify(userNameList)}`);
 				              if (userNameList !== null && userNameList !== undefined) {
 				              	// remove current user from the list
 				              	const adjustedUsernameList = userNameList.filter(user => user !== req.user.username);
-				              	//console.warn(`adjustedUsernameList: ${JSON.stringify(adjustedUsernameList)}`);
+				              	// console.warn(`adjustedUsernameList: ${JSON.stringify(adjustedUsernameList)}`);
 				              	chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, adjustedUsernameList);
 				              }
 			              });
