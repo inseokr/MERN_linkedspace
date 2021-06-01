@@ -197,34 +197,84 @@ async function getListingById(listing_id, type) {
 }
 
 
+function checkDuplicate(list, id) {
+  let bDuplicate = false;
+
+  if (list.length >= 1) {
+    bDuplicate = list.some(
+      _list => _list.id.equals(id)
+    );
+  }
+
+  return bDuplicate;
+}
+
+
+function checkUserIdDuplicate(list, id) {
+  let bDuplicate = false;
+
+  if (list.length >= 1) {
+    bDuplicate = list.some(
+      _list => _list.equals(id)
+    );
+  }
+  // console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
+  return bDuplicate;
+}
+
+async function forwardEvents(event, reqUser, userList) {
+  if(userList===undefined || userList.length===0) {
+    //console.warn(`forwardEvents: user list is empty?`);
+    return;
+  } 
+
+  let forwardCount = 0;
+
+  for (let index = 0; index < userList.length; index++) {
+    const friend = userList[index];
+    // <note> this line won't wait till the callback function is completed though
+    const foundFriend = await User.findById(friend);
+    if (foundFriend) {
+      // let's check duplicate records
+      if ((checkDuplicate(foundFriend.incoming_events, event._id) === true)
+          || foundFriend._id.equals(event.requester)) {
+        // <note> Only warning?? why do we still continue it?
+        console.warn('Duplicate');
+      }
+      else {
+        foundFriend.incoming_events.push({
+          id: event._id,
+          received_date: Date.now(),
+          status: 'New'
+        });
+
+        const notificationBody = `A new event has been shared by ${reqUser.username}.\n\n`
+          + 'Please click the following link to get to the listing page.\n\n'
+          + `${process.env.REACT_SERVER_URL}/event/${event._id}/get\n`;
+        sendNotificationEmail(foundFriend.email, `new event shared by ${reqUser.username}`, notificationBody);
+
+        //console.warn(`forwardEvents: friend name=${foundFriend.username}`);
+
+        foundFriend.save();
+
+        if (checkUserIdDuplicate(event.shared_user_group, foundFriend._id) === false) {
+          const _wait = await event.shared_user_group.push(foundFriend._id);
+        }
+        forwardCount++;
+      }
+
+    }
+  }
+
+  if (forwardCount >= 1) {
+    //console.warn('Event Forwarded Successfully');
+    event.save();
+  } 
+}
+
 function handleListingForward(req, res, type) {
-  function checkDuplicate(list, id) {
-    let bDuplicate = false;
-
-    if (list.length >= 1) {
-      bDuplicate = list.some(
-        _list => _list.id.equals(id)
-      );
-    }
-
-    return bDuplicate;
-  }
-
-
-  function checkUserIdDuplicate(list, id) {
-    let bDuplicate = false;
-
-    if (list.length >= 1) {
-      bDuplicate = list.some(
-        _list => _list.equals(id)
-      );
-    }
-
-    // console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
-
-    return bDuplicate;
-  }
-
+  
+  // <note> need to handle the case where the user's already found.
   User.findById(req.user._id, async (err, foundUser) => {
     if (err) {
       res.json({ result: 'User not found' });
@@ -451,5 +501,6 @@ module.exports = {
   readListingFromFriends,
   updateLoggedInStatus,
   deleteOwnListing,
-  deleteListingFromFriends
+  deleteListingFromFriends,
+  forwardEvents
 };

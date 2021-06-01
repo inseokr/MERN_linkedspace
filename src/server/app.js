@@ -38,6 +38,7 @@ app.namespace('/LS_API', () => {
   // routes
   const indexRoutes = require('./routes/index')(app);
   const listingRoutes = require('./routes/listing/index');
+  const eventRoutes = require('./routes/event/index')(app);
   const mynetworkRoutes = require('./routes/mynetwork/index')(app);
   const landlordRoutes = require('./routes/listing/landlord/index')(app);
   const tenantRoutes = require('./routes/listing/tenant/index')(app);
@@ -264,6 +265,7 @@ app.namespace('/LS_API', () => {
 
   app.use('/LS_API', indexRoutes);
   app.use('/LS_API/listing', listingRoutes);
+  app.use('/LS_API/event', eventRoutes);
   app.use('/LS_API/mynetwork', mynetworkRoutes);
   app.use('/LS_API/listing/landlord', landlordRoutes);
   app.use('/LS_API/listing/tenant', tenantRoutes);
