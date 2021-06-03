@@ -80,7 +80,7 @@ router.get('/getLastVisitedListingId', (req, res) => {
 });
 
 router.get('/get_active_listing/own', (req, res) => {
-  User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing')
+  User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing').populate('events')
 
     .exec(async (err, foundUser) => {
       if (err) {
@@ -89,6 +89,7 @@ router.get('/get_active_listing/own', (req, res) => {
         const tenant_listing = [];
         const landlord_listing = [];
         const _3rdparty_listing = [];
+        const events = [];
 
         for (let index = 0; index < foundUser.tenant_listing.length; index++) {
           const listing = foundUser.tenant_listing[index];
@@ -127,6 +128,33 @@ router.get('/get_active_listing/own', (req, res) => {
           landlord_listing.push(llist);
         }
 
+        for (let index = 0; index < foundUser.events.length; index++) {
+          const listing = foundUser.events[index];
+
+          const pathToPopulate = 'requester';
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+          listing.populated(pathToPopulate);
+
+          const event = {
+            id: listing._id,
+            username: listing.requester.username,
+            location: {state: 'CA', city: 'SAN JOSE'},
+            listingType: 'event',
+            picture: listing.requester.profile_picture,
+            date: {
+                    month: listing.date.getMonth()+1, 
+                    date: listing.date.getDate(), 
+                    year: listing.date.getFullYear(),
+                    hour: listing.date.getHours(),
+                    min: listing.date.getMinutes()},
+            summary: listing.summary,
+            coordinates: listing.coordinates
+          };
+          //console.warn(`pushing event: ${JSON.stringify(event)}`);
+          //console.warn(`Date=${listing.date.toDateString()}`);
+          events.push(event);
+        }
+
         let numOfProcessedListing = 0;
 
         foundUser._3rdparty_listing.forEach(async (listing, index) => {
@@ -152,12 +180,12 @@ router.get('/get_active_listing/own', (req, res) => {
 
           if (++numOfProcessedListing === foundUser._3rdparty_listing.length) {
             // passing whole data structure may not be a good idea?
-            res.json({ tenant_listing, landlord_listing, _3rdparty_listing });
+            res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
           }
         });
 
         if (foundUser._3rdparty_listing.length === 0) {
-          res.json({ tenant_listing, landlord_listing, _3rdparty_listing });
+          res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
         }
       }
     });
@@ -172,6 +200,7 @@ router.get('/get_active_listing/friend', (req, res) => {
       const tenant_listing = [];
       const landlord_listing = [];
       const _3rdparty_listing = [];
+      const events = [];
 
       for (let index = 0; index < foundUser.incoming_landlord_listing.length; index++) {
         const listing = foundUser.incoming_landlord_listing[index];
@@ -215,8 +244,41 @@ router.get('/get_active_listing/friend', (req, res) => {
         }
       }
 
+      for (let index = 0; index < foundUser.incoming_events.length; index++) {
+        const listing = foundUser.incoming_events[index];
+
+        let pathToPopulate = `incoming_events.${index}.id`;
+        await foundUser.populate({ path: pathToPopulate, model: 'Event' }).execPopulate();
+        foundUser.populated(pathToPopulate);
+
+        pathToPopulate = `incoming_events.${index}.id.requester`;
+        await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+        foundUser.populated(pathToPopulate);
+
+        //console.warn(`listing:=${JSON.stringify(listing)}`);
+
+        const event = {
+          id: listing.id._id,
+          username: listing.id.requester.username,
+          location: {state: 'CA', city: 'SAN JOSE'},
+          listingType: 'event',
+          picture: listing.id.requester.profile_picture,
+          date: {
+                  month: listing.id.date.getMonth()+1, 
+                  date: listing.id.date.getDate(), 
+                  year: listing.id.date.getFullYear(),
+                  hour: listing.id.date.getHours(),
+                  min: listing.id.date.getMinutes()},
+          summary: listing.id.summary,
+          coordinates: listing.id.coordinates
+        };
+        //console.warn(`pushing event: ${JSON.stringify(event)}`);
+        //console.warn(`Date=${listing.id.date.toDateString()}`);
+        events.push(event);
+      }
+
       // passing whole data structure may not be a good idea?
-      res.json({ tenant_listing, landlord_listing, _3rdparty_listing });
+      res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
     }
   });
 });

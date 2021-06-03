@@ -21,6 +21,8 @@ function createNewEvent(req, res, coordinates) {
     newEvent.requester = req.user._id;
     newEvent.location = req.body.location;
     newEvent.date = req.body.date;
+    newEvent.dateString = `${newEvent.date.toLocaleTimeString([], 
+                                {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`;
     newEvent.summary = req.body.summary;
     newEvent.coordinates = coordinates;
     newEvent.state = 0;
@@ -102,6 +104,72 @@ module.exports = function (app) {
             }
         }
     });
+
+    router.get('/:list_id/fetch', (req, res) => {
+        //console.log(`REACT: fetch event with listing id= ${JSON.stringify(req.params.list_id)}`);
+        Event.findById(req.params.list_id, async (err, foundListing) => {
+          if (err || foundListing === null) {
+            console.warn('Listing not found');
+            console.warn(`err=${err}`);
+            res.redirect('/');
+            return;
+          }
+    
+          /* await foundListing.populate('requester', 'username profile_picture loggedInTime').execPopulate();
+          foundListing.populated('requester'); */
+          if (req.user === undefined) {
+            res.json(foundListing);
+            return;
+          }
+    
+          const populateChildren = new Promise(async (resolve, reject) => {
+            await foundListing.populate('shared_user_group', 'username profile_picture loggedInTime').execPopulate();
+            foundListing.populated('shared_user_group');
+    
+            if (foundListing.child_listings.length > 0) {
+              let numberOfPopulatedChildListing = 0;
+    
+              foundListing.child_listings.forEach(async (child, index, array) => {
+                const pathToPopulate = `child_listings.${index}.listing_id`;
+                // console.log("child listing reference = " + child.listing_type);
+                await foundListing.populate({ path: pathToPopulate, model: child.listing_type }).execPopulate();
+                foundListing.populated(pathToPopulate);
+    
+                const pathToRequester = `child_listings.${index}.listing_id.requester`;
+                await foundListing.populate(pathToRequester, 'username profile_picture loggedInTime').execPopulate();
+                foundListing.populated(pathToRequester);
+    
+    
+                const pathToSharedUserGroup = `child_listings.${index}.shared_user_group`;
+                await foundListing.populate(pathToSharedUserGroup, 'username profile_picture loggedInTime').execPopulate();
+                foundListing.populated(pathToSharedUserGroup);
+                // console.log("listing: listingType =  " + foundListing.child_listings[index].listing_id.listingType);
+                // console.log("listing: index =  " + index);
+                // console.log(`foundListing = ${JSON.stringify(foundListing)}`);
+                if (++numberOfPopulatedChildListing == array.length) resolve();
+              });
+            } else {
+              // resolve it right away.
+              resolve();
+            }
+          });
+    
+          populateChildren.then(async () => {
+            userDbHandler.findUserById(req.user._id).then(async (foundUser)	=> {
+              await foundListing.populate('requester', 'username lastname firstname profile_picture loggedInTime').execPopulate();
+              foundListing.populated('requester');
+    
+              // update status of listing ID from friends
+              //console.log(`foundListing.requester=${JSON.stringify(foundListing.requester)}`);
+    
+              res.json(foundListing);
+    
+              // update recent visited listing
+              foundUser.lastVistedListingId = req.params.list_id;
+            });
+          });
+        });
+      });
 
     return router;
 };

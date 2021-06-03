@@ -6,6 +6,8 @@ const EventSchema = new mongoose.Schema({
     ref: 'User'
   },
 
+  listingType: { type: String, default: 'event' },
+
   type: { type: String, default: 'social' },
 
   summary: { type: String, default: 'Social Gathering'},
@@ -19,8 +21,8 @@ const EventSchema = new mongoose.Schema({
   // <note> City will be the mandatory information
   location: {
     street: String,
-    city: String,
-    state: String,
+    city: { type: String, default: 'San Jose'},
+    state: { type: String, default: 'CA'},
     country: String,
     zipcode: String
   },
@@ -32,6 +34,11 @@ const EventSchema = new mongoose.Schema({
 
   // event date
   date: Date,
+
+  dateString: {
+    type: String,
+    default: '01/01/2021'
+  }, 
 
   // list of user engaged in chatting regarding this posting
   shared_user_group: [
@@ -55,7 +62,7 @@ const EventSchema = new mongoose.Schema({
   ],
 
   // list of places(restaurants) for the event
-  places: [
+  child_listings: [
     {
       id: {
         type: mongoose.Schema.Types.ObjectId,
