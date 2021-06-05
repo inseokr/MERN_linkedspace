@@ -10,14 +10,19 @@ const Event = require('../../models/listing/event');
 const User = require('../../models/user');
 
 const userDbHandler = require('../../db_utilities/user_db/access_user_db');
+const listingDbHandler = require('../../db_utilities/listing_db/access_listing_db');
+const chatDbHandler = require('../../db_utilities/chatting_db/access_chat_db');
+const chatServer = require('../../chatting_server');
 const { fileDeleteFromCloud } = require('../../aws_s3_api');
 const serverPath = './src/server';
+
 
 node.loop = node.runLoopOnce;
 
 function createNewEvent(req, res, coordinates) { 
     const newEvent = new Event();
 
+    try {
     newEvent.requester = req.user._id;
     newEvent.location = req.body.location;
     newEvent.date = req.body.date;
@@ -28,6 +33,10 @@ function createNewEvent(req, res, coordinates) {
     newEvent.state = 0;
 
     newEvent.shared_user_group.push(req.user._id);
+    } catch (err) {
+        res.json({result: 'FAIL', reason: err});
+        return;
+    }
 
     newEvent.save((err) => {
         if (err) {
@@ -168,6 +177,60 @@ module.exports = function (app) {
               foundUser.lastVistedListingId = req.params.list_id;
             });
           });
+        });
+      });
+
+      router.delete('/:list_id', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundListing) => {
+            if (err) {
+                console.log('Listing not found');
+                res.json({result: 'FAIL', reason: 'Event not found with given ID'});
+            }
+    
+            // clean up chatting related resources
+            // 1. go through all the child listing and remove chatting channels.
+            listingDbHandler.cleanAllChildListingsFromParent(foundListing);
+    
+            // 3. remove channels in the parent level
+            const channel_id_prefix = `${req.params.list_id}-`;
+            chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
+    
+            foundListing.shared_user_group.map(async (user, userIndex) => {
+                const pathToPopulate = `shared_user_group.${userIndex}`;
+                await foundListing.populate(pathToPopulate, 'username').execPopulate();
+                foundListing.populated(pathToPopulate);
+        
+                const userName = foundListing.shared_user_group[userIndex].username;
+        
+                userDbHandler.getUserByName(userName).then((foundUser) => {
+                const new_dm_channels = [];
+        
+                for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
+                    const channel = foundUser.chatting_channels.dm_channels[index];
+                    if (channel.name.search(channel_id_prefix) != -1) {
+                    // remove the chatting channel from chatting server.
+                    chatServer.removeChannel(channel.name);
+                    } else {
+                    new_dm_channels.push(channel);
+                    }
+                }
+                foundUser.chatting_channels.dm_channels = new_dm_channels;
+                // check if current user is the creator
+                if (foundListing.requester.equals(foundUser._id)) {
+                    // console.warn(`deleteOwnListing`);
+                    userDbHandler.deleteOwnListing(foundUser, foundListing);
+                } else {
+                    // console.warn(`deleteListingFromFriends`);
+                    userDbHandler.deleteListingFromFriends(foundUser, foundListing);
+                }
+                foundUser.save();
+                });
+                // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
+            });
+        
+            foundListing.remove();
+
+            res.json({result: 'OK'});
         });
       });
 

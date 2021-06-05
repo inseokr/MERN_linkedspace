@@ -114,32 +114,34 @@ function cleanChildListingFromParent(foundListing, child_listing_id, channel_id_
 
 
 function cleanAllChildListingsFromParent(parent, bRequiredSave = false) {
-  parent.child_listings.forEach((listing) => {
-    const channel_id_prefix = `${parent._id}-child-${listing.listing_id}`;
+  if(parent.child_listings!==undefined || parent.child_listings!==null) {
+    parent.child_listings.forEach((listing) => {
+      const channel_id_prefix = `${parent._id}-child-${listing.listing_id}`;
 
-    // let's remove chatting channels as well
-    // remove chatting channels
-    // 1. go through check shared_group and remove dm channels from there
-    listing.shared_user_group.map(async (user, userIndex) => {
-      const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
-      await parent.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
-      parent.populated(pathToPopulate);
+      // let's remove chatting channels as well
+      // remove chatting channels
+      // 1. go through check shared_group and remove dm channels from there
+      listing.shared_user_group.map(async (user, userIndex) => {
+        const pathToPopulate = `child_listings.${listingIndex}.shared_user_group.${userIndex}`;
+        await parent.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
+        parent.populated(pathToPopulate);
 
-      chatServer.removeChannelFromUserDb(listing.shared_user_group[userIndex].username, channel_id_prefix);
+        chatServer.removeChannelFromUserDb(listing.shared_user_group[userIndex].username, channel_id_prefix);
+      });
+
+      chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
     });
 
-    chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
-  });
+    if (bRequiredSave == true) {
+      // clean the child_listings.
+      parent.child_listings = [];
 
-  if (bRequiredSave == true) {
-    // clean the child_listings.
-    parent.child_listings = [];
-
-    parent.save((err) => {
-      if (err) {
-        console.warn(`foundListing saving error = ${err}`);
-      }
-    });
+      parent.save((err) => {
+        if (err) {
+          console.warn(`foundListing saving error = ${err}`);
+        }
+      });
+    }
   }
 }
 
