@@ -56,6 +56,10 @@ function deleteOwnListing(user, listing) {
       tempListings = user._3rdparty_listing.filter(listing_ => listing_.equals(listing._id) == false);
       user._3rdparty_listing = tempListings;
       break;
+    case 'event':
+      tempListings = user.events.filter(listing_ => listing_.equals(listing._id) == false);
+      user.events = tempListings;
+      break;
     default: console.warn(`Unknown listing type  = ${listing.listingType}`);
   }
 }
@@ -71,6 +75,10 @@ function deleteListingFromFriends(user, listing) {
     case 'tenant':
       tempListings = user.incoming_tenant_listing.filter(listing_ => listing_.id.equals(listing._id) == false);
       user.incoming_tenant_listing = tempListings;
+      break;
+    case 'event':
+      tempListings = user.incoming_events.filter(listing_ => listing_.id.equals(listing._id) == false);
+      user.incoming_events = tempListings;
       break;
     default: console.warn(`Unknown listing type  = ${listing.listingType}`);
   }
