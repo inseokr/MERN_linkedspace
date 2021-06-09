@@ -197,7 +197,6 @@ module.exports = function (app) {
             // 3. remove channels in the parent level
             const channel_id_prefix = `${req.params.list_id}-`;
             chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
-
             foundListing.shared_user_group.map(async (user, userIndex) => {
                 const pathToPopulate = `shared_user_group.${userIndex}`;
                 await foundListing.populate(pathToPopulate, 'username').execPopulate();
