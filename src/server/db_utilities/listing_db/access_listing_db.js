@@ -114,6 +114,9 @@ function cleanChildListingFromParent(foundListing, child_listing_id, channel_id_
 
 
 function cleanAllChildListingsFromParent(parent, bRequiredSave = false) {
+
+  if(parent===null) return;
+  
   if(parent.child_listings!==undefined || parent.child_listings!==null) {
     parent.child_listings.forEach((listing) => {
       const channel_id_prefix = `${parent._id}-child-${listing.listing_id}`;

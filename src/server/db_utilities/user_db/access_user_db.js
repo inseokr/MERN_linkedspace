@@ -231,6 +231,8 @@ function checkUserIdDuplicate(list, id) {
 }
 
 async function forwardEvents(event, reqUser, userList) {
+  let userNameList = [];
+
   if(userList===undefined || userList.length===0) {
     //console.warn(`forwardEvents: user list is empty?`);
     return;
@@ -264,6 +266,7 @@ async function forwardEvents(event, reqUser, userList) {
         //console.warn(`forwardEvents: friend name=${foundFriend.username}`);
 
         foundFriend.save();
+        userNameList.push(foundFriend.username);
 
         if (checkUserIdDuplicate(event.shared_user_group, foundFriend._id) === false) {
           const _wait = await event.shared_user_group.push(foundFriend._id);
@@ -278,6 +281,8 @@ async function forwardEvents(event, reqUser, userList) {
     //console.warn('Event Forwarded Successfully');
     event.save();
   } 
+
+  return userNameList;
 }
 
 function handleListingForward(req, res, type) {

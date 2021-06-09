@@ -45,7 +45,7 @@ function createNewEvent(req, res, coordinates) {
             return;
         }
 
-        User.findById(req.user._id, (err, foundUser) => {
+        User.findById(req.user._id, async (err, foundUser) => {
             if (err) {
                 console.warn(`User not found`);
                 res.json({result: 'FAIL', reason: 'user not found'});
@@ -58,7 +58,9 @@ function createNewEvent(req, res, coordinates) {
             res.json({result: 'OK'});
 
             // let's share this event with friends if any
-            userDbHandler.forwardEvents(newEvent, foundUser, req.body.userList);
+            let userNameList = await userDbHandler.forwardEvents(newEvent, foundUser, req.body.userList);
+            //console.warn(`length of userNameList =${JSON.stringify(userNameList)}`);
+            chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList, foundUser.username);
         });
     });
 }
@@ -185,6 +187,7 @@ module.exports = function (app) {
             if (err) {
                 console.log('Listing not found');
                 res.json({result: 'FAIL', reason: 'Event not found with given ID'});
+                return;
             }
     
             // clean up chatting related resources
@@ -194,7 +197,6 @@ module.exports = function (app) {
             // 3. remove channels in the parent level
             const channel_id_prefix = `${req.params.list_id}-`;
             chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
-    
             foundListing.shared_user_group.map(async (user, userIndex) => {
                 const pathToPopulate = `shared_user_group.${userIndex}`;
                 await foundListing.populate(pathToPopulate, 'username').execPopulate();
@@ -224,6 +226,7 @@ module.exports = function (app) {
                     userDbHandler.deleteListingFromFriends(foundUser, foundListing);
                 }
                 foundUser.save();
+                chatServer.sendDashboardControlMessageToSingleUser(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, foundUser.username);
                 });
                 // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
             });

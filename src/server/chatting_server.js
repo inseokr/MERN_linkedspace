@@ -40,8 +40,10 @@ const userDbHandler = require('./db_utilities/user_db/access_user_db');
 const DASHBOARD_AUTO_REFRESH = 0;
 const DASHBOARD_CTRL_SET_MODE_NORMAL = 1;
 const DASHBOARD_CTRL_SET_MODE_LOCKED = 2;
+const DASHBOARD_AUTO_REFRESH_EVENT = 3;
 
-const controlCodeStrings = ['CSC:autoRefresh', 'CSC:setModeNomal', 'CSC:setModeLocked'];
+
+const controlCodeStrings = ['CSC:autoRefresh', 'CSC:setModeNomal', 'CSC:setModeLocked', 'CSC:autoRefreshEvent'];
 
 // const wss = new WebSocket.Server({ port: 3030});
 let wss = null;
@@ -289,18 +291,45 @@ function routeMessage(data, incomingSocket) {
   }
 }
 
-function sendDashboardControlMessage(command, userNameList) {
+
+function sendDashboardControlMessage2SharedGroup(command, shared_user_group, senderName=null) {
   // console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
   try {
     switch (command) {
       case DASHBOARD_AUTO_REFRESH:
       case DASHBOARD_CTRL_SET_MODE_LOCKED:
       case DASHBOARD_CTRL_SET_MODE_NORMAL:
-        userNameList.forEach((name) => {
+        shared_user_group.forEach((user) => {
           // console.log(`sending control message to user = ${name}`);
-          if (userToSocketMap[name] !== undefined) {
-            userToSocketMap[name].forEach((_socket) => {
+          if (userToSocketMap[user.username] !== undefined && user.username!==senderName) {
+            userToSocketMap[user.username].forEach((_socket) => {
               // console.log('sending control message');
+              _socket.send(controlCodeStrings[command]);
+            });
+          }
+        });
+        break;
+      default: console.warn('Unknown command'); break;
+    }
+  } catch (error) {
+    console.warn(`sendDashboardControlMessage: error${error}`);
+  }
+}
+
+
+function sendDashboardControlMessage(command, userNameList, senderName=null) {
+  //console.warn(`sendDashboardControlMessage: command=${command}, userNameList=${JSON.stringify(userNameList)}`);
+  try {
+    switch (command) {
+      case DASHBOARD_AUTO_REFRESH:
+      case DASHBOARD_AUTO_REFRESH_EVENT:
+      case DASHBOARD_CTRL_SET_MODE_LOCKED:
+      case DASHBOARD_CTRL_SET_MODE_NORMAL:
+        userNameList.forEach((name) => {
+          //console.log(`sending control message to user = ${name}`);
+          if (userToSocketMap[name] !== undefined && name!==senderName) {
+            userToSocketMap[name].forEach((_socket) => {
+              //console.log('sending control message');
               _socket.send(controlCodeStrings[command]);
             });
           }
@@ -316,6 +345,7 @@ function sendDashboardControlMessage(command, userNameList) {
 function sendDashboardControlMessageToSingleUser(command, userName) {
   switch (command) {
     case DASHBOARD_AUTO_REFRESH:
+    case DASHBOARD_AUTO_REFRESH_EVENT:
     case DASHBOARD_CTRL_SET_MODE_LOCKED:
     case DASHBOARD_CTRL_SET_MODE_NORMAL:
       if (userToSocketMap[userName] !== undefined) {
@@ -457,7 +487,9 @@ module.exports = {
   removeChannelFromUserDb,
   sendDashboardControlMessage,
   sendDashboardControlMessageToSingleUser,
+  sendDashboardControlMessage2SharedGroup,
   DASHBOARD_AUTO_REFRESH,
   DASHBOARD_CTRL_SET_MODE_NORMAL,
-  DASHBOARD_CTRL_SET_MODE_LOCKED
+  DASHBOARD_CTRL_SET_MODE_LOCKED,
+  DASHBOARD_AUTO_REFRESH_EVENT
 };
