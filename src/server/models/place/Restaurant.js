@@ -6,17 +6,17 @@ const RestaurantSchema = new mongoose.Schema({
     ref: 'User'
   },
 
-  category: { type: String, default: 'Korean' },
+  listingType: { type: String, default: 'restaurant' },
 
-  source: { type: String, default: 'Yelp' },
+  listingSource: { type: String, default: 'Yelp' },
 
   // external URL to the place
-  url: String,
+  listingUrl: String,
 
   // brief summary or title of place
-  summary: String,
+  listingSummary: String,
 
-  photo: {
+  coverPhoto: {
     path: String,
     caption: String
   },
@@ -29,10 +29,15 @@ const RestaurantSchema = new mongoose.Schema({
     zipcode: String
   },
 
+  locationString: String,
+
   coordinates: {
     lat: Number,
     lng: Number
-  }
+  },
+
+  category: { type: String, default: 'Korean' },
+
 });
 
 module.exports = mongoose.model('Restaurant', RestaurantSchema);
