@@ -5,6 +5,7 @@ const path = require('path');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const {ObjectId} = require('mongodb');
 
 const Event = require('../../models/listing/event');
 const User = require('../../models/user');
@@ -178,6 +179,115 @@ module.exports = function (app) {
               // update recent visited listing
               foundUser.lastVistedListingId = req.params.list_id;
             });
+          });
+        });
+      });
+
+      router.post('/addChild', (req, res) => {
+        // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
+        if (req.user === undefined) {
+          console.warn('addChild failure as req.user is undefined');
+          res.json({result: 'FAIL', reason: 'addChild only allowed for authorized users'});
+        }
+    
+        Event.findById(req.body.parent_listing_id).populate('requester').populate('shared_user_group', 'username').exec((err, foundListing) => {
+          if (err) {
+            console.log('listing not found');
+            res.json({result: 'FAIL', reason: 'listing not found'});
+            return;
+          }
+    
+          // console.log("listing  found");
+          // support restuarant only for now.
+          const listing_type = 'Restaurant';
+    
+          const child_listing = {
+            listing_id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: listing_type
+            },
+            listing_type,
+            created_by: { id: null, username: '' },
+            shared_user_group: []
+          };
+    
+          child_listing.listing_id = ObjectId(req.body.child_listing_id);
+    
+          // let's check if it's a duplicate request.
+          let foundDuplicate = false;
+    
+          // console.log("foundListing = " + JSON.stringify(foundListing));
+    
+          if (foundListing.child_listings.length >= 1) {
+            foundListing.child_listings.forEach(
+              (listing) => {
+                if (listing.listing_id.equals(req.body.child_listing_id)) {
+                  foundDuplicate = true;
+                }
+              }
+            );
+    
+            if (foundDuplicate == true) {
+                res.json({result: 'FAIL', reason: 'Duplicate exists'});
+                return;
+            }
+          }
+    
+          // default user group
+          // 1. check if the parent listing is created by me
+          // console.log("req.user._id="+req.user._id);
+          // console.log("foundListing.requester.id="+foundListing.requester.id);
+          if (foundListing.requester.equals(req.user._id)) {
+            // console.log("Updating user group, created by the current user");
+            child_listing.shared_user_group.push(foundListing.requester);
+    
+            child_listing.created_by.id = req.user._id;
+            child_listing.created_by.username = foundListing.requester.username;
+    
+            //console.warn(`adding child listing: ${JSON.stringify(child_listing)}`);
+            foundListing.child_listings.push(child_listing);
+          }
+          // tenant & creator of child listing
+          else {
+            // console.log("Updating user group, created by friend");
+    
+            // <note> the 3rd party listing could be added by either tenant or friends.
+            // It's a friend case.
+            child_listing.created_by.id = foundListing.requester;
+            child_listing.created_by.username = req.user.username;
+    
+            child_listing.shared_user_group.push(foundListing.requester);
+            child_listing.shared_user_group.push(req.user._id);
+            foundListing.child_listings.push(child_listing);
+            //console.warn(`adding child listing: ${JSON.stringify(child_listing)}`);
+          }
+    
+          // send auto-refresh to shared_user_group
+          // build user name list
+          /*
+          const userNameList = [];
+          for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+            userNameList.push(foundListing.shared_user_group[index].username);
+          }
+    
+          chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList); */
+    
+          foundListing.save((err) => {
+            if (err) {
+              console.warn(`foundListing saving error = ${err}`);
+              res.json({result: 'FAIL', reason: 'child listing add failed'});
+            } else {
+                res.json({result: 'OK'});
+                // send auto-refresh to shared_user_group
+                // build user name list
+                const userNameList = [];
+                for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+                if (req.user.username !== foundListing.shared_user_group[index].username) {
+                    userNameList.push(foundListing.shared_user_group[index].username);
+                }
+                }
+                chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList);
+            }
           });
         });
       });

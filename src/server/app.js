@@ -43,6 +43,7 @@ app.namespace('/LS_API', () => {
   const landlordRoutes = require('./routes/listing/landlord/index')(app);
   const tenantRoutes = require('./routes/listing/tenant/index')(app);
   const _3rdpartyRoutes = require('./routes/listing/3rdparty/index')(app);
+  const restaurantRoutes = require('./routes/listing/restaurant/index')(app);
   const profileRoutes = require('./routes/profile/index');
   const chattingRoutes = require('./routes/chatting/index')(app);
 
@@ -270,6 +271,7 @@ app.namespace('/LS_API', () => {
   app.use('/LS_API/listing/landlord', landlordRoutes);
   app.use('/LS_API/listing/tenant', tenantRoutes);
   app.use('/LS_API/listing/3rdparty', _3rdpartyRoutes);
+  app.use('/LS_API/listing/restaurant', restaurantRoutes);
   app.use('/LS_API/profile', profileRoutes);
   app.use('/LS_API/chatting', chattingRoutes);
 
@@ -532,6 +534,14 @@ app.namespace('/LS_API', () => {
     // console.log("picture: received file name=" + fileName)
     res.sendFile(path.join(__dirname, `/public/user_resources/pictures/tenant/${fileName}`));
   });
+
+
+  app.get('/public/user_resources/pictures/restaurant/:filename', (req, res) => {
+    const fileName = req.params.filename;
+    // console.log("picture: received file name=" + fileName)
+    res.sendFile(path.join(__dirname, `/public/user_resources/pictures/restaurant/${fileName}`));
+  });
+
 
   app.get('/scripts/:filename', (req, res) => {
     const fileName = req.params.filename;
