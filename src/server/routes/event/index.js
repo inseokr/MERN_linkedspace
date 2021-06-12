@@ -347,5 +347,198 @@ module.exports = function (app) {
         });
       });
 
+      // forward listing to direct friends
+      // Let's move it to common utility
+      router.post('/:list_id/forward', async (req, res) => {
+        //console.warn(`EVENT: forward`);
+        userDbHandler.handleListingForward(req, res, 'event');
+      });
+
+
+
+      router.post('/:list_id/addUserGroup', (req, res) => {
+        // console.warn('addUserGroup');
+        Event.findById(req.params.list_id, (err, foundListing) => {
+          function checkDuplicate(user_list, _id) {
+            let bDuplicate = false;
+    
+            if (user_list.length >= 1) {
+              bDuplicate = user_list.some(
+                _user => _user.equals(_id)
+              );
+            }
+    
+            return bDuplicate;
+          }
+    
+          if (err) {
+            console.log('Listing not found');
+            return;
+          }
+          const { chattingType } = req.body;
+          const { childInfo } = req.body;
+          const { friend } = req.body;
+    
+          // console.log("friend = " + JSON.stringify(friend));
+          // console.log("userDbHandler = " + JSON.stringify(userDbHandler));
+          userDbHandler.getUserByName(friend.username).then((_friend) => {
+            if (_friend == null) {
+              console.log('Friend not found');
+              res.json({ result: 'Friend not found' });
+              return;
+            }
+            // 1. check duplicate.
+            switch (chattingType) {
+              case 1:
+                // find the ID of the friend
+                if (checkDuplicate(foundListing.shared_user_group, _friend._id) === false) {
+                  foundListing.shared_user_group.push(_friend._id);
+                }
+    
+                // let's add the current user if it's not the shared_user_group yet.
+                if (checkDuplicate(foundListing.shared_user_group, req.user._id) === false) {
+                  foundListing.shared_user_group.push(req.user._id);
+                }
+    
+                break;
+              case 2:
+    
+                if (foundListing.child_listings[childInfo.index] === undefined) {
+                  console.warn('Child listing not created yet');
+                  res.json({ result: 'Child listing not created yet' });
+                  return;
+                }
+    
+                if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, _friend._id) === false) {
+                  // console.log(`Pushing friend = ${_friend.username}`);
+                  foundListing.child_listings[childInfo.index].shared_user_group.push(_friend._id);
+                }
+    
+                // let's add the current user if it's not the shared_user_group yet.
+                if (checkDuplicate(foundListing.child_listings[childInfo.index].shared_user_group, req.user._id) === false) {
+                  // console.warn('adding current user');
+                  foundListing.child_listings[childInfo.index].shared_user_group.push(req.user._id);
+                }
+    
+                break;
+              default:
+                console.log('Unknown chattingType');
+                res.json({ result: 'Unknown chattingType' });
+                return;
+            }
+    
+            foundListing.save(async (err) => {
+              if (err) {
+                res.json({ result: 'DB save failure' });
+                return;
+              }
+              // console.log('ISEO: user added successfully');
+              res.json({ result: 'Added successfully' });
+    
+              // we should notify to other people in the group.
+              let pathToPopulate = '';
+    
+              if (chattingType === 1) {
+                pathToPopulate = 'shared_user_group';
+              } else {
+                pathToPopulate = `child_listings.${childInfo.index}.shared_user_group`;
+              }
+    
+              await foundListing.populate(pathToPopulate, 'username').execPopulate();
+              foundListing.populated(pathToPopulate);
+    
+              const userNameList = [];
+              const notificationUserList = (chattingType === 1) ? foundListing.shared_user_group : foundListing.child_listings[childInfo.index].shared_user_group;
+    
+              for (let index = 0; index < notificationUserList.length; index++) {
+                if (req.user.username !== notificationUserList[index].username) {
+                  userNameList.push(notificationUserList[index].username);
+                }
+              }
+              // <note> sendDashboardControlMessage expects username, not the ID
+              chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList);
+            });
+          });
+        });
+      });
+
+
+      router.post('/:list_id/addGroupChat', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundListing) => {
+          if (err) {
+            console.log('Listing not found');
+            res.json({ result: 'Listing not found' });
+            return;
+          }
+    
+          // list of parameters needed
+          // 1. chatting ID
+          // + parent list: (parent_listing_id)-parent-(list of friend_name)
+          // + child list:  (parent_listing_id)-child-(child_listing_id)-(list of friend name)
+          // 2. list of friends
+    
+          // 1. check if there is a chatting channel created already. Skip it it it exists
+          const channelId = await chatDbHandler.findChatChannel(req.body.channel_id);
+    
+          if (channelId != null) {
+            console.log('Channel=$channelId exists already');
+            res.json({ result: 'Channel exists already' });
+            return;
+          }
+    
+          // 2. construct the group_chat using list of friends
+          // <note> list_of_group_chats
+          // <problem#1> User could create group chat first before creating any DM.
+          // We may need to add the current user to the shared_user_group as well if it's not in the list.
+          const { chattingType } = req.body;
+          const { childInfo } = req.body;
+          const { friends } = req.body;
+    
+          // go through friend list and add it to shared_user_group
+          // <note> This process could be done in parallel.
+          // Nope... in my second thought. We'd better update list_of_group_chats.
+          // It's the same object anyhow. So we should complete all the operarions before save()
+          const group_chat = { channel_id: req.body.channel_id, friend_list: [] };
+    
+          let numOfFriendsProcessed = 0;
+    
+          friends.forEach(async (_friend) => {
+            const result = await listingDbHandler.addToSharedUserGroup(foundListing, _friend.username, chattingType, childInfo.index, false);
+            // let's update list_of_group_chats now
+            const userInfo = { username: _friend.username };
+    
+            // console.log("numOfFriendsProcessed="+numOfFriendsProcessed);
+            // console.log("friends.length="+friends.length);
+    
+            group_chat.friend_list.push(userInfo);
+            ++numOfFriendsProcessed;
+    
+            if (numOfFriendsProcessed == friends.length) {
+              if (chattingType == 1) {
+                foundListing.list_of_group_chats.push(group_chat);
+                // console.log("group_chat = " + JSON.stringify(group_chat));
+              } else {
+                foundListing.child_listings[childInfo.index].list_of_group_chats.push(group_chat);
+                // console.log("group_chat = " + JSON.stringify(group_chat));
+                // console.log("index = " + childInfo.index);
+              }
+    
+              // console.log("group_chat = " + JSON.stringify(foundListing.child_listings[childInfo.index].list_of_group_chats));
+    
+              foundListing.save((err) => {
+                  if (err) {
+                  console.warn(`addGroupChat failure with reason=${err}`);
+                    res.json({ result: 'DB save failure' });
+                    return;
+                  }
+                  // console.log('addGroupChat: user added successfully');
+                  // console.log(`addGroupChat: list_of_group_chats = ${JSON.stringify(foundListing.list_of_group_chats)}`);
+                  res.json({ result: 'Added successfully' });
+              });
+            }
+          });
+        });
+      });
+
     return router;
 };

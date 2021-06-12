@@ -266,7 +266,7 @@ app.namespace('/LS_API', () => {
 
   app.use('/LS_API', indexRoutes);
   app.use('/LS_API/listing', listingRoutes);
-  app.use('/LS_API/event', eventRoutes);
+  app.use('/LS_API/listing/event', eventRoutes);
   app.use('/LS_API/mynetwork', mynetworkRoutes);
   app.use('/LS_API/listing/landlord', landlordRoutes);
   app.use('/LS_API/listing/tenant', tenantRoutes);
