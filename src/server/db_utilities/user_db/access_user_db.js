@@ -2,6 +2,7 @@ const async = require('async');
 const User = require('../../models/user');
 const TenantRequest = require('../../models/listing/tenant_request');
 const LandlordRequest = require('../../models/listing/landlord_request');
+const Event = require('../../models/listing/event');
 const { sendNotificationEmail } = require('../../utilities/notifications');
 // ISEO-TBD: WOW it's really interesting problem.
 // <note> functions defined in this module may not work well, not a function error, if chatting_server is included.
@@ -196,6 +197,17 @@ async function getListingById(listing_id, type) {
         });
         break;
 
+      case 'event':
+        Event.findById(listing_id, (err, listing) => {
+          if (err) {
+            console.warn(`listing not found with err = ${err}`);
+            resolve(null);
+          }
+
+          resolve(listing);
+        });
+        break;
+
       default:
         console.log('Why default');
         resolve(null);
@@ -320,52 +332,63 @@ function handleListingForward(req, res, type) {
         // <note> this line won't wait till the callback function is completed though
         const foundFriend = await User.findById(friend);
         if (foundFriend) {
+          let inBox = [];
+
+          switch(type) {
+            case 'tenant':   inBox = foundFriend.incoming_tenant_listing; break;
+            case 'event':    inBox = foundFriend.incoming_events; break;
+            case 'landlord': inBox = foundFriend.incoming_landlord_listing; break;
+            default: console.warn(`Unsupported type=${type}`); return;
+          }
+
           // let's check duplicate records
-          if (checkDuplicate((type == 'tenant')
-            ? foundFriend.incoming_tenant_listing : foundFriend.incoming_landlord_listing, listing_info.id) == true
+          if (checkDuplicate(inBox, listing_info.id) == true
              || foundFriend._id.equals(listing.requester)) {
             console.warn('Duplicate');
           }
 
           // build list_of_referring_friends
           // 1. check if the user owns the listing or just forwarding it from others
-          if (listing.requester.equals(req.user._id) == true) {
-            const referringFriends = [];
+          if(type!=='event') {
+            if (listing.requester.equals(req.user._id) == true) {
+              const referringFriends = [];
 
-            const creator = {
-              profile_picture: foundUser.profile_picture,
-              friend_id: req.user._id,
-              username: foundUser.username
-            };
-            const forwardee = {
-              profile_picture: foundFriend.profile_picture,
-              friend_id: foundFriend._id,
-              username: foundFriend.username
-            };
+              const creator = {
+                profile_picture: foundUser.profile_picture,
+                friend_id: req.user._id,
+                username: foundUser.username
+              };
+              const forwardee = {
+                profile_picture: foundFriend.profile_picture,
+                friend_id: foundFriend._id,
+                username: foundFriend.username
+              };
 
-            referringFriends.push(creator);
-            referringFriends.push(forwardee);
+              referringFriends.push(creator);
+              referringFriends.push(forwardee);
 
-            listing_info.list_of_referring_friends = referringFriends;
-          } else {
-            // copy list_of_referring_friends and then add forwardee
-            // get list_of_referring_friends by listing ID
-            const referringFriends = getReferringFriendsByListingId(foundUser, req.params.list_id, type);
-            const forwardee = {
-              profile_picture: foundFriend.profile_picture,
-              friend_id: foundFriend._id,
-              username: foundFriend.username
-            };
+              listing_info.list_of_referring_friends = referringFriends;
+            } else {
+              // copy list_of_referring_friends and then add forwardee
+              // get list_of_referring_friends by listing ID
+              const referringFriends = getReferringFriendsByListingId(foundUser, req.params.list_id, type);
+              const forwardee = {
+                profile_picture: foundFriend.profile_picture,
+                friend_id: foundFriend._id,
+                username: foundFriend.username
+              };
 
-            referringFriends.push(forwardee); // just append itself to the list.
+              referringFriends.push(forwardee); // just append itself to the list.
 
-            listing_info.list_of_referring_friends = referringFriends;
+              listing_info.list_of_referring_friends = referringFriends;
+            }
           }
 
-          if (type == 'tenant') {
-            foundFriend.incoming_tenant_listing.push(listing_info);
-          } else {
-            foundFriend.incoming_landlord_listing.push(listing_info);
+          switch(type) {
+            case 'tenant':   inBox = foundFriend.incoming_tenant_listing.push(listing_info); break;
+            case 'event':    inBox = foundFriend.incoming_events.push(listing_info); break;
+            case 'landlord': inBox = foundFriend.incoming_landlord_listing.push(listing_info); break;
+            default: console.warn(`Unsupported type=${type}`); return;
           }
 
           const notificationBody = `A new tenant listing has been shared by ${req.user.username}.\n\n`

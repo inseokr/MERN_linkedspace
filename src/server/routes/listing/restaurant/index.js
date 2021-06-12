@@ -24,10 +24,11 @@ module.exports = function (app) {
     const picPath = serverPath + picturePath + sampleFile.name;
 
     //console.log(`file_upload: picPath=${picPath}`);
+    //console.warn(`sampleFile=${JSON.stringify(sampleFile)}`);
 
     sampleFile.mv(picPath, (err) => {
       if (err) {
-        console.warn(`file can't be replaced!!`);
+        console.warn(`file can't be replaced!! with error code=${err}`);
         return res.status(500).send(err);
       } 
 
@@ -75,6 +76,7 @@ module.exports = function (app) {
 
                 // let's create a database
                 // rename the file with listing_id
+                try {
                 if (filename != '') {
                     const original_path = serverPath + picturePath + filename;
                     const new_full_picture_path = `${picturePath + newListing.requester}_${filename}`;
@@ -85,6 +87,9 @@ module.exports = function (app) {
                     });
                     // ISEO-TBD: The path should start from "/public/..."?
                     newListing.coverPhoto.path = new_full_picture_path;
+                }
+                } catch (err) {
+                  console.warn(`File rename failure with err=${err}`);
                 }
             
                 newListing.save((err) => {
