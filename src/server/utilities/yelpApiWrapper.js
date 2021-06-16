@@ -21,7 +21,7 @@ async function processYelpBusinessSearch(location, term) {
     const response = await axios
         .get('https://api.yelp.com/v3/businesses/search', config)
         .then(response => {
-          console.log(response);
+          //console.log(response);
           return response;
         })
         .catch(error => {
