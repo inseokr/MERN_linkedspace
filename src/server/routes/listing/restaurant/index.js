@@ -15,6 +15,7 @@ const serverPath = './src/server';
 const picturePath = '/public/user_resources/pictures/restaurant/';
 
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('../../../aws_s3_api');
+const { fetchYelpBusinessSearch } = require('../../../utilities/yelpApiWrapper');
 
 node.loop = node.runLoopOnce;
 
@@ -62,61 +63,123 @@ module.exports = function (app) {
     newListing.listingSummary = req.body.listingSummary;
     newListing.locationString = req.body.location;
 
-    // set location information
-    let address = req.body.location;
+    //console.warn(`imageUrl: ${req.body.imageUrl}`);
 
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(
-        response => response.json()).then((response) => {
-            const { results, status } = response;
-            if (status === 'OK') {
-                const { geometry } = results[0];
-                const { location } = geometry;
-                newListing.coordinates.lat = location.lat;
-                newListing.coordinates.lng = location.lng;
+    if(req.body.imageUrl) {
+      newListing.coverPhoto.path = req.body.imageUrl;
+    } else {
+      // let's create a database
+      // rename the file with listing_id
+      try {
+        if (filename !== '' && filename!==null ) {
+          const original_path = serverPath + picturePath + filename;
+          const new_full_picture_path = `${picturePath + newListing.requester}_${filename}`;
+          const new_path = `${serverPath + new_full_picture_path}`;
+          fs.rename(original_path, new_path, (err) => {
+            if (err) throw err;
+              fileUpload2Cloud(serverPath, new_full_picture_path);
+          });
+          // ISEO-TBD: The path should start from "/public/..."?
+          newListing.coverPhoto.path = new_full_picture_path;
+        } 
+      } catch (err) {
+        console.warn(`File rename failure with err=${err}`);
+      }
+    }
 
-                // let's create a database
-                // rename the file with listing_id
-                try {
-                if (filename != '') {
-                    const original_path = serverPath + picturePath + filename;
-                    const new_full_picture_path = `${picturePath + newListing.requester}_${filename}`;
-                    const new_path = `${serverPath + new_full_picture_path}`;
-                    fs.rename(original_path, new_path, (err) => {
-                    if (err) throw err;
-                    fileUpload2Cloud(serverPath, new_full_picture_path);
-                    });
-                    // ISEO-TBD: The path should start from "/public/..."?
-                    newListing.coverPhoto.path = new_full_picture_path;
-                }
-                } catch (err) {
-                  console.warn(`File rename failure with err=${err}`);
-                }
-            
-                newListing.save((err) => {
-                    if (err) {
-                        console.log('New Listing Save Failure');
-                        console.log(`error = ${err}`);
-                    res.json({ result: 'New Listing Save Failure' });
-                    }
-            
-                    User.findById(req.user._id, (err, foundUser) => {
-                        foundUser.places.restaurant.push(newListing._id);
-                        foundUser.save();
-                    });
-                });
-                
-                //console.warn(`newListing ID = ${newListing._id}`);
-                res.json({ result: 'successul creation of listing', createdId: newListing._id });
-                
-            } else {
-                console.warn('New Event Creation failure');
-                res.json({result: 'FAIL', reason: 'Location is wrong'});
-            }
+    if(req.body.coordinates) {
+      newListing.coordinates.lat = location.latitude;
+      newListing.coordinates.lng = location.longitude;
+
+      newListing.save((err) => {
+        if (err) {
+            console.log('New Listing Save Failure');
+            console.log(`error = ${err}`);
+        res.json({ result: 'New Listing Save Failure' });
         }
-    );
+
+        User.findById(req.user._id, (err, foundUser) => {
+            foundUser.places.restaurant.push(newListing._id);
+            foundUser.save();
+        });
+      });
+    
+      //console.warn(`newListing ID = ${newListing._id}`);
+      res.json({ result: 'successul creation of listing', createdId: newListing._id });
+    } else {
+      // set location information
+      let address = req.body.location;
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(
+          response => response.json()).then((response) => {
+              const { results, status } = response;
+              if (status === 'OK') {
+                  const { geometry } = results[0];
+                  const { location } = geometry;
+                  newListing.coordinates.lat = location.lat;
+                  newListing.coordinates.lng = location.lng;
+
+              
+                  newListing.save((err) => {
+                      if (err) {
+                          console.log('New Listing Save Failure');
+                          console.log(`error = ${err}`);
+                      res.json({ result: 'New Listing Save Failure' });
+                      }
+              
+                      User.findById(req.user._id, (err, foundUser) => {
+                          foundUser.places.restaurant.push(newListing._id);
+                          foundUser.save();
+                      });
+                  });
+                  
+                  //console.warn(`newListing ID = ${newListing._id}`);
+                  res.json({ result: 'successul creation of listing', createdId: newListing._id });
+                  
+              } else {
+                  console.warn('New Event Creation failure');
+                  res.json({result: 'FAIL', reason: 'Location is wrong'});
+              }
+          }
+      );
+    }
 
   });
 
+  router.post('/new_yelp', (req, res) => {
+
+    const newListing = new Restaurant();
+    newListing.requester = req.user._id;
+
+    newListing.listingSource = 'Yelp';
+    newListing.listingUrl = req.body.webViewUrl;
+
+    fetchYelpBusinessSearch(req.body.alias).then((response) => {
+      if (response) {
+          //console.warn(`YELP response: ${JSON.stringify(response)}`);
+          newListing.listingSummary = response.name;
+          newListing.locationString = response.location.display_address[0]+', '+response.location.display_address[1];
+          newListing.coverPhoto.path = response.image_url;
+          newListing.coordinates.lat = response.coordinates.latitude;
+          newListing.coordinates.lng = response.coordinates.longitude;
+
+          newListing.save((err) => {
+            if (err) {
+              console.log('New Listing Save Failure');
+              console.log(`error = ${err}`);
+              res.json({ result: 'New Listing Save Failure' });
+            }
+      
+            User.findById(req.user._id, (err, foundUser) => {
+              foundUser.places.restaurant.push(newListing._id);
+              foundUser.save();
+            });
+          });
+        
+          //console.warn(`newListing ID = ${newListing._id}`);
+          res.json({ result: 'successul creation of listing', createdId: newListing._id });
+      }
+    });
+  });
 
   router.post('/:listing_id/new', (req, res) => {
     _3rdPartyListing.findById(req.params.listing_id, (err, foundListing) => {
