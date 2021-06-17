@@ -23,9 +23,12 @@ node.loop = node.runLoopOnce;
 function createNewEvent(req, res, coordinates) { 
     const newEvent = new Event();
 
+
     try {
     newEvent.requester = req.user._id;
-    newEvent.location = req.body.location;
+    newEvent.location = req.body.reverseLocation;
+    //console.warn(`createNewEvent: location=${newEvent.location}`);
+
     newEvent.date = req.body.date;
     newEvent.dateString = `${newEvent.date.toLocaleTimeString([], 
                                 {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`;

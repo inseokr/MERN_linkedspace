@@ -138,7 +138,7 @@ router.get('/get_active_listing/own', (req, res) => {
           const event = {
             id: listing._id,
             username: listing.requester.username,
-            location: {state: 'CA', city: 'SAN JOSE'},
+            location: {state: listing.location.state, city: listing.location.city},
             listingType: 'event',
             picture: listing.requester.profile_picture,
             date: {
