@@ -76,7 +76,7 @@
     "mongoose": "^5.10.13",
     "multer": "^1.4.1",
     "node-fetch": "^2.6.1",
-    "nodemailer": "^6.4.15",
+    "nodemailer": "^6.4.16",
     "nodemon": "^1.17.3",
     "parse-error": "^0.2.0",
     "passport": "^0.4.1",
