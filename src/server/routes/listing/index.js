@@ -131,9 +131,12 @@ router.get('/get_active_listing/own', (req, res) => {
         for (let index = 0; index < foundUser.events.length; index++) {
           const listing = foundUser.events[index];
 
-          const pathToPopulate = 'requester';
+          let pathToPopulate = 'requester';
           await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
           listing.populated(pathToPopulate);
+
+          pathToPopulate = `shared_user_group`;
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
           const event = {
             id: listing._id,
@@ -148,7 +151,8 @@ router.get('/get_active_listing/own', (req, res) => {
                     hour: listing.date.getHours(),
                     min: listing.date.getMinutes()},
             summary: listing.summary,
-            coordinates: listing.coordinates
+            coordinates: listing.coordinates,
+            shared_user_group: listing.shared_user_group
           };
           //console.warn(`pushing event: ${JSON.stringify(event)}`);
           //console.warn(`Date=${listing.date.toDateString()}`);
@@ -163,6 +167,7 @@ router.get('/get_active_listing/own', (req, res) => {
           await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
           foundUser.populated(pathToPopulate);
+
 
           const llist = {
             id: listing._id,
@@ -255,7 +260,8 @@ router.get('/get_active_listing/friend', (req, res) => {
         await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
         foundUser.populated(pathToPopulate);
 
-        //console.warn(`listing:=${JSON.stringify(listing)}`);
+        pathToPopulate = `incoming_events.${index}.id.shared_user_group`;
+        await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
         const event = {
           id: listing.id._id,
@@ -270,7 +276,8 @@ router.get('/get_active_listing/friend', (req, res) => {
                   hour: listing.id.date.getHours(),
                   min: listing.id.date.getMinutes()},
           summary: listing.id.summary,
-          coordinates: listing.id.coordinates
+          coordinates: listing.id.coordinates,
+          shared_user_group: listing.id.shared_user_group
         };
         //console.warn(`pushing event: ${JSON.stringify(event)}`);
         //console.warn(`Date=${listing.id.date.toDateString()}`);

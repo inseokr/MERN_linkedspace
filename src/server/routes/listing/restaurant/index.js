@@ -153,14 +153,29 @@ module.exports = function (app) {
     newListing.listingSource = 'Yelp';
     newListing.listingUrl = req.body.webViewUrl;
 
+    // example
+    /*{"id":"eO5tJ35vZ2orLd1IY2-6Iw",
+      "alias":"koja-kitchen-fremont-4",
+      "name":"Koja Kitchen",
+      "image_url":"https://s3-media3.fl.yelpcdn.com/bphoto/7i9GO6iFkRWPa79w6kAtBg/o.jpg","is_closed":false,
+      "url":"https://www.yelp.com/biz/koja-kitchen-fremont-4?adjust_creative=BixayGc6BtXSQo6cWni1qw&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=BixayGc6BtXSQo6cWni1qw","review_count":166,
+      "categories":[{"alias":"korean","title":"Korean"},{"alias":"japanese","title":"Japanese"},{"alias":"bars","title":"Bars"}],
+      "rating":4,"coordinates":{"latitude":37.50079,"longitude":-121.97006},"transactions":["pickup","delivery"],
+      "price":"$$",
+      "location":{"address1":"43845 Pacific Commons Blvd","address2":"Ste SP-5G","address3":"","city":"Fremont","zip_code":"94538","country":"US","state":"CA",
+      "display_address":["43845 Pacific Commons Blvd","Ste SP-5G","Fremont, CA 94538"]},"phone":"+15105734536","display_phone":"(510) 573-4536","distance":7.281423096646681}*/
+
     fetchYelpBusinessSearch(req.body.alias).then((response) => {
       if (response) {
           //console.warn(`YELP response: ${JSON.stringify(response)}`);
+          try {
           newListing.listingSummary = response.name;
           newListing.locationString = response.location.display_address[0]+', '+response.location.display_address[1];
           newListing.coverPhoto.path = response.image_url;
           newListing.coordinates.lat = response.coordinates.latitude;
           newListing.coordinates.lng = response.coordinates.longitude;
+          newListing.category = response.categories[0].alias;
+          newListing.price = response.price;
 
           newListing.save((err) => {
             if (err) {
@@ -176,8 +191,11 @@ module.exports = function (app) {
           });
         
           //console.warn(`newListing ID = ${newListing._id}`);
-          res.json({ result: 'successul creation of listing', createdId: newListing._id });
-      }
+          res.json({ result: 'OK', createdId: newListing._id });
+        } catch (err) {
+          res.json({ result: 'FAIL', reason: err });
+        }
+    }
     });
   });
 
@@ -264,6 +282,26 @@ module.exports = function (app) {
       res.redirect('/ActiveListing');
     });
   });
+
+
+  router.get('/favorites', async (req, res) => {
+    // need to populate favorites...
+    // check if user log is logged in
+    if(req.user!==undefined) {
+      const pathToPopulate = `places.restaurant`;
+      await req.user.populate(pathToPopulate, 'listingUrl listingSummary coverPhoto category price').execPopulate();
+      req.user.populated(pathToPopulate);
+
+      //console.warn(`restaurants = ${req.user.places.restaurant}`);
+
+      res.json({result: 'OK', favoriteList: req.user.places.restaurant});
+
+    } else {
+      res.json({result: 'FAIL', reason: 'User is not logged in'});
+    }
+    
+  });
+
 
   return router;
 };
