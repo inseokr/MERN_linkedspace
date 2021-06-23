@@ -169,29 +169,52 @@ module.exports = function (app) {
       if (response) {
           //console.warn(`YELP response: ${JSON.stringify(response)}`);
           try {
-          newListing.listingSummary = response.name;
-          newListing.locationString = response.location.display_address[0]+', '+response.location.display_address[1];
-          newListing.coverPhoto.path = response.image_url;
-          newListing.coordinates.lat = response.coordinates.latitude;
-          newListing.coordinates.lng = response.coordinates.longitude;
-          newListing.category = response.categories[0].alias;
-          newListing.price = response.price;
-
-          newListing.save((err) => {
-            if (err) {
-              console.log('New Listing Save Failure');
-              console.log(`error = ${err}`);
-              res.json({ result: 'New Listing Save Failure' });
+          Restaurant.findOne({listingSummary: response.name}, async (err, foundRestaurant) => {
+            
+            if(foundRestaurant || err) {
+              if(foundRestaurant) {
+                // let's check coordinates as well
+                if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(response.coordinates.latitude).toFixed(4) )
+                    && 
+                   (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(response.coordinates.longitude).toFixed(4)) ) {
+                    //console.warn(`Same location....`);
+                    res.json({ result: 'OK', createdId: foundRestaurant._id });
+                    return;
+                }
+              }
+              else {
+                res.json({ result: 'FAIL', reason: err });
+                return;
+              }
             }
-      
-            User.findById(req.user._id, (err, foundUser) => {
-              foundUser.places.restaurant.push(newListing._id);
-              foundUser.save();
-            });
-          });
+
+
+            newListing.listingSummary = response.name;
+            newListing.locationString = response.location.display_address[0]+', '+response.location.display_address[1];
+            newListing.coverPhoto.path = response.image_url;
+            newListing.coordinates.lat = response.coordinates.latitude;
+            newListing.coordinates.lng = response.coordinates.longitude;
+            newListing.category = response.categories[0].alias;
+            newListing.price = response.price;
+  
+            newListing.save((err) => {
+              if (err) {
+                console.log('New Listing Save Failure');
+                console.log(`error = ${err}`);
+                res.json({ result: 'New Listing Save Failure' });
+              }
         
-          //console.warn(`newListing ID = ${newListing._id}`);
-          res.json({ result: 'OK', createdId: newListing._id });
+              User.findById(req.user._id, (err, foundUser) => {
+                //console.warn(`Created new restaurant and added to the places.`);
+                foundUser.places.restaurant.push(newListing._id);
+                foundUser.save();
+                //console.warn(`newListing ID = ${newListing._id}`);
+                res.json({ result: 'OK', createdId: newListing._id });
+
+              });
+            });
+          
+          });
         } catch (err) {
           res.json({ result: 'FAIL', reason: err });
         }
