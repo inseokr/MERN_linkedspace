@@ -46,7 +46,9 @@ export default class LandingPage extends Component {
 
   componentDidMount() {
     const { refreshUserData } = this.context;
-    refreshUserData();
+
+    // ISEO-TBD: background API call to keep the backend server alive
+    let timer = setInterval(()=> refreshUserData(), 1000*1000);
   }
 
   handleSignupClick() {
