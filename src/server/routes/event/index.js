@@ -37,6 +37,9 @@ function createNewEvent(req, res, coordinates) {
     newEvent.state = 0;
 
     newEvent.shared_user_group.push(req.user._id);
+    // organizer will be implicitly added to the attendance list
+    newEvent.attendanceList.push(req.user.username);
+
     } catch (err) {
         res.json({result: 'FAIL', reason: err});
         return;
@@ -293,6 +296,42 @@ module.exports = function (app) {
             }
           });
         });
+      });
+
+      router.post('/:list_id/attendance', (req, res) => {
+
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if(err) {
+            res.json({result: 'FAIL', reason: 'event not found'})
+            return;
+          }
+
+          let _attendanceList = [];
+
+          if(foundEvent.attendanceList) {
+            _attendanceList = foundEvent.attendanceList;
+          }
+
+          let _attendance = req.body.attendance;
+
+          if(_attendance===true) {
+            //console.warn(`Attending`);
+            _attendanceList.push(req.user.username);
+          } 
+          else {
+            //console.warn(`Skipping`);
+            let _index= _attendanceList.indexOf(req.user.username);
+            _attendanceList.splice(_index, 1);
+          }
+
+          foundEvent.attendanceList = _attendanceList;
+
+          //console.warn(`_attendanceList=${JSON.stringify(_attendanceList)}`);
+          foundEvent.save();
+          res.json({result: 'OK'});
+
+        });  
+      
       });
 
       router.delete('/:list_id', (req, res) => {
