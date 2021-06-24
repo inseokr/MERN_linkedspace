@@ -40,7 +40,7 @@ const EventSchema = new mongoose.Schema({
     default: '01/01/2021'
   }, 
 
-  // list of user engaged in chatting regarding this posting
+  // list of user shared with this event
   shared_user_group: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -48,6 +48,13 @@ const EventSchema = new mongoose.Schema({
     }
   ],
 
+  attendanceList: [
+    {
+      type: String
+    }
+  ],
+
+ 
   list_of_group_chats: [
     // the user in the first entry will be the creator for this group chat
     {

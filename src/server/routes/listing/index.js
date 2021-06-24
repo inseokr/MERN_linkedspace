@@ -152,6 +152,7 @@ router.get('/get_active_listing/own', (req, res) => {
                     min: listing.date.getMinutes()},
             summary: listing.summary,
             coordinates: listing.coordinates,
+            attendanceList: listing.attendanceList,
             shared_user_group: listing.shared_user_group
           };
           //console.warn(`pushing event: ${JSON.stringify(event)}`);
@@ -277,6 +278,7 @@ router.get('/get_active_listing/friend', (req, res) => {
                   min: listing.id.date.getMinutes()},
           summary: listing.id.summary,
           coordinates: listing.id.coordinates,
+          attendanceList: listing.id.attendanceList,
           shared_user_group: listing.id.shared_user_group
         };
         //console.warn(`pushing event: ${JSON.stringify(event)}`);
