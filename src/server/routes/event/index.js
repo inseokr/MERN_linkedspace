@@ -14,9 +14,9 @@ const userDbHandler = require('../../db_utilities/user_db/access_user_db');
 const listingDbHandler = require('../../db_utilities/listing_db/access_listing_db');
 const chatDbHandler = require('../../db_utilities/chatting_db/access_chat_db');
 const chatServer = require('../../chatting_server');
+const { handleLikeAction,  handleDislikeAction, handleNeutralAction } = require('../../utilities/listing_utilities');
 const { fileDeleteFromCloud } = require('../../aws_s3_api');
 const serverPath = './src/server';
-
 
 node.loop = node.runLoopOnce;
 
@@ -157,7 +157,21 @@ module.exports = function (app) {
                 await foundListing.populate(pathToRequester, 'username profile_picture loggedInTime').execPopulate();
                 foundListing.populated(pathToRequester);
     
-    
+
+                let pathToDislikedUserList = `child_listings.${index}.listOfDislikedUser`;
+                await foundListing.populate(pathToDislikedUserList, 'username').execPopulate();
+                foundListing.populated(pathToDislikedUserList);
+
+                //console.warn(`listOfDislikedUser: =${JSON.stringify(foundListing.child_listings[index].listOfDislikedUser)}`);
+
+                let pathToUserList = `child_listings.${index}.listOfLikedUser`;
+                await foundListing.populate(pathToUserList, 'username').execPopulate();
+                foundListing.populated(pathToUserList);
+
+                //console.warn(`listOfLikedUser: =${JSON.stringify(foundListing.child_listings[index].listOfLikedUser)}`);
+
+
+
                 const pathToSharedUserGroup = `child_listings.${index}.shared_user_group`;
                 await foundListing.populate(pathToSharedUserGroup, 'username profile_picture loggedInTime').execPopulate();
                 foundListing.populated(pathToSharedUserGroup);
@@ -579,6 +593,38 @@ module.exports = function (app) {
               });
             }
           });
+        });
+      });
+
+      router.post('/:list_id/:child_id/vote/like', (req, res) => {
+        Event.findById(req.params.list_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
+          if (err) {
+            console.log('listing not found');
+            res.send('listing_not_found');
+          }
+
+          handleLikeAction(req, res, foundListing);
+        });
+      });
+    
+      router.post('/:list_id/:child_id/vote/dislike', (req, res) => {
+        Event.findById(req.params.list_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
+          if (err) {
+            console.log('listing not found');
+            res.send('listing_not_found');
+          }
+          handleDislikeAction(req, res, foundListing);
+
+        });
+      });
+
+      router.post('/:list_id/:child_id/vote/neutral', (req, res) => {
+        Event.findById(req.params.list_id).populate('shared_user_group', 'username').exec((err, foundListing) => {
+          if (err) {
+            console.log('listing not found');
+            res.send('listing_not_found');
+          }
+          handleNeutralAction(req, res, foundListing);
         });
       });
 

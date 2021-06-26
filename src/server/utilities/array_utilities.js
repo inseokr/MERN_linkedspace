@@ -14,6 +14,22 @@ function checkDuplicate(list, id) {
   return bDuplicate;
 }
 
+function checkDuplicateValue(list, value) {
+
+  let bDuplicate = false;
+
+  if (list === undefined) return false;
+
+  if (list.length >= 1) {
+    bDuplicate = list.some(
+      item => item===value
+    );
+  }
+
+  return bDuplicate;
+
+}
+
 // <note> list entry contains the object ID
 function addUserToList(list, user_id) {
   // 1. check if there is any duplicate
@@ -30,10 +46,11 @@ function removeUserFromList(list, user_id) {
 
   list = list.filter(_objId => _objId.equals(user_id) === false);
 
-  console.warn(`removeUserFromList: length of list = ${list.length}`);
+  //console.warn(`removeUserFromList: length of list = ${list.length}`);
 }
 
 module.exports = {
   addUserToList,
-  removeUserFromList
+  removeUserFromList,
+  checkDuplicateValue
 };
