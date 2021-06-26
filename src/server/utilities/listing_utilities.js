@@ -2,14 +2,17 @@ const async = require('async');
 const { addUserToList, removeUserFromList } = require('./array_utilities');
 const chatServer = require('../chatting_server');
 
-function sendDashboardAutoRefresh(currUserName, shared_user_group) {
+function sendDashboardAutoRefresh(currUserName, shared_user_group, type) {
     const userNameList = [];
     for (let index = 0; index < shared_user_group.length; index++) {
       if (currUserName !== shared_user_group[index].username) {
         userNameList.push(shared_user_group[index].username);
       }
     }
-    chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+    chatServer.sendDashboardControlMessage(
+      (type==='event') ? 
+        chatServer.DASHBOARD_AUTO_REFRESH_EVENT:
+        chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
   }
   
   function sendDashboardControlMessage(currUserName, shared_user_group, controlCode) {
@@ -49,8 +52,7 @@ function sendDashboardAutoRefresh(currUserName, shared_user_group) {
         //console.warn(`List of liked user = ${JSON.stringify(foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser)}`);
         foundListing.save();
         // console.warn('Successfully added');
-        // sendDashboardAutoRefresh(foundListing.child_listings[indexOfMatchingChildListing].shared_user_group);
-        sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group);
+        sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group, foundListing.listingType);
 
         res.send('Successfully added');
       } else {
@@ -81,7 +83,7 @@ function sendDashboardAutoRefresh(currUserName, shared_user_group) {
 
         foundListing.save();
         // console.warn(`Successfully removed, length = ${foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser.length}`);
-        sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group);
+        sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group, foundListing.listingType);
         res.send('Successfully removed');
       } else {
         console.warn('No child listing found with given ID');
@@ -110,7 +112,7 @@ function sendDashboardAutoRefresh(currUserName, shared_user_group) {
 
       foundListing.save();
       // console.warn(`Successfully removed, length = ${foundListing.child_listings[indexOfMatchingChildListing].listOfLikedUser.length}`);
-      sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group);
+      sendDashboardAutoRefresh(req.user.username, foundListing.shared_user_group, foundListing.listingType);
       res.send('Successfully removed');
     } else {
       console.warn('No child listing found with given ID');
@@ -119,7 +121,6 @@ function sendDashboardAutoRefresh(currUserName, shared_user_group) {
 }
 
 module.exports = {
-    sendDashboardAutoRefresh,
     sendDashboardControlMessage,
     handleLikeAction,
     handleDislikeAction,
