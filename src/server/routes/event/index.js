@@ -348,7 +348,7 @@ module.exports = function (app) {
 
       router.delete('/:list_id', (req, res) => {
         Event.findById(req.params.list_id, (err, foundListing) => {
-            if (err) {
+            if (err || foundListing===null) {
                 console.log('Listing not found');
                 res.json({result: 'FAIL', reason: 'Event not found with given ID'});
                 return;
