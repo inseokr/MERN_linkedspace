@@ -265,12 +265,7 @@ router.get('/get_active_listing/friend', (req, res) => {
           location: {state: 'CA', city: 'SAN JOSE'},
           listingType: 'event',
           picture: listing.id.requester.profile_picture,
-          date: {
-                  month: listing.id.date.getMonth()+1, 
-                  date: listing.id.date.getDate(), 
-                  year: listing.id.date.getFullYear(),
-                  hour: listing.id.date.getHours(),
-                  min: listing.id.date.getMinutes()},
+          date: listing.date,
           summary: listing.id.summary,
           coordinates: listing.id.coordinates,
           attendanceList: listing.id.attendanceList,
