@@ -29,14 +29,7 @@ function createNewEvent(req, res, coordinates) {
     newEvent.location = req.body.reverseLocation;
     //console.warn(`createNewEvent: location=${newEvent.location}`);
 
-    console.warn(`received date=${JSON.stringify(req.body.date)}`);
-
     newEvent.date = req.body.date;
-    newEvent.dateString = `${newEvent.date.toLocaleTimeString([], 
-                                {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`;
-
-    console.warn(`dateString=${newEvent.dateString}`);
-
     newEvent.summary = req.body.summary;
     newEvent.coordinates = coordinates;
     newEvent.state = 0;

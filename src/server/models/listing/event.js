@@ -35,11 +35,6 @@ const EventSchema = new mongoose.Schema({
   // event date
   date: Date,
 
-  dateString: {
-    type: String,
-    default: '01/01/2021'
-  }, 
-
   // list of user shared with this event
   shared_user_group: [
     {

@@ -144,12 +144,7 @@ router.get('/get_active_listing/own', (req, res) => {
             location: {state: listing.location.state, city: listing.location.city},
             listingType: 'event',
             picture: listing.requester.profile_picture,
-            date: {
-                    month: listing.date.getMonth()+1, 
-                    date: listing.date.getDate(), 
-                    year: listing.date.getFullYear(),
-                    hour: listing.date.getHours(),
-                    min: listing.date.getMinutes()},
+            date: listing.date,
             summary: listing.summary,
             coordinates: listing.coordinates,
             attendanceList: listing.attendanceList,
