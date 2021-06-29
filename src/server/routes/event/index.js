@@ -29,9 +29,14 @@ function createNewEvent(req, res, coordinates) {
     newEvent.location = req.body.reverseLocation;
     //console.warn(`createNewEvent: location=${newEvent.location}`);
 
+    console.warn(`received date=${JSON.stringify(req.body.date)}`);
+
     newEvent.date = req.body.date;
     newEvent.dateString = `${newEvent.date.toLocaleTimeString([], 
                                 {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`;
+
+    console.warn(`dateString=${newEvent.dateString}`);
+
     newEvent.summary = req.body.summary;
     newEvent.coordinates = coordinates;
     newEvent.state = 0;
@@ -363,40 +368,41 @@ module.exports = function (app) {
             // 3. remove channels in the parent level
             const channel_id_prefix = `${req.params.list_id}-`;
             chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
-            foundListing.shared_user_group.map(async (user, userIndex) => {
-                const pathToPopulate = `shared_user_group.${userIndex}`;
-                await foundListing.populate(pathToPopulate, 'username').execPopulate();
-                foundListing.populated(pathToPopulate);
-        
-                const userName = foundListing.shared_user_group[userIndex].username;
-        
-                userDbHandler.getUserByName(userName).then((foundUser) => {
-                const new_dm_channels = [];
-        
-                for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
-                    const channel = foundUser.chatting_channels.dm_channels[index];
-                    if (channel.name.search(channel_id_prefix) != -1) {
-                    // remove the chatting channel from chatting server.
-                    chatServer.removeChannel(channel.name);
-                    } else {
-                    new_dm_channels.push(channel);
-                    }
-                }
-                foundUser.chatting_channels.dm_channels = new_dm_channels;
-                // check if current user is the creator
-                if (foundListing.requester.equals(foundUser._id)) {
-                    // console.warn(`deleteOwnListing`);
-                    userDbHandler.deleteOwnListing(foundUser, foundListing);
-                } else {
-                    // console.warn(`deleteListingFromFriends`);
-                    userDbHandler.deleteListingFromFriends(foundUser, foundListing);
-                }
-                foundUser.save();
-                chatServer.sendDashboardControlMessageToSingleUser(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, foundUser.username);
-                });
-                // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
-            });
-        
+            if(foundListing.shared_user_group) {
+              foundListing.shared_user_group.map(async (user, userIndex) => {
+                  const pathToPopulate = `shared_user_group.${userIndex}`;
+                  await foundListing.populate(pathToPopulate, 'username').execPopulate();
+                  foundListing.populated(pathToPopulate);
+          
+                  const userName = foundListing.shared_user_group[userIndex].username;
+          
+                  userDbHandler.getUserByName(userName).then((foundUser) => {
+                  const new_dm_channels = [];
+          
+                  for (let index = 0; index < foundUser.chatting_channels.dm_channels.length; index++) {
+                      const channel = foundUser.chatting_channels.dm_channels[index];
+                      if (channel.name.search(channel_id_prefix) != -1) {
+                      // remove the chatting channel from chatting server.
+                      chatServer.removeChannel(channel.name);
+                      } else {
+                      new_dm_channels.push(channel);
+                      }
+                  }
+                  foundUser.chatting_channels.dm_channels = new_dm_channels;
+                  // check if current user is the creator
+                  if (foundListing.requester.equals(foundUser._id)) {
+                      // console.warn(`deleteOwnListing`);
+                      userDbHandler.deleteOwnListing(foundUser, foundListing);
+                  } else {
+                      // console.warn(`deleteListingFromFriends`);
+                      userDbHandler.deleteListingFromFriends(foundUser, foundListing);
+                  }
+                  foundUser.save();
+                  chatServer.sendDashboardControlMessageToSingleUser(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, foundUser.username);
+                  });
+                  // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
+              });
+            }
             foundListing.remove();
 
             res.json({result: 'OK'});
