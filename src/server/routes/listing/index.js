@@ -262,10 +262,10 @@ router.get('/get_active_listing/friend', (req, res) => {
         const event = {
           id: listing.id._id,
           username: listing.id.requester.username,
-          location: {state: 'CA', city: 'SAN JOSE'},
+          location: {state: listing.id.location.state, city: listing.id.location.city},
           listingType: 'event',
           picture: listing.id.requester.profile_picture,
-          date: listing.date,
+          date: listing.id.date,
           summary: listing.id.summary,
           coordinates: listing.id.coordinates,
           attendanceList: listing.id.attendanceList,
