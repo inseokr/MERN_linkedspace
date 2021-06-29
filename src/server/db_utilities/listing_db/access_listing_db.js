@@ -118,7 +118,7 @@ function cleanAllChildListingsFromParent(parent, bRequiredSave = false) {
   if(parent===null) return;
   
   if(parent.child_listings!==undefined || parent.child_listings!==null) {
-    parent.child_listings.forEach((listing) => {
+    parent.child_listings.forEach((listing, listingIndex) => {
       const channel_id_prefix = `${parent._id}-child-${listing.listing_id}`;
 
       // let's remove chatting channels as well
