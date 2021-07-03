@@ -61,7 +61,7 @@ function createNewEvent(req, res, coordinates) {
             res.json({result: 'OK'});
 
             // let's share this event with friends if any
-            console.warn(`forwarding events: length of friends = ${req.body.userList.length}`);
+            //console.warn(`forwarding events: length of friends = ${req.body.userList.length}`);
             let userNameList = await userDbHandler.forwardEvents(newEvent, foundUser, req.body.userList);
             //console.warn(`length of userNameList =${JSON.stringify(userNameList)}`);
             chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList, foundUser.username);
