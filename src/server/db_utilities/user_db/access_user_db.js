@@ -245,17 +245,22 @@ function checkUserIdDuplicate(list, id) {
 async function forwardEvents(event, reqUser, userList) {
   let userNameList = [];
 
+  console.warn(`forwarding events function`);
+
   if(userList===undefined || userList.length===0) {
-    //console.warn(`forwardEvents: user list is empty?`);
+    console.warn(`forwardEvents: user list is empty?`);
     return;
   } 
 
   let forwardCount = 0;
 
+  console.warn(`forwarding events function: userList.length=${userList.length}`);
+
   for (let index = 0; index < userList.length; index++) {
     const friend = userList[index];
-    // <note> this line won't wait till the callback function is completed though
+    // <note> this line won't wait till the callback unction is completed though
     const foundFriend = await User.findById(friend);
+    console.warn(`foundFriend=${JSON.stringify(foundFriend)}` );
     if (foundFriend) {
       // let's check duplicate records
       if ((checkDuplicate(foundFriend.incoming_events, event._id) === true)
