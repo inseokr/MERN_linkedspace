@@ -427,6 +427,7 @@ module.exports = function (app) {
     
           if (err || foundListing===null ) {
             console.warn('Listing not found');
+            res.json({ result: 'Listing not found' });
             return;
           }
           const { chattingType } = req.body;
