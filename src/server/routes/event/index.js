@@ -55,16 +55,16 @@ function createNewEvent(req, res, coordinates) {
             }
 
             foundUser.events.push(newEvent._id);
-            foundUser.save();
 
             //console.warn(`createNewEvent successful`);
-            res.json({result: 'OK'});
 
             // let's share this event with friends if any
             //console.warn(`forwarding events: length of friends = ${req.body.userList.length}`);
             let userNameList = await userDbHandler.forwardEvents(newEvent, foundUser, req.body.userList);
             //console.warn(`length of userNameList =${JSON.stringify(userNameList)}`);
             chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList, foundUser.username);
+            
+            foundUser.save(()=>res.json({result: 'OK'}));
         });
     });
 }
@@ -381,6 +381,7 @@ module.exports = function (app) {
                       }
                   }
                   foundUser.chatting_channels.dm_channels = new_dm_channels;
+                  
                   // check if current user is the creator
                   if (foundListing.requester.equals(foundUser._id)) {
                       // console.warn(`deleteOwnListing`);
@@ -389,6 +390,8 @@ module.exports = function (app) {
                       // console.warn(`deleteListingFromFriends`);
                       userDbHandler.deleteListingFromFriends(foundUser, foundListing);
                   }
+
+
                   foundUser.save();
                   chatServer.sendDashboardControlMessageToSingleUser(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, foundUser.username);
                   });
