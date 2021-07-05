@@ -126,7 +126,7 @@ module.exports = function (app) {
           if (err || foundListing === null) {
             console.warn('Listing not found');
             console.warn(`err=${err}`);
-            res.redirect('/');
+            res.json({result: 'FAIL', reason: 'Listing not found'});
             return;
           }
     
@@ -585,7 +585,7 @@ module.exports = function (app) {
     
               foundListing.save((err) => {
                   if (err) {
-                  console.warn(`addGroupChat failure with reason=${err}`);
+                    console.warn(`addGroupChat failure with reason=${err}`);
                     res.json({ result: 'DB save failure' });
                     return;
                   }
