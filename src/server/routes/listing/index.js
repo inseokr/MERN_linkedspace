@@ -259,21 +259,23 @@ router.get('/get_active_listing/friend', (req, res) => {
         pathToPopulate = `incoming_events.${index}.id.shared_user_group`;
         await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
-        const event = {
-          id: listing.id._id,
-          username: listing.id.requester.username,
-          location: {state: listing.id.location.state, city: listing.id.location.city},
-          listingType: 'event',
-          picture: listing.id.requester.profile_picture,
-          date: listing.id.date,
-          summary: listing.id.summary,
-          coordinates: listing.id.coordinates,
-          attendanceList: listing.id.attendanceList,
-          shared_user_group: listing.id.shared_user_group
-        };
-        //console.warn(`pushing event: ${JSON.stringify(event)}`);
-        //console.warn(`Date=${listing.id.date.toDateString()}`);
-        events.push(event);
+        if(listing.id) {
+          const event = {
+            id: listing.id._id,
+            username: listing.id.requester.username,
+            location: {state: listing.id.location.state, city: listing.id.location.city},
+            listingType: 'event',
+            picture: listing.id.requester.profile_picture,
+            date: listing.id.date,
+            summary: listing.id.summary,
+            coordinates: listing.id.coordinates,
+            attendanceList: listing.id.attendanceList,
+            shared_user_group: listing.id.shared_user_group
+          };
+          //console.warn(`pushing event: ${JSON.stringify(event)}`);
+          //console.warn(`Date=${listing.id.date.toDateString()}`);
+          events.push(event); 
+        }
       }
 
       // passing whole data structure may not be a good idea?
