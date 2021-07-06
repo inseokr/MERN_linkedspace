@@ -393,7 +393,14 @@ module.exports = function (app) {
 
 
                   foundUser.save();
-                  chatServer.sendDashboardControlMessageToSingleUser(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, foundUser.username);
+                  chatServer.sendDashboardControlMessageToSingleUser(
+                    chatServer.DASHBOARD_AUTO_REFRESH_EVENT, 
+                    foundUser.username, 
+                    {
+                      target: 'event',
+                      type: 'delete',
+                      id: req.params.list_id
+                    });
                   });
                   // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
               });

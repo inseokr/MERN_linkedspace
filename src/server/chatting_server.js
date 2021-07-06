@@ -342,7 +342,7 @@ function sendDashboardControlMessage(command, userNameList, senderName=null) {
   }
 }
 
-function sendDashboardControlMessageToSingleUser(command, userName) {
+function sendDashboardControlMessageToSingleUser(command, userName, param=null) {
   switch (command) {
     case DASHBOARD_AUTO_REFRESH:
     case DASHBOARD_AUTO_REFRESH_EVENT:
@@ -351,7 +351,14 @@ function sendDashboardControlMessageToSingleUser(command, userName) {
       if (userToSocketMap[userName] !== undefined) {
         userToSocketMap[userName].forEach((_socket) => {
           // console.log('sending control message');
-          _socket.send(controlCodeStrings[command]);
+          // add parameters if any
+          if(param!==null) {
+            let commandString = controlCodeStrings[command] + '@' + JSON.stringify(param);
+            _socket.send(commandString);
+          }
+          else {
+            _socket.send(controlCodeStrings[command]);
+          }
         });
       }
       break;
