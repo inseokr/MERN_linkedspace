@@ -28,6 +28,19 @@ module.exports = function (app) {
     });
   });
 
+  router.get('/userdbload', (req, res) => {
+    User.findOne({ username: req.user.username }, (err, user) => {
+		if (err) {
+		  console.warn("User not found");
+		  res.json(null);
+		  return;
+		}
+		else {
+			res.json(user.chatting_channels);
+		}
+	});
+  });
+
   router.post('/update', (req, res) => {
     let result = { op_result: 'success' };
 
