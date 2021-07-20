@@ -26,7 +26,11 @@ function sendDashboardAutoRefresh(currUserName, shared_user_group, type) {
   }
 
   function handleLikeAction(req, res, foundListing) {
-
+      if(!req.user) {
+        console.warn(`Unexpected action while user is not logged in`);
+        res.send('User is not logged in');
+        return;
+      }
       //console.warn(`handleLikeAction`);
 
       // find the index of child listing of which ID matches.
