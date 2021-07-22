@@ -3,6 +3,41 @@ const User = require('../../models/user');
 const ChatChannel = require('../../models/chatting/chatting_channel');
 
 const userDbHandler = require('../user_db/access_user_db');
+
+async function getGroupChat(currentUserName, chatMemberList, chatType, listingId) {
+
+  if(chatType!==0) return null;
+
+  let concatenatedFriendsString = '';
+  const group_chat =  { channel_id: '', friend_list: [] };
+
+  // 1. go through friends list
+  for (let index = 0; index < chatMemberList.length; index++) {
+
+    let foundFriend = await User.findById(chatMemberList[index]);
+    group_chat.friend_list.push({username: foundFriend.username, profile_picture: foundFriend.profile_picture});
+
+    const hypen = (index >= 1) ? '-' : '';
+
+    concatenatedFriendsString = concatenatedFriendsString + hypen + foundFriend.username;
+  }
+
+  concatenatedFriendsString = `${concatenatedFriendsString}-${currentUserName}`;
+
+  // let's sort it
+  let userList = concatenatedFriendsString.split('-').sort();
+  concatenatedFriendsString = '';
+
+  for (let index = 0; index < userList.length; index++) {
+    const hypen = (index >= 1) ? '-' : '';
+    concatenatedFriendsString = concatenatedFriendsString + hypen + userList[index];
+  }
+
+  group_chat.channel_id = `${listingId}-parent-${concatenatedFriendsString}`;
+
+  return group_chat;
+}
+
 // create DM channel
 async function getMemberInfoByUserName(name) {
   return new Promise((resolve) => {
@@ -132,5 +167,6 @@ module.exports = {
   addChannelToUser,
   addChannelToSingleUser,
   getChannels: getListOfChannelsByUserName,
-  removeChannelsByPartialChannelId
+  removeChannelsByPartialChannelId,
+  getGroupChat
 };

@@ -41,7 +41,8 @@ function createNewEvent(req, res, coordinates) {
         return;
     }
 
-    newEvent.save((err) => {
+
+    newEvent.save(async (err) => {
         if (err) {
             console.warn(`New Event Save Failure: err=${err}`);
             res.json({result: 'FAIL', reason: 'New Event Save Failure'});
@@ -54,6 +55,14 @@ function createNewEvent(req, res, coordinates) {
                 res.json({result: 'FAIL', reason: 'user not found'});
             }
 
+            if(req.body.userList.length>1) {
+              // create a group channel based on user list
+              let groupChat = await chatDbHandler.getGroupChat(req.user.username, req.body.userList, 0, newEvent._id);
+              groupChat.friend_list.push({username: foundUser.username, profile_picture: foundUser.profile_picture});
+              newEvent.list_of_group_chats.push(groupChat);
+              newEvent.save();
+            }
+
             foundUser.events.push(newEvent._id);
 
             //console.warn(`createNewEvent successful`);
@@ -63,6 +72,7 @@ function createNewEvent(req, res, coordinates) {
             let userNameList = await userDbHandler.forwardEvents(newEvent, foundUser, req.body.userList);
             //console.warn(`length of userNameList =${JSON.stringify(userNameList)}`);
             chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList, foundUser.username);
+
             
             foundUser.save(()=>res.json({result: 'OK'}));
         });
