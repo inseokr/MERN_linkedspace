@@ -277,7 +277,7 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          // console.warn('sending message');
+          console.warn('sending PUSH notification');
           // sendPushNotification();
           sendPushNotification(socketToUserMap[target.id], channel.channel_id);
           target.send(data);
