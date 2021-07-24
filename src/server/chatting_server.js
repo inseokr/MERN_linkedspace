@@ -481,7 +481,6 @@ function removeChannelFromUserDb(name, channel_id) {
     }
 
     foundUser.chatting_channels.dm_channels = new_dm_channels;
-
     console.log(`After dm_channels length = ${foundUser.chatting_channels.dm_channels.length}`);
     foundUser.save();
   });
