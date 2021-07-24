@@ -356,6 +356,19 @@ module.exports = function (app) {
       });
 
       router.delete('/:list_id', (req, res) => {
+
+        function finalProcess(res, foundListing, totalNumberOfUser, numOfProcessed) {
+            //console.warn(`finalProcess: numOfProcessed=${numOfProcessed}`);
+            // clean up chatting related resources
+            // 1. go through all the child listing and remove chatting channels.
+            // <note> how to ensure that previous action has been completed?
+            if(totalNumberOfUser===numOfProcessed) {
+              listingDbHandler.cleanAllChildListingsFromParent(foundListing);
+              foundListing.remove();
+              res.json({result: 'OK'});
+            }
+        }
+
         Event.findById(req.params.list_id, (err, foundListing) => {
             if (err || foundListing===null) {
                 console.log('Listing not found');
@@ -363,13 +376,13 @@ module.exports = function (app) {
                 return;
             }
     
-            // clean up chatting related resources
-            // 1. go through all the child listing and remove chatting channels.
-            listingDbHandler.cleanAllChildListingsFromParent(foundListing);
     
             // 3. remove channels in the parent level
             const channel_id_prefix = `${req.params.list_id}-`;
             chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
+            let numOfProcessed = 0;
+            let totalNumberOfUser = (foundListing.shared_user_group)? foundListing.shared_user_group.length : 0;
+
             if(foundListing.shared_user_group) {
               foundListing.shared_user_group.map(async (user, userIndex) => {
                   const pathToPopulate = `shared_user_group.${userIndex}`;
@@ -391,18 +404,17 @@ module.exports = function (app) {
                       }
                   }
                   foundUser.chatting_channels.dm_channels = new_dm_channels;
-                  
+                                    
                   // check if current user is the creator
                   if (foundListing.requester.equals(foundUser._id)) {
-                      // console.warn(`deleteOwnListing`);
-                      userDbHandler.deleteOwnListing(foundUser, foundListing);
+                    userDbHandler.deleteOwnListing(foundUser, foundListing);
                   } else {
                       // console.warn(`deleteListingFromFriends`);
-                      userDbHandler.deleteListingFromFriends(foundUser, foundListing);
+                    userDbHandler.deleteListingFromFriends(foundUser, foundListing);
                   }
 
+                  foundUser.save(()=> finalProcess(res, foundListing, totalNumberOfUser, ++numOfProcessed));
 
-                  foundUser.save();
                   chatServer.sendDashboardControlMessageToSingleUser(
                     chatServer.DASHBOARD_AUTO_REFRESH_EVENT, 
                     foundUser.username, 
@@ -415,9 +427,9 @@ module.exports = function (app) {
                   // chatServer.removeChannelFromUserDb(foundListing.shared_user_group[userIndex].username, channel_id_prefix);
               });
             }
-            foundListing.remove();
 
-            res.json({result: 'OK'});
+
+
         });
       });
 
