@@ -70,8 +70,8 @@ function parseChannelName(channel_name)
     }
     else {
       // DM case
-      userList.push(listOfUser[1]);
-      userList.push(listOfUser[2]);
+      userList.push(parsedListOfUser[1]);
+      userList.push(parsedListOfUser[2]);
 
       return userList;
     }
