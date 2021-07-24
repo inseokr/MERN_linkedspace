@@ -55,6 +55,46 @@ const userToSocketMap = [];
 const channelIdToSocketList = [];
 const socketToChannelIdMap = [];
 
+// input: channel_name(name of chatting channel)
+// output: list of user name
+function parseChannelName(channel_name)
+{
+  function parseUserList(listOfUserString) {
+    // check if DM or group channel
+    let parsedListOfUser = listOfUserString.match(/(.*)-dm-(.*)/);
+
+    if(parsedListOfUser===null) {
+      // group channel
+      userList = listOfUserString.split('-');
+      return userList;
+    }
+    else {
+      // DM case
+      userList.push(listOfUser[1]);
+      userList.push(listOfUser[2]);
+
+      return userList;
+    }
+  }
+
+  // 1. check if it's a parent or child
+  let parsedChannelName = channel_name.match(/(.*)-child-([^-]*)-(.*)/);
+  let userList = [];
+
+  // parent channel
+  if(parsedChannelName===null) {
+    // check if it's parent chatting channel
+    parsedChannelName = channel_name.match(/(.*)-parent-(.*)/);
+
+    return (parseUserList(parsedChannelName[2]));
+  }
+  // handling child chatting channel
+  else {
+    // result[3] contains the list of user name separate by '-' if it's group or 
+    // 2 user separated by dm, example> iseo-dm-yoobin
+    return (parseUserList(parsedChannelName[3]));
+  }
+}
 
 async function actualPush(expo, chunks) {
   const tickets = [];
@@ -277,15 +317,24 @@ function routeMessage(data, incomingSocket) {
 
       targets.forEach((target) => {
         if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          console.warn('sending PUSH notification');
-          // sendPushNotification();
-          sendPushNotification(socketToUserMap[target.id], channel.channel_id);
+          //console.warn('sending PUSH notification');
           target.send(data);
         } else {
           // console.warn('Same Socket??');
         }
       });
+
+      // send notification
+      let userList = parseChannelName(channel.channel_id);
+      userList.forEach((user) => {
+        if(socketToUserMap[incomingSocket.id]!==user) {
+          //console.warn(`sendPushNotification to user =${user}`);
+          sendPushNotification(user, channel.channel_id);
+        }        
+      });
     });
+
+
   } else {
     console.warn('No chatting channel found with given channel ID');
   }
