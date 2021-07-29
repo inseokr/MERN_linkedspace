@@ -659,5 +659,30 @@ module.exports = function (app) {
         });
       });
 
+      router.post('/:list_id/update', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if (err) {
+            console.warn('listing not found');
+            res.send('listing_not_found');
+          }
+
+          // 1. update summary if any
+          if(req.body.summary) {
+            foundEvent.summary = req.body.summary;
+          }
+
+          if(req.body.date) {
+            foundEvent.date = req.body.date;
+          }
+
+          if(req.body.reverseLocation && req.body.coordinates) {
+            foundEvent.location = req.body.reverseLocation;
+            foundEvent.coordinates = req.body.coordinates;
+          }
+
+          foundEvent.save(()=>res.json({result: 'OK'}));
+        });
+      });
+
     return router;
 };
