@@ -66,6 +66,7 @@ const EventSchema = new mongoose.Schema({
   // list of places(restaurants) for the event
   child_listings: [
     {
+      hide: { type: Boolean, default: false},
       listing_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant' // _3rdPartyListing or LandlordRequest
