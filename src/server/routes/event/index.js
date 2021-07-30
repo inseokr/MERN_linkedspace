@@ -355,6 +355,44 @@ module.exports = function (app) {
       
       });
 
+      router.post('/:list_id/hide', (req, res) => {
+
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if(err) {
+            res.json({result: 'FAIL', reason: 'event not found'})
+            return;
+          }
+
+          const { childIndex } = req.body;
+          if(foundEvent.child_listings.length && foundEvent.child_listings[childIndex]) {
+            foundEvent.child_listings[childIndex].hide = true;
+          }
+
+          foundEvent.save();
+          res.json({result: 'OK'});
+        });  
+      
+      });
+
+      router.post('/:list_id/show', (req, res) => {
+
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if(err) {
+            res.json({result: 'FAIL', reason: 'event not found'})
+            return;
+          }
+
+          const { childIndex } = req.body;
+          if(foundEvent.child_listings.length && foundEvent.child_listings[childIndex]) {
+            foundEvent.child_listings[childIndex].hide = false;
+          }
+
+          foundEvent.save();
+          res.json({result: 'OK'});
+        });  
+      
+      });
+
       router.delete('/:list_id', (req, res) => {
 
         function finalProcess(res, foundListing, totalNumberOfUser, numOfProcessed) {
