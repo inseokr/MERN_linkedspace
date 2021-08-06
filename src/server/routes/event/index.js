@@ -355,6 +355,44 @@ module.exports = function (app) {
       
       });
 
+      router.post('/:list_id/hide', (req, res) => {
+
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if(err) {
+            res.json({result: 'FAIL', reason: 'event not found'})
+            return;
+          }
+
+          const { childIndex } = req.body;
+          if(foundEvent.child_listings.length && foundEvent.child_listings[childIndex]) {
+            foundEvent.child_listings[childIndex].hide = true;
+          }
+
+          foundEvent.save();
+          res.json({result: 'OK'});
+        });  
+      
+      });
+
+      router.post('/:list_id/show', (req, res) => {
+
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if(err) {
+            res.json({result: 'FAIL', reason: 'event not found'})
+            return;
+          }
+
+          const { childIndex } = req.body;
+          if(foundEvent.child_listings.length && foundEvent.child_listings[childIndex]) {
+            foundEvent.child_listings[childIndex].hide = false;
+          }
+
+          foundEvent.save();
+          res.json({result: 'OK'});
+        });  
+      
+      });
+
       router.delete('/:list_id', (req, res) => {
 
         function finalProcess(res, foundListing, totalNumberOfUser, numOfProcessed) {
@@ -656,6 +694,31 @@ module.exports = function (app) {
             res.send('listing_not_found');
           }
           handleNeutralAction(req, res, foundListing);
+        });
+      });
+
+      router.post('/:list_id/update', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if (err) {
+            console.warn('listing not found');
+            res.send('listing_not_found');
+          }
+
+          // 1. update summary if any
+          if(req.body.summary) {
+            foundEvent.summary = req.body.summary;
+          }
+
+          if(req.body.date) {
+            foundEvent.date = req.body.date;
+          }
+
+          if(req.body.reverseLocation && req.body.coordinates) {
+            foundEvent.location = req.body.reverseLocation;
+            foundEvent.coordinates = req.body.coordinates;
+          }
+
+          foundEvent.save(()=>res.json({result: 'OK'}));
         });
       });
 

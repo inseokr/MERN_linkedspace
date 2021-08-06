@@ -373,7 +373,7 @@ module.exports = function (app) {
     // check if user log is logged in
     if(req.user!==undefined) {
       const pathToPopulate = `places.restaurant`;
-      await req.user.populate(pathToPopulate, 'listingUrl listingSummary coverPhoto category price').execPopulate();
+      await req.user.populate(pathToPopulate, 'listingUrl listingSummary coverPhoto category price coordinates').execPopulate();
       req.user.populated(pathToPopulate);
 
       //console.warn(`restaurants = ${req.user.places.restaurant}`);
