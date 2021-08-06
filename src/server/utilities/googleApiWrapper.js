@@ -45,7 +45,16 @@ async function fetchGoogleBusinessPhoto(photoReference) {
   return response ? response.request : null;
 }
 
+function processPriceLevel(priceLevel) {
+  let price = ""; // Translate price level to dollar signs.
+  for (let index = 0; index < priceLevel; index++) {
+    price += "$";
+  }
+  return price;
+}
+
 module.exports = {
   fetchGoogleBusiness,
-  fetchGoogleBusinessPhoto
+  fetchGoogleBusinessPhoto,
+  processPriceLevel
 };

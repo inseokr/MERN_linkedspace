@@ -16,7 +16,7 @@ const picturePath = '/public/user_resources/pictures/restaurant/';
 
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('../../../aws_s3_api');
 const { fetchYelpBusinessSearch } = require('../../../utilities/yelpApiWrapper');
-const { fetchGoogleBusiness, fetchGoogleBusinessPhoto } = require('../../../utilities/googleApiWrapper');
+const { fetchGoogleBusiness, fetchGoogleBusinessPhoto, processPriceLevel } = require('../../../utilities/googleApiWrapper');
 
 node.loop = node.runLoopOnce;
 
@@ -234,7 +234,7 @@ module.exports = function (app) {
         fetchGoogleBusinessPhoto(googleBusinessResponse.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
           if (googleBusinessPhotoResponse) {
             try {
-              const { name, geometry, formatted_address, types } = googleBusinessResponse;
+              const { name, geometry, formatted_address, types, price_level } = googleBusinessResponse;
               Restaurant.findOne({listingSummary: name}, async (err, foundRestaurant) => {
                 if (foundRestaurant || err) {
                   if (foundRestaurant) {
@@ -254,7 +254,7 @@ module.exports = function (app) {
                 newListing.coverPhoto.path = googleBusinessPhotoResponse.res.responseUrl;
                 newListing.coordinates = geometry.location;
                 newListing.category = types[0];
-                newListing.price = "$$";
+                newListing.price = processPriceLevel(price_level);
 
                 newListing.save((err) => {
                   if (err) {
