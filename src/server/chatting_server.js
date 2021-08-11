@@ -270,6 +270,27 @@ function removeSocketToChannel(channelId, socket_) {
   }
 }
 
+function updateSocketMap(oldId, newId) {
+  // 1. update channelIdToSocketList
+  // <note> how to remove old one?
+  //console.warn(`updateSocketMap: oldId=${oldId}`);
+  channelIdToSocketList[newId] = channelIdToSocketList[oldId];
+  //delete channelIdToSocketList[oldId];
+  //console.warn(`updateSocketMap: channelIdToSocketList=${JSON.stringify(channelIdToSocketList[newId])}`);
+
+  // 2. update socketToChannelIdMap
+  if(channelIdToSocketList[newId]) {
+    channelIdToSocketList[newId].forEach((socket) => {
+      // let's remove old channel from the list
+      if(socketToChannelIdMap[socket.id]) {
+        socketToChannelIdMap[socket.id] = socketToChannelIdMap[socket.id].filter(item => item != oldId);
+        socketToChannelIdMap[socket.id] = [...socketToChannelIdMap[socket.id], newId];
+      }
+    });
+
+  }
+
+}
 
 function getListOfSocketsByChannelId(channelId) {
   return channelIdToSocketList[channelId];
@@ -540,6 +561,7 @@ module.exports = {
   chatServerMain,
   removeChannel,
   removeChannelFromUserDb,
+  updateSocketMap,
   sendDashboardControlMessage,
   sendDashboardControlMessageToSingleUser,
   sendDashboardControlMessage2SharedGroup,

@@ -54,7 +54,7 @@ function Invite2DashboardModal(props) {
               // send test email from ReactJs
               var templateParams = {
                 to_email: user.email,
-                from_name: 'LikedSpaces',
+                from_name: 'LinkedSpaces',
                 to_name: user.username,
                 message: user.message
               };

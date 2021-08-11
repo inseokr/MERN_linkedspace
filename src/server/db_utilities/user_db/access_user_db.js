@@ -31,7 +31,7 @@ async function findUserById_(id) {
 
   return new Promise((resolve) => {
     User.findById(id, (err, foundUser) => {
-      if (err || foundUser == null) {
+      if (err || foundUser == null) { 
         console.log('No user found with given user name');
       } else {
         // console.log("User Found");
@@ -240,6 +240,27 @@ function checkUserIdDuplicate(list, id) {
   }
   // console.warn(`checkUserIdDuplicate: ${bDuplicate}`);
   return bDuplicate;
+}
+
+async function updateChannelId(userList, oldId, newId) {
+
+  if(userList===undefined || userList.length===0) {
+    //console.warn(`updateChannelId: user list is empty?`);
+    return;
+  } 
+
+  for (let index = 0; index < userList.length; index++) {
+    const foundFriend = await getUserByName_(userList[index].username);
+    if(foundFriend) {
+      for(let chatIndex=0; chatIndex < foundFriend.chatting_channels.dm_channels.length;chatIndex++) {
+        if(foundFriend.chatting_channels.dm_channels[chatIndex].name===oldId) {
+          foundFriend.chatting_channels.dm_channels[chatIndex].name = newId;
+          foundFriend.save();
+          break;
+        }
+      }
+    }
+  }  
 }
 
 async function forwardEvents(event, reqUser, userList) {
@@ -543,5 +564,6 @@ module.exports = {
   updateLoggedInStatus,
   deleteOwnListing,
   deleteListingFromFriends,
-  forwardEvents
+  forwardEvents,
+  updateChannelId
 };

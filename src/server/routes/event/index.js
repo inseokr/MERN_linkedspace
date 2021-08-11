@@ -587,6 +587,58 @@ module.exports = function (app) {
         });
       });
 
+      router.post('/:list_id/modifyGroupChat', async (req, res) => {
+        //console.warn(`Modifying Group Chat..........................................................`);
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+          if (err) {
+            console.warn('event not found');
+            res.send('event not found');
+          }
+
+          let { oldChannelId, newChannelId, level, newMember, operation } = req.body;
+
+          try {
+          if(operation==='add') {
+            // 1. update chatting channel database
+            let channel = await chatDbHandler.updateChannelId(oldChannelId, newChannelId);
+
+            // 2. update user data base
+            await userDbHandler.updateChannelId(foundEvent.list_of_group_chats[0].friend_list, oldChannelId, newChannelId);
+
+            // <note> let's handle parent level for now
+            if(foundEvent.list_of_group_chats) {
+              for(let index=0;index<foundEvent.list_of_group_chats.length; index++) {
+                if(foundEvent.list_of_group_chats[index].channel_id===oldChannelId){
+                  // update channel ID
+                  foundEvent.list_of_group_chats[index].channel_id = newChannelId;
+                  // add member
+                  // {username, profile_picture}
+                  foundEvent.list_of_group_chats[index].friend_list.push(newMember);
+                  foundEvent.save(()=>res.json({result: 'OK'}));
+                  break;
+                }
+              }
+            }
+
+            // 4. add the group chat to the newly added member
+            if(channel) {
+              let user = await userDbHandler.getUserByName(newMember.username);
+              if(user) {
+                await chatDbHandler.addChannelToSingleUser(channel, user);
+              }
+            }
+
+            // 5. update mapping table in chatting_servers
+            chatServer.updateSocketMap(oldChannelId, newChannelId);
+          }
+          } catch(err) {
+            res.json({result: 'FAIL'};
+            console.warn(`err=${err}`);
+          }
+        });
+       
+      });
+
 
       router.post('/:list_id/addGroupChat', (req, res) => {
         Event.findById(req.params.list_id, async (err, foundListing) => {
