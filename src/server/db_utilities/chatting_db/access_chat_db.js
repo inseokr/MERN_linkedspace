@@ -92,6 +92,21 @@ async function getChannelByChannelId(channelName) {
   });
 }
 
+async function updateChannelId(oldId, newId) {
+  return new Promise((resolve) => {
+    ChatChannel.findOne({ channel_id: oldId }, (err, foundChannel) => {
+      if (err || foundChannel === null) {
+        // console.log("No such channel found");
+        resolve(null);
+      } else {
+        // console.log("Channel found");
+        foundChannel.channel_id = newId;
+        foundChannel.save(()=> resolve(foundChannel));
+      }
+    });
+  });
+}
+
 async function addChannelToSingleUser(chat_channel, user) {
 
   return new Promise((resolve) => {
@@ -168,5 +183,6 @@ module.exports = {
   addChannelToSingleUser,
   getChannels: getListOfChannelsByUserName,
   removeChannelsByPartialChannelId,
-  getGroupChat
+  getGroupChat,
+  updateChannelId
 };
