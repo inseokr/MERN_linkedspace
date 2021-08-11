@@ -16,6 +16,7 @@ const picturePath = '/public/user_resources/pictures/restaurant/';
 
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('../../../aws_s3_api');
 const { fetchYelpBusinessSearch } = require('../../../utilities/yelpApiWrapper');
+const { fetchGoogleBusiness, fetchGoogleBusinessPhoto, processPriceLevel } = require('../../../utilities/googleApiWrapper');
 
 node.loop = node.runLoopOnce;
 
@@ -31,7 +32,7 @@ module.exports = function (app) {
       if (err) {
         console.warn(`file can't be replaced!! with error code=${err}`);
         return res.status(500).send(err);
-      } 
+      }
 
       //console.warn(`File successfully replaced`);
       res.json({result: 'OK'});
@@ -81,7 +82,7 @@ module.exports = function (app) {
           });
           // ISEO-TBD: The path should start from "/public/..."?
           newListing.coverPhoto.path = new_full_picture_path;
-        } 
+        }
       } catch (err) {
         console.warn(`File rename failure with err=${err}`);
       }
@@ -103,7 +104,7 @@ module.exports = function (app) {
             foundUser.save();
         });
       });
-    
+
       //console.warn(`newListing ID = ${newListing._id}`);
       res.json({ result: 'successul creation of listing', createdId: newListing._id });
     } else {
@@ -118,23 +119,23 @@ module.exports = function (app) {
                   newListing.coordinates.lat = location.lat;
                   newListing.coordinates.lng = location.lng;
 
-              
+
                   newListing.save((err) => {
                       if (err) {
                           console.log('New Listing Save Failure');
                           console.log(`error = ${err}`);
                       res.json({ result: 'New Listing Save Failure' });
                       }
-              
+
                       User.findById(req.user._id, (err, foundUser) => {
                           foundUser.places.restaurant.push(newListing._id);
                           foundUser.save();
                       });
                   });
-                  
+
                   //console.warn(`newListing ID = ${newListing._id}`);
                   res.json({ result: 'successul creation of listing', createdId: newListing._id });
-                  
+
               } else {
                   console.warn('New Event Creation failure');
                   res.json({result: 'FAIL', reason: 'Location is wrong'});
@@ -165,17 +166,17 @@ module.exports = function (app) {
       "location":{"address1":"43845 Pacific Commons Blvd","address2":"Ste SP-5G","address3":"","city":"Fremont","zip_code":"94538","country":"US","state":"CA",
       "display_address":["43845 Pacific Commons Blvd","Ste SP-5G","Fremont, CA 94538"]},"phone":"+15105734536","display_phone":"(510) 573-4536","distance":7.281423096646681}*/
 
-    fetchYelpBusinessSearch(req.body.alias).then((response) => {
+    fetchYelpBusinessSearch(req.body.identifier).then((response) => {
       if (response) {
           //console.warn(`YELP response: ${JSON.stringify(response)}`);
           try {
           Restaurant.findOne({listingSummary: response.name}, async (err, foundRestaurant) => {
-            
+
             if(foundRestaurant || err) {
               if(foundRestaurant) {
                 // let's check coordinates as well
                 if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(response.coordinates.latitude).toFixed(4) )
-                    && 
+                    &&
                    (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(response.coordinates.longitude).toFixed(4)) ) {
                     //console.warn(`Same location....`);
                     res.json({ result: 'OK', createdId: foundRestaurant._id });
@@ -196,14 +197,14 @@ module.exports = function (app) {
             newListing.coordinates.lng = response.coordinates.longitude;
             newListing.category = response.categories[0].alias;
             newListing.price = response.price;
-  
+
             newListing.save((err) => {
               if (err) {
                 console.log('New Listing Save Failure');
                 console.log(`error = ${err}`);
                 res.json({ result: 'New Listing Save Failure' });
               }
-        
+
               User.findById(req.user._id, (err, foundUser) => {
                 //console.warn(`Created new restaurant and added to the places.`);
                 foundUser.places.restaurant.push(newListing._id);
@@ -213,12 +214,72 @@ module.exports = function (app) {
 
               });
             });
-          
+
           });
         } catch (err) {
           res.json({ result: 'FAIL', reason: err });
         }
     }
+    });
+  });
+
+  router.post('/new_google', (req, res) => {
+    const newListing = new Restaurant();
+    newListing.requester = req.user._id;
+    newListing.listingSource = 'Google';
+    newListing.listingUrl = req.body.webViewUrl;
+
+    fetchGoogleBusiness(req.body.identifier).then((googleBusinessResponse) => {
+      if (googleBusinessResponse) {
+        fetchGoogleBusinessPhoto(googleBusinessResponse.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
+          if (googleBusinessPhotoResponse) {
+            try {
+              const { name, geometry, formatted_address, types, price_level } = googleBusinessResponse;
+              Restaurant.findOne({listingSummary: name}, async (err, foundRestaurant) => {
+                if (foundRestaurant || err) {
+                  if (foundRestaurant) {
+                    if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.latitude).toFixed(4) ) &&
+                      (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.longitude).toFixed(4)) ) {
+                      res.json({ result: 'OK', createdId: foundRestaurant._id });
+                      return;
+                    }
+                  } else {
+                    res.json({ result: 'FAIL', reason: err });
+                    return;
+                  }
+                }
+
+                newListing.listingSummary = name;
+                newListing.locationString = formatted_address;
+                newListing.coverPhoto.path = googleBusinessPhotoResponse.res.responseUrl;
+                newListing.coordinates = geometry.location;
+                newListing.category = types[0];
+                newListing.price = processPriceLevel(price_level);
+
+                newListing.save((err) => {
+                  if (err) {
+                    console.log('New Listing Save Failure');
+                    console.log(`error = ${err}`);
+                    res.json({ result: 'New Listing Save Failure' });
+                  }
+
+                  User.findById(req.user._id, (err, foundUser) => {
+                    //console.warn(`Created new restaurant and added to the places.`);
+                    foundUser.places.restaurant.push(newListing._id);
+                    foundUser.save();
+                    //console.warn(`newListing ID = ${newListing._id}`);
+                    res.json({ result: 'OK', createdId: newListing._id });
+
+                  });
+                });
+
+              });
+            } catch (err) {
+              res.json({ result: 'FAIL', reason: err });
+            }
+          }
+        });
+      }
     });
   });
 
@@ -322,7 +383,7 @@ module.exports = function (app) {
     } else {
       res.json({result: 'FAIL', reason: 'User is not logged in'});
     }
-    
+
   });
 
 
