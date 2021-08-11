@@ -632,7 +632,7 @@ module.exports = function (app) {
             chatServer.updateSocketMap(oldChannelId, newChannelId);
           }
           } catch(err) {
-            res.json({result: 'FAIL'};
+            res.json({result: 'FAIL'});
             console.warn(`err=${err}`);
           }
         });
