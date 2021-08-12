@@ -29,6 +29,13 @@ module.exports = function (app) {
   });
 
   router.get('/userdbload', (req, res) => {
+	// user not logged in yet??
+	if(!req.user)  {
+		console.warn(`userdbload without proper login`);
+		res.json(null);
+		return;
+	}
+
     User.findOne({ username: req.user.username }, (err, user) => {
 		if (err) {
 		  console.warn("User not found");
