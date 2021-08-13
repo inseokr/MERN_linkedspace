@@ -90,7 +90,7 @@ module.exports = function (app) {
   });
 
   router.post('/new', (req, res) => {
-	    if (req.user === undefined) {
+	    if (req.user === undefined || !req.body.channel_id) {
 	      const result = { bNewlyCreated: false, channel: null };
 	      res.json(result);
 	      return;
