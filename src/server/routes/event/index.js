@@ -595,7 +595,7 @@ module.exports = function (app) {
             res.send('event not found');
           }
 
-          let { oldChannelId, newChannelId, level, newMember, operation } = req.body;
+          let { oldChannelId, newChannelId, childIndex, newMember, operation } = req.body;
 
           try {
           if(operation==='add') {
@@ -606,14 +606,16 @@ module.exports = function (app) {
             await userDbHandler.updateChannelId(foundEvent.list_of_group_chats[0].friend_list, oldChannelId, newChannelId);
 
             // <note> let's handle parent level for now
-            if(foundEvent.list_of_group_chats) {
-              for(let index=0;index<foundEvent.list_of_group_chats.length; index++) {
-                if(foundEvent.list_of_group_chats[index].channel_id===oldChannelId){
+            let list_of_group_chats = (childIndex>=0)? foundEvent.child_listings[childIndex].list_of_group_chats: foundEvent.list_of_group_chats;
+
+            if(list_of_group_chats) {
+              for(let index=0;index<list_of_group_chats.length; index++) {
+                if(list_of_group_chats[index].channel_id===oldChannelId){
                   // update channel ID
-                  foundEvent.list_of_group_chats[index].channel_id = newChannelId;
+                  list_of_group_chats[index].channel_id = newChannelId;
                   // add member
                   // {username, profile_picture}
-                  foundEvent.list_of_group_chats[index].friend_list.push(newMember);
+                  list_of_group_chats[index].friend_list.push(newMember);
                   foundEvent.save(()=>res.json({result: 'OK'}));
                   break;
                 }

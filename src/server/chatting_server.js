@@ -102,7 +102,7 @@ async function actualPush(expo, chunks) {
   for (const chunk of chunks) {
     try {
       const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-      console.log(ticketChunk);
+      //console.log(ticketChunk);
       tickets.push(...ticketChunk);
       // NOTE: If a ticket contains an error code in ticket.details.error, you
       // must handle it appropriately. The error codes are listed in the Expo
@@ -126,7 +126,7 @@ function sendPushNotification(userName, channelName) {
     // Create the messages that you want to send to clients
     const messages = [];
 
-    console.warn('sendPushNotification');
+    //console.warn('sendPushNotification');
 
     if (!Expo.isExpoPushToken(pushToken)) {
       console.error(`Push token ${pushToken} is not a valid Expo push token`);
