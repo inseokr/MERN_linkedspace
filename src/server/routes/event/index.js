@@ -136,14 +136,14 @@ module.exports = function (app) {
           if (err || foundListing === null) {
             console.warn('Listing not found');
             console.warn(`err=${err}`);
-            res.json({result: 'FAIL', reason: 'Listing not found'});
+            res.json(null);
             return;
           }
     
           /* await foundListing.populate('requester', 'username profile_picture loggedInTime').execPopulate();
           foundListing.populated('requester'); */
           if (req.user === undefined) {
-            res.json(foundListing);
+            res.json(null);
             return;
           }
     
