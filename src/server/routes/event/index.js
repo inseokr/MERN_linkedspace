@@ -643,11 +643,24 @@ module.exports = function (app) {
 
 
       router.post('/:list_id/addGroupChat', (req, res) => {
+
         Event.findById(req.params.list_id, async (err, foundListing) => {
           if (err) {
             console.log('Listing not found');
             res.json({ result: 'Listing not found' });
             return;
+          }
+
+          function checkDuplicate(group_chat_list, channelId) {
+            let bDuplicate = false;
+    
+            if (group_chat_list.length >= 1) {
+              bDuplicate = group_chat_list.some(
+                group_chat => group_chat.channel_id===channelId
+              );
+            }
+    
+            return bDuplicate;
           }
     
           // list of parameters needed
@@ -680,9 +693,25 @@ module.exports = function (app) {
           const group_chat = { channel_id: req.body.channel_id, friend_list: [] };
     
           let numOfFriendsProcessed = 0;
+
+          if(checkDuplicate(
+              (chattingType==1) ? 
+                foundListing.list_of_group_chats: 
+                foundListing.child_listings[childInfo.index].list_of_group_chats, 
+                req.body.channel_id)===true) {
+                  console.warn('Channel=$channelId exists already');
+                  res.json({ result: 'Channel exists already' });
+                  return;
+          }
     
           friends.forEach(async (_friend) => {
             const result = await listingDbHandler.addToSharedUserGroup(foundListing, _friend.username, chattingType, childInfo.index, false);
+
+            if(result===0) {
+              res.json({ result: 'Duplicate user found'});
+              return;
+            }
+
             // let's update list_of_group_chats now
             const userInfo = { username: _friend.username };
     
@@ -697,8 +726,10 @@ module.exports = function (app) {
                 foundListing.list_of_group_chats.push(group_chat);
                 // console.log("group_chat = " + JSON.stringify(group_chat));
               } else {
+                // need to check duplicate...
                 foundListing.child_listings[childInfo.index].list_of_group_chats.push(group_chat);
                 // console.log("group_chat = " + JSON.stringify(group_chat));
+
                 // console.log("index = " + childInfo.index);
               }
     
