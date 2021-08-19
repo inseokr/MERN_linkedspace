@@ -708,8 +708,9 @@ module.exports = function (app) {
             const result = await listingDbHandler.addToSharedUserGroup(foundListing, _friend.username, chattingType, childInfo.index, false);
 
             if(result===0) {
-              res.json({ result: 'Duplicate user found'});
-              return;
+              console.warn(`user's already in the shared user group??`);
+              //res.json({ result: 'Duplicate user found'});
+              //return;
             }
 
             // let's update list_of_group_chats now
