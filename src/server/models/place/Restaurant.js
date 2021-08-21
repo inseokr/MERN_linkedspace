@@ -8,7 +8,7 @@ const RestaurantSchema = new mongoose.Schema({
 
   listingType: { type: String, default: 'restaurant' },
 
-  listingSource: { type: String, default: 'Yelp' },
+  listingSource: { type: String, default: 'LinkedSpaces' },
 
   // external URL to the place
   listingUrl: String,
