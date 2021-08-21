@@ -339,8 +339,7 @@ module.exports = function (app) {
   router.delete('/:list_id', (req, res) => {
     // Clean all resources such as pictures.
 
-    // Get landlord listing.
-    _3rdPartyListing.findById(req.params.list_id, (err, foundListing) => {
+    Restaurant.findById(req.params.list_id, (err, foundListing) => {
     	if (err) {
     		console.log('Listing not found');
     		return;
@@ -357,13 +356,13 @@ module.exports = function (app) {
 
       // Need to remove this listing from dashboard and delete all other resources such as chatting channels.
       // 1. need to check the listing contains it as a child listing
-      listingDbHandler.deleteChildListingFromAllParents(foundListing._id);
+      listingDbHandler.deleteChildListingFromAllParents(foundListing._id, 'event');
 
       foundListing.remove();
 
     	req.flash('success', 'Listing Deleted Successfully');
       // res.send("listing deleted successfully");
-      res.redirect('/ActiveListing');
+      res.json({result: 'OK'});
     });
   });
 

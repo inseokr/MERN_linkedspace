@@ -9,6 +9,7 @@ const {ObjectId} = require('mongodb');
 
 const Event = require('../../models/listing/event');
 const User = require('../../models/user');
+const Restaurant = require('../../models/place/Restaurant');
 
 const userDbHandler = require('../../db_utilities/user_db/access_user_db');
 const listingDbHandler = require('../../db_utilities/listing_db/access_listing_db');
@@ -316,6 +317,110 @@ module.exports = function (app) {
                 chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH_EVENT, userNameList);
             }
           });
+        });
+      });
+
+
+      // req.body: {channel_id_prefix, child_listing_id}
+      // req.body: {childIndex}
+      router.post('/:list_id/removeChild', (req, res) => {
+        // console.log("addChild post event. listing_id = " + req.body.parent_listing_id);
+        if (req.user === undefined) {
+          console.warn('removeChild failure as req.user is undefined');
+          res.json({result: 'FAIL', reason: 'removeChild only allowed for authorized users'});
+        }
+    
+        Event.findById(req.params.list_id).populate('requester').populate('shared_user_group', 'username').exec((err, foundListing) => {
+          if (err) {
+            console.log('event not found');
+            res.json({result: 'FAIL', reason: 'event not found'});
+            return;
+          }
+    
+          if (foundListing.child_listings.length == 0) {
+            console.log('no child listing found');
+            res.json({result: 'FAIL', reason: 'no child listing'});
+            return;
+          }
+    
+          // use filter to create a new array
+          let childIndex = req.body.childIndex;
+          let child_listing_id = foundListing.child_listings[childIndex].listing_id;
+          let channel_id_prefix = `${req.params.list_id}-child-${child_listing_id}`;
+
+          //console.warn(`channel_id_prefix: ${channel_id_prefix}`);
+    
+          if (childIndex !== -1) {
+            const listing = foundListing.child_listings[childIndex];
+            const numOfUsers = listing.shared_user_group.length;
+            let numOfUsersProcessed = 0;
+    
+            listing.shared_user_group.map(async (user, userIndex) => {
+              // console.warn(`listingIndex = ${listingIndex}`);
+              // console.warn(`userIndex = ${userIndex}`);
+    
+              const pathToPopulate = `child_listings.${childIndex}.shared_user_group.${userIndex}`;
+              await foundListing.populate(pathToPopulate, 'username profile_picture loggedInTime').execPopulate();
+              foundListing.populated(pathToPopulate);
+    
+              chatServer.removeChannelFromUserDb(foundListing.child_listings[childIndex].shared_user_group[userIndex].username, channel_id_prefix);
+
+              // <note> saving should be done here?
+              // Nope... not really. it's so messy logic.
+              numOfUsersProcessed++;
+    
+              if (numOfUsersProcessed === numOfUsers) {
+                foundListing.child_listings.splice(childIndex, 1);
+    
+                foundListing.save((err) => {
+                  if (err) {
+                    console.warn(`foundListing saving error = ${err}`);
+                    res.json({result: 'FAIL', reason: 'child listing removal failed'});
+                  } else {
+                    // remove chatting channels from chatting channel DB as well
+                    chatDbHandler.removeChannelsByPartialChannelId(channel_id_prefix);
+                    res.json({result: 'OK'});
+
+                    // send auto-refresh to shared_user_group
+                    // build user name list
+                    const userNameList = [];
+                    for (let index = 0; index < foundListing.shared_user_group.length; index++) {
+                      if (req.user.username !== foundListing.shared_user_group[index].username) {
+                        userNameList.push(foundListing.shared_user_group[index].username);
+                      }
+                    }
+                    chatServer.sendDashboardControlMessage(chatServer.DASHBOARD_AUTO_REFRESH, userNameList);
+
+                    // remove the place/restaurant from DB
+                    Restaurant.findById(child_listing_id, (err, place) => {
+                      if (err) {
+                        console.warn('place not found');
+                        return;
+                      }
+
+                      try {
+                        if(place.coverPhoto.path != '') {
+                          let foundIndex = place.coverPhoto.path.indexOf('user_resources');
+
+                          if(foundIndex!==-1) {
+                            fileDeleteFromCloud(place.coverPhoto.path);
+                            fs.unlinkSync(serverPath + place.coverPhoto.path);
+                          }
+
+                        }
+                      } catch (err) {
+                        console.error(err);
+                      }
+                      place.remove();
+                    });
+                  }
+                });
+              }
+            });
+          } else {
+            console.warn('no matching child listing found');
+            res.json({result: 'FAIL', reason: 'no child lising found'});
+          }
         });
       });
 

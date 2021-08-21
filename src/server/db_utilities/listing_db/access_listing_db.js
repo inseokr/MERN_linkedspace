@@ -148,7 +148,8 @@ function cleanAllChildListingsFromParent(parent, bRequiredSave = false) {
   }
 }
 
-async function deleteChildListingFromAllParents(listing_id) {
+// <note> It needs optimization. 
+async function deleteChildListingFromAllParents(listing_id, type='rental') {
   const allListings = await TenantRequest.find();
 
   console.log(`allListings.length=${allListings.length}`);
