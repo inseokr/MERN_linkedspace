@@ -453,8 +453,7 @@ app.namespace('/LS_API', () => {
       if (Object.keys(req.files).length == 0) {
         return res.status(400).send('No files were uploaded.');
       }
-
-      console.log('ISEO: uploading profile picture...');
+      //console.log('ISEO: uploading profile picture...');
 
       // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
       const sampleFile = req.files.file_name;
@@ -464,7 +463,7 @@ app.namespace('/LS_API', () => {
       // Use the mv() method to place the file somewhere on your server
       sampleFile.mv(serverPath + picPath, (err) => {
         if (err) {
-          console.log(`ISEO: upload failure. error=${err}`);
+          console.warn(`ISEO: upload failure. error=${err}`);
           return res.status(500).send(err);
         }
 
@@ -484,6 +483,7 @@ app.namespace('/LS_API', () => {
       });
     });
   });
+
   app.post('/profile/:user_id/file_delete', (req, res) => {
     User.findById(req.params.user_id, (err, curr_user) => {
       try {
@@ -496,6 +496,48 @@ app.namespace('/LS_API', () => {
         console.error(err);
       }
     });
+  });
+
+
+  // file operation for profile
+  // ISEO: req.files were undefined if it's used in routers.
+  // We need to address this problem later, but I will define it inside app.js for now.
+  app.post('/profile/file_upload', (req, res) => {
+      if (Object.keys(req.files).length == 0) {
+        return res.status(400).send('No files were uploaded.');
+      }
+      // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+      const sampleFile = req.files.photo;
+      const picPath = `/public/user_resources/pictures/profile_pictures/${sampleFile.name}`;
+
+      //console.warn(`sampleFile.name=${sampleFile.name}`);
+
+      // Use the mv() method to place the file somewhere on your server
+      sampleFile.mv(serverPath + picPath, (err) => {
+        if (err) {
+          console.warn(`ISEO: upload failure. error=${err}`);
+          return res.status(500).send(err);
+        }
+        fileUpload2Cloud(serverPath, picPath);
+        res.send('File uploaded!');
+      });
+  });
+  
+  app.post('/profile/file_delete', (req, res) => {
+      try {
+        let {fileName} = req.body;
+
+        //console.warn(`profile file delete: fileName = ${fileName}`);
+
+        const picPath = `/public/user_resources/pictures/profile_pictures/${fileName}`;
+
+        fileDeleteFromCloud(picPath);
+        fs.unlinkSync(serverPath + picPath);
+        res.send('File deleted successfully');
+      } catch (err) {
+        console.error(err);
+        res.send('File deletion failed');
+      }
   });
 
   app.get('/public/user_resources/pictures/3rdparty/:filename', (req, res) => {
@@ -660,6 +702,7 @@ app.namespace('/LS_API', () => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
+      phone: req.body.phone
     });
 
 
@@ -679,6 +722,37 @@ app.namespace('/LS_API', () => {
       });
     });
   });
+
+
+  // handle sign up logic
+  app.post('/signup/mobile/local', (req, res) => {
+    const newUser = new User({
+      username: req.body.signupData.username,
+      email: req.body.signupData.email,
+      password: req.body.signupData.password,
+      phone: req.body.signupData.phone
+    });
+
+    User.register(newUser, req.body.signupData.password, (err, user) => {
+      if (err) {
+        console.warn(`User.register failed = ${err.message}`);
+        res.json({result: 'fail'});
+      }
+
+      // handling user profile picture
+      const fileName = req.body.signupData.filename;
+      const picPath = `/public/user_resources/pictures/profile_pictures/${fileName}`;
+
+      // 1. rename the file
+      // 2. update profile picture path
+      user.profile_picture = picPath;
+      //fileDeleteFromCloud(curr_user.profile_picture);
+      //fs.unlinkSync(serverPath + curr_user.profile_picture);
+      user.save();
+      res.json({result: 'success'});
+    });
+  });
+
 
 
   app.get('/signup/facebook', passport.authenticate('facebook',
