@@ -260,7 +260,13 @@ const UserSchema = new mongoose.Schema({
 				ref: 'Restaurant'
 			}
 		],
-	}
+	},
+
+	phonebook: [
+		{
+			type: String
+		}
+	]
 });
 
 UserSchema.plugin(passportLocalMongoose);

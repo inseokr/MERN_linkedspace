@@ -155,6 +155,25 @@ module.exports = function (app) {
     });
   }
 
+
+  // establish the friendship between friend_1 & friend_2
+  async function buildSocialNetwork(currentUser, friend_id) {
+    return new Promise((resolve)=> {
+      User.findById(friend_id, (err, friend) => {
+        if (isDirectFriend(currentUser, friend_id) === true) {
+          //console.log("we're friend already");
+          resolve(true);
+        }
+        currentUser.direct_friends.push(friend_id);
+        friend.direct_friends.push(currentUser._id);
+        friend.save();
+        currentUser.save(()=>resolve(true));
+        // remove both incoming&outgoing entries if any
+        // This works but non-sense to me... why should I query again??
+      });
+    });
+  }
+
   async function buildRecommendedFriendsList(curr_user) {
     return new Promise((resolve) => {
       User.find({}, (error, users) => {
@@ -290,6 +309,41 @@ module.exports = function (app) {
     } else {
       establishFriendship(res, req.user._id, req.params.friend_id);
     }
+  });
+
+
+  router.post('/sync_contact', (req, res) => {
+    User.findById(req.user._id, async (err, user) => {
+      if (err) {
+        res.send({result: 'fail', reason: 'user not found'});
+        return;
+      }
+
+      let phoneNumberList = req.body.phoneNumberList;
+      user.phonebook = phoneNumberList;
+      // let's go through the list of users and check if any phone number in the contact, but not in the friend list.
+      const all = await User.find({});
+
+      for(let index=0; index<all.length; index++) {
+        if(phoneNumberList.indexOf(all[index].phone)) {
+          // check if it's a new friend
+          let _friend = await user.direct_friends.filter(_id =>_id.equals(all[index]._id));
+
+          //console.warn(`_friend=${JSON.stringify(_friend)}`);
+
+          if(_friend && _friend.length || user._id.equals(all[index]._id)) {
+            //console.warn(`user(${all[index].username}) is already friend`);
+          }
+          else {
+            let result = await buildSocialNetwork(user, all[index]._id);
+            if(result===true) {
+              //console.warn(`New friend (${all[index].username}) added`);
+            }
+          }
+        }
+      }
+      res.send({result: 'success'});
+    });
   });
 
   router.get('/:filename', (req, res) => {
