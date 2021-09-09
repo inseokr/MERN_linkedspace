@@ -893,6 +893,7 @@ module.exports = function (app) {
           if (err) {
             console.warn('listing not found');
             res.send('listing_not_found');
+            return;
           }
 
           // 1. update summary if any
@@ -910,6 +911,28 @@ module.exports = function (app) {
           }
 
           foundEvent.save(()=>res.json({result: 'OK'}));
+        });
+      });
+
+      router.post('/:list_id/postNote', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if (err) {
+            console.warn('listing not found');
+            res.json({result: 'fail', reason: 'listing not found'});
+            return;
+          }
+
+          let {childIndex, content} = req.body;
+
+          if(childIndex!==-1) {
+            if(foundEvent.child_listings[childIndex]) {
+              foundEvent.child_listings[childIndex].note = content;
+            }
+          }
+          else {
+            foundEvent.note = content;
+          }
+          foundEvent.save(()=>res.json({result: 'success'}));
         });
       });
 

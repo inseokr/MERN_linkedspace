@@ -12,6 +12,8 @@ const EventSchema = new mongoose.Schema({
 
   summary: { type: String, default: 'Social Gathering'},
 
+  note: { type:String, default: ''},
+
   // 0. Initial State
   // 1. Planning Phase
   // 2. Closed
@@ -67,6 +69,7 @@ const EventSchema = new mongoose.Schema({
   child_listings: [
     {
       hide: { type: Boolean, default: false},
+      note: { type:String, default: ''},
       listing_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant' // _3rdPartyListing or LandlordRequest
