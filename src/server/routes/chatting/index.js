@@ -126,6 +126,12 @@ module.exports = function (app) {
 		    // <note> Please don't rely on index value to check if it's the last item 'cause getMemberInfoByUserName
 		    // could be called in parallel.
 		    let numberOfPushedMembers = 0;
+
+			if(req.body.members.length===1) {
+				// let's add the current user to the list.
+				req.body.members.push(req.user.username);
+			}
+
 		    for (index = 0; index < req.body.members.length; index++) {
 		      // //console.log("index = " + index);
 		      chatDbHandler.findChatPartyByName(req.body.members[index]).then(async (memberInfo) => {

@@ -166,8 +166,9 @@ module.exports = function (app) {
       "location":{"address1":"43845 Pacific Commons Blvd","address2":"Ste SP-5G","address3":"","city":"Fremont","zip_code":"94538","country":"US","state":"CA",
       "display_address":["43845 Pacific Commons Blvd","Ste SP-5G","Fremont, CA 94538"]},"phone":"+15105734536","display_phone":"(510) 573-4536","distance":7.281423096646681}*/
 
+    //console.warn(`req.body.identifier: ${req.body.identifier}`);
     fetchYelpBusinessSearch(req.body.identifier).then((response) => {
-      if (response) {
+      if (response && response.name) {
           //console.warn(`YELP response: ${JSON.stringify(response)}`);
           try {
           Restaurant.findOne({listingSummary: response.name}, async (err, foundRestaurant) => {
@@ -219,7 +220,9 @@ module.exports = function (app) {
         } catch (err) {
           res.json({ result: 'FAIL', reason: err });
         }
-    }
+      } else {
+        res.json({ result: 'FAIL', reason: 'Yelp returns empty response'});
+      }
     });
   });
 
