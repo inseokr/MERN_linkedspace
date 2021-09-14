@@ -252,6 +252,26 @@ module.exports = function (app) {
     });
   }
 
+  // check if there is any matching phone number in the provided phone book
+  function scanPhoneBook(userPhoneNumber, phonebook) {
+    for(let index=0;index<phonebook.length;index++) {
+      // check if which one's bigger
+      if(phonebook[index].length>=userPhoneNumber.length) {
+        if(phonebook[index].includes(userPhoneNumber)) {
+          return true;
+        }
+      }
+      else {
+        if(userPhoneNumber.includes(phonebook[index])) {
+          return true;
+        }
+      }
+    }
+
+    // no matching entry found with given phone number
+    return false;
+  }
+
   /* router.get("/", function(req, res){
 
 		buildMyNetworkList(req).then((networkInfo) => {
@@ -325,7 +345,11 @@ module.exports = function (app) {
       const all = await User.find({});
 
       for(let index=0; index<all.length; index++) {
-        if(phoneNumberList.indexOf(all[index].phone)) {
+        // <note> phone number could be in different format, like +1 or any other country code
+        // let's compare the length and check if the longer phone string includes the shorter one.
+        if(scanPhoneBook(all[index].phone, phoneNumberList)===true) {
+          // found matching entry with given phone number
+
           // check if it's a new friend
           let _friend = await user.direct_friends.filter(_id =>_id.equals(all[index]._id));
 
