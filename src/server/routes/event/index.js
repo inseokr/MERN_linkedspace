@@ -936,5 +936,24 @@ module.exports = function (app) {
         });
       });
 
+      router.post('/:list_id/setDateOnPlace', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if (err) {
+            console.warn('listing not found');
+            res.json({result: 'fail', reason: 'listing not found'});
+            return;
+          }
+
+          let {childIndex, date} = req.body;
+
+          if(childIndex!==-1) {
+            if(foundEvent.child_listings[childIndex]) {
+              foundEvent.child_listings[childIndex].date = date;
+            }
+          }
+          foundEvent.save(()=>res.json({result: 'success'}));
+        });
+      });
+
     return router;
 };
