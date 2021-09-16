@@ -30,7 +30,7 @@
     "@types/leaflet": "^1.5.19",
     "async": "^3.2.0",
     "aws-sdk": "^2.792.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-polyfill": "^6.26.0",
