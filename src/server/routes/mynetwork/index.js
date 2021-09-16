@@ -254,6 +254,12 @@ module.exports = function (app) {
 
   // check if there is any matching phone number in the provided phone book
   function scanPhoneBook(userPhoneNumber, phonebook) {
+    
+    if(!userPhoneNumber){
+      console.warn(`scanPhoneBook: undefined user phone number`);
+      return false;
+    } 
+
     for(let index=0;index<phonebook.length;index++) {
       // check if which one's bigger
       if(phonebook[index].length>=userPhoneNumber.length) {
