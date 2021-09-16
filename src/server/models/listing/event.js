@@ -37,6 +37,9 @@ const EventSchema = new mongoose.Schema({
   // event date
   date: Date,
 
+  // event ending date
+  endDate: Date,
+
   // list of user shared with this event
   shared_user_group: [
     {
@@ -70,6 +73,7 @@ const EventSchema = new mongoose.Schema({
     {
       hide: { type: Boolean, default: false},
       note: { type:String, default: ''},
+      date: Date,
       listing_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant' // _3rdPartyListing or LandlordRequest
