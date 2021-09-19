@@ -29,6 +29,7 @@ function createNewEvent(req, res, coordinates) {
     //console.warn(`createNewEvent: location=${newEvent.location}`);
 
     newEvent.date = req.body.date;
+    newEvent.endDate = req.body.endDate;
     newEvent.summary = req.body.summary;
     newEvent.coordinates = coordinates;
     newEvent.state = 0;
@@ -903,6 +904,10 @@ module.exports = function (app) {
 
           if(req.body.date) {
             foundEvent.date = req.body.date;
+          }
+
+          if(req.body.endDate) {
+            foundEvent.endDate = req.body.endDate;
           }
 
           if(req.body.reverseLocation && req.body.coordinates) {
