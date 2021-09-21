@@ -80,6 +80,12 @@ router.get('/getLastVisitedListingId', (req, res) => {
 });
 
 router.get('/get_active_listing/own', (req, res) => {
+
+  if(!req.user) {
+    res.json({err: 'user is not logged in yet'});
+    return;
+  }
+
   User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing').populate('events')
 
     .exec(async (err, foundUser) => {
@@ -194,6 +200,12 @@ router.get('/get_active_listing/own', (req, res) => {
 
 
 router.get('/get_active_listing/friend', (req, res) => {
+
+  if(!req.user) {
+    res.json({err: 'user not logged in'});
+    return;
+  }
+
   User.findById(req.user._id).exec(async (err, foundUser) => {
     if (err) {
       console.log(err);
