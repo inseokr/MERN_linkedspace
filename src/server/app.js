@@ -667,6 +667,7 @@ app.namespace('/LS_API', () => {
         // console.log(`Before refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
         if (err) {
           console.warn('User not found!!');
+          res.json(null);
         } else {
           app.locals.currentUser[req.user.username] = foundUser;
           // console.log(`After refresh: user = ${JSON.stringify(app.locals.currentUser[req.user.username])}`);
