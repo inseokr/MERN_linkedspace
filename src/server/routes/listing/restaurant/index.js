@@ -190,6 +190,11 @@ module.exports = function (app) {
               }
             }
 
+            if(!response.location) {
+              console.warn(`fetchYelpBusinessSearch: returned null location`);
+              res.json({ result: 'FAIL', reason: 'NULL location' });
+              return;
+            }
 
             newListing.listingSummary = response.name;
             newListing.locationString = response.location.display_address[0]+', '+response.location.display_address[1];
