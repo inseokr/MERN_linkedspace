@@ -16,7 +16,7 @@ const picturePath = '/public/user_resources/pictures/restaurant/';
 
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('../../../aws_s3_api');
 const { fetchYelpBusinessSearch } = require('../../../utilities/yelpApiWrapper');
-const { fetchGoogleBusiness, fetchGoogleBusinessPhoto, processPriceLevel } = require('../../../utilities/googleApiWrapper');
+const { fetchGoogleBusiness, fetchGoogleBusinessPhoto, fetchGooglePlaceByCoordinate, processPriceLevel } = require('../../../utilities/googleApiWrapper');
 
 node.loop = node.runLoopOnce;
 
@@ -147,7 +147,6 @@ module.exports = function (app) {
   });
 
   router.post('/new_yelp', (req, res) => {
-
     const newListing = new Restaurant();
     newListing.requester = req.user._id;
 
@@ -190,6 +189,11 @@ module.exports = function (app) {
               }
             }
 
+            if(!response.location) {
+              console.warn(`fetchYelpBusinessSearch: returned null location`);
+              res.json({ result: 'FAIL', reason: 'NULL location' });
+              return;
+            }
 
             newListing.listingSummary = response.name;
             newListing.locationString = response.location.display_address[0]+', '+response.location.display_address[1];
@@ -232,58 +236,75 @@ module.exports = function (app) {
     newListing.listingSource = 'Google';
     newListing.listingUrl = req.body.webViewUrl;
 
-    fetchGoogleBusiness(req.body.identifier).then((googleBusinessResponse) => {
-      if (googleBusinessResponse) {
-        fetchGoogleBusinessPhoto(googleBusinessResponse.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
-          if (googleBusinessPhotoResponse) {
-            try {
-              const { name, geometry, formatted_address, types, price_level } = googleBusinessResponse;
-              Restaurant.findOne({listingSummary: name}, async (err, foundRestaurant) => {
-                if (foundRestaurant || err) {
-                  if (foundRestaurant) {
-                    if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.latitude).toFixed(4) ) &&
-                      (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.longitude).toFixed(4)) ) {
-                      res.json({ result: 'OK', createdId: foundRestaurant._id });
-                      return;
-                    }
-                  } else {
-                    res.json({ result: 'FAIL', reason: err });
-                    return;
-                  }
+    const handleResponse = (req, res, googleBusinessResponse, googleBusinessPhotoResponse) => {
+      if (googleBusinessPhotoResponse) {
+        try {
+          const { name, geometry, formatted_address, types, price_level } = googleBusinessResponse;
+          Restaurant.findOne({listingSummary: name}, async (err, foundRestaurant) => {
+            if (foundRestaurant || err) {
+              if (foundRestaurant) {
+                if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.latitude).toFixed(4) ) &&
+                  (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.longitude).toFixed(4)) ) {
+                  res.json({ result: 'OK', createdId: foundRestaurant._id });
+                  return;
                 }
+              } else {
+                res.json({ result: 'FAIL', reason: err });
+                return;
+              }
+            }
 
-                newListing.listingSummary = name;
-                newListing.locationString = formatted_address;
-                newListing.coverPhoto.path = googleBusinessPhotoResponse.res.responseUrl;
-                newListing.coordinates = geometry.location;
-                newListing.category = types[0];
-                newListing.price = processPriceLevel(price_level);
+            newListing.listingSummary = name;
+            newListing.locationString = formatted_address;
+            newListing.coverPhoto.path = googleBusinessPhotoResponse.res.responseUrl;
+            newListing.coordinates = geometry.location;
+            newListing.category = types[0];
+            newListing.price = processPriceLevel(price_level);
 
-                newListing.save((err) => {
-                  if (err) {
-                    console.log('New Listing Save Failure');
-                    console.log(`error = ${err}`);
-                    res.json({ result: 'New Listing Save Failure' });
-                  }
+            newListing.save((err) => {
+              if (err) {
+                console.log('New Listing Save Failure');
+                console.log(`error = ${err}`);
+                res.json({ result: 'New Listing Save Failure' });
+              }
 
-                  User.findById(req.user._id, (err, foundUser) => {
-                    //console.warn(`Created new restaurant and added to the places.`);
-                    foundUser.places.restaurant.push(newListing._id);
-                    foundUser.save();
-                    //console.warn(`newListing ID = ${newListing._id}`);
-                    res.json({ result: 'OK', createdId: newListing._id });
-
-                  });
-                });
+              User.findById(req.user._id, (err, foundUser) => {
+                //console.warn(`Created new restaurant and added to the places.`);
+                foundUser.places.restaurant.push(newListing._id);
+                foundUser.save();
+                //console.warn(`newListing ID = ${newListing._id}`);
+                res.json({ result: 'OK', createdId: newListing._id });
 
               });
-            } catch (err) {
-              res.json({ result: 'FAIL', reason: err });
-            }
+            });
+
+          });
+        } catch (err) {
+          res.json({ result: 'FAIL', reason: err });
+        }
+      }
+    }
+
+    if(req.body.placeCoordinate) {
+      fetchGooglePlaceByCoordinate(req.body.placeCoordinate).then((googleBusinessResponse) => {
+        if (googleBusinessResponse) {
+          fetchGoogleBusinessPhoto(googleBusinessResponse.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
+            handleResponse(req, res, googleBusinessResponse, googleBusinessPhotoResponse);
+          });
+        }
+      });    
+    }
+    else {
+      if(req.body.identifier) {
+        fetchGoogleBusiness(req.body.identifier).then((googleBusinessResponse) => {
+          if (googleBusinessResponse) {
+            fetchGoogleBusinessPhoto(googleBusinessResponse.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
+              handleResponse(req, res, googleBusinessResponse, googleBusinessPhotoResponse);
+            });
           }
         });
       }
-    });
+    }
   });
 
   router.post('/:listing_id/new', (req, res) => {
