@@ -56,7 +56,6 @@ async function fetchGooglePlaceByCoordinate(coordinate) {
   };
 
   //console.warn(`fetchGooglePlaceByCoordinate: ${JSON.stringify(config)}`);
-  
   const response = await axios(config)
   .then( async (placeIdResponse) => {
     console.log(JSON.stringify(placeIdResponse.data.results));
@@ -72,6 +71,8 @@ async function fetchGooglePlaceByCoordinate(coordinate) {
 
     if(numOfResults>0) {
       // Pick a place closer to the target coordinate
+      // <note> There could be places sharing the same coordinate.
+      // In this case, we should compare the business name as well.
       for(let index=0; index<numOfResults; index++ ) {
         let bMatch = compareCoordinate(coordinate,placeIdResponse.data.results[index].geometry.location);    
         if(bMatch===true) {
@@ -80,6 +81,10 @@ async function fetchGooglePlaceByCoordinate(coordinate) {
         }
       }
 
+      return placeIdResponse.data.results[indexWithMinimumDistance];
+      /* 
+       * <note> nearby API already contains all the details for the place.
+       * No need to call this API anymore.
       let placeId = placeIdResponse.data.results[indexWithMinimumDistance].place_id;
       //console.log(`Place ID: ${placeId}`);
       config = {
@@ -100,7 +105,7 @@ async function fetchGooglePlaceByCoordinate(coordinate) {
           return null;
         });
     
-      return response ? response.data.result : null;
+      return response ? response.data.result : null;*/
     }
     else {
       console.warn(`No place found with given coordinate`);
