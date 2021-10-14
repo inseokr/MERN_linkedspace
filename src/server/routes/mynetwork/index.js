@@ -187,6 +187,7 @@ module.exports = function (app) {
             const friend = {
               profile_picture: user.profile_picture,
               name: `${user.firstname} ${user.lastname}`,
+              username: user.username,
               address: { city: user.address.city, state: user.address.state },
               id: user._id
             };
