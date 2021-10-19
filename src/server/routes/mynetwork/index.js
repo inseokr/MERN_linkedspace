@@ -311,6 +311,12 @@ module.exports = function (app) {
     User.findById(req.params.friend_id, (err, user) => {
       if (err) {
         console.log('No such user found');
+        if(source===web) {
+          res.redirect('/MyNetworks');
+        } 
+        else {
+          res.json({result: 'fail'});
+        }
       } else {
         // <note> req.user: isn't it User object already?
         User.findById(req.user._id, (err, curr_user) => {
@@ -321,7 +327,15 @@ module.exports = function (app) {
           curr_user.outgoing_friends_requests.push(user._id);
           curr_user.save();
           // Let's render with updated database...
-          res.redirect('/MyNetworks');
+
+          let source = (req.body.source)? source: 'web';
+
+          if(source===web) {
+            res.redirect('/MyNetworks');
+          } 
+          else {
+            res.json({result: 'success'});
+          }
         });
       }
     });

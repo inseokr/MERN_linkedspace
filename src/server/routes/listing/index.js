@@ -6,9 +6,10 @@ const node = require('deasync');
 const path = require('path');
 const User = require('../../models/user');
 const RentalRequest = require('../../models/listing/tenant_request');
+const userDbHandler = require('../../db_utilities/user_db/access_user_db');
+const chatDbHandler = require('../../db_utilities/chatting_db/access_chat_db');
 
 node.loop = node.runLoopOnce;
-
 
 router.get('/', (req, res) => {
   res.render('listing_main');
@@ -154,10 +155,36 @@ router.get('/get_active_listing/own', (req, res) => {
             summary: listing.summary,
             coordinates: listing.coordinates,
             attendanceList: listing.attendanceList,
-            shared_user_group: listing.shared_user_group
+            shared_user_group: listing.shared_user_group,
+            newMessage: false
           };
           //console.warn(`pushing event: ${JSON.stringify(event)}`);
           //console.warn(`Date=${listing.date.toDateString()}`);
+
+          // Check if there is any new message
+          let relevantChattingChannels = [];
+          let eventIdString = listing._id.toString();
+
+          for(let index=0; index < foundUser.chatting_channels.dm_channels.length; index++ ) {
+            if(foundUser.chatting_channels.dm_channels[index].name.includes(eventIdString)===true) {
+              relevantChattingChannels.push(foundUser.chatting_channels.dm_channels[index]);
+            }
+          }
+
+          //console.warn(`relevantChattingChannels length: ${relevantChattingChannels.length}`);
+          
+          if(relevantChattingChannels.length>1) {
+            for(let index=0; index<relevantChattingChannels.length; index++) {
+              let chattingChannel = await chatDbHandler.findChatChannel(relevantChattingChannels[index].name);
+              if(chattingChannel && 
+                (chattingChannel.chat_history.length!=(relevantChattingChannels[index].lastReadIndex))) {
+                  //console.warn(`New message detected!!!`);
+                  event.newMessage = true;
+                  break;
+              }
+            }
+          }
+
           events.push(event);
         }
 
@@ -283,10 +310,35 @@ router.get('/get_active_listing/friend', (req, res) => {
               summary: listing.id.summary,
               coordinates: listing.id.coordinates,
               attendanceList: listing.id.attendanceList,
-              shared_user_group: listing.id.shared_user_group
+              shared_user_group: listing.id.shared_user_group,
+              newMessage: false
             };
             //console.warn(`pushing event: ${JSON.stringify(event)}`);
             //console.warn(`Date=${listing.id.date.toDateString()}`);
+
+            // Check if there is any new message
+            let relevantChattingChannels = [];
+            let eventIdString = listing.id._id.toString();
+
+            for(let index=0; index < foundUser.chatting_channels.dm_channels.length; index++ ) {
+              if(foundUser.chatting_channels.dm_channels[index].name.includes(eventIdString)===true) {
+                relevantChattingChannels.push(foundUser.chatting_channels.dm_channels[index]);
+              }
+            }
+
+            if(relevantChattingChannels.length>1) {
+              for(let index=0; index<relevantChattingChannels.length; index++) {
+                let chattingChannel = await chatDbHandler.findChatChannel(relevantChattingChannels[index].name);
+
+
+                if(chattingChannel && 
+                  (chattingChannel.chat_history.length!=(relevantChattingChannels[index].lastReadIndex))) {
+                    event.newMessage = true;
+                    break;
+                }
+              }
+            }
+
             events.push(event); 
           }
         } catch(err) {
