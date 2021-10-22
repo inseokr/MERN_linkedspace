@@ -197,7 +197,7 @@ module.exports = function (app) {
 
   router.post('/jwt_login', passport.authenticate('local', { failWithError: true }),
   function(req, res, next) {
-    //console.warn(`Authentication success...`);
+     console.warn(`Authentication success...`);
       // handle success
       User.findOne({ username: req.body.username }).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, user) => {
         user.loggedInTime = Date.now();
@@ -214,12 +214,10 @@ module.exports = function (app) {
     },
     function(err, req, res, next) {
       // handle error
-      //console.warn(`Authentication failure...`);
+      console.warn(`Authentication failure...`);
       res.json({ message: 'authentication failure'});
     }
   );
-
-  
 
   router.get('/homepage', (req, res) => {
     res.render('homepage');
