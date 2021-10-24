@@ -3,6 +3,7 @@ const randtoken = require('rand-token');
 const passportLocalMongoose = require('passport-local-mongoose');
 
 const UserSchema = new mongoose.Schema({
+	facebookid: String, // add facebook id 
 	firstname: String,
 	lastname: String,
 	username: String,
