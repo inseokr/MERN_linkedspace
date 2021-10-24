@@ -34,6 +34,8 @@ const app = express();
 app.namespace('/LS_API', () => {
   app.use(fileUpload());
   app.use(bodyParser());
+  app.use(express.json());
+
 
   // routes
   const indexRoutes = require('./routes/index')(app);
@@ -141,8 +143,8 @@ app.namespace('/LS_API', () => {
     });
   }
 
-
-  mongoose.connect(url, { useNewUrlParser: true });
+  //const testUrl = 'mongodb+srv://admin:hasija22@cluster0.iuie5.mongodb.net/UsersDB?retryWrites=true&w=majority'
+  mongoose.connect(url /*testUrl*/, { useNewUrlParser: true });
   // app.use(bodyParser.urlencoded({extended: true}));
 
 
@@ -774,3 +776,55 @@ app.namespace('/LS_API', () => {
 /* app.get('/*', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
 }); */
+
+// VINCE - FACEBOOK AUTH ROUTING
+
+// send token to backend - DONE
+// backend queries graph API with token - DONE
+// get user info - DONE
+// backend uses this info to either - DONE
+    // find user in DB
+    // or create new entry
+// backend generates new auth token by hashing users unique iddentifier with a secret key - TODO
+// token sent back to client to auth any future API calls to backend - TODO
+
+app.post('/facebookauth', function(req, res) {
+  // STORE TOKEN PASSED IN REQ BODY FROM FRONT END
+  const token = req.body.token; 
+  console.log('token in API body:' + token);
+
+  // QUERY GRAPH API WITH TOKEN
+  Axios.get(`https://graph.facebook.com/v2.8/me?fields=id,first_name,last_name,email&access_token=${token}`).then(function (response) {
+    // GET USER INFO
+    const facebook_id = response.data.id;
+    const first_name = response.data.first_name;
+    const last_name = response.data.last_name;
+    const email = response.data.email;
+
+    // FIND USER IN DB
+    User.find({facebook_id: response.data.id}, function(err, users) { // *** confirm data fields ***
+      user = users[0];
+      if (err) { return next(err); }
+
+      // IF NO USER, CREATE A NEW ENTRY
+      if (!user) {
+        var user = new User({
+          facebook_id: facebook_id,
+          firstname: first_name,
+          lastname: last_name,
+          email: email
+        });
+        user.save(function(err) {
+          if (err) { return next(err); }
+        // res.json({token: tokenForUser(user)}); // TODO: hash, generate a linkedspaces token for query?
+          console.log('new user has been saved');
+        });
+      } else {
+      // res.json({token: tokenForUser(user)});
+        console.log('return token for existing user');
+      }
+    });
+  }).catch(function(error) {
+    return next(error);
+  });
+})
