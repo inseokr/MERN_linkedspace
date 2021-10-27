@@ -34,6 +34,7 @@ const app = express();
 app.namespace('/LS_API', () => {
   app.use(fileUpload());
   app.use(bodyParser());
+  app.use(express.json());
 
   // routes
   const indexRoutes = require('./routes/index')(app);
@@ -754,7 +755,71 @@ app.namespace('/LS_API', () => {
     });
   });
 
+  // handle Facebook sign up logic
+  // <note> It's LinkedSpaces specific business logic
+  app.post('/signup/mobile/facebook', async (req, res) => {
 
+    const token = req.body.signupData.token;
+
+    //console.warn(`token: ${token}`);
+    await Axios.get(`https://graph.facebook.com/v2.8/me?fields=id,name,first_name,last_name,email&access_token=${token}`).then(function (response) {
+
+      // GET USER INFO
+      const username    = response.data.name;
+      const facebook_id = response.data.id;
+      const first_name  = response.data.first_name;
+      const last_name   = response.data.last_name;
+      const email       = response.data.email;
+
+      //console.warn(`facebook_id: ${facebook_id}`);
+      //console.warn(`username: ${username}`);
+
+      // FIND USER IN DB
+      User.find({username: username}, function(err, users) { // *** confirm data fields ***
+        user = users[0];
+        if (err) { 
+          //console.log(`err: ${err}`);
+          res.json({result: 'fail'});
+          return;
+        }
+        const profilePicturePath = 'https://graph.facebook.com/'+facebook_id+'/picture';
+        
+        // IF NO USER, CREATE A NEW ENTRY
+        if (!user) {
+          var user = new User({
+            username:        username,
+            firstname:       first_name,
+            lastname:        last_name,
+            password:        facebook_id,
+            email:           email,
+            profile_picture: profilePicturePath
+          });
+
+          // <note> let's use facebook_id as a password
+          User.register(user, facebook_id, (err, user) => {
+            if (err) {
+              //console.warn(`User.register failed = ${err.message}`);
+              res.json({result: 'fail'});
+              return;
+            }
+            
+            user.save();
+            res.json({result: 'success'});
+          });
+          
+        } else {
+          // The user has been created already
+          // res.json({token: tokenForUser(user)});
+          //console.warn(`User already exists, and you're ready to log in....`);
+          res.json({result: 'success'});
+          return;
+        }
+      });
+    }).catch(function(error) {
+      console.warn(`error=${error}`);
+      res.json({result: 'fail'});
+    });
+  });
 
   app.get('/signup/facebook', passport.authenticate('facebook',
     {
