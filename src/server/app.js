@@ -787,12 +787,14 @@ app.namespace('/LS_API', () => {
         // IF NO USER, CREATE A NEW ENTRY
         if (!user) {
           var user = new User({
-            username:        username,
-            firstname:       first_name,
-            lastname:        last_name,
-            password:        facebook_id,
-            email:           email,
-            profile_picture: profilePicturePath
+            username:             username,
+            firstname:            first_name,
+            lastname:             last_name,
+            password:             facebook_id,
+            email:                email,
+            profile_picture:      profilePicturePath,
+            signupType:           'facebook',
+            facebookAccessToken:  token
           });
 
           // <note> let's use facebook_id as a password

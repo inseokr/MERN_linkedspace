@@ -3,9 +3,13 @@ const randtoken = require('rand-token');
 const passportLocalMongoose = require('passport-local-mongoose');
 
 const UserSchema = new mongoose.Schema({
+	username: String,
+
+	signupType: { type: String, default: 'local' },
+	facebookAccessToken: { type: String, default: null },
+	
 	firstname: String,
 	lastname: String,
-	username: String,
 	password: String,
 	email: String,
 	phone: String,
@@ -13,6 +17,7 @@ const UserSchema = new mongoose.Schema({
 	resetPasswordExpires: Date,
 	gender: String,
 	birthdate: Date,
+
 
 	expoPushToken: { type: String, default: null },
 
