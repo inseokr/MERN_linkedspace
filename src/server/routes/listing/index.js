@@ -82,14 +82,23 @@ router.get('/getLastVisitedListingId', (req, res) => {
 
 router.get('/get_active_listing/own', (req, res) => {
 
+  var prevTimeInMilliseconds=Date.now();
+  var currentTimeInMilliseconds=Date.now();
+
+  console.warn(`get_active_listing: started at: ${prevTimeInMilliseconds}`);
+
   if(!req.user) {
     res.json({err: 'user is not logged in yet'});
     return;
   }
 
-  User.findById(req.user._id).populate('landlord_listing').populate('tenant_listing').populate('_3rdparty_listing').populate('events')
+  User.findById(req.user._id).populate('events')
 
     .exec(async (err, foundUser) => {
+      currentTimeInMilliseconds=Date.now();
+      console.warn(`Debug1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+      prevTimeInMilliseconds = currentTimeInMilliseconds;
+
       if (err) {
         console.log(err);
       } else {
@@ -135,59 +144,6 @@ router.get('/get_active_listing/own', (req, res) => {
           landlord_listing.push(llist);
         }
 
-        for (let index = 0; index < foundUser.events.length; index++) {
-          const listing = foundUser.events[index];
-
-          let pathToPopulate = 'requester';
-          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
-          listing.populated(pathToPopulate);
-
-          pathToPopulate = `shared_user_group`;
-          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
-
-          const event = {
-            id: listing._id,
-            username: listing.requester.username,
-            location: {state: listing.location.state, city: listing.location.city},
-            listingType: 'event',
-            picture: listing.requester.profile_picture,
-            date: listing.date,
-            summary: listing.summary,
-            coordinates: listing.coordinates,
-            attendanceList: listing.attendanceList,
-            shared_user_group: listing.shared_user_group,
-            newMessage: false
-          };
-          //console.warn(`pushing event: ${JSON.stringify(event)}`);
-          //console.warn(`Date=${listing.date.toDateString()}`);
-
-          // Check if there is any new message
-          let relevantChattingChannels = [];
-          let eventIdString = listing._id.toString();
-
-          for(let index=0; index < foundUser.chatting_channels.dm_channels.length; index++ ) {
-            if(foundUser.chatting_channels.dm_channels[index].name.includes(eventIdString)===true) {
-              relevantChattingChannels.push(foundUser.chatting_channels.dm_channels[index]);
-            }
-          }
-
-          //console.warn(`relevantChattingChannels length: ${relevantChattingChannels.length}`);
-          
-          if(relevantChattingChannels.length>1) {
-            for(let index=0; index<relevantChattingChannels.length; index++) {
-              let chattingChannel = await chatDbHandler.findChatChannel(relevantChattingChannels[index].name);
-              if(chattingChannel && 
-                (chattingChannel.chat_history.length!=(relevantChattingChannels[index].lastReadIndex))) {
-                  //console.warn(`New message detected!!!`);
-                  event.newMessage = true;
-                  break;
-              }
-            }
-          }
-
-          events.push(event);
-        }
-
         let numOfProcessedListing = 0;
 
         foundUser._3rdparty_listing.forEach(async (listing, index) => {
@@ -196,7 +152,6 @@ router.get('/get_active_listing/own', (req, res) => {
           await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
           foundUser.populated(pathToPopulate);
-
 
           const llist = {
             id: listing._id,
@@ -214,11 +169,95 @@ router.get('/get_active_listing/own', (req, res) => {
 
           if (++numOfProcessedListing === foundUser._3rdparty_listing.length) {
             // passing whole data structure may not be a good idea?
+            let endTime = Date.now();
+            console.warn(`get_active_listing: ended at: ${endTime}`);
+
+            console.warn(`Diff: ${endTime-currentTimeInMilliseconds}`);
+
             res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
           }
         });
 
+        currentTimeInMilliseconds=Date.now();
+        console.warn(`Debug2:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        prevTimeInMilliseconds = currentTimeInMilliseconds;
+  
+
+        for (let index = 0; index < foundUser.events.length; index++) {
+          const listing = foundUser.events[index];
+
+          let pathToPopulate = 'requester';
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+          listing.populated(pathToPopulate);
+
+          currentTimeInMilliseconds=Date.now();
+          console.warn(`Debug3:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+          prevTimeInMilliseconds = currentTimeInMilliseconds;
+  
+
+          pathToPopulate = `shared_user_group`;
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+
+          currentTimeInMilliseconds=Date.now();
+          console.warn(`Debug4:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+          prevTimeInMilliseconds = currentTimeInMilliseconds;
+
+          const event = {
+            id: listing._id,
+            username: listing.requester.username,
+            location: {state: listing.location.state, city: listing.location.city},
+            listingType: 'event',
+            picture: listing.requester.profile_picture,
+            date: listing.date,
+            summary: listing.summary,
+            coordinates: listing.coordinates,
+            attendanceList: listing.attendanceList,
+            shared_user_group: listing.shared_user_group,
+            newMessage: false
+          };
+          //console.warn(`pushing event: ${JSON.stringify(event)}`);
+          //console.warn(`Date=${listing.date.toDateString()}`);
+          if(true) {
+            // Check if there is any new message
+            let relevantChattingChannels = [];
+            let eventIdString = listing._id.toString();
+
+            for(let index=0; index < foundUser.chatting_channels.dm_channels.length; index++ ) {
+              if(foundUser.chatting_channels.dm_channels[index].name.includes(eventIdString)===true) {
+                relevantChattingChannels.push(foundUser.chatting_channels.dm_channels[index]);
+              }
+            }
+
+            currentTimeInMilliseconds=Date.now();
+            console.warn(`Debug4.1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+            prevTimeInMilliseconds = currentTimeInMilliseconds;
+  
+            //console.warn(`relevantChattingChannels length: ${relevantChattingChannels.length}`);
+            let numOfProcessed = 0;
+            if(relevantChattingChannels.length>1) {
+
+              relevantChattingChannels.forEach(async (channel, index) => {
+                let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
+                if(chattingChannel && 
+                  (chattingChannel.chat_history.length!=(channel.lastReadIndex))) {
+                    event.newMessage = true;
+                }
+                numOfProcessed++;
+              });
+            }
+          }
+
+          currentTimeInMilliseconds=Date.now();
+          console.warn(`Debug5:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+          prevTimeInMilliseconds = currentTimeInMilliseconds;
+
+          events.push(event);
+        }
+
         if (foundUser._3rdparty_listing.length === 0) {
+          currentTimeInMilliseconds=Date.now();
+          console.warn(`Debug7:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+          prevTimeInMilliseconds = currentTimeInMilliseconds;
           res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
         }
       }
@@ -227,6 +266,9 @@ router.get('/get_active_listing/own', (req, res) => {
 
 
 router.get('/get_active_listing/friend', (req, res) => {
+
+  var prevTimeInMilliseconds=Date.now();
+  var currentTimeInMilliseconds=Date.now();
 
   if(!req.user) {
     res.json({err: 'user not logged in'});
@@ -241,6 +283,10 @@ router.get('/get_active_listing/friend', (req, res) => {
       const landlord_listing = [];
       const _3rdparty_listing = [];
       const events = [];
+
+      currentTimeInMilliseconds=Date.now();
+      console.warn(`Debug1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+      prevTimeInMilliseconds = currentTimeInMilliseconds;
 
       for (let index = 0; index < foundUser.incoming_landlord_listing.length; index++) {
         const listing = foundUser.incoming_landlord_listing[index];
@@ -284,19 +330,58 @@ router.get('/get_active_listing/friend', (req, res) => {
         }
       }
 
-      for (let index = 0; index < foundUser.incoming_events.length; index++) {
-        const listing = foundUser.incoming_events[index];
+      console.warn(`foundUser.incoming_events length: ${foundUser.incoming_events.length}`);
+
+      let beforeEventHandling=Date.now();
+
+      let totalEventProcessed = 0;
+      foundUser.incoming_events.forEach(async (listing, index) => {
+
+        //currentTimeInMilliseconds=Date.now();
+        //console.warn(`Debug1.1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        //prevTimeInMilliseconds = currentTimeInMilliseconds;
+
+        currentTimeInMilliseconds=Date.now();
+        console.warn(`Debug1.1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        prevTimeInMilliseconds = currentTimeInMilliseconds;
 
         let pathToPopulate = `incoming_events.${index}.id`;
         await foundUser.populate({ path: pathToPopulate, model: 'Event' }).execPopulate();
         foundUser.populated(pathToPopulate);
 
+        currentTimeInMilliseconds=Date.now();
+        console.warn(`Debug1.2:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        prevTimeInMilliseconds = currentTimeInMilliseconds;
+
+
+        //currentTimeInMilliseconds=Date.now();
+        //console.warn(`Debug1.2:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        //prevTimeInMilliseconds = currentTimeInMilliseconds;
+
         pathToPopulate = `incoming_events.${index}.id.requester`;
         await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
         foundUser.populated(pathToPopulate);
 
+        currentTimeInMilliseconds=Date.now();
+        console.warn(`Debug1.3:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        prevTimeInMilliseconds = currentTimeInMilliseconds;
+
+
+        //currentTimeInMilliseconds=Date.now();
+        //console.warn(`Debug1.3:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        //prevTimeInMilliseconds = currentTimeInMilliseconds;
+
         pathToPopulate = `incoming_events.${index}.id.shared_user_group`;
         await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+        foundUser.populated(pathToPopulate);
+
+        currentTimeInMilliseconds=Date.now();
+        console.warn(`Debug1.4:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        prevTimeInMilliseconds = currentTimeInMilliseconds;
+
+        //currentTimeInMilliseconds=Date.now();
+        //console.warn(`Debug1.4:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
+        //prevTimeInMilliseconds = currentTimeInMilliseconds;
 
         try {
           if(listing.id) {
@@ -317,6 +402,7 @@ router.get('/get_active_listing/friend', (req, res) => {
             //console.warn(`Date=${listing.id.date.toDateString()}`);
 
             // Check if there is any new message
+            if(true) {
             let relevantChattingChannels = [];
             let eventIdString = listing.id._id.toString();
 
@@ -326,28 +412,304 @@ router.get('/get_active_listing/friend', (req, res) => {
               }
             }
 
+            let numOfProcessed = 0;
             if(relevantChattingChannels.length>1) {
-              for(let index=0; index<relevantChattingChannels.length; index++) {
-                let chattingChannel = await chatDbHandler.findChatChannel(relevantChattingChannels[index].name);
-
-
+              relevantChattingChannels.forEach(async (channel, index) => {
+                let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
                 if(chattingChannel && 
-                  (chattingChannel.chat_history.length!=(relevantChattingChannels[index].lastReadIndex))) {
+                  (chattingChannel.chat_history.length!=(channel.lastReadIndex))) {
                     event.newMessage = true;
-                    break;
                 }
-              }
+                numOfProcessed++;
+              });
             }
-
+          }
             events.push(event); 
           }
+
+
         } catch(err) {
           console.warn(err);
         }
+
+        totalEventProcessed++
+        
+        if(totalEventProcessed===foundUser.incoming_events.length) {
+          currentTimeInMilliseconds=Date.now();
+          console.warn(`Debug2:diff: ${currentTimeInMilliseconds-beforeEventHandling}`);
+          prevTimeInMilliseconds = currentTimeInMilliseconds;
+          res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
+        }
+      });
+    }
+  });
+});
+
+
+router.get('/get_active_listing/event/own', (req, res) => {
+
+  if(!req.user) {
+    res.json({err: 'user not logged in'});
+    return;
+  }
+
+  User.findById(req.user._id).populate('events').exec(async (err, foundUser) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const events = [];
+
+      // start/end index of event
+      //const {start, end} = req.body.eventRange;
+      let end = foundUser.events.length-1;
+      let start = 0;
+
+      // check validity of range
+      if(!foundUser.events[start] || !foundUser.events[end]) {
+        res.json({ events: null, err: 'invalid range' });
+        return;
       }
 
-      // passing whole data structure may not be a good idea?
-      res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
+      let totalEventProcessed = 0;
+      let numOfEvents = end - start + 1;
+
+      foundUser.events.forEach(async (listing, index) => {
+        // process it only if it's within the range.
+        if(index>=start && index<=end) {
+
+          let pathToPopulate = 'requester';
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+          listing.populated(pathToPopulate);
+  
+
+          pathToPopulate = `shared_user_group`;
+          await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+          listing.populated(pathToPopulate);
+
+          // check if there is any new message
+          try {
+            if(listing.id) {
+              var event = {
+                id: listing._id,
+                username: listing.requester.username,
+                location: {state: listing.location.state, city: listing.location.city},
+                listingType: 'event',
+                picture: listing.requester.profile_picture,
+                date: listing.date,
+                summary: listing.summary,
+                coordinates: listing.coordinates,
+                attendanceList: listing.attendanceList,
+                shared_user_group: listing.shared_user_group,
+                newMessage: false
+              };
+  
+              // Check if there is any new message
+              let relevantChattingChannels = [];
+              let eventIdString = listing._id.toString();
+              
+              for(let index=0; index < foundUser.chatting_channels.dm_channels.length; index++ ) {
+                if(foundUser.chatting_channels.dm_channels[index].name.includes(eventIdString)===true) {
+                  relevantChattingChannels.push(foundUser.chatting_channels.dm_channels[index]);
+                }
+              }
+
+              if(relevantChattingChannels.length>1) {
+                let numOfChannelProcessed = 0;
+                relevantChattingChannels.forEach(async (channel, index) => {
+                  if(event.newMessage===true && (++numOfChannelProcessed===relevantChattingChannels.length)) {
+                    // new message already detected, and we will just skip all the rest.
+                   // console.warn(`All channels processed`);
+                    //console.warn(`summary: ${event.summary}`);
+                  }
+                  else {
+                    let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
+
+                    if(chattingChannel && 
+                      (chattingChannel.chat_history.length!=(channel.lastReadIndex)) &&  event.newMessage===false ) {
+                        event.newMessage = true;
+                        // No further processing's needed for this event
+                        events.push(event); 
+                        totalEventProcessed++;
+                        //console.warn(`new message detected: totalEventProcessed=${totalEventProcessed}`);
+                        //console.warn(`summary: ${event.summary}`);
+                        if(numOfEvents===totalEventProcessed) {
+                          res.json({ events });
+                        }
+                    }
+  
+                    // all channels has been processed
+                    if(++numOfChannelProcessed===relevantChattingChannels.length && event.newMessage===false) {
+                      //console.warn(`All channels processed`);
+                      //console.warn(`summary: ${event.summary}`);
+                      events.push(event);
+                      totalEventProcessed++;
+                      if(numOfEvents===totalEventProcessed) {
+                        res.json({ events });
+                      }
+                    }
+                  }
+                });
+              }
+              else {
+                events.push(event); 
+                totalEventProcessed++;
+                if(numOfEvents===totalEventProcessed) {
+                  res.json({ events });
+                }
+              }
+            }
+            else {
+              numOfEvents--;
+              if(numOfEvents===totalEventProcessed) {
+                res.json({ events });
+              }
+            }
+          } catch(err) {
+            console.warn(err);
+            numOfEvents--;
+            if(numOfEvents===totalEventProcessed) {
+              res.json({ events });
+            }
+          }
+        }
+      });
+    }
+  });
+});
+
+router.get('/get_active_listing/event/friend', (req, res) => {
+
+  if(!req.user) {
+    res.json({err: 'user not logged in'});
+    return;
+  }
+
+  User.findById(req.user._id).exec(async (err, foundUser) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const events = [];
+
+      // start/end index of event
+      //const {start, end} = req.body.eventRange;
+      let end = foundUser.incoming_events.length-1;
+      let start = 0;
+
+      // check validity of range
+      if(!foundUser.incoming_events[start] || !foundUser.incoming_events[end]) {
+        res.json({ events: null, err: 'invalid range' });
+        return;
+      }
+
+      let totalEventProcessed = 0;
+      let numOfEvents = end - start + 1;
+
+      foundUser.incoming_events.forEach(async (listing, index) => {
+        // process it only if it's within the range.
+        if(index>=start && index<=end) {
+          //console.warn(`processing index=${index}`);
+
+          let pathToPopulate = `incoming_events.${index}.id`;
+          await foundUser.populate({ path: pathToPopulate, model: 'Event' }).execPopulate();
+          foundUser.populated(pathToPopulate);
+
+          pathToPopulate = `incoming_events.${index}.id.requester`;
+          await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+          foundUser.populated(pathToPopulate);
+
+          pathToPopulate = `incoming_events.${index}.id.shared_user_group`;
+          await foundUser.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
+          foundUser.populated(pathToPopulate);
+
+          // check if there is any new message
+          try {
+            if(listing.id) {
+              var event = {
+                id: listing.id._id,
+                username: listing.id.requester.username,
+                location: {state: listing.id.location.state, city: listing.id.location.city},
+                listingType: 'event',
+                picture: listing.id.requester.profile_picture,
+                date: listing.id.date,
+                summary: listing.id.summary,
+                coordinates: listing.id.coordinates,
+                attendanceList: listing.id.attendanceList,
+                shared_user_group: listing.id.shared_user_group,
+                newMessage: false
+              };
+  
+              // Check if there is any new message
+              let relevantChattingChannels = [];
+              let eventIdString = listing.id._id.toString();
+              
+              for(let index=0; index < foundUser.chatting_channels.dm_channels.length; index++ ) {
+                if(foundUser.chatting_channels.dm_channels[index].name.includes(eventIdString)===true) {
+                  relevantChattingChannels.push(foundUser.chatting_channels.dm_channels[index]);
+                }
+              }
+
+              //console.warn(`Total channel=${relevantChattingChannels.length}`);
+
+              if(relevantChattingChannels.length>1) {
+                let numOfChannelProcessed = 0;
+                relevantChattingChannels.forEach(async (channel, index) => {
+                  if(event.newMessage===true && (++numOfChannelProcessed===relevantChattingChannels.length)) {
+                    // new message already detected, and we will just skip all the rest.
+                   // console.warn(`All channels processed`);
+                    //console.warn(`summary: ${event.summary}`);
+                  }
+                  else {
+                    let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
+
+                    if(chattingChannel && 
+                      (chattingChannel.chat_history.length!=(channel.lastReadIndex)) &&  event.newMessage===false ) {
+                        event.newMessage = true;
+                        // No further processing's needed for this event
+                        events.push(event); 
+                        totalEventProcessed++;
+                        //console.warn(`new message detected: totalEventProcessed=${totalEventProcessed}`);
+                        //console.warn(`summary: ${event.summary}`);
+                        if(numOfEvents===totalEventProcessed) {
+                          res.json({ events });
+                        }
+                    }
+  
+                    // all channels has been processed
+                    if(++numOfChannelProcessed===relevantChattingChannels.length && event.newMessage===false) {
+                      //console.warn(`All channels processed`);
+                      //console.warn(`summary: ${event.summary}`);
+                      events.push(event);
+                      totalEventProcessed++;
+                      if(numOfEvents===totalEventProcessed) {
+                        res.json({ events });
+                      }
+                    }
+                  }
+                });
+              }
+              else {
+                events.push(event); 
+                totalEventProcessed++;
+                if(numOfEvents===totalEventProcessed) {
+                  res.json({ events });
+                }
+              }
+            }
+            else {
+              numOfEvents--;
+              if(numOfEvents===totalEventProcessed) {
+                res.json({ events });
+              }
+            }
+          } catch(err) {
+            console.warn(err);
+            numOfEvents--;
+            if(numOfEvents===totalEventProcessed) {
+              res.json({ events });
+            }
+          }
+        }
+      });
     }
   });
 });

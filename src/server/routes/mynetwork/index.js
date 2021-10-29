@@ -365,6 +365,8 @@ module.exports = function (app) {
       // let's go through the list of users and check if any phone number in the contact, but not in the friend list.
       const all = await User.find({});
 
+      let numOfNewFriends = 0;
+
       for(let index=0; index<all.length; index++) {
         // <note> phone number could be in different format, like +1 or any other country code
         // let's compare the length and check if the longer phone string includes the shorter one.
@@ -383,11 +385,12 @@ module.exports = function (app) {
             let result = await buildSocialNetwork(user, all[index]._id);
             if(result===true) {
               //console.warn(`New friend (${all[index].username}) added`);
+              numOfNewFriends++;
             }
           }
         }
       }
-      res.send({result: 'success'});
+      res.send({result: 'success', numOfNewFriends: numOfNewFriends});
     });
   });
 
