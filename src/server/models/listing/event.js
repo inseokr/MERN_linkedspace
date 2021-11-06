@@ -79,6 +79,12 @@ const EventSchema = new mongoose.Schema({
         ref: 'Restaurant' // _3rdPartyListing or LandlordRequest
       },
 
+      labels: [
+        {
+          type: String
+        }
+      ],
+      
       created_by: {
         id: {
           type: mongoose.Schema.Types.ObjectId,
@@ -122,9 +128,14 @@ const EventSchema = new mongoose.Schema({
           ]
         }
       ]
-    }
+    },
   ],
 
+  labels: [
+    {
+      type: String
+    }
+  ]
 });
 
 module.exports = mongoose.model('Event', EventSchema);

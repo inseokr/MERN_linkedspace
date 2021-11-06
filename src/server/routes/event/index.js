@@ -960,5 +960,37 @@ module.exports = function (app) {
         });
       });
 
+      router.post('/:list_id/label/update', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if (err) {
+            console.log('listing not found');
+            res.send('listing_not_found');
+          }
+
+          let {childIndex, selectedList} = req.body;
+
+          if(childIndex===-1 || !selectedList) {
+            console.warn(`Not applicable`);
+            return;
+          }
+      
+          //console.warn(`childIndex=${childIndex}, selectedList=${JSON.stringify(selectedList)}`);
+          foundEvent.child_listings[childIndex].labels = [...selectedList];
+      
+          // add any new label to the main list
+          if(!foundEvent.labels || foundEvent.labels.length===0) {
+            foundEvent.labels = selectedList;
+      
+          } else {
+            for(let index=0; index< selectedList.length; index++) {
+              if(foundEvent.labels.indexOf(selectedList[index])===-1) {
+                foundEvent.labels.push(selectedList[index]);
+              }
+            }
+          }
+          foundEvent.save(()=>res.json({result: 'success'}));
+        });
+      });
+
     return router;
 };
