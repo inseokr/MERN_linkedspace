@@ -135,7 +135,24 @@ const EventSchema = new mongoose.Schema({
     {
       type: String
     }
-  ]
+  ],
+
+  filter: { 
+    showAll: { type: Boolean, default: false}, 
+    showLiked: { type: Boolean, default: true}, 
+    showSelectedCategory: { type: Boolean, default: false}, 
+    showSelectedDate: { type: Boolean, default: false}, 
+    showSelectedLabels: { type: Boolean, default: false},
+    selectedDate: Date,
+    refMarkerType: {type: Number, default: 1},
+    zoomLevel: {type: Number, default: 1},
+    selectedLabels:[
+      {
+        type: String
+      }
+    ]
+  }
+
 });
 
 module.exports = mongoose.model('Event', EventSchema);

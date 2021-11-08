@@ -960,6 +960,23 @@ module.exports = function (app) {
         });
       });
 
+      router.post('/:list_id/filter/update', (req, res) => {
+        Event.findById(req.params.list_id, (err, foundEvent) => {
+          if (err) {
+            console.warn('listing not found');
+            res.json({result: 'fail', reason: 'listing not found'});
+            return;
+          }
+
+          let {filter} = req.body;
+
+          foundEvent.filter = filter;
+          
+          foundEvent.save(()=>res.json({result: 'success'}));
+        });
+      });
+
+
       router.post('/:list_id/label/update', (req, res) => {
         Event.findById(req.params.list_id, (err, foundEvent) => {
           if (err) {
