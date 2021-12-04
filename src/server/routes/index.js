@@ -190,6 +190,22 @@ module.exports = function (app) {
     });
   });
 
+
+  router.post('/location', (req, res) => {
+    User.findById(req.user._id, (err, user) => {
+      if(err) {
+        res.json({result: 'fail', reason: 'user not found'});
+        return;
+      }
+      let {location} = req.body;
+      if(location) {
+        user.lastReportedLocation = location;
+        user.save();
+        res.json({result: 'success'});
+      }
+    });
+  });
+
   router.get('/test_jwt', passport.authenticate('jwt', { session: false }), (req, res) => {
     console.warn(`user=${JSON.stringify(req.user)}`);
     res.json({ message: 'Success! you can not see this without a token' });
