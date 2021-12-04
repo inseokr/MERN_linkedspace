@@ -18,10 +18,14 @@ const UserSchema = new mongoose.Schema({
 	gender: String,
 	birthdate: Date,
 
-
 	expoPushToken: { type: String, default: null },
 
 	loggedInTime: { type: Date, default: null },
+
+	lastReportedLocation: {
+		lat: Number, 
+		lng: Number
+	},
 
 	lastVistedListingId: { type: mongoose.Schema.Types.ObjectId, ref: 'TenantRequest', default: null },
 

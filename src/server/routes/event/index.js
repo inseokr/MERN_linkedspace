@@ -1009,5 +1009,23 @@ module.exports = function (app) {
         });
       });
 
+      router.get('/:list_id/friends-location', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+          if (err) {
+            console.log('listing not found');
+            res.json({result: 'fail', err: 'listing not found'});
+          }
+
+          // 1. collect the last reported location of users
+          await foundEvent.populate('shared_user_group', 'username lastReportedLocation').execPopulate();
+          foundEvent.populated('shared_user_group');
+
+          res.json({result: 'success', locations: foundEvent.shared_user_group});
+
+          // 2. trigger to get the latest location
+        });
+      });
+
+
     return router;
 };

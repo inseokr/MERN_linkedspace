@@ -661,7 +661,7 @@ app.namespace('/LS_API', () => {
 
   app.get('/refresh', (req, res) => {
     if (req.user != undefined && app.locals.currentUser[req.user.username] !== null) {
-      User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime').exec((err, foundUser) => {
+      User.findById(req.user._id).populate('direct_friends', 'profile_picture email username name loggedInTime lastReportedLocation').exec((err, foundUser) => {
         // ISEO-TBD: Need to make it sure that we populate things needed.
         // console.log(`foundUser = ${JSON.stringify(foundUser)}`);
         // app.locals.currentUser[req.user.username].direct_friends = foundUser.direct_friends;
