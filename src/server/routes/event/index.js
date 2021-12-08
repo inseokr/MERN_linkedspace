@@ -1023,9 +1023,26 @@ module.exports = function (app) {
           res.json({result: 'success', locations: foundEvent.shared_user_group});
 
           // 2. trigger to get the latest location
+          chatServer.getLocation(req.params.list_id, foundEvent.shared_user_group, req.user.username, foundEvent.summary);
         });
       });
 
+      router.post('/:list_id/send-user-location', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+
+          if (err) {
+            res.json({result: 'fail', err: 'listing not found'});
+          }
+
+          let location = req.body.location;
+          let requester = req.body.requester;
+
+          chatServer.sendUserLocation(req.params.list_id, requester, req.user.username, location);
+
+          res.json({result: 'success'});
+        });
+      });
 
     return router;
 };

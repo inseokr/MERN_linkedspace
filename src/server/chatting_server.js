@@ -41,9 +41,19 @@ const DASHBOARD_AUTO_REFRESH = 0;
 const DASHBOARD_CTRL_SET_MODE_NORMAL = 1;
 const DASHBOARD_CTRL_SET_MODE_LOCKED = 2;
 const DASHBOARD_AUTO_REFRESH_EVENT = 3;
+const DASHBOARD_GET_LOCATION = 4;
+const DASHBOARD_REPORT_LOCATION = 5;
 
 
-const controlCodeStrings = ['CSC:autoRefresh', 'CSC:setModeNomal', 'CSC:setModeLocked', 'CSC:autoRefreshEvent'];
+const controlCodeStrings = 
+  [
+    'CSC:autoRefresh', 
+    'CSC:setModeNomal', 
+    'CSC:setModeLocked', 
+    'CSC:autoRefreshEvent', 
+    'CSC:getLocation',
+    'CSC:reportLocation',
+  ];
 
 // const wss = new WebSocket.Server({ port: 3030});
 let wss = null;
@@ -139,6 +149,45 @@ function sendPushNotification(userName, channelName) {
       sound: 'default',
       body: 'You\'ve got a new message from LinkedSpaces',
       data: { channelId: channelName },
+    });
+
+    // The Expo push notification service accepts batches of notifications so
+    // that you don't need to send 1000 requests to send 1000 notifications. We
+    // recommend you batch your notifications to reduce the number of requests
+    // and to compress them (notifications with similar content will get
+    // compressed).
+    const chunks = expo.chunkPushNotifications(messages);
+    actualPush(expo, chunks);
+  });
+}
+
+
+
+function sendLocationRequestNotification(userName, requesterName, eventSummary) {
+  if (userName === null || requesterName === null ) {
+    return;
+  }
+
+  userDbHandler.getUserByName(userName).then((foundUser) => {
+    const pushToken = foundUser.expoPushToken;
+
+    const expo = new Expo();
+    // Create the messages that you want to send to clients
+    const messages = [];
+
+    //console.warn('sendPushNotification');
+
+    if (!Expo.isExpoPushToken(pushToken)) {
+      console.error(`Push token ${pushToken} is not a valid Expo push token`);
+      return;
+    }
+
+    // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
+    messages.push({
+      to: pushToken,
+      sound: 'default',
+      body: `${requesterName} asks your current location - ${eventSummary}@LinkedSpaces`,
+      data: { eventSummary: eventSummary },
     });
 
     // The Expo push notification service accepts batches of notifications so
@@ -436,6 +485,59 @@ function sendDashboardControlMessageToSingleUser(command, userName, param=null) 
   }
 }
 
+function sendToSingleUser(command, userName, param=null) {
+  switch (command) {
+    case DASHBOARD_AUTO_REFRESH:
+    case DASHBOARD_AUTO_REFRESH_EVENT:
+    case DASHBOARD_CTRL_SET_MODE_LOCKED:
+    case DASHBOARD_CTRL_SET_MODE_NORMAL:
+      if (userToSocketMap[userName] !== undefined) {
+        userToSocketMap[userName].forEach((_socket) => {
+          // console.log('sending control message');
+          // add parameters if any
+          if(param!==null) {
+            let commandString = controlCodeStrings[command] + '@' + JSON.stringify(param);
+            _socket.send(commandString);
+          }
+          else {
+            _socket.send(controlCodeStrings[command]);
+          }
+        });
+      }
+      break;
+    default: console.warn('Unknown command'); break;
+  }
+}
+
+
+function getLocation(eventId, userList, initiator, eventSummary) {
+
+  userList.forEach((user)=> {
+    let username = user.username;
+    if(username!==initiator && userToSocketMap[username] !== undefined) {
+      sendLocationRequestNotification(username, initiator, eventSummary);
+      userToSocketMap[username].forEach((_socket) => {
+         let commandString = controlCodeStrings[DASHBOARD_GET_LOCATION] + '@' + JSON.stringify({id: eventId, requester: initiator});
+         _socket.send(commandString);
+      });
+
+    }
+  });
+}
+
+
+function sendUserLocation(eventId, targetUserName, reportingUserName, location) {
+
+  if(userToSocketMap[targetUserName]) {
+    userToSocketMap[targetUserName].forEach((_socket) => {
+      let commandString = controlCodeStrings[DASHBOARD_REPORT_LOCATION] + '@' + JSON.stringify({id: eventId, user: reportingUserName, location: location});
+      _socket.send(commandString);
+      console.log(`sendUserLocation: ${JSON.stringify({id: eventId, user: reportingUserName, location: location})}`);
+   });
+  }
+
+}
+
 // remove the socket from all the maps
 function removeSocket(socket_) {
   // 0. need to know the asscciated user information from socket
@@ -565,6 +667,8 @@ module.exports = {
   sendDashboardControlMessage,
   sendDashboardControlMessageToSingleUser,
   sendDashboardControlMessage2SharedGroup,
+  getLocation,
+  sendUserLocation,
   DASHBOARD_AUTO_REFRESH,
   DASHBOARD_CTRL_SET_MODE_NORMAL,
   DASHBOARD_CTRL_SET_MODE_LOCKED,
