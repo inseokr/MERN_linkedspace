@@ -474,13 +474,20 @@ app.namespace('/LS_API', () => {
 
         curr_user.profile_picture = picPath;
         app.locals.profile_picture = picPath;
-        curr_user.save();
 
         // ISEO-TBD:
         app.locals.currentUser[curr_user.username] = curr_user;
         fileUpload2Cloud(serverPath, picPath);
 
-        res.json({path: picPath, result: 'OK'});
+        curr_user.save((err)=> {
+            if(err) {
+              res.json({path: null, result: 'FAIL'});
+              return;
+            }
+            res.json({path: picPath, result: 'OK'});
+        });
+
+
       });
     });
   });

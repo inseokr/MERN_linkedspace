@@ -4,10 +4,8 @@ const router = express.Router();
 const passport = require('passport');
 const node = require('deasync');
 const User = require('../../models/user');
-const RentalRequest = require('../../models/listing/tenant_request');
 
 node.loop = node.runLoopOnce;
-
 
 router.get('/', (req, res) => {
   // 1. get user information from DB
@@ -48,12 +46,42 @@ router.put('/:user_id', (req, res) => {
 
     curr_user.gender = req.body.gender;
 
-    curr_user.save();
 
     res.redirect('/');
   });
 });
 
+
+router.put('/:user_id/phone', (req, res) => {
+  User.findById(req.params.user_id, (err, curr_user) => {
+    let {phone} = req.body;
+    curr_user.phone = phone;
+    curr_user.save((err)=>{
+      if(err) {
+        res.json({result: 'FAIL', err: err});
+        return;
+      }
+      res.json({result: 'OK'});
+    });
+  });
+});
+
+router.put('/:user_id/email', (req, res) => {
+  console.warn(`Updating email....`);
+  User.findById(req.params.user_id, (err, curr_user) => {
+    let {email} = req.body;
+
+    console.warn(`new email: ${email}`);
+    curr_user.email = email;
+    curr_user.save((err)=>{
+      if(err) {
+        res.json({result: 'FAIL', err: err});
+        return;
+      }
+      res.json({result: 'OK'});
+    });
+  });
+});
 
 router.get('/:filename', (req, res) => {
   const fileName = req.params.filename;
