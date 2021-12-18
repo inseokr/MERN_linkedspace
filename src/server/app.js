@@ -480,7 +480,48 @@ app.namespace('/LS_API', () => {
         app.locals.currentUser[curr_user.username] = curr_user;
         fileUpload2Cloud(serverPath, picPath);
 
-        res.send('File uploaded!');
+        res.json({path: picPath, result: 'OK'});
+      });
+    });
+  });
+
+
+  // file operation for profile
+  // ISEO: req.files were undefined if it's used in routers.
+  // We need to address this problem later, but I will define it inside app.js for now.
+  app.post('/profile/:user_id/replace-profile-picture', (req, res) => {
+    User.findById(req.params.user_id, (err, curr_user) => {
+      if (Object.keys(req.files).length == 0) {
+        return res.status(400).send('No files were uploaded.');
+      }
+
+      // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+      const sampleFile = req.files.photo;
+      const { user_id } = req.params;
+      const picPath = `/public/user_resources/pictures/profile_pictures/${user_id}_profile_${sampleFile.name}`;
+
+      // Use the mv() method to place the file somewhere on your server
+      sampleFile.mv(serverPath + picPath, (err) => {
+        if (err) {
+          console.warn(`ISEO: upload failure. error=${err}`);
+          return res.status(500).send(err);
+        }
+
+        if (curr_user.profile_picture) {
+          fileDeleteFromCloud(curr_user.profile_picture);
+        }
+
+        curr_user.profile_picture = picPath;
+        app.locals.profile_picture = picPath;
+        curr_user.save();
+
+        // ISEO-TBD:
+        app.locals.currentUser[curr_user.username] = curr_user;
+        fileUpload2Cloud(serverPath, picPath);
+
+        console.warn(`file uploaded successfully`);
+        //res.send('File uploaded!');
+        res.json({path: picPath, result: 'OK'});
       });
     });
   });
