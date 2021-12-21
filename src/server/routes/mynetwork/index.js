@@ -328,7 +328,7 @@ module.exports = function (app) {
           curr_user.save();
           // Let's render with updated database...
 
-          let source = (req.body.source)? source: 'web';
+          let source = (req.body.source)? req.body.source: 'web';
 
           if(source===web) {
             res.redirect('/MyNetworks');
