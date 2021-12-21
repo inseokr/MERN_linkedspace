@@ -330,7 +330,7 @@ module.exports = function (app) {
 
           let source = (req.body.source)? req.body.source: 'web';
 
-          if(source===web) {
+          if(source==='web') {
             res.redirect('/MyNetworks');
           } 
           else {
