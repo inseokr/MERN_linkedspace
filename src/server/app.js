@@ -497,7 +497,7 @@ app.namespace('/LS_API', () => {
   // ISEO: req.files were undefined if it's used in routers.
   // We need to address this problem later, but I will define it inside app.js for now.
   app.post('/profile/:user_id/replace-profile-picture', (req, res) => {
-    User.findById(req.params.user_id, (err, curr_user) => {
+    User.findById(req.params.user_id,  (err, curr_user) => {
       if (Object.keys(req.files).length == 0) {
         return res.status(400).send('No files were uploaded.');
       }
@@ -508,7 +508,7 @@ app.namespace('/LS_API', () => {
       const picPath = `/public/user_resources/pictures/profile_pictures/${user_id}_profile_${sampleFile.name}`;
 
       // Use the mv() method to place the file somewhere on your server
-      sampleFile.mv(serverPath + picPath, (err) => {
+      sampleFile.mv(serverPath + picPath, async (err) => {
         if (err) {
           console.warn(`ISEO: upload failure. error=${err}`);
           return res.status(500).send(err);
@@ -520,15 +520,18 @@ app.namespace('/LS_API', () => {
 
         curr_user.profile_picture = picPath;
         app.locals.profile_picture = picPath;
-        curr_user.save();
+        
 
         // ISEO-TBD:
         app.locals.currentUser[curr_user.username] = curr_user;
-        fileUpload2Cloud(serverPath, picPath);
+        let result = await fileUpload2Cloud(serverPath, picPath);
 
-        console.warn(`file uploaded successfully`);
+        console.warn(`file upload status: ${result}`);
         //res.send('File uploaded!');
-        res.json({path: picPath, result: 'OK'});
+        curr_user.save(()=> {
+          res.json({path: picPath, result: 'OK'});
+        });
+
       });
     });
   });
