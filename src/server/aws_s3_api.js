@@ -8,25 +8,34 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.AWS_SECRET
 });
 
-const fileUpload2Cloud = (serverPath, fileName) => {
-  if (process.env.NODE_ENV == 'development') return;
+const fileUpload2Cloud = async (serverPath, fileName) => {
 
-  const fileContent = fs.readFileSync(serverPath + fileName);
+  return new Promise((resolve) => {
+    if (process.env.NODE_ENV == 'development') resolve(true);
 
-  const adjustedFileName = fileName.substring(1);
+    const fileContent = fs.readFileSync(serverPath + fileName);
 
-  const params = {
-    Bucket: BUCKET_NAME,
-    Key: adjustedFileName,
-    Body: fileContent,
-    ACL: 'public-read'
-  };
+    const adjustedFileName = fileName.substring(1);
+  
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: adjustedFileName,
+      Body: fileContent,
+      ACL: 'public-read'
+    };
+  
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.warn(`fileUpload2Cloud: error = ${err}`);
+        resolve(false);
+      }
+      else {
+        resolve(true);
+      }
+    });
 
-  s3.upload(params, (err, data) => {
-    if (err) {
-      console.warn(`fileUpload2Cloud: error = ${err}`);
-    }
   });
+  
 };
 
 const fileDeleteFromCloud = (fileName) => {

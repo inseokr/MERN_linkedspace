@@ -163,7 +163,7 @@ function sendPushNotification(userName, channelName) {
 
 
 
-function sendLocationRequestNotification(userName, requesterName, eventSummary) {
+function sendLocationRequestNotification(userName, requesterName, eventSummary, eventId) {
   if (userName === null || requesterName === null ) {
     return;
   }
@@ -187,7 +187,7 @@ function sendLocationRequestNotification(userName, requesterName, eventSummary) 
       to: pushToken,
       sound: 'default',
       body: `${requesterName} asks your current location - ${eventSummary}@LinkedSpaces`,
-      data: { eventSummary: eventSummary },
+      data: { id: 'LocationRequestNotification', eventId: eventId },
     });
 
     // The Expo push notification service accepts batches of notifications so
@@ -515,7 +515,7 @@ function getLocation(eventId, userList, initiator, eventSummary) {
   userList.forEach((user)=> {
     let username = user.username;
     if(username!==initiator && userToSocketMap[username] !== undefined) {
-      sendLocationRequestNotification(username, initiator, eventSummary);
+      sendLocationRequestNotification(username, initiator, eventSummary, eventId);
       userToSocketMap[username].forEach((_socket) => {
          let commandString = controlCodeStrings[DASHBOARD_GET_LOCATION] + '@' + JSON.stringify({id: eventId, requester: initiator});
          _socket.send(commandString);
