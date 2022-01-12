@@ -36,9 +36,25 @@ const EventSchema = new mongoose.Schema({
 
   // event date
   date: Date,
-
   // event ending date
   endDate: Date,
+
+  itinerary: [
+    {
+      dayOffset: Number, // 0: first day,
+      dayString: String, 
+      routes: [
+        {
+          routeName: String, 
+          route: [
+            {
+              placeIndex: Number, // index value within the current event
+            }
+          ]
+        }
+      ]
+    }
+  ],
 
   // list of user shared with this event
   shared_user_group: [

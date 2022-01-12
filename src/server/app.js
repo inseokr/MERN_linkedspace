@@ -522,11 +522,10 @@ app.namespace('/LS_API', () => {
         app.locals.profile_picture = picPath;
         
 
-        // ISEO-TBD:
         app.locals.currentUser[curr_user.username] = curr_user;
         let result = await fileUpload2Cloud(serverPath, picPath);
 
-        console.warn(`file upload status: ${result}`);
+        //console.warn(`file upload status: ${result}`);
         //res.send('File uploaded!');
         curr_user.save(()=> {
           res.json({path: picPath, result: 'OK'});

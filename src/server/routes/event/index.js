@@ -7,6 +7,10 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const {ObjectId} = require('mongodb');
 
+//const cheerio = require(`cheerio`);
+//const axios = require('axios');
+//const request = require('request');
+
 const Event = require('../../models/listing/event');
 const User = require('../../models/user');
 const Restaurant = require('../../models/place/Restaurant');
@@ -1009,7 +1013,24 @@ module.exports = function (app) {
         });
       });
 
-      router.get('/:list_id/friends-location', (req, res) => {
+      router.get('/:list_id/friends-location', async (req, res) => {
+
+        // working example
+        // const response = await axios.get('https://www.theguardian.com/uk');
+        // const html = response.data;
+        // const $ = await cheerio.load(html);
+        // $('.fc-item__title', html).each(function() {
+        //   let title = $(this).text();
+        //   console.warn(`title=${title}`);
+        // })
+        // const response = await axios.get('https://www.airbnb.com/rooms/12834174?check_in=2021-12-18&check_out=2021-12-19&federated_search_id=0af8cf52-2078-4b08-a3a4-525a4c275ef2&source_impression_id=p3_1639362135_mH%2FdS9RvZVxAx7%2F8&guests=1&adults=1');
+        // const html = response.data;
+        // const $ = await cheerio.load(html);
+        // $('._6tbg2q', html).each(function() {
+        //   let src = $(this).attr('src');
+        //   console.warn(`title=${src}`);
+        // })
+
         Event.findById(req.params.list_id, async (err, foundEvent) => {
           if (err) {
             console.log('listing not found');
@@ -1030,7 +1051,6 @@ module.exports = function (app) {
       router.post('/:list_id/send-user-location', (req, res) => {
         Event.findById(req.params.list_id, async (err, foundEvent) => {
 
-
           if (err) {
             res.json({result: 'fail', err: 'listing not found'});
           }
@@ -1041,6 +1061,150 @@ module.exports = function (app) {
           chatServer.sendUserLocation(req.params.list_id, requester, req.user.username, location);
 
           res.json({result: 'success'});
+        });
+      });
+
+      // utilities for itinerary/route
+
+
+      // creating a new route
+      router.post('/:list_id/itinerary/route', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+          if (err) {
+            res.json({result: 'fail', err: 'listing not found'});
+            return;
+          }
+
+          let {dayOffset, routeName, route} = req.body;
+
+          if(foundEvent.itinerary && foundEvent.itinerary.length>0) {
+            // check if there is any entry with the same dayOffset value
+            let itinerary = foundEvent.itinerary;
+            let foundEntry = false;
+
+            for(let index=0; index<itinerary.length; index++) {
+              if(itinerary[index].dayOffset===dayOffset) {
+                // check if there is any route with the same route name already
+                for(let routeIndex=0; routeIndex<itinerary[index].routes.length; routeIndex++) {
+                  if(routeName===itinerary[index].routes[routeIndex].routeName) {
+                    res.json({result: 'fail', reason: 'route name already exists'});          
+                    return;
+                  }
+                }
+                // no duplicate route exists. let's add this route
+                foundEntry = true;
+                foundEvent.itinerary[index].routes.push({routeName: routeName, route: route});
+              }
+            }
+
+            if(foundEntry===false) {
+              let newEntry = {dayOffset: dayOffset, routes: []};
+              newEntry.routes.push({routeName: routeName, route: route});
+              foundEvent.itinerary.push(newEntry);
+
+              foundEvent.save(()=> {
+                  res.json({result: 'success'});
+              });
+            }
+            else {
+              foundEvent.save(()=> {
+                res.json({result: 'success'});
+              });
+            }
+          } 
+          else {
+            // it doesn't exist yet
+            let newEntry = {dayOffset: dayOffset, routes: []};
+            newEntry.routes.push({routeName: routeName, route: route});
+            foundEvent.itinerary.push(newEntry);
+
+            foundEvent.save(()=> {
+                res.json({result: 'success'});
+            });
+          }
+        });
+      });
+
+      // modify a route
+      router.put('/:list_id/itinerary/route', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+          if (err) {
+            res.json({result: 'fail', err: 'listing not found'});
+            return;
+          }
+
+          let {dayOffset, routeName, route} = req.body;
+
+          // let's find a route with given parameters
+          if(!foundEvent.itinerary || foundEvent.itinerary.length===0) {
+            res.json({result: 'fail', err: 'no route found'});
+            return;
+          }
+
+          let itinerary = foundEvent.itinerary;
+          let foundEntry = false;
+
+          for(let index=0; index<itinerary.length; index++) {
+            if(itinerary[index].dayOffset===dayOffset) {
+              // check if there is any route with the same route name already
+              for(let routeIndex=0; routeIndex<itinerary[index].routes.length; routeIndex++) {
+                if(routeName===itinerary[index].routes[routeIndex].routeName) {
+                  // let's update it.
+                  foundEvent.itinerary[index].routes[routeIndex].route = route;
+                  foundEntry = true;
+                  foundEvent.save(()=> {
+                    res.json({result: 'success'});
+                  })
+                }
+              }
+            }
+          }
+
+          if(foundEntry===false) {
+            res.json({result: 'fail', reason: 'no entry found to update'});
+          }
+        });
+      });
+
+      // delete a route
+      router.delete('/:list_id/itinerary/route', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+          if (err) {
+            res.json({result: 'fail', err: 'listing not found'});
+            return;
+          }
+
+          let {dayOffset, routeName, route} = req.body;
+
+          // let's find a route with given parameters
+          if(!foundEvent.itinerary || foundEvent.itinerary.length===0) {
+            res.json({result: 'fail', err: 'no route found'});
+            return;
+          }
+
+          let itinerary = foundEvent.itinerary;
+          let foundEntry = false;
+
+          for(let index=0; index<itinerary.length; index++) {
+            if(itinerary[index].dayOffset===dayOffset) {
+              // check if there is any route with the same route name already
+              let newRouteList = itinerary[index].routes.filter((entry)=> entry.routeName!==routeName);
+
+              foundEvent.itinerary[index].routes = newRouteList;
+
+              foundEntry = true;
+              foundEvent.save(()=> {
+                res.json({result: 'success'});
+              })
+            }
+          }
+
+          if(foundEntry===false) {
+            res.json({result: 'fail', err: 'no route found'});
+          }
         });
       });
 
