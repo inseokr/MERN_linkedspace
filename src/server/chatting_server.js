@@ -374,33 +374,34 @@ function routeMessage(data, incomingSocket) {
         return;
       }
       // add to history
-      console.log(`Writer = ${socketToUserMap[incomingSocket.id]}`);
+      //console.log(`Writer = ${socketToUserMap[incomingSocket.id]}`);
 
       const chat = { writer: socketToUserMap[incomingSocket.id], message, timestamp: Date.now() };
       channel.chat_history.push(chat);
-      channel.save();
 
-      if (targets == undefined) {
-        console.warn(`No socket available for channel ID = ${id}`);
-        return;
-      }
-
-      targets.forEach((target) => {
-        if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-          //console.warn('sending PUSH notification');
-          target.send(data);
-        } else {
-          // console.warn('Same Socket??');
+      channel.save(()=> {
+        if (targets == undefined) {
+          console.warn(`No socket available for channel ID = ${id}`);
+          return;
         }
-      });
-
-      // send notification
-      let userList = parseChannelName(channel.channel_id);
-      userList.forEach((user) => {
-        if(socketToUserMap[incomingSocket.id]!==user) {
-          //console.warn(`sendPushNotification to user =${user}`);
-          sendPushNotification(user, channel.channel_id);
-        }        
+  
+        targets.forEach((target) => {
+          if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
+            //console.warn('sending PUSH notification');
+            target.send(data);
+          } else {
+            // console.warn('Same Socket??');
+          }
+        });
+  
+        // send notification
+        let userList = parseChannelName(channel.channel_id);
+        userList.forEach((user) => {
+          if(socketToUserMap[incomingSocket.id]!==user) {
+            //console.warn(`sendPushNotification to user =${user}`);
+            sendPushNotification(user, channel.channel_id);
+          }        
+        });
       });
     });
 
