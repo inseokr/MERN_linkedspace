@@ -370,7 +370,7 @@ function routeMessage(data, incomingSocket) {
   if (id != null) {
     chatDbHandler.findChatChannel(id).then((channel) => {
       if (channel == null) {
-        console.log("Channel couldn't be found");
+        console.warn("Channel couldn't be found");
         return;
       }
       // add to history
@@ -387,7 +387,7 @@ function routeMessage(data, incomingSocket) {
   
         targets.forEach((target) => {
           if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-            //console.warn('sending PUSH notification');
+            console.warn(`forwarding the message....`);
             target.send(data);
           } else {
             // console.warn('Same Socket??');
