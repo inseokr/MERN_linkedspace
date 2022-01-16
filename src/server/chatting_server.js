@@ -387,7 +387,6 @@ function routeMessage(data, incomingSocket) {
   
         targets.forEach((target) => {
           if (target != incomingSocket && target.readyState === WebSocket.OPEN) {
-            console.warn(`forwarding the message....`);
             target.send(data);
           } else {
             //console.warn('Same Socket??');
