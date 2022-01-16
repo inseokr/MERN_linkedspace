@@ -156,6 +156,10 @@ module.exports = function (app) {
 				              const result = { bNewlyCreated: true };
 				              res.json(result);
 
+							  userNameList.forEach((user)=> {
+								chatServer.registerUserSocketToChannel(newChannel.channel_id, user);
+							  })
+
 				              // console.warn(`userNameList = ${JSON.stringify(userNameList)}`);
 				              if (userNameList !== null && userNameList !== undefined) {
 				              	// remove current user from the list
