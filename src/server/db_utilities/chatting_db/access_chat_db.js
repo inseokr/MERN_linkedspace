@@ -1,5 +1,6 @@
 const async = require('async');
 const User = require('../../models/user');
+const chatServer = require('../../chatting_server');
 const ChatChannel = require('../../models/chatting/chatting_channel');
 
 const userDbHandler = require('../user_db/access_user_db');
@@ -163,7 +164,9 @@ async function addChannelToUser(chat_channel) {
             const dm_channel = { id: chat_channel.id_, name: chat_channel.channel_id, lastReadIndex: 0 };
             foundUser.chatting_channels.dm_channels.push(dm_channel);
             //console.warn(`adding ${chat_channel.channel_id} to user: ${foundUser.username}`);
-            foundUser.save();
+            foundUser.save(()=> {
+              chatServer.registerUserSocketToChannel(chat_channel.channel_id, foundUser.username);
+            });
           }
         }
 

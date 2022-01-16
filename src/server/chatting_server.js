@@ -390,7 +390,7 @@ function routeMessage(data, incomingSocket) {
             console.warn(`forwarding the message....`);
             target.send(data);
           } else {
-            // console.warn('Same Socket??');
+            //console.warn('Same Socket??');
           }
         });
   
@@ -585,6 +585,13 @@ function removeChannel(channel_id) {
   console.warn(`removeChannel with channel_id = ${channel_id}`);
 }
 
+function registerUserSocketToChannel(channel_id, user_name) {
+  // Go through the socket list of user.
+  userToSocketMap[user_name].forEach((socket) => {
+    addSocketToChannel(channel_id, socket);
+  });
+}
+
 function removeChannelFromUserDb(name, channel_id) {
   userDbHandler.getUserByName(name).then((foundUser) => {
     // console.log("user name: "+name);
@@ -670,6 +677,7 @@ module.exports = {
   sendDashboardControlMessage2SharedGroup,
   getLocation,
   sendUserLocation,
+  registerUserSocketToChannel,
   DASHBOARD_AUTO_REFRESH,
   DASHBOARD_CTRL_SET_MODE_NORMAL,
   DASHBOARD_CTRL_SET_MODE_LOCKED,
