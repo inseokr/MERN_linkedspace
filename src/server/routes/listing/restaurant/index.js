@@ -134,7 +134,7 @@ module.exports = function (app) {
                   });
 
                   //console.warn(`newListing ID = ${newListing._id}`);
-                  res.json({ result: 'successul creation of listing', createdId: newListing._id });
+                  res.json({ result: 'successful creation of listing', createdId: newListing._id });
 
               } else {
                   console.warn('New Event Creation failure');
@@ -178,8 +178,8 @@ module.exports = function (app) {
                 if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(response.coordinates.latitude).toFixed(4) )
                     &&
                    (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(response.coordinates.longitude).toFixed(4)) ) {
-                    //console.warn(`Same location....`);
-                    res.json({ result: 'OK', createdId: foundRestaurant._id });
+                    //console.warn(`This place exists already....`);
+                    res.json({ result: 'DUPLICATE', createdId: foundRestaurant._id });
                     return;
                 }
               }
@@ -201,6 +201,8 @@ module.exports = function (app) {
             newListing.coordinates.lat = response.coordinates.latitude;
             newListing.coordinates.lng = response.coordinates.longitude;
             newListing.category = response.categories[0].alias;
+            newListing.categories = response.categories.map(category => category.alias);
+            newListing.place_id = response.id;
             newListing.price = response.price;
 
             newListing.save((err) => {
@@ -215,7 +217,13 @@ module.exports = function (app) {
                 foundUser.places.restaurant.push(newListing._id);
                 foundUser.save();
                 //console.warn(`newListing ID = ${newListing._id}`);
-                res.json({ result: 'OK', createdId: newListing._id });
+
+                let { listingUrl, listingSummary, coverPhoto,  category, price, coordinates } = newListing;
+
+                res.json(
+                  { result: 'OK', 
+                    createdId: newListing._id, 
+                    listingSummary: {listingUrl, listingSummary, coverPhoto,  category, price, coordinates} });
 
               });
             });
@@ -239,13 +247,14 @@ module.exports = function (app) {
     const handleResponse = (req, res, googleBusinessResponse, googleBusinessPhotoResponse) => {
       if (googleBusinessPhotoResponse) {
         try {
-          const { name, geometry, formatted_address, types, price_level } = googleBusinessResponse;
+          const { name, geometry, formatted_address, types, price_level, place_id } = googleBusinessResponse;
           Restaurant.findOne({listingSummary: name}, async (err, foundRestaurant) => {
             if (foundRestaurant || err) {
               if (foundRestaurant) {
                 if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.latitude).toFixed(4) ) &&
                   (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.longitude).toFixed(4)) ) {
-                  res.json({ result: 'OK', createdId: foundRestaurant._id });
+                  //console.warn(`This place exists already...`);
+                  res.json({ result: 'DUPLICATE', createdId: foundRestaurant._id });
                   return;
                 }
               } else {
@@ -259,6 +268,8 @@ module.exports = function (app) {
             newListing.coverPhoto.path = googleBusinessPhotoResponse.res.responseUrl;
             newListing.coordinates = geometry.location;
             newListing.category = types[0];
+            newListing.categories = types;
+            newListing.place_id = place_id;
             newListing.price = processPriceLevel(price_level);
 
             newListing.save((err) => {
@@ -273,8 +284,12 @@ module.exports = function (app) {
                 foundUser.places.restaurant.push(newListing._id);
                 foundUser.save();
                 //console.warn(`newListing ID = ${newListing._id}`);
-                res.json({ result: 'OK', createdId: newListing._id });
+                let { listingUrl, listingSummary, coverPhoto,  category, price, coordinates } = newListing;
 
+                res.json(
+                  { result: 'OK', 
+                    createdId: newListing._id, 
+                    listingSummary: {listingUrl, listingSummary, coverPhoto,  category, price, coordinates} });
               });
             });
 
@@ -292,7 +307,7 @@ module.exports = function (app) {
             handleResponse(req, res, googleBusinessResponse, googleBusinessPhotoResponse);
           });
         }
-      });    
+      });
     }
     else {
       if(req.body.identifier) {
@@ -355,7 +370,7 @@ module.exports = function (app) {
             res.json({result: 'FAIL', reason: 'listing save failure'});
         }
 
-        res.json({result: 'OK'});
+        res.json({result: 'OK', });
         });
     });
   });
