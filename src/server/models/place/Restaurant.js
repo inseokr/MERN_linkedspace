@@ -36,8 +36,12 @@ const RestaurantSchema = new mongoose.Schema({
     lng: Number
   },
 
-  category: { type: String, default: 'Korean' },
-  
+  category: { type: String, default: '' },
+
+  categories: { type: Array, default: '' },
+
+  place_id: { type: String, default: '' },
+
   price: {type: String, default: '$'}
 
 });
