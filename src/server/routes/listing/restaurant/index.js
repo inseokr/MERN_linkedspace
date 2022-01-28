@@ -178,8 +178,8 @@ module.exports = function (app) {
                 if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(response.coordinates.latitude).toFixed(4) )
                     &&
                    (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(response.coordinates.longitude).toFixed(4)) ) {
-                    //console.warn(`Same location....`);
-                    res.json({ result: 'OK', createdId: foundRestaurant._id });
+                    //console.warn(`This place exists already....`);
+                    res.json({ result: 'DUPLICATE', createdId: foundRestaurant._id });
                     return;
                 }
               }
@@ -215,7 +215,13 @@ module.exports = function (app) {
                 foundUser.places.restaurant.push(newListing._id);
                 foundUser.save();
                 //console.warn(`newListing ID = ${newListing._id}`);
-                res.json({ result: 'OK', createdId: newListing._id });
+
+                let { listingUrl, listingSummary, coverPhoto,  category, price, coordinates } = newListing;
+
+                res.json(
+                  { result: 'OK', 
+                    createdId: newListing._id, 
+                    listingSummary: {listingUrl, listingSummary, coverPhoto,  category, price, coordinates} });
 
               });
             });
@@ -245,7 +251,8 @@ module.exports = function (app) {
               if (foundRestaurant) {
                 if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.latitude).toFixed(4) ) &&
                   (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.longitude).toFixed(4)) ) {
-                  res.json({ result: 'OK', createdId: foundRestaurant._id });
+                  //console.warn(`This place exists already...`);
+                  res.json({ result: 'DUPLICATE', createdId: foundRestaurant._id });
                   return;
                 }
               } else {
@@ -273,8 +280,12 @@ module.exports = function (app) {
                 foundUser.places.restaurant.push(newListing._id);
                 foundUser.save();
                 //console.warn(`newListing ID = ${newListing._id}`);
-                res.json({ result: 'OK', createdId: newListing._id });
+                let { listingUrl, listingSummary, coverPhoto,  category, price, coordinates } = newListing;
 
+                res.json(
+                  { result: 'OK', 
+                    createdId: newListing._id, 
+                    listingSummary: {listingUrl, listingSummary, coverPhoto,  category, price, coordinates} });
               });
             });
 
@@ -355,7 +366,7 @@ module.exports = function (app) {
             res.json({result: 'FAIL', reason: 'listing save failure'});
         }
 
-        res.json({result: 'OK'});
+        res.json({result: 'OK', });
         });
     });
   });
