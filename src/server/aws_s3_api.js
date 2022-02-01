@@ -11,11 +11,10 @@ const s3 = new AWS.S3({
 const fileUpload2Cloud = async (serverPath, fileName) => {
 
   return new Promise((resolve) => {
-    if (process.env.NODE_ENV == 'development') resolve(true);
-
     const fileContent = fs.readFileSync(serverPath + fileName);
 
     const adjustedFileName = fileName.substring(1);
+
   
     const params = {
       Bucket: BUCKET_NAME,
@@ -39,8 +38,6 @@ const fileUpload2Cloud = async (serverPath, fileName) => {
 };
 
 const fileDeleteFromCloud = (fileName) => {
-  if (process.env.NODE_ENV == 'development') return;
-
   const adjustedFileName = fileName.substring(1);
 
   const params = {

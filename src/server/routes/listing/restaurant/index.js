@@ -34,7 +34,7 @@ module.exports = function (app) {
         return res.status(500).send(err);
       }
 
-      //console.warn(`File successfully replaced`);
+      //console.warn(`File successfully replaced: picPath=${picPath}`);
       res.json({result: 'OK'});
     });
   });
@@ -64,8 +64,6 @@ module.exports = function (app) {
     newListing.listingSummary = req.body.listingSummary;
     newListing.locationString = req.body.location;
 
-    //console.warn(`imageUrl: ${req.body.imageUrl}`);
-
     if(req.body.imageUrl) {
       newListing.coverPhoto.path = req.body.imageUrl;
     } else {
@@ -76,72 +74,87 @@ module.exports = function (app) {
           const original_path = serverPath + picturePath + filename;
           const new_full_picture_path = `${picturePath + newListing.requester}_${filename}`;
           const new_path = `${serverPath + new_full_picture_path}`;
-          fs.rename(original_path, new_path, (err) => {
-            if (err) throw err;
-              fileUpload2Cloud(serverPath, new_full_picture_path);
+          fs.rename(original_path, new_path, async (err) => {
+              if (err) {
+                throw err;
+              } 
+
+              let result = await fileUpload2Cloud(serverPath, new_full_picture_path);
+
+              //console.warn(`fileUpload2Cloud: result = ${result}`);
+
+              if(result===false) {
+                res.json({result: 'FAIL', reason: 'File upload failure'});
+                return;
+              }
+
+              newListing.coverPhoto.path = new_full_picture_path;
+
+              if(req.body.coordinates) {
+                newListing.coordinates.lat = location.latitude;
+                newListing.coordinates.lng = location.longitude;
+          
+                newListing.save((err) => {
+                  if (err) {
+                      console.log('New Listing Save Failure');
+                      console.log(`error = ${err}`);
+                      res.json({ result: 'FAIL', reason: 'New Listing Save Failure' });
+                      return;
+                  }
+          
+                  User.findById(req.user._id, (err, foundUser) => {
+                      foundUser.places.restaurant.push(newListing._id);
+                      foundUser.save();
+                  });
+                });
+          
+                //console.warn(`newListing ID = ${newListing._id}`);
+                res.json({ result: 'successul creation of listing', createdId: newListing._id });
+              } else {
+                // set location information
+                let address = req.body.location;
+                fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(
+                    response => response.json()).then((response) => {
+                        const { results, status } = response;
+                        if (status === 'OK') {
+                            const { geometry } = results[0];
+                            const { location } = geometry;
+                            newListing.coordinates.lat = location.lat;
+                            newListing.coordinates.lng = location.lng;
+
+                            newListing.save((err) => {
+                                if (err) {
+                                    console.log('New Listing Save Failure');
+                                    console.log(`error = ${err}`);
+                                    res.json({ result: 'FAIL', reason: 'New Listing Save Failure' });
+                                    return;
+                                }
+          
+                                User.findById(req.user._id, (err, foundUser) => {
+                                    foundUser.places.restaurant.push(newListing._id);
+                                    foundUser.save();
+                                });
+                            });
+          
+                            //console.warn(`newListing ID = ${newListing._id}`);
+                            res.json({ result: 'OK', createdId: newListing._id });
+          
+                        } else {
+                            console.warn('New Event Creation failure');
+                            res.json({result: 'FAIL', reason: 'Location is wrong'});
+                        }
+                    }
+                );
+              }
+          
           });
           // ISEO-TBD: The path should start from "/public/..."?
-          newListing.coverPhoto.path = new_full_picture_path;
         }
       } catch (err) {
-        console.warn(`File rename failure with err=${err}`);
+        console.warn(`err=${err}`);
+        res.json({result: 'FAIL', reason: `${err}`});
+        return;
       }
-    }
-
-    if(req.body.coordinates) {
-      newListing.coordinates.lat = location.latitude;
-      newListing.coordinates.lng = location.longitude;
-
-      newListing.save((err) => {
-        if (err) {
-            console.log('New Listing Save Failure');
-            console.log(`error = ${err}`);
-        res.json({ result: 'New Listing Save Failure' });
-        }
-
-        User.findById(req.user._id, (err, foundUser) => {
-            foundUser.places.restaurant.push(newListing._id);
-            foundUser.save();
-        });
-      });
-
-      //console.warn(`newListing ID = ${newListing._id}`);
-      res.json({ result: 'successul creation of listing', createdId: newListing._id });
-    } else {
-      // set location information
-      let address = req.body.location;
-      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`).then(
-          response => response.json()).then((response) => {
-              const { results, status } = response;
-              if (status === 'OK') {
-                  const { geometry } = results[0];
-                  const { location } = geometry;
-                  newListing.coordinates.lat = location.lat;
-                  newListing.coordinates.lng = location.lng;
-
-
-                  newListing.save((err) => {
-                      if (err) {
-                          console.log('New Listing Save Failure');
-                          console.log(`error = ${err}`);
-                      res.json({ result: 'New Listing Save Failure' });
-                      }
-
-                      User.findById(req.user._id, (err, foundUser) => {
-                          foundUser.places.restaurant.push(newListing._id);
-                          foundUser.save();
-                      });
-                  });
-
-                  //console.warn(`newListing ID = ${newListing._id}`);
-                  res.json({ result: 'successful creation of listing', createdId: newListing._id });
-
-              } else {
-                  console.warn('New Event Creation failure');
-                  res.json({result: 'FAIL', reason: 'Location is wrong'});
-              }
-          }
-      );
     }
 
   });
