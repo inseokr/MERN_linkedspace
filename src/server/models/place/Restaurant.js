@@ -42,7 +42,7 @@ const RestaurantSchema = new mongoose.Schema({
 
   place_id: { type: String, default: '' },
 
-  price: {type: String, default: '$'}
+  price: {type: String, default: ''}
 
 });
 
