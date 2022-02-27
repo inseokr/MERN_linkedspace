@@ -1208,5 +1208,30 @@ module.exports = function (app) {
         });
       });
 
+
+      // APIs related to comments
+      router.post('/:list_id/comments/add', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+          if (err) {
+            res.json({result: 'fail', err: 'listing not found'});
+          }
+
+          let {childIndex, channel_id, chatIndex, writer, message, timestamp} = req.body;
+
+          if(childIndex>=0) {
+            foundEvent.child_listings[childIndex].comments.push({channel_id, chatIndex, writer, message, timestamp});
+          }
+          else {
+            foundEvent.comments.push({channel_id, chatIndex, writer, message, timestamp});
+          }
+
+          foundEvent.save(()=> {
+            res.json({result: 'success'});
+          });
+
+        });
+      });
+
     return router;
 };

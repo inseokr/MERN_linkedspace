@@ -84,6 +84,19 @@ const EventSchema = new mongoose.Schema({
     }
   ],
 
+  comments: [
+    {
+      // chatting ID & the index of chatting history
+      // <note> It will be used to identify the specific comment and apply any operation if needed.
+      channel_id: String,
+      chatIndex: Number,
+
+      writer: String,
+      message: String,
+      timestamp: Date
+    }
+  ],
+
   // list of places(restaurants) for the event
   child_listings: [
     {
@@ -123,7 +136,6 @@ const EventSchema = new mongoose.Schema({
         }
       ],
 
-
       listOfDislikedUser: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -131,6 +143,18 @@ const EventSchema = new mongoose.Schema({
         }
       ],
 
+      comments: [
+        {
+          // chatting ID & the index of chatting history
+          // <note> It will be used to identify the specific comment and apply any operation if needed.
+          channel_id: String,
+          chatIndex: Number,
+
+          writer: String,
+          message: String,
+          timestamp: Date
+        }
+      ],
 
       list_of_group_chats: [
         {
