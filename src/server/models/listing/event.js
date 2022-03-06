@@ -52,6 +52,11 @@ const EventSchema = new mongoose.Schema({
             }
           ]
         }
+      ],
+      places: [
+        {
+          placeIndex: Number
+        }
       ]
     }
   ],
