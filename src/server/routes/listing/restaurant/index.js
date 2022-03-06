@@ -263,10 +263,14 @@ module.exports = function (app) {
           const { name, geometry, formatted_address, types, price_level, place_id } = googleBusinessResponse;
           Restaurant.findOne({listingSummary: name}, async (err, foundRestaurant) => {
             if (foundRestaurant || err) {
+              if(err) {
+                console.warn(`err: ${err}`);
+                res.json({ result: 'FAIL', reason: err });
+                return;
+              }
               if (foundRestaurant) {
-                if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.latitude).toFixed(4) ) &&
-                  (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.longitude).toFixed(4)) ) {
-                  //console.warn(`This place exists already...`);
+                if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(geometry.location.lat).toFixed(4) ) &&
+                  (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(geometry.location.lng).toFixed(4)) ) {
                   res.json({ result: 'DUPLICATE', createdId: foundRestaurant._id });
                   return;
                 }
