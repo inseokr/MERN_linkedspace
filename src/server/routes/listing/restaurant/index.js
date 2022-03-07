@@ -181,7 +181,6 @@ module.exports = function (app) {
     //console.warn(`req.body.identifier: ${req.body.identifier}`);
     fetchYelpBusinessSearch(req.body.identifier).then((response) => {
       if (response && response.name) {
-          //console.warn(`YELP response: ${JSON.stringify(response)}`);
           try {
           Restaurant.findOne({listingSummary: response.name}, async (err, foundRestaurant) => {
 
@@ -191,12 +190,13 @@ module.exports = function (app) {
                 if((Number.parseFloat(foundRestaurant.coordinates.lat).toFixed(4) === Number.parseFloat(response.coordinates.latitude).toFixed(4) )
                     &&
                    (Number.parseFloat(foundRestaurant.coordinates.lng).toFixed(4) === Number.parseFloat(response.coordinates.longitude).toFixed(4)) ) {
-                    //console.warn(`This place exists already....`);
+                    console.warn(`This place exists already....`);
                     res.json({ result: 'DUPLICATE', createdId: foundRestaurant._id });
                     return;
                 }
               }
               else {
+                console.warn(`err=${err}`);
                 res.json({ result: 'FAIL', reason: err });
                 return;
               }
@@ -243,9 +243,11 @@ module.exports = function (app) {
 
           });
         } catch (err) {
+          console.warn(`err: ${err}`);
           res.json({ result: 'FAIL', reason: err });
         }
       } else {
+        console.warn(`err: Yelp returns empty response`);
         res.json({ result: 'FAIL', reason: 'Yelp returns empty response'});
       }
     });
@@ -256,6 +258,7 @@ module.exports = function (app) {
     newListing.requester = req.user._id;
     newListing.listingSource = 'Google';
     newListing.listingUrl = req.body.webViewUrl;
+
 
     const handleResponse = (req, res, googleBusinessResponse, googleBusinessPhotoResponse) => {
       if (googleBusinessPhotoResponse) {
