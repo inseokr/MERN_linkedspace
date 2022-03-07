@@ -11,7 +11,7 @@ async function fetchGoogleBusiness(cid) {
   const response = await axios
     .get('https://maps.googleapis.com/maps/api/place/details/json', config)
     .then(response => {
-      console.log(response.data.result);
+      //console.log(response.data.result);
       return response;
     })
     .catch(error => {
@@ -58,7 +58,7 @@ async function fetchGooglePlaceByCoordinate(coordinate) {
   //console.warn(`fetchGooglePlaceByCoordinate: ${JSON.stringify(config)}`);
   const response = await axios(config)
   .then( async (placeIdResponse) => {
-    console.log(JSON.stringify(placeIdResponse.data.results));
+    //console.log(JSON.stringify(placeIdResponse.data.results));
     /*
     {"html_attributions":[],"results":[{"geometry":{"location":{"lat":40.3572976,"lng":-74.6672226},"viewport":{"northeast":{"lat":40.39175483612622,"lng":-74.61750794313994},"southwest":{"lat":40.30487184140339,"lng":-74.72217704480025}}},"icon":"https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png","icon_background_color":"#7B9EB0","icon_mask_base_uri":"https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet","name":"Princeton","photos":[{"height":1960,"html_attributions":["<a href=\"https://maps.google.com/maps/contrib/109335108266697991179\">Animationeer</a>"],"photo_reference":"Aap_uEAX2I06tWPi6yli6dxMSc6VRrMdhkJDzRfFcbuRQLctLodSkzfuWcCTVk0-Ub32flD5-O76OIRwqtnShpAz4EWb2hSZjZeYZxxXIqwyhruxq0r8hZzyXLUqI8wqxbAyxHrrRYDkJkRvxFhPdSCOdYw78jfYC4jn12lf8aY_HiBPTklS","width":4032}],"place_id":"ChIJ8VnQcsHmw4kRwtYTSpNJzT8","reference":"ChIJ8VnQcsHmw4kRwtYTSpNJzT8","scope":"GOOGLE","types":["locality","political"],"vicinity":"Princeton"},{"business_status":"OPERATIONAL","geometry":{"location":{"lat":40.3430942,"lng":-74.65507389999999},"viewport":{"northeast":{"lat":40.35975090000001,"lng":-74.63838315},"southwest":{"lat":40.3261121,"lng":-74.67179695}}},"icon":"https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/school-71.png","icon_background_color":"#7B9EB0","icon_mask_base_uri":"https://maps.gstatic.com/mapfiles/place_api/icons/v2/school_pinlet","name":"Princeton University","photos":[{"height":1066,"html_attributions":["<a href=\"https://maps.google.com/maps/contrib/101594406467166034382\">Rahul Deo Photography</a>"],"photo_reference":"Aap_uEDfrJmg7FUp84kaYbp-64yG-aCHdZTxC0a-4XV9BpvFJ_lAR3zw0P7QqBuYElFIfeUl69wK_rGVCn7QvV9hDXxQYfU3PHwxpsM9kpwonY2_gxyOOM-bnwlr2Q3zanmmApnAB2ywL6iLDzimt-SNXimEiRqzTs8pE1FrWYKfzAAolptx","width":1600}],"place_id":"ChIJ6baYzdjmw4kRTwKQ-tZ-ugI","plus_code":{"compound_code":"88VV+6X Princeton, NJ, USA","global_code":"87G788VV+6X"},"rating":4.6,"reference":"ChIJ6baYzdjmw4kRTwKQ-tZ-ugI","scope":"GOOGLE","types":["university","point_of_interest","establishment"],"user_ratings_total":1370,"vicinity":"Princeton"},{"geometry":{"location":{"lat":40.3435665,"lng":-74.65431559999999},"viewport":{"northeast":{"lat":40.34472710318555,"lng":-74.65363222455395},"southwest":{"lat":40.34202914260256,"lng":-74.65633018513697}}},"icon":"https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png","icon_background_color":"#7B9EB0","icon_mask_base_uri":"https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet","name":"Poe Field","place_id":"ChIJO59gDMXmw4kR9LN3B9pDxh0","reference":"ChIJO59gDMXmw4kR9LN3B9pDxh0","scope":"GOOGLE","types":["premise","point_of_interest","establishment"],"vicinity":"Princeton"}],"status":"OK"}
     */
@@ -132,7 +132,7 @@ async function fetchGoogleBusinessPhoto(photoReference) {
   const response = await axios
     .get('https://maps.googleapis.com/maps/api/place/photo', config)
     .then(response => {
-      console.log(response.request);
+      //console.log(response.request);
       return response;
     })
     .catch(error => {
