@@ -1066,6 +1066,22 @@ module.exports = function (app) {
 
       // utilities for itinerary/route
 
+      const getItineraryIndex = (itinerary, dayOffset)=> {
+        if(itinerary && itinerary.length>0) {
+          // check if there is any entry with the same dayOffset value
+
+          for(let index=0; index<itinerary.length; index++) {
+            if(itinerary[index] && itinerary[index].dayOffset===dayOffset) {
+              return index;
+            }
+          }
+          return -1;
+        }
+        else {
+          return -1;
+        }
+
+      }
 
       // creating a new route
       router.post('/:list_id/itinerary/route', (req, res) => {
@@ -1207,6 +1223,117 @@ module.exports = function (app) {
           }
         });
       });
+
+
+      // add place to a day
+      router.post('/:list_id/itinerary/day/add', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+          if (err) {
+            res.json({result: 'fail', err: 'event not found'});
+            return;
+          }
+          // dayOffset: 0(start date)..n(end date)
+          // places: array of place index in the child_listings
+          let {dayOffset, places} = req.body;
+
+          let itinerary = foundEvent.itinerary;
+          
+          // check if there is an entry with given dayOffset already.
+          let foundIndex = getItineraryIndex(itinerary, dayOffset);
+
+          if(foundIndex!=-1) {
+            // It exists already.
+            // Let's check if it's the same as dayOffset. If not then let's relocate it.
+            if(foundIndex!==dayOffset) {
+              itinerary[dayOffset] = itinerary[foundIndex];
+              // let's clean the entry as well
+              itinerary[foundIndex] = undefined;
+            }
+
+            if(itinerary[dayOffset].places) {
+              let _places = itinerary[dayOffset].places;
+              itinerary[dayOffset].places = [..._places, ...places];
+              //console.warn(`new place: place=${JSON.stringify(_currentListing.itinerary[dayOffset].places)}`);
+            }
+            else {
+              itinerary[dayOffset].places = places;
+              //console.warn(`new place: place=${JSON.stringify(currentListing.itinerary[dayOffset].places)}`);
+            }
+
+            foundEvent.save(()=> {
+              res.json({result: 'success'});
+            });
+
+          }
+          else {
+            // doesn't exist. let's just copy it.
+            let places2Add = places;
+            itinerary[dayOffset] = {dayOffset, places: places2Add};
+
+            foundEvent.save(()=> {
+              res.json({result: 'success'});
+            });
+          }
+        });
+      });
+
+
+      // Remove a place to a day
+      // <note> Just a single entry for now.
+      router.post('/:list_id/itinerary/day/remove', (req, res) => {
+        Event.findById(req.params.list_id, async (err, foundEvent) => {
+
+          if (err) {
+            res.json({result: 'fail', err: 'event not found'});
+            return;
+          }
+          // dayOffset: 0(start date)..n(end date)
+          // places: array of place index in the child_listings
+          let {dayOffset, places} = req.body;
+
+          let itinerary = foundEvent.itinerary;
+          
+          // check if there is an entry with given dayOffset already.
+          let foundIndex = getItineraryIndex(itinerary, dayOffset);
+
+          let bSuccessfuRemoval = false;
+
+          if(foundIndex!=-1) {
+            // It exists already.
+            // Let's check if it's the same as dayOffset. If not then let's relocate it.
+            if(foundIndex!==dayOffset) {
+              itinerary[dayOffset] = itinerary[foundIndex];
+              // let's clean the entry as well
+              itinerary[foundIndex] = undefined;
+            }
+
+            places.map((place)=> {
+              itinerary[dayOffset].places = itinerary[dayOffset].places.filter((item)=> {return item.placeIndex!==place.placeIndex});
+              bSuccessfuRemoval = true;
+            })
+
+           
+          }
+          else {
+            if(itinerary[dayOffset] && itinerary[dayOffset].places && itinerary[dayOffset].places.length>0) {
+              place2Remove.map((place)=> {
+                itinerary[dayOffset].places = itinerary[dayOffset].places.filter((item)=> {return item.placeIndex!==place.placeIndex});
+                bSuccessfuRemoval = true;
+              })
+            }
+          }
+
+          if(bSuccessfuRemoval===true) {
+            foundEvent.save(()=> {
+              res.json({result: 'success'});
+            });
+          }
+          else {
+            res.json({result: 'fail', err: 'no entry exist'});
+          }
+        });
+    });
 
 
       // APIs related to comments
