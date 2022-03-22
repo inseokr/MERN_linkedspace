@@ -1335,6 +1335,46 @@ module.exports = function (app) {
         });
     });
 
+    // add place to a day
+    router.put('/:list_id/itinerary/day/route/update', (req, res) => {
+      Event.findById(req.params.list_id, async (err, foundEvent) => {
+        if (err) {
+          res.json({result: 'fail', err: 'event not found'});
+          return;
+        }
+        // dayOffset: 0(start date)..n(end date)
+        // places: array of place index in the child_listings
+        let {dayOffset, direction, placeIndex} = req.body;
+        let itinerary = foundEvent.itinerary;
+
+        // need to update backend DB as well.
+        if(direction==='up') {
+          // move the place higher
+          let _placeIndex = foundEvent.itinerary[dayOffset].places[placeIndex-1].placeIndex;
+
+          foundEvent.itinerary[dayOffset].places[placeIndex-1].placeIndex = foundEvent.itinerary[dayOffset].places[placeIndex].placeIndex;
+          foundEvent.itinerary[dayOffset].places[placeIndex].placeIndex = _placeIndex;
+        }
+        else {
+          let _placeIndex = itinerary[dayOffset].places[placeIndex].placeIndex;
+          
+          foundEvent.itinerary[dayOffset].places[placeIndex].placeIndex = foundEvent.itinerary[dayOffset].places[placeIndex+1].placeIndex;
+          foundEvent.itinerary[dayOffset].places[placeIndex+1].placeIndex = _placeIndex;
+        }
+
+        foundEvent.itinerary = [...itinerary];
+
+        //console.warn(`new itinerary=${JSON.stringify(foundEvent.itinerary[dayOffset])}`);
+        foundEvent.save((err)=> { 
+          if(err) {
+            console.warn(`err=${err}`);
+            res.json({result: 'fail'});
+          }
+          res.json({result: 'success'});
+        });
+      });
+    });
+
 
       // APIs related to comments
       router.post('/:list_id/comments/add', (req, res) => {
