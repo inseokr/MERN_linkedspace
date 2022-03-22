@@ -22,6 +22,28 @@ async function fetchGoogleBusiness(cid) {
   return response ? response.data.result : null;
 }
 
+
+async function fetchGoogleTextSearch(queryString) {
+  const config = {
+    params: {
+      key: process.env.REACT_APP_GOOGLE_MAP_API_KEY,
+      query: queryString
+    }
+  };
+
+  const response = await axios
+    .get('https://maps.googleapis.com/maps/api/place/textsearch/json', config)
+    .then(response => {
+      return response.data.results[0];
+    })
+    .catch(error => {
+      console.log(error);
+      return null;
+    });
+
+  return response;
+}
+
 async function fetchGooglePlaceByCoordinate(coordinate) {
 
   function getDistance(a, b) {
@@ -133,6 +155,7 @@ async function fetchGoogleBusinessPhoto(photoReference) {
     .get('https://maps.googleapis.com/maps/api/place/photo', config)
     .then(response => {
       //console.log(response.request);
+      //console.warn(`fetchGoogleBusinessPhoto: response=${response}`);
       return response;
     })
     .catch(error => {
@@ -155,5 +178,6 @@ module.exports = {
   fetchGoogleBusiness,
   fetchGoogleBusinessPhoto,
   fetchGooglePlaceByCoordinate,
-  processPriceLevel
+  processPriceLevel,
+  fetchGoogleTextSearch
 };

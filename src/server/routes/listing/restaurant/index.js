@@ -16,7 +16,7 @@ const picturePath = '/public/user_resources/pictures/restaurant/';
 
 const { fileUpload2Cloud, fileDeleteFromCloud } = require('../../../aws_s3_api');
 const { fetchYelpBusinessSearch } = require('../../../utilities/yelpApiWrapper');
-const { fetchGoogleBusiness, fetchGoogleBusinessPhoto, fetchGooglePlaceByCoordinate, processPriceLevel } = require('../../../utilities/googleApiWrapper');
+const { fetchGoogleBusiness, fetchGoogleTextSearch, fetchGoogleBusinessPhoto, fetchGooglePlaceByCoordinate, processPriceLevel } = require('../../../utilities/googleApiWrapper');
 
 node.loop = node.runLoopOnce;
 
@@ -259,8 +259,11 @@ module.exports = function (app) {
     newListing.listingSource = 'Google';
     newListing.listingUrl = req.body.webViewUrl;
 
+    //console.warn(`new_google....`);
 
     const handleResponse = (req, res, googleBusinessResponse, googleBusinessPhotoResponse) => {
+
+      //console.warn(`handleResponse: responseURL=${JSON.stringify(googleBusinessPhotoResponse.res.responseUrl)} `);
       if (googleBusinessPhotoResponse) {
         try {
           const { name, geometry, formatted_address, types, price_level, place_id } = googleBusinessResponse;
@@ -327,6 +330,19 @@ module.exports = function (app) {
             handleResponse(req, res, googleBusinessResponse, googleBusinessPhotoResponse);
           });
         }
+        else {
+          // search by address?
+          if(req.body.placeKeywords) {
+            fetchGoogleTextSearch(req.body.placeKeywords).then((results)=> {
+              //console.warn(`response=${JSON.stringify(results)}`);
+              if(results) {
+                fetchGoogleBusinessPhoto(results.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
+                  handleResponse(req, res, results, googleBusinessPhotoResponse);
+                });
+              }
+            });
+          }
+        }
       });
     }
     else {
@@ -338,6 +354,21 @@ module.exports = function (app) {
             });
           }
         });
+      }
+      else {
+        // search by address?
+        if(req.body.placeKeywords) {
+          fetchGoogleTextSearch(req.body.placeKeywords).then((results)=> {
+            //console.warn(`response=${JSON.stringify(results)}`);
+            if(results) {
+              fetchGoogleBusinessPhoto(results.photos[0].photo_reference).then((googleBusinessPhotoResponse) => {
+                handleResponse(req, res, results, googleBusinessPhotoResponse);
+              });
+            }
+          });
+        }
+        //https://maps.googleapis.com/maps/api/place/textsearch/json?query=Crater%20Lake%20National&key=AIzaSyANrYzQMIHxXFiNglY8gAiXZglXr_JZW_E
+
       }
     }
   });
