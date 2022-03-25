@@ -98,11 +98,18 @@ const EventSchema = new mongoose.Schema({
 
       writer: String,
       message: String,
-      timestamp: Date
+      timestamp: Date,
+      rating: Number,
+      photos: [
+        {
+          path: String,
+          tag: String
+        }
+      ]
     }
   ],
 
-  // list of places(restaurants) for the event
+  // list of places(restaurants) for the event********************
   child_listings: [
     {
       hide: { type: Boolean, default: false},
@@ -157,7 +164,14 @@ const EventSchema = new mongoose.Schema({
 
           writer: String,
           message: String,
-          timestamp: Date
+          timestamp: Date,
+          rating: Number,
+          photos: [
+            {
+              path: String,
+              tag: String
+            }
+          ]
         }
       ],
 
