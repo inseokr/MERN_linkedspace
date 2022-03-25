@@ -1384,13 +1384,15 @@ module.exports = function (app) {
             res.json({result: 'fail', err: 'listing not found'});
           }
 
-          let {childIndex, channel_id, chatIndex, writer, message, timestamp} = req.body;
+          let {childIndex, channel_id, chatIndex, writer, message, timestamp, rating, photos} = req.body;
 
           if(childIndex>=0) {
-            foundEvent.child_listings[childIndex].comments.push({channel_id, chatIndex, writer, message, timestamp});
+            //console.warn(`photos=${JSON.stringify(photos)}`);
+
+            foundEvent.child_listings[childIndex].comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
           }
           else {
-            foundEvent.comments.push({channel_id, chatIndex, writer, message, timestamp});
+            foundEvent.comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
           }
 
           foundEvent.save(()=> {

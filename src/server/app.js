@@ -549,7 +549,6 @@ app.namespace('/LS_API', () => {
     });
   });
 
-
   // file operation for profile
   // ISEO: req.files were undefined if it's used in routers.
   // We need to address this problem later, but I will define it inside app.js for now.
@@ -588,6 +587,50 @@ app.namespace('/LS_API', () => {
       } catch (err) {
         console.error(err);
         res.send('File deletion failed');
+      }
+  });
+
+  // file management - comment
+  app.post('/event/:listing_id/comment/:place_index/file_upload', (req, res) => {
+
+    if (Object.keys(req.files).length == 0) {
+      return res.status(400).send('No files were uploaded.');
+    }
+
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+    const sampleFile = req.files.photo;
+    const { place_index, listing_id } = req.params;
+    const picPath = `/public/user_resources/pictures/comment/${listing_id}_${place_index}_comment_${sampleFile.name}`;
+
+    // Use the mv() method to place the file somewhere on your server
+    sampleFile.mv(serverPath + picPath, async (err) => {
+      if (err) {
+        console.warn(`ISEO: upload failure. error=${err}`);
+        return res.status(500).send(err);
+      }
+
+      let result = await fileUpload2Cloud(serverPath, picPath);
+      if(result===true) {
+        res.json({path: picPath, result: true});
+      }
+      else {
+        res.json({path: null, result: false});
+      }
+    });
+  });
+
+
+  app.post('/event/:listing_id/comment/:place_index/file_delete', (req, res) => {
+      try {
+        let {fileName} = req.body;
+
+        console.warn(`comment picture - delete file: fileName = ${fileName}`);
+        fileDeleteFromCloud(fileName);
+        fs.unlinkSync(serverPath + fileName);
+        res.json({result: true});
+      } catch (err) {
+        console.error(err);
+        res.json({result: false});
       }
   });
 
