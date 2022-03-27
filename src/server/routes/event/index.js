@@ -1387,16 +1387,21 @@ module.exports = function (app) {
           let {childIndex, channel_id, chatIndex, writer, message, timestamp, rating, photos} = req.body;
 
           if(childIndex>=0) {
-            //console.warn(`photos=${JSON.stringify(photos)}`);
-
             foundEvent.child_listings[childIndex].comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
           }
           else {
             foundEvent.comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
           }
 
-          foundEvent.save(()=> {
-            res.json({result: 'success'});
+          foundEvent.save((err)=> {
+            if(err) {
+              console.warn(`err=${err}`)
+              res.json({result: 'fail'});
+            }
+            else {
+              //console.warn(`Comment added successfully!!`);
+              res.json({result: 'success'});
+            }
           });
 
         });

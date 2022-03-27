@@ -600,7 +600,7 @@ app.namespace('/LS_API', () => {
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     const sampleFile = req.files.photo;
     const { place_index, listing_id } = req.params;
-    const picPath = `/public/user_resources/pictures/comment/${listing_id}_${place_index}_comment_${sampleFile.name}`;
+    const picPath = `/public/user_resources/pictures/comment/${sampleFile.name}`;
 
     // Use the mv() method to place the file somewhere on your server
     sampleFile.mv(serverPath + picPath, async (err) => {
