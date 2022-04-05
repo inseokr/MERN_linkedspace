@@ -1376,36 +1376,66 @@ module.exports = function (app) {
     });
 
 
-      // APIs related to comments
-      router.post('/:list_id/comments/add', (req, res) => {
-        Event.findById(req.params.list_id, async (err, foundEvent) => {
+    // APIs related to comments
+    router.post('/:list_id/comments/add', (req, res) => {
+      Event.findById(req.params.list_id, async (err, foundEvent) => {
 
-          if (err) {
-            res.json({result: 'fail', err: 'listing not found'});
-          }
+        if (err) {
+          res.json({result: 'fail', err: 'listing not found'});
+        }
 
-          let {childIndex, channel_id, chatIndex, writer, message, timestamp, rating, photos} = req.body;
+        let {childIndex, channel_id, chatIndex, writer, message, timestamp, rating, photos} = req.body;
 
-          if(childIndex>=0) {
-            foundEvent.child_listings[childIndex].comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
+        if(childIndex>=0) {
+          foundEvent.child_listings[childIndex].comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
+        }
+        else {
+          foundEvent.comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
+        }
+
+        foundEvent.save((err)=> {
+          if(err) {
+            console.warn(`err=${err}`)
+            res.json({result: 'fail'});
           }
           else {
-            foundEvent.comments.push({channel_id, chatIndex, writer, message, timestamp, rating, photos});
+            //console.warn(`Comment added successfully!!`);
+            res.json({result: 'success'});
           }
+        });
 
-          foundEvent.save((err)=> {
-            if(err) {
-              console.warn(`err=${err}`)
-              res.json({result: 'fail'});
-            }
-            else {
-              //console.warn(`Comment added successfully!!`);
-              res.json({result: 'success'});
-            }
-          });
+      });
+    });
 
+    // APIs related to comments
+    router.put('/:list_id/comments/update', (req, res) => {
+      console.warn(`Comment update API is called`);
+      Event.findById(req.params.list_id, async (err, foundEvent) => {
+        if (err) {
+          res.json({result: 'fail', err: 'listing not found'});
+        }
+
+        let {childIndex, channel_id, chatIndex, writer, message, timestamp, rating, photos, commentIndex} = req.body;
+
+        if(childIndex>=0) {
+          foundEvent.child_listings[childIndex].comments[commentIndex] = {channel_id, chatIndex, writer, message, timestamp, rating, photos};
+        }
+        else {
+          foundEvent.comments[commentIndex] = {channel_id, chatIndex, writer, message, timestamp, rating, photos};
+        }
+
+        foundEvent.save((err)=> {
+          if(err) {
+            console.warn(`err=${err}`)
+            res.json({result: 'fail'});
+          }
+          else {
+            console.warn(`Comment has been updated successfully!!`);
+            res.json({result: 'success'});
+          }
         });
       });
+    });
 
     return router;
 };
