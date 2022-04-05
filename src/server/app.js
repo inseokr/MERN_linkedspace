@@ -623,10 +623,8 @@ app.namespace('/LS_API', () => {
   app.post('/event/:listing_id/comment/:place_index/file_delete', (req, res) => {
       try {
         let {fileName} = req.body;
-
-        console.warn(`comment picture - delete file: fileName = ${fileName}`);
-        fileDeleteFromCloud(fileName);
-        fs.unlinkSync(serverPath + fileName);
+        fileDeleteFromCloud(fileName.path);
+        fs.unlinkSync(serverPath + fileName.path);
         res.json({result: true});
       } catch (err) {
         console.error(err);
