@@ -638,6 +638,13 @@ app.namespace('/LS_API', () => {
     res.sendFile(path.join(__dirname, `/public/user_resources/pictures/3rdparty/${fileName}`));
   });
 
+
+  app.get('/public/user_resources/pictures/downloaded/:filename', (req, res) => {
+    const fileName = req.params.filename;
+    // console.log("picture: received file name=" + fileName)
+    res.sendFile(path.join(__dirname, `/public/user_resources/pictures/downloaded/${fileName}`));
+  });
+
   app.get('/public/user_resources/pictures/:filename', (req, res) => {
     const fileName = req.params.filename;
     // console.log("picture: received file name=" + fileName)
