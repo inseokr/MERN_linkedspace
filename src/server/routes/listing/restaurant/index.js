@@ -34,18 +34,28 @@ module.exports = function (app) {
         return res.status(500).send(err);
       }
 
-      //console.warn(`File successfully replaced: picPath=${picPath}`);
       res.json({result: 'OK'});
     });
   });
 
 
   router.post('/file_delete', (req, res) => {
-    const filename = req.body.file_name.replace(/^.*[\\\/]/, '');
-    const picPath = serverPath + picturePath + filename;
-    fileDeleteFromCloud(picturePath + filename);
-    fs.unlinkSync(picPath);
-    res.send('File Deleted!');
+    let filename = req.body.filename;
+    let fileName = req.body.fileName;
+
+    let _fileName = (filename)? filename.replace(/^.*[\\\/]/, ''): 
+                    (fileName)? fileName.replace(/^.*[\\\/]/, ''): null ;
+
+
+    if(!_fileName) {
+      res.json({result: 'FAIL', reason: 'no valid file name given'});
+    }
+    else {
+      const picPath = serverPath + picturePath + _fileName;
+      fileDeleteFromCloud(picturePath + _fileName);
+      fs.unlinkSync(picPath);
+      res.json({result: 'OK'});
+    }
   });
 
   router.post('/new', (req, res) => {
@@ -91,8 +101,8 @@ module.exports = function (app) {
               newListing.coverPhoto.path = new_full_picture_path;
 
               if(req.body.coordinates) {
-                newListing.coordinates.lat = location.latitude;
-                newListing.coordinates.lng = location.longitude;
+                newListing.coordinates.lat = req.body.coordinates.latitude;
+                newListing.coordinates.lng = req.body.coordinates.longitude;
           
                 newListing.save((err) => {
                   if (err) {
