@@ -7,12 +7,7 @@
   "description": "First LinkedSpaces service based on MERN",
   "main": "src/server/index.js",
   "scripts": {
-    "build": "webpack --mode production ",
-    "client": "react-scripts start && npm run build",
-    "start": "npm run client",
-    "build-dev": "webpack --mode development",
-    "client-dev": "react-scripts start && npm run build-dev",
-    "start-dev": "concurrently \"node src/server/app.js \" \"npm run client-dev\""
+    "start": "node src/server/app.js"
   },
   "author": "In Seo",
   "license": "ISC",
