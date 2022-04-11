@@ -88,24 +88,6 @@ function createNewEvent(req, res, coordinates) {
 module.exports = function (app) {
 
     router.post('/new', async (req, res) => {
-        /* req.body
-        {
-        location: {
-            street:
-            city:
-            state:
-            zipcode:
-            country
-        },
-        coordinates: {
-            lat,
-            lng
-        },
-        date,
-        summary,
-        userList: [ {userName} ]
-        }
-        */
         if(req.body.coordinates!==null) {
             createNewEvent(req, res, req.body.coordinates);
         }
