@@ -69,10 +69,13 @@ module.exports = function (app) {
 
     newListing.requester = req.user._id;
 
+    console.warn(`req body: ${JSON.stringify(req.body)}`);
+
     newListing.listingSource = req.body.listingSource;
     newListing.listingUrl = req.body.listingUrl;
     newListing.listingSummary = req.body.listingSummary;
     newListing.locationString = req.body.location;
+
 
     if(req.body.imageUrl) {
       newListing.coverPhoto.path = req.body.imageUrl;
