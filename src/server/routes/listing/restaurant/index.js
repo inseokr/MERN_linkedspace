@@ -25,7 +25,7 @@ module.exports = function (app) {
     const sampleFile = req.files.photo;
     const picPath = serverPath + picturePath + sampleFile.name;
 
-    //console.log(`file_upload: picPath=${picPath}`);
+    console.log(`file_upload: picPath=${picPath}`);
     //console.warn(`sampleFile=${JSON.stringify(sampleFile)}`);
 
     sampleFile.mv(picPath, (err) => {
@@ -33,6 +33,8 @@ module.exports = function (app) {
         console.warn(`file can't be replaced!! with error code=${err}`);
         return res.status(500).send(err);
       }
+
+      console.warn(`File uploaded successfully to ${picPath}`);
 
       res.json({result: 'OK'});
     });
