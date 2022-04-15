@@ -427,6 +427,27 @@ app.namespace('/LS_API', () => {
       });
     });
   });
+
+
+   // File operation for tenant
+  // ISEO: req.files were undefined if it's used in routers.
+  // We need to address this problem later, but I will define it inside app.js for now.
+  app.post('/listing/event/chat/file_upload', (req, res) => {
+
+    const sampleFile = req.files.photo;
+    const fileFullPath = `/public/user_resources/pictures/chat/${sampleFile.name}`;
+
+    sampleFile.mv(serverPath + fileFullPath, (err) => {
+      if (err) {
+        console.log(`mv operation failed with error code=${err}`);
+        return res.status(500).send(err);
+      }
+      fileUpload2Cloud(serverPath, fileFullPath);
+      res.send('File uploaded!');
+    });
+  });
+  
+
   app.post('/listing/tenant/:list_id/file_delete', (req, res) => {
     console.log('tenant, file_delete is called');
     TenantRequest.findById(req.params.list_id, (err, foundListing) => {
