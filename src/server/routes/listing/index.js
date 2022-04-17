@@ -80,6 +80,26 @@ router.get('/getLastVisitedListingId', (req, res) => {
   });
 });
 
+function checkIfAnyNewMsg(currentUserName, lastReadIndex, chatHistory) {
+  // <note> lastReadIndex has the value of the next message to saved in the chat history
+  // So it has read all the messages if it equals to the length.
+  // console.log("checkIfAnyNewMsg: direction of last message" + chatHistory[chatHistory.length-1].direction);
+  // console.log("checkIfAnyNewMsg: lastReadIndex = " + lastReadIndex + " history length = " + chatHistory.length);
+
+  if (lastReadIndex == chatHistory.length) {
+    return false;
+  }
+
+  // return TRUE only if the direction of message is received.
+  // <note> In some cases, the DB is not updated yet.
+  // At least we should keep both message window and summary window in sync.
+  // Let's check if there is any received message in between lastReadIndex and the last message
+  for (let index = chatHistory.length - 1; index >= lastReadIndex; index--) {
+    if (chatHistory[index].writer !== currentUserName) return true;
+  }
+  return false;
+}
+
 router.get('/get_active_listing/own', (req, res) => {
 
   var prevTimeInMilliseconds=Date.now();
@@ -96,7 +116,6 @@ router.get('/get_active_listing/own', (req, res) => {
 
     .exec(async (err, foundUser) => {
       currentTimeInMilliseconds=Date.now();
-      console.warn(`Debug1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
       prevTimeInMilliseconds = currentTimeInMilliseconds;
 
       if (err) {
@@ -170,16 +189,11 @@ router.get('/get_active_listing/own', (req, res) => {
           if (++numOfProcessedListing === foundUser._3rdparty_listing.length) {
             // passing whole data structure may not be a good idea?
             let endTime = Date.now();
-            console.warn(`get_active_listing: ended at: ${endTime}`);
-
-            console.warn(`Diff: ${endTime-currentTimeInMilliseconds}`);
-
             res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
           }
         });
 
         currentTimeInMilliseconds=Date.now();
-        console.warn(`Debug2:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
         prevTimeInMilliseconds = currentTimeInMilliseconds;
   
 
@@ -191,7 +205,6 @@ router.get('/get_active_listing/own', (req, res) => {
           listing.populated(pathToPopulate);
 
           currentTimeInMilliseconds=Date.now();
-          console.warn(`Debug3:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
           prevTimeInMilliseconds = currentTimeInMilliseconds;
   
 
@@ -199,7 +212,6 @@ router.get('/get_active_listing/own', (req, res) => {
           await listing.populate(pathToPopulate, 'username profile_picture firstname lastname').execPopulate();
 
           currentTimeInMilliseconds=Date.now();
-          console.warn(`Debug4:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
           prevTimeInMilliseconds = currentTimeInMilliseconds;
 
           const event = {
@@ -229,17 +241,16 @@ router.get('/get_active_listing/own', (req, res) => {
             }
 
             currentTimeInMilliseconds=Date.now();
-            console.warn(`Debug4.1:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
             prevTimeInMilliseconds = currentTimeInMilliseconds;
   
             //console.warn(`relevantChattingChannels length: ${relevantChattingChannels.length}`);
             let numOfProcessed = 0;
-            if(relevantChattingChannels.length>1) {
+            if(relevantChattingChannels.length>=1) {
 
               relevantChattingChannels.forEach(async (channel, index) => {
                 let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
                 if(chattingChannel && 
-                  (chattingChannel.chat_history.length!=(channel.lastReadIndex))) {
+                  (checkIfAnyNewMsage(req.user.username, channel.lastReadIndex, chattingChannel.chat_history) === true)) {
                     event.newMessage = true;
                 }
                 numOfProcessed++;
@@ -248,7 +259,6 @@ router.get('/get_active_listing/own', (req, res) => {
           }
 
           currentTimeInMilliseconds=Date.now();
-          console.warn(`Debug5:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
           prevTimeInMilliseconds = currentTimeInMilliseconds;
 
           events.push(event);
@@ -256,7 +266,6 @@ router.get('/get_active_listing/own', (req, res) => {
 
         if (foundUser._3rdparty_listing.length === 0) {
           currentTimeInMilliseconds=Date.now();
-          console.warn(`Debug7:diff: ${currentTimeInMilliseconds-prevTimeInMilliseconds}`);
           prevTimeInMilliseconds = currentTimeInMilliseconds;
           res.json({ tenant_listing, landlord_listing, _3rdparty_listing, events });
         }
@@ -414,11 +423,11 @@ router.get('/get_active_listing/friend', (req, res) => {
             }
 
             let numOfProcessed = 0;
-            if(relevantChattingChannels.length>1) {
+            if(relevantChattingChannels.length>=1) {
               relevantChattingChannels.forEach(async (channel, index) => {
                 let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
                 if(chattingChannel && 
-                  (chattingChannel.chat_history.length!=(channel.lastReadIndex))) {
+                  (checkIfAnyNewMsage(req.user.username, channel.lastReadIndex, chattingChannel.chat_history) === true)) {
                     event.newMessage = true;
                 }
                 numOfProcessed++;
@@ -515,27 +524,29 @@ router.get('/get_active_listing/event/own', (req, res) => {
                 }
               }
 
-              if(relevantChattingChannels.length>1) {
+              if(relevantChattingChannels.length>=1) {
                 let numOfChannelProcessed = 0;
                 relevantChattingChannels.forEach(async (channel, index) => {
                   if(event.newMessage===true && (++numOfChannelProcessed===relevantChattingChannels.length)) {
                     // new message already detected, and we will just skip all the rest.
-                   // console.warn(`All channels processed`);
-                    //console.warn(`summary: ${event.summary}`);
+                      //console.warn(`All channels processed`);
+                      //console.warn(`summary: ${event.summary}`);
                   }
                   else {
                     let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
 
-                    if(chattingChannel && 
-                      (chattingChannel.chat_history.length!=(channel.lastReadIndex)) &&  event.newMessage===false ) {
-                        event.newMessage = true;
-                        // No further processing's needed for this event
-                        events.push(event); 
-                        totalEventProcessed++;
-                        //console.warn(`new message detected: totalEventProcessed=${totalEventProcessed}`);
-                        //console.warn(`summary: ${event.summary}`);
-                        if(numOfEvents===totalEventProcessed) {
-                          res.json({ events });
+                    if(chattingChannel && (event.newMessage===false )) {
+                        let bNewMessage = checkIfAnyNewMsg(req.user.username, channel.lastReadIndex, chattingChannel.chat_history);
+                        if(bNewMessage===true) {
+                          event.newMessage = true;
+                          // No further processing's needed for this event
+                          events.push(event); 
+                          totalEventProcessed++;
+                          //console.warn(`new message detected: totalEventProcessed=${totalEventProcessed}`);
+                          //console.warn(`summary: ${event.summary}`);
+                          if(numOfEvents===totalEventProcessed) {
+                            res.json({ events });
+                          }
                         }
                     }
   
@@ -653,28 +664,33 @@ router.get('/get_active_listing/event/friend', (req, res) => {
 
               //console.warn(`Total channel=${relevantChattingChannels.length}`);
 
-              if(relevantChattingChannels.length>1) {
+              if(relevantChattingChannels.length>=1) {
                 let numOfChannelProcessed = 0;
                 relevantChattingChannels.forEach(async (channel, index) => {
                   if(event.newMessage===true && (++numOfChannelProcessed===relevantChattingChannels.length)) {
                     // new message already detected, and we will just skip all the rest.
-                   // console.warn(`All channels processed`);
-                    //console.warn(`summary: ${event.summary}`);
+                      //console.warn(`All channels processed`);
+                      //console.warn(`summary: ${event.summary}`);
                   }
                   else {
                     let chattingChannel = await chatDbHandler.findChatChannel(channel.name);
 
-                    if(chattingChannel && 
-                      (chattingChannel.chat_history.length!=(channel.lastReadIndex)) &&  event.newMessage===false ) {
+                    if(chattingChannel && (event.newMessage===false )) {
+                      let bNewMessage = checkIfAnyNewMsg(req.user.username, channel.lastReadIndex, chattingChannel.chat_history);
+                      if(bNewMessage===true) {
                         event.newMessage = true;
                         // No further processing's needed for this event
                         events.push(event); 
                         totalEventProcessed++;
+                          //console.warn(`new message detected: totalEventProcessed=${totalEventProcessed}`);
+                          //console.warn(`summary: ${event.summary}`);
+                          //console.warn(`channel.name: ${channel.name}`);
                         //console.warn(`new message detected: totalEventProcessed=${totalEventProcessed}`);
                         //console.warn(`summary: ${event.summary}`);
                         if(numOfEvents===totalEventProcessed) {
                           res.json({ events });
                         }
+                      }
                     }
   
                     // all channels has been processed
